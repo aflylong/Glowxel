@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planet Screensaver - Glowxel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Full-screen canvas — fills entire browser window -->
+  <div class="canvas-fullscreen" id="canvas-container">
+    <canvas id="planet-canvas"></canvas>
+  </div>
+
+  <!-- Floating controls panel -->
+  <div class="controls" id="controls-panel">
+    <div class="controls-header">
+      <h2>🪐 Planet Screensaver</h2>
+      <button class="toggle-btn" id="btn-toggle">◀</button>
+    </div>
+
+    <!-- Preset selection -->
+    <div class="control-group">
+      <label>星球类型</label>
+      <div class="preset-grid" id="preset-grid"></div>
+    </div>
+
+    <!-- 清晰度 — render resolution -->
+    <div class="control-group">
+      <label class="resolution-label">
+        清晰度
+        <span class="value-display"><span id="pixels-value">64</span>×<span id="pixels-value2">64</span> · <span id="pixels-info">像素风</span></span>
+      </label>
+      <input type="range" id="pixels-slider" min="32" max="512" value="64" step="16">
+      <div class="slider-hints">
+        <span>32 像素风</span>
+        <span>512 超清</span>
+      </div>
+    </div>
+
+    <!-- Size -->
+    <div class="control-group">
+      <label>星球大小</label>
+      <div class="option-row" id="size-options"></div>
+    </div>
+
+    <!-- Direction -->
+    <div class="control-group">
+      <label>自转方向</label>
+      <div class="option-row" id="direction-options"></div>
+    </div>
+
+    <!-- Speed -->
+    <div class="control-group">
+      <label class="resolution-label">
+        转速
+        <span class="value-display" id="speed-value">3</span>
+      </label>
+      <input type="range" id="speed-slider" min="1" max="7" value="3" step="1">
+    </div>
+
+    <!-- Position -->
+    <div class="control-group">
+      <label class="resolution-label">
+        水平位置
+        <span class="value-display" id="x-value">32</span>
+      </label>
+      <input type="range" id="x-slider" min="0" max="63" value="32" step="1">
+    </div>
+    <div class="control-group">
+      <label class="resolution-label">
+        垂直位置
+        <span class="value-display" id="y-value">32</span>
+      </label>
+      <input type="range" id="y-slider" min="0" max="63" value="32" step="1">
+    </div>
+
+    <!-- Clock settings -->
+    <div class="control-group">
+      <label>时间显示</label>
+      <div class="clock-row">
+        <input type="checkbox" id="clock-toggle" checked>
+        <label for="clock-toggle">显示时间</label>
+        <input type="color" id="clock-color" value="#64c8ff" title="时间颜色">
+      </div>
+      <div class="control-group" style="margin-top:4px">
+        <label class="resolution-label">
+          字体大小
+          <span class="value-display" id="clock-size-value">1</span>
+        </label>
+        <input type="range" id="clock-size-slider" min="1" max="4" value="1" step="1">
+      </div>
+      <div class="control-group" style="margin-top:4px">
+        <label class="resolution-label">
+          时间 X
+          <span class="value-display" id="clock-x-value">32</span>
+        </label>
+        <input type="range" id="clock-x-slider" min="0" max="63" value="32" step="1">
+      </div>
+      <div class="control-group" style="margin-top:4px">
+        <label class="resolution-label">
+          时间 Y
+          <span class="value-display" id="clock-y-value">5</span>
+        </label>
+        <input type="range" id="clock-y-slider" min="0" max="63" value="5" step="1">
+      </div>
+      <div class="control-group" style="margin-top:4px">
+        <label>字体</label>
+        <div class="option-row" id="clock-font-options"></div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-row">
+      <button class="action-btn primary" id="btn-random-planet">🎲 随机星球</button>
+      <button class="action-btn" id="btn-random-color">🎨 随机颜色</button>
+    </div>
+    <div class="action-row">
+      <button class="action-btn" id="btn-center">⊕ 居中</button>
+      <button class="action-btn" id="btn-export">💾 导出 PNG</button>
+    </div>
+
+    <!-- Playback -->
+    <div class="control-group playback-group">
+      <button class="play-btn playing" id="btn-play">⏸</button>
+      <span class="fps-label" id="fps-display">-- FPS</span>
+    </div>
+  </div>
+
+  <script src="planet-engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
