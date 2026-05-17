@@ -466,10 +466,13 @@ void TetrisEffect::render(MatrixPanel_I2S_DMA* display) {
         for (int dx = 0; dx < cellSize; dx++) {
           int px = x * cellSize + dx;
           int py = boardOffsetY + y * cellSize + dy;
+          // 硬件 row offset 补偿: panel 把 buffer y=N 显示到屏 y=(N-1) mod 64,
+          // 反向写到 (y+1) % 64 让屏底贴齐
+          int screenY = (py + 1) % 64;
           // 这里必须走 drawPixel()，这样 beginRedirectedFrame() 才能拦截到
           // tetris 屏保的整帧合成；drawPixelRGB888() 在底层库里不是虚函数。
-          display->drawPixel(px, py, blockColor565);
-          DisplayManager::backgroundBuffer[py][px] = blockColor565;
+          display->drawPixel(px, screenY, blockColor565);
+          DisplayManager::backgroundBuffer[screenY][px] = blockColor565;
         }
       }
     }
@@ -487,8 +490,9 @@ void TetrisEffect::render(MatrixPanel_I2S_DMA* display) {
         for (int dx = 0; dx < cellSize; dx++) {
           int drawX = px * cellSize + dx;
           int drawY = boardOffsetY + py * cellSize + dy;
-          display->drawPixel(drawX, drawY, pieceColor565);
-          DisplayManager::backgroundBuffer[drawY][drawX] = pieceColor565;
+          int screenY = (drawY + 1) % 64;
+          display->drawPixel(drawX, screenY, pieceColor565);
+          DisplayManager::backgroundBuffer[screenY][drawX] = pieceColor565;
         }
       }
     }

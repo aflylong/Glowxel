@@ -353,9 +353,9 @@ function topReached(state) {
   return false;
 }
 
-function drawCell(map, cellX, cellY, cellSize, color) {
+function drawCell(map, cellX, cellY, cellSize, color, boardOffsetY = 0) {
   const pixelX = cellX * cellSize;
-  const pixelY = cellY * cellSize;
+  const pixelY = cellY * cellSize + boardOffsetY;
   for (let offsetY = 0; offsetY < cellSize; offsetY += 1) {
     for (let offsetX = 0; offsetX < cellSize; offsetX += 1) {
       const drawX = pixelX + offsetX;
@@ -368,25 +368,28 @@ function drawCell(map, cellX, cellY, cellSize, color) {
 }
 
 function drawBoard(map, board, cols, rows, cellSize) {
+  // 底部对齐: 把"64 / cellSize 取 floor 后剩下的像素"放到顶部 (跟板载 tetris_effect.cpp 一致)
+  const boardOffsetY = Math.max(0, PANEL_SIZE - rows * cellSize);
   for (let row = 0; row < rows; row += 1) {
     for (let col = 0; col < cols; col += 1) {
       const colorIndex = board[row][col];
       if (colorIndex <= 0) {
         continue;
       }
-      drawCell(map, col, row, cellSize, COLORS[colorIndex - 1]);
+      drawCell(map, col, row, cellSize, COLORS[colorIndex - 1], boardOffsetY);
     }
   }
 }
 
 function drawActivePiece(map, piece, cols, rows, cellSize) {
+  const boardOffsetY = Math.max(0, PANEL_SIZE - rows * cellSize);
   const cells = getPieceCells(piece.type, piece.rotation);
   for (let index = 0; index < cells.length; index += 1) {
     const cell = cells[index];
     const nextX = piece.x + cell.x;
     const nextY = piece.y + cell.y;
     if (nextX >= 0 && nextX < cols && nextY >= 0 && nextY < rows) {
-      drawCell(map, nextX, nextY, cellSize, COLORS[piece.type]);
+      drawCell(map, nextX, nextY, cellSize, COLORS[piece.type], boardOffsetY);
     }
   }
 }

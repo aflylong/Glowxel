@@ -130,103 +130,6 @@
             </view>
           </view>
 
-          <!-- 角色位置 -->
-          <view class="card-title-section">
-            <Icon name="rectangle" :size="32" />
-            <text class="card-title">角色位置</text>
-          </view>
-
-          <view class="setting-item-row">
-            <text class="setting-label">X</text>
-            <view class="setting-control-buttons">
-              <view class="control-btn" @click="adjustTerraria('playerX', -1)">
-                <text class="control-icon">-</text>
-              </view>
-              <text class="setting-value-large">{{ config.terraria.playerX }}</text>
-              <view class="control-btn" @click="adjustTerraria('playerX', 1)">
-                <text class="control-icon">+</text>
-              </view>
-            </view>
-          </view>
-
-          <view class="setting-item-row">
-            <text class="setting-label">Y</text>
-            <view class="setting-control-buttons">
-              <view class="control-btn" @click="adjustTerraria('playerY', -1)">
-                <text class="control-icon">-</text>
-              </view>
-              <text class="setting-value-large">{{ config.terraria.playerY }}</text>
-              <view class="control-btn" @click="adjustTerraria('playerY', 1)">
-                <text class="control-icon">+</text>
-              </view>
-            </view>
-          </view>
-
-          <view class="setting-item-row">
-            <text class="setting-label">缩放%</text>
-            <view class="setting-control-buttons">
-              <view class="control-btn" @click="adjustTerraria('playerScale', -5)">
-                <text class="control-icon">-</text>
-              </view>
-              <text class="setting-value-large">{{ config.terraria.playerScale }}</text>
-              <view class="control-btn" @click="adjustTerraria('playerScale', 5)">
-                <text class="control-icon">+</text>
-              </view>
-            </view>
-          </view>
-
-          <!-- 守卫位置 (召唤师) -->
-          <view v-if="config.terraria.characterId === 'summoner'">
-            <view class="card-title-section">
-              <Icon name="ai" :size="32" />
-              <text class="card-title">守卫位置</text>
-            </view>
-
-            <view class="setting-item-row">
-              <text class="setting-label">守卫 X</text>
-              <view class="setting-control-buttons">
-                <view class="control-btn" @click="adjustTerraria('guardianX', -1)">
-                  <text class="control-icon">-</text>
-                </view>
-                <text class="setting-value-large">{{ config.terraria.guardianX }}</text>
-                <view class="control-btn" @click="adjustTerraria('guardianX', 1)">
-                  <text class="control-icon">+</text>
-                </view>
-              </view>
-            </view>
-
-            <view class="setting-item-row">
-              <text class="setting-label">守卫 Y</text>
-              <view class="setting-control-buttons">
-                <view class="control-btn" @click="adjustTerraria('guardianY', -1)">
-                  <text class="control-icon">-</text>
-                </view>
-                <text class="setting-value-large">{{ config.terraria.guardianY }}</text>
-                <view class="control-btn" @click="adjustTerraria('guardianY', 1)">
-                  <text class="control-icon">+</text>
-                </view>
-              </view>
-            </view>
-          </view>
-
-          <!-- 翅膀速度 -->
-          <view class="card-title-section">
-            <Icon name="wing" :size="32" />
-            <text class="card-title">翅膀速度</text>
-          </view>
-          <view class="setting-item-row">
-            <text class="setting-label">速度%</text>
-            <view class="setting-control-buttons">
-              <view class="control-btn" @click="adjustTerraria('wingSpeedPct', -10)">
-                <text class="control-icon">-</text>
-              </view>
-              <text class="setting-value-large">{{ config.terraria.wingSpeedPct }}</text>
-              <view class="control-btn" @click="adjustTerraria('wingSpeedPct', 10)">
-                <text class="control-icon">+</text>
-              </view>
-            </view>
-          </view>
-
         </view>
 
       </view>
@@ -286,15 +189,9 @@ import { renderTerrariaScene, CHARACTERS } from "../../utils/terrariaRenderer.js
 import { preloadAll as preloadTerrariaSprites } from "../../utils/terrariaSprites.js";
 import { applyTerrariaClockBorder } from "../../utils/clockTerrariaBorder.js";
 
-// 各字段调节范围
-const TERRARIA_RANGE = {
-  playerX:      { min: 0,    max: 63 },
-  playerY:      { min: 0,    max: 63 },
-  playerScale:  { min: 20,   max: 200 },
-  guardianX:    { min: -32,  max: 32 },
-  guardianY:    { min: -32,  max: 32 },
-  wingSpeedPct: { min: 0,    max: 200 },
-};
+// 角色 X / Y / 缩放 / 翅膀速度全部用板载默认值, 不开放调整
+// 守卫位置也固定为 (-29, -19), 不调整
+// 这里保留空对象只是给历史 adjustTerraria(...) 调用一个安全降级
 
 export default {
   mixins: [
@@ -382,8 +279,9 @@ export default {
           playerX: 32,
           playerY: 43,
           playerScale: 60,
+          // 守卫位置固定 (-29, -19), 不开放调整
           guardianX: -29,
-          guardianY: -6,
+          guardianY: -19,
           wingSpeedPct: 50,
           clockBgInner: "#63971f",
           clockBgOuter: "#8FD71D",
@@ -464,16 +362,6 @@ export default {
     selectWeapon(weaponId) {
       this.config.terraria.weaponId = weaponId;
       this.scheduleRender();
-    },
-    adjustTerraria(key, delta) {
-      const r = TERRARIA_RANGE[key];
-      if (!r) return;
-      const cur = this.config.terraria[key];
-      const next = Math.max(r.min, Math.min(r.max, cur + delta));
-      if (next !== cur) {
-        this.config.terraria[key] = next;
-        this.scheduleRender();
-      }
     },
 
     // ===== 直接覆盖 mixin 的 sendToDevice (terraria 走独立 ws.startTerrariaClock) =====

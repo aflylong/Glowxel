@@ -41,8 +41,8 @@ void drawClockText(
 );
 
 // 把字光栅化到 64*64 的 mask (1 = 字像素)
-//   x, y: 字串左上角
-//   align: 0 = left (x 是左上角), 1 = center (x 是中心), 2 = right (x 是右下角)
+//   x, y: 字串"顶部锚点"(y 永远是顶部行, 跟 uniapp drawClockTextToPixels 一致)
+//   align: 0 = left (x 是左边),  1 = center (x 是水平中心),  2 = right (x 是右边)
 //   写入 mask[64*64], mask 必须是 0/1 字节数组, 先清零再画
 void rasterizeClockTextToMask(
   uint8_t mask[64 * 64],

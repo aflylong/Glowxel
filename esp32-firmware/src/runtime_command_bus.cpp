@@ -238,6 +238,21 @@ bool parseRequiredHexColorText(
   return true;
 }
 
+// 把 "#rrggbb" 解成 3 字节 RGB; value 为 nullptr / 长度不对 / 非 hex 字符返回 false
+bool parseHexColorString(const char* value, uint8_t out[3]) {
+  if (!isHexColorText(value)) {
+    return false;
+  }
+  for (int i = 0; i < 3; i++) {
+    char buf[3] = { value[1 + i * 2], value[2 + i * 2], 0 };
+    char* end = nullptr;
+    long v = strtol(buf, &end, 16);
+    if (*end != '\0') return false;
+    out[i] = static_cast<uint8_t>(v);
+  }
+  return true;
+}
+
 void setErrorResponse(StaticJsonDocument<768>& response, const char* message) {
   response["status"] = "error";
   response["message"] = message;
@@ -1610,6 +1625,118 @@ bool prepareTetrisClockTransaction(JsonObject params, const char*& reason) {
   return true;
 }
 
+bool prepareTerrariaTransaction(JsonObject params, const char*& reason) {
+  // 必需字段 (跟 uniapp ws.startTerrariaClock(config) 完全对齐, 不发明字段)
+  if (!params.containsKey("character") ||
+      !params.containsKey("weaponId") ||
+      !params.containsKey("playerX") ||
+      !params.containsKey("playerY") ||
+      !params.containsKey("playerScale") ||
+      !params.containsKey("guardianX") ||
+      !params.containsKey("guardianY") ||
+      !params.containsKey("wingSpeed") ||
+      !params.containsKey("fontId") ||
+      !params.containsKey("fontScale") ||
+      !params.containsKey("clockX") ||
+      !params.containsKey("clockY") ||
+      !params.containsKey("hourFormat") ||
+      !params.containsKey("showSeconds") ||
+      !params.containsKey("clockTextColor") ||
+      !params.containsKey("clockBgInner") ||
+      !params.containsKey("clockBgOuter")) {
+    reason = "terraria_clock fields missing";
+    return false;
+  }
+
+  // character: 字符串 → 枚举
+  const char* characterStr = params["character"];
+  if (characterStr == nullptr) {
+    reason = "terraria_clock character invalid";
+    return false;
+  }
+  uint8_t character;
+  if (strcmp(characterStr, "warrior") == 0) character = TERRARIA_CHAR_WARRIOR;
+  else if (strcmp(characterStr, "ranger") == 0) character = TERRARIA_CHAR_RANGER;
+  else if (strcmp(characterStr, "mage") == 0) character = TERRARIA_CHAR_MAGE;
+  else if (strcmp(characterStr, "summoner") == 0) character = TERRARIA_CHAR_SUMMONER;
+  else {
+    reason = "terraria_clock character invalid";
+    return false;
+  }
+
+  // 数值字段
+  const int weaponId = params["weaponId"].as<int>();
+  const int playerX = params["playerX"].as<int>();
+  const int playerY = params["playerY"].as<int>();
+  const int playerScale = params["playerScale"].as<int>();
+  const int guardianX = params["guardianX"].as<int>();
+  const int guardianY = params["guardianY"].as<int>();
+  const int wingSpeed = params["wingSpeed"].as<int>();
+  const int fontScale = params["fontScale"].as<int>();
+  const int clockX = params["clockX"].as<int>();
+  const int clockY = params["clockY"].as<int>();
+  const int hourFormat = params["hourFormat"].as<int>();
+
+  if (playerX < 0 || playerX > 63 ||
+      playerY < 0 || playerY > 63 ||
+      playerScale < 20 || playerScale > 200 ||
+      guardianX < -32 || guardianX > 32 ||
+      guardianY < -32 || guardianY > 32 ||
+      wingSpeed < 0 || wingSpeed > 200 ||
+      fontScale < 1 || fontScale > 3 ||
+      clockX < 0 || clockX > 63 ||
+      clockY < 0 || clockY > 63 ||
+      (hourFormat != 12 && hourFormat != 24)) {
+    reason = "terraria_clock config invalid";
+    return false;
+  }
+
+  // 字体 ID: 字符串 → 枚举
+  const char* fontIdStr = params["fontId"];
+  uint8_t fontId;
+  if (fontIdStr == nullptr || !clockFontIdFromString(fontIdStr, fontId)) {
+    reason = "terraria_clock font invalid";
+    return false;
+  }
+
+  // 3 个 hex 颜色
+  uint8_t textColor[3], bgInner[3], bgOuter[3];
+  if (!parseHexColorString(params["clockTextColor"], textColor) ||
+      !parseHexColorString(params["clockBgInner"], bgInner) ||
+      !parseHexColorString(params["clockBgOuter"], bgOuter)) {
+    reason = "terraria_clock color invalid";
+    return false;
+  }
+
+  resetPreparedCommand(gWebSocketTransactionSession.preparedCommand);
+  RuntimeCommandBus::RuntimeCommand& command = gWebSocketTransactionSession.preparedCommand;
+  command.type = RuntimeCommandBus::RuntimeCommandType::MODE_SWITCH;
+  command.targetMode = MODE_ANIMATION;
+  command.businessModeTag = ModeTags::TERRARIA_CLOCK;
+  command.successMessage = "terraria mode started";
+
+  command.terrariaConfig.character = character;
+  command.terrariaConfig.weaponId = static_cast<uint16_t>(weaponId);
+  command.terrariaConfig.playerX = static_cast<uint8_t>(playerX);
+  command.terrariaConfig.playerY = static_cast<uint8_t>(playerY);
+  command.terrariaConfig.playerScale = static_cast<uint8_t>(playerScale);
+  command.terrariaConfig.guardianX = static_cast<int8_t>(guardianX);
+  command.terrariaConfig.guardianY = static_cast<int8_t>(guardianY);
+  command.terrariaConfig.wingSpeed = static_cast<uint8_t>(wingSpeed);
+  command.terrariaConfig.fontId = fontId;
+  command.terrariaConfig.fontScale = static_cast<uint8_t>(fontScale);
+  command.terrariaConfig.clockX = static_cast<uint8_t>(clockX);
+  command.terrariaConfig.clockY = static_cast<uint8_t>(clockY);
+  command.terrariaConfig.hourFormat = static_cast<uint8_t>(hourFormat);
+  command.terrariaConfig.showSeconds = params["showSeconds"].as<bool>();
+  memcpy(command.terrariaConfig.clockTextColor, textColor, 3);
+  memcpy(command.terrariaConfig.clockBgInner, bgInner, 3);
+  memcpy(command.terrariaConfig.clockBgOuter, bgOuter, 3);
+
+  reason = nullptr;
+  return true;
+}
+
 bool prepareEyesTransaction(JsonObject params, const char*& reason) {
   if (!parseEyesConfigPayload(params, reason)) {
     return false;
@@ -1662,6 +1789,8 @@ bool buildPreparedWebSocketTransaction(
     prepared = prepareTetrisTransaction(params, reason);
   } else if (mode == ModeTags::TETRIS_CLOCK) {
     prepared = prepareTetrisClockTransaction(params, reason);
+  } else if (mode == ModeTags::TERRARIA_CLOCK) {
+    prepared = prepareTerrariaTransaction(params, reason);
   } else {
     reason = "mode unsupported";
     return false;

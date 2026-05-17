@@ -301,6 +301,7 @@ bool isStaticallyRecoverableBusinessModeTag(const String& businessModeTag) {
          businessModeTag == ModeTags::LED_MATRIX_SHOWCASE ||
          businessModeTag == ModeTags::MAZE ||
          businessModeTag == ModeTags::SNAKE ||
+         businessModeTag == ModeTags::TERRARIA_CLOCK ||
          businessModeTag == ModeTags::PLANET_SCREENSAVER;
 }
 
@@ -403,14 +404,14 @@ MazeModeConfig ConfigManager::mazeConfig = makeDefaultMazeModeConfig();
 SnakeModeConfig ConfigManager::snakeConfig = makeDefaultSnakeModeConfig();
 
 // Terraria 默认配置 (跟 uniapp data.config.terraria 默认值对齐, AGENTS.md 硬约束)
-//   战士 + 天顶剑, x=32 y=43 scale=60%, 守卫 (-29, -6), 翅膀速度 50%
+//   战士 + 天顶剑, x=32 y=43 scale=60%, 守卫固定 (-29, -19), 翅膀速度 50%
 //   字体 lcd_6x8, fontScale=1, 时钟在 (32,6), 24 小时制
 //   字色 #5a4a3a, 内圈 #63971f, 外圈 #8FD71D
 TerrariaModeConfig ConfigManager::terrariaConfig = {
   .character = TERRARIA_CHAR_WARRIOR,
   .weaponId = 4956,
   .playerX = 32, .playerY = 43, .playerScale = 60,
-  .guardianX = -29, .guardianY = -6,
+  .guardianX = -29, .guardianY = -19,
   .wingSpeed = 50,
   .fontId = CLOCK_FONT_LCD_6X8, .fontScale = 1,
   .clockX = 32, .clockY = 6,
@@ -1141,7 +1142,7 @@ void ConfigManager::resetToDefault() {
     .character = TERRARIA_CHAR_WARRIOR,
     .weaponId = 4956,
     .playerX = 32, .playerY = 43, .playerScale = 60,
-    .guardianX = -29, .guardianY = -6,
+    .guardianX = -29, .guardianY = -19,
     .wingSpeed = 50,
     .fontId = CLOCK_FONT_LCD_6X8, .fontScale = 1,
     .clockX = 32, .clockY = 6,

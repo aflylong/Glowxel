@@ -610,7 +610,11 @@ void paintBlockShapeToBuffer(
         if (px < 0 || px >= kPanelSize || py < 0 || py >= kPanelSize) {
           continue;
         }
-        targetBuffer[py * kPanelSize + px] = color565;
+        // 硬件 row offset 补偿: panel 把 buffer y=N 显示到屏 y=(N-1) mod 64,
+        // 不补偿会导致 "顶部方块未落下时屏底显示出顶部 1 行像素"。
+        // 反向写到 (py+1) % 64 抵消。
+        const int screenY = (py + 1) % kPanelSize;
+        targetBuffer[screenY * kPanelSize + px] = color565;
       }
     }
   }

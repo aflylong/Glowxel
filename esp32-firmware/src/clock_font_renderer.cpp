@@ -548,15 +548,14 @@ void rasterizeClockTextToMask(
   int startX = x;
   int startY = y;
   if (align == 1) {
-    // center: (x, y) 是中心
+    // center: x 是水平中心, y 仍然是顶部 (跟 uniapp drawClockTextToPixels 对齐)
     startX = x - textWidth / 2;
-    startY = y - textHeight / 2;
   } else if (align == 2) {
-    // right
+    // right: x 是右边界, y 仍然是顶部
     startX = x - textWidth;
-    startY = y - textHeight;
   }
   // align == 0: 左上角
+  (void)textHeight;
 
   int cursorX = startX;
 

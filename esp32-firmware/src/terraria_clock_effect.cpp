@@ -109,20 +109,41 @@ const char* s_lastError = nullptr;
 // 64×64 = 4096 bit = 512 字节; 用 byte mask 简化
 uint8_t s_clockMask[64 * 64] = {};
 
+// ============ 渲染缓冲 ============
+//   不再自己声明 s_renderBuffer, 改用 DisplayManager::animationBuffer 项目全局
+//   原因: maze / snake 都用同一个 animationBuffer, 这样确保内存布局跟 presentOffscreenFrame 完全兼容
+//   占用: 0 (复用全局 8 KB)
+bool s_lastFrameValid = false;
+bool s_needsRender = false;
+
+// 取项目全局 animationBuffer 当我们的 render buffer 用
+inline uint16_t* renderBufferRow(int y) {
+  return &DisplayManager::animationBuffer[y][0];
+}
+
+// ★ 行偏移补偿: 此 panel 在双缓冲管线下 buffer y=N 实际显示到屏 y=(N-1) mod 64,
+//   导致屏底空一行 (草地最后一行 y=63 显示天空色)。
+//   反向补偿: 写到 buffer y=(y+1) mod 64, 屏幕显示就回到屏 y=N 位置。
+//   只在 terraria 模式内修, 不动 DisplayManager 全局 (避免影响其他模式)
+inline void putPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
+  if (x < 0 || x >= SCREEN_W || y < 0 || y >= SCREEN_H) return;
+  int by = (y + 1) % SCREEN_H;
+  DisplayManager::animationBuffer[by][x] = MatrixPanel_I2S_DMA::color565(r, g, b);
+}
+
 // ============ 像素绘制 ============
 
 inline uint16_t toRGB565(uint8_t r, uint8_t g, uint8_t b) {
-  return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+  return MatrixPanel_I2S_DMA::color565(r, g, b);
 }
 
-// 把一段 PROGMEM 像素 (fmt=5 或 7) 画到屏幕
+// 把一段 PROGMEM 像素 (fmt=5 或 7) 画到 s_renderBuffer
 //   sourceY 范围: [yMin, yMax) 内的 sprite 像素才画 (网格切片用)
 //   localOffsetY: sprite 局部 y - sourceYMin
 //   centerX/Y: 子图中心在屏幕上的位置
 //   spriteW/spriteH: 子图尺寸 (切片后)
 //   tintColor: nullptr = 不染色; 否则灰度 lum × baseColor
 void drawPixelsRange(
-  MatrixPanel_I2S_DMA* display,
   const uint8_t* sourcePixels,
   uint16_t pixelCount,
   uint8_t fmt,
@@ -167,27 +188,24 @@ void drawPixelsRange(
     int localY = (int)y - (int)sourceYMin;
     int px = (int)(ox + (float)x * scale + 0.5f);
     int py = (int)(oy + (float)localY * scale + 0.5f);
-    if (px < 0 || px >= SCREEN_W || py < 0 || py >= SCREEN_H) continue;
-    display->drawPixelRGB888(px, py, r, g, b);
+    putPixel(px, py, r, g, b);
   }
 }
 
-// 整张 sprite 画到屏幕
+// 整张 sprite 画到 s_renderBuffer
 void drawSpriteWhole(
-  MatrixPanel_I2S_DMA* display,
   const TerrariaSprite* sprite,
   float centerX, float centerY, float scale,
   const uint8_t* tintColor = nullptr
 ) {
   if (sprite == nullptr) return;
-  drawPixelsRange(display, sprite->pixels, sprite->pixelCount, sprite->fmt,
+  drawPixelsRange(sprite->pixels, sprite->pixelCount, sprite->fmt,
                    0, sprite->h, centerX, centerY,
                    sprite->w, sprite->h, scale, tintColor);
 }
 
 // 网格 sprite 取第 gridIndex 段 (每段 56 高度)
 void drawSpriteGrid(
-  MatrixPanel_I2S_DMA* display,
   const TerrariaSprite* sprite,
   uint8_t gridIndex,
   float centerX, float centerY, float scale,
@@ -197,7 +215,7 @@ void drawSpriteGrid(
   uint16_t yMin = gridIndex * FRAME_H;
   uint16_t yMax = yMin + FRAME_H;
   if (yMax > sprite->h) return;
-  drawPixelsRange(display, sprite->pixels, sprite->pixelCount, sprite->fmt,
+  drawPixelsRange(sprite->pixels, sprite->pixelCount, sprite->fmt,
                    yMin, yMax, centerX, centerY,
                    sprite->w, FRAME_H, scale, tintColor);
 }
@@ -205,7 +223,6 @@ void drawSpriteGrid(
 // 多帧差异 sprite: 画指定帧
 //   frame 0 = base;  frame N = base 整张 + delta[N-1] 整张 (delta 像素覆盖)
 void drawSpriteAnimFrame(
-  MatrixPanel_I2S_DMA* display,
   const TerrariaSpriteAnim* anim,
   uint8_t frameIndex,
   float centerX, float centerY, float scale,
@@ -213,7 +230,7 @@ void drawSpriteAnimFrame(
 ) {
   if (anim == nullptr) return;
   // 画 base
-  drawPixelsRange(display, anim->base.pixels, anim->base.pixelCount, anim->fmt,
+  drawPixelsRange(anim->base.pixels, anim->base.pixelCount, anim->fmt,
                    0, anim->h, centerX, centerY,
                    anim->w, anim->h, scale, tintColor);
   // 画 delta (如果不是 frame 0)
@@ -221,7 +238,7 @@ void drawSpriteAnimFrame(
   if (frameIndex - 1 >= anim->frameCount - 1) return;
   TerrariaFrameBlock delta;
   memcpy_P(&delta, &anim->deltas[frameIndex - 1], sizeof(delta));
-  drawPixelsRange(display, delta.pixels, delta.pixelCount, anim->fmt,
+  drawPixelsRange(delta.pixels, delta.pixelCount, anim->fmt,
                    0, anim->h, centerX, centerY,
                    anim->w, anim->h, scale, tintColor);
 }
@@ -229,7 +246,6 @@ void drawSpriteAnimFrame(
 // ============ 角色皮肤层取片画 ============
 
 void drawSkinLayer(
-  MatrixPanel_I2S_DMA* display,
   uint8_t layer, uint8_t gridIndex, bool useGrid,
   const uint8_t* tintColor,
   float cx, float cy, float scale
@@ -237,47 +253,43 @@ void drawSkinLayer(
   const TerrariaSprite* sprite = TerrariaSprites::getPlayerLayer(layer);
   if (sprite == nullptr) return;
   if (useGrid && isPlayerGridLayer(layer)) {
-    drawSpriteGrid(display, sprite, gridIndex, cx, cy, scale, tintColor);
+    drawSpriteGrid(sprite, gridIndex, cx, cy, scale, tintColor);
   } else {
-    drawSpriteWhole(display, sprite, cx, cy, scale, tintColor);
+    drawSpriteWhole(sprite, cx, cy, scale, tintColor);
   }
 }
 
 // 胸甲网格画 (4 套全是 9×4 网格已切成 6 段)
 void drawArmorBodyGrid(
-  MatrixPanel_I2S_DMA* display,
   uint16_t bodyId, uint8_t gridIndex,
   float cx, float cy, float scale
 ) {
   const TerrariaSprite* sprite = TerrariaSprites::getArmorBody(bodyId);
   if (sprite == nullptr) return;
-  drawSpriteGrid(display, sprite, gridIndex, cx, cy, scale, nullptr);
+  drawSpriteGrid(sprite, gridIndex, cx, cy, scale, nullptr);
 }
 
 // 腿甲 (frame 0)
 void drawArmorLegs(
-  MatrixPanel_I2S_DMA* display,
   uint16_t legsId, float cx, float cy, float scale
 ) {
   const TerrariaSprite* sprite = TerrariaSprites::getArmorLegs(legsId);
   if (sprite == nullptr) return;
-  drawSpriteWhole(display, sprite, cx, cy, scale, nullptr);
+  drawSpriteWhole(sprite, cx, cy, scale, nullptr);
 }
 
 // 头甲 (frame 0)
 void drawArmorHead(
-  MatrixPanel_I2S_DMA* display,
   uint16_t headId, float cx, float cy, float scale
 ) {
   const TerrariaSprite* sprite = TerrariaSprites::getArmorHead(headId);
   if (sprite == nullptr) return;
-  drawSpriteWhole(display, sprite, cx, cy, scale, nullptr);
+  drawSpriteWhole(sprite, cx, cy, scale, nullptr);
 }
 
 // ============ 翅膀渲染 ============
 
 void drawWings(
-  MatrixPanel_I2S_DMA* display,
   uint16_t wingId,
   float playerCenterX, float playerCenterY, float playerScale,
   uint8_t wingSpeedPct
@@ -298,15 +310,14 @@ void drawWings(
   float wingCx = playerCenterX + (-9.0f) * playerScale;
   float wingCy = playerCenterY + 9.0f * playerScale;
 
-  drawSpriteAnimFrame(display, anim, frameIdx, wingCx, wingCy, playerScale);
+  drawSpriteAnimFrame(anim, frameIdx, wingCx, wingCy, playerScale);
 }
 
 // ============ 武器渲染 ============
 
-// 把整张 sprite (PROGMEM) 旋转/翻转后画到屏幕
+// 把整张 sprite (PROGMEM) 旋转/翻转后画到 s_renderBuffer
 //   旋转用最简版: 中心对齐, 任意角度 (不预切, 每像素直接算)
 void drawWeapon(
-  MatrixPanel_I2S_DMA* display,
   uint16_t weaponId,
   float playerCenterX, float playerCenterY, float playerScale, int dir
 ) {
@@ -340,7 +351,7 @@ void drawWeapon(
   const float cosR = cosf(rad);
   const float sinR = sinf(rad);
 
-  // 直接遍历 sprite 像素, 算转换后位置画到屏幕
+  // 直接遍历 sprite 像素, 算转换后位置画到 s_renderBuffer
   const float ox = drawCx;
   const float oy = drawCy;
   const float spriteCx = (float)sprite->w * 0.5f;
@@ -371,13 +382,12 @@ void drawWeapon(
     }
     int px = (int)(ox + lx * playerScale + 0.5f);
     int py = (int)(oy + ly * playerScale + 0.5f);
-    if (px < 0 || px >= SCREEN_W || py < 0 || py >= SCREEN_H) continue;
-    display->drawPixelRGB888(px, py, r, g, b);
+    putPixel(px, py, r, g, b);
   }
 }
 
 // 法师烈焰光团 (3542): 手部画 dust_242_f0 + 1px 抖动
-void drawWeaponOrb(MatrixPanel_I2S_DMA* display, float cx, float cy, float scale) {
+void drawWeaponOrb(float cx, float cy, float scale) {
   const TerrariaSprite* sprite = TerrariaSprites::getDust242();
   if (sprite == nullptr) return;
   // 手部位置 (useStyle=5 朝右)
@@ -388,13 +398,12 @@ void drawWeaponOrb(MatrixPanel_I2S_DMA* display, float cx, float cy, float scale
   // 1px 抖动
   uint32_t tick = (uint32_t)(s_animTimeSec * 60.0f);
   int dy = ((tick % 5) < 3) ? 0 : 1;
-  drawSpriteWhole(display, sprite, handX, handY + dy, scale, nullptr);
+  drawSpriteWhole(sprite, handX, handY + dy, scale, nullptr);
 }
 
 // ============ 角色 16 step 合成 ============
 
 void drawPlayer(
-  MatrixPanel_I2S_DMA* display,
   uint8_t character, uint16_t weaponId,
   float playerScale, float cx, float cy
 ) {
@@ -411,43 +420,43 @@ void drawPlayer(
   const uint8_t frontArmGrid = usesCompositeArm ? GRID_FRONT_ARM : GRID_TORSO;
 
   // ===== Step 1-2: 后臂皮肤 + 后臂内衬 + 后臂上衣袖 =====
-  drawSkinLayer(display, 5, backArmGrid, usesCompositeArm, COLOR_SKIN, cx, cy, playerScale);
-  drawSkinLayer(display, 8, backArmGrid, usesCompositeArm, COLOR_UNDERSHIRT, cx, cy, playerScale);
-  drawSkinLayer(display, 13, backArmGrid, usesCompositeArm, COLOR_SHIRT, cx, cy, playerScale);
+  drawSkinLayer(5, backArmGrid, usesCompositeArm, COLOR_SKIN, cx, cy, playerScale);
+  drawSkinLayer(8, backArmGrid, usesCompositeArm, COLOR_UNDERSHIRT, cx, cy, playerScale);
+  drawSkinLayer(13, backArmGrid, usesCompositeArm, COLOR_SHIRT, cx, cy, playerScale);
 
   // ===== Step 3-4: 后臂装甲 + 后肩装甲 =====
-  drawArmorBodyGrid(display, bodyId, GRID_BACK_ARM, cx, cy, playerScale);
-  drawArmorBodyGrid(display, bodyId, GRID_BACK_SHOULDER, cx, cy, playerScale);
+  drawArmorBodyGrid(bodyId, GRID_BACK_ARM, cx, cy, playerScale);
+  drawArmorBodyGrid(bodyId, GRID_BACK_SHOULDER, cx, cy, playerScale);
 
   // ===== Step 5: 翅膀 =====
   if (cs.wings != 0) {
-    drawWings(display, cs.wings, cx, cy, playerScale, s_config.wingSpeed);
+    drawWings(cs.wings, cx, cy, playerScale, s_config.wingSpeed);
   }
 
   // ===== Step 6-8: 腿/裤皮肤 + 裤子 + 鞋子 =====
-  drawSkinLayer(display, 10, 0, false, COLOR_SKIN, cx, cy, playerScale);
-  drawSkinLayer(display, 11, 0, false, COLOR_PANTS, cx, cy, playerScale);
-  drawSkinLayer(display, 12, 0, false, COLOR_SHOE, cx, cy, playerScale);
+  drawSkinLayer(10, 0, false, COLOR_SKIN, cx, cy, playerScale);
+  drawSkinLayer(11, 0, false, COLOR_PANTS, cx, cy, playerScale);
+  drawSkinLayer(12, 0, false, COLOR_SHOE, cx, cy, playerScale);
 
   // ===== Step 9: 护腿装甲 =====
-  drawArmorLegs(display, legsId, cx, cy, playerScale);
+  drawArmorLegs(legsId, cx, cy, playerScale);
 
   // ===== Step 10-12: 躯干皮肤 + 内衬 + 上衣 =====
-  drawSkinLayer(display, 3, GRID_TORSO, usesCompositeArm, COLOR_SKIN, cx, cy, playerScale);
-  drawSkinLayer(display, 4, GRID_TORSO, usesCompositeArm, COLOR_UNDERSHIRT, cx, cy, playerScale);
-  drawSkinLayer(display, 6, GRID_TORSO, usesCompositeArm, COLOR_SHIRT, cx, cy, playerScale);
+  drawSkinLayer(3, GRID_TORSO, usesCompositeArm, COLOR_SKIN, cx, cy, playerScale);
+  drawSkinLayer(4, GRID_TORSO, usesCompositeArm, COLOR_UNDERSHIRT, cx, cy, playerScale);
+  drawSkinLayer(6, GRID_TORSO, usesCompositeArm, COLOR_SHIRT, cx, cy, playerScale);
 
   // ===== Step 13: 躯干装甲 =====
-  drawArmorBodyGrid(display, bodyId, GRID_TORSO, cx, cy, playerScale);
+  drawArmorBodyGrid(bodyId, GRID_TORSO, cx, cy, playerScale);
 
   // ===== Step 14: 头/眼/眼珠 =====
-  drawSkinLayer(display, 0, 0, false, COLOR_SKIN, cx, cy, playerScale);
-  drawSkinLayer(display, 1, 0, false, nullptr, cx, cy, playerScale);  // 眼白不染
-  drawSkinLayer(display, 2, 0, false, COLOR_EYE, cx, cy, playerScale);
+  drawSkinLayer(0, 0, false, COLOR_SKIN, cx, cy, playerScale);
+  drawSkinLayer(1, 0, false, nullptr, cx, cy, playerScale);  // 眼白不染
+  drawSkinLayer(2, 0, false, COLOR_EYE, cx, cy, playerScale);
 
   // ===== Step 15: 头甲 (持械时下移 2px) =====
   float headOffY = isHolding ? 2.0f : 0.0f;
-  drawArmorHead(display, headId, cx, cy + headOffY * playerScale, playerScale);
+  drawArmorHead(headId, cx, cy + headOffY * playerScale, playerScale);
 
   // ===== Step 16: 头发 — Lunar 头甲全包式跳过 (4 职业全跳) =====
 
@@ -455,31 +464,31 @@ void drawPlayer(
   // 武器在前臂之前画
   bool hasOrb = false;
   if (isHolding) {
-    drawWeapon(display, weaponId, cx, cy, playerScale, 1);
+    drawWeapon(weaponId, cx, cy, playerScale, 1);
     if (weaponId == 3542) hasOrb = true;
   }
 
   // 前臂层
-  drawSkinLayer(display, 7, frontArmGrid, usesCompositeArm, COLOR_SKIN, cx, cy, playerScale);
-  drawSkinLayer(display, 8, frontArmGrid, usesCompositeArm, COLOR_UNDERSHIRT, cx, cy, playerScale);
-  drawSkinLayer(display, 13, frontArmGrid, usesCompositeArm, COLOR_SHIRT, cx, cy, playerScale);
-  drawArmorBodyGrid(display, bodyId, GRID_FRONT_ARM, cx, cy, playerScale);
+  drawSkinLayer(7, frontArmGrid, usesCompositeArm, COLOR_SKIN, cx, cy, playerScale);
+  drawSkinLayer(8, frontArmGrid, usesCompositeArm, COLOR_UNDERSHIRT, cx, cy, playerScale);
+  drawSkinLayer(13, frontArmGrid, usesCompositeArm, COLOR_SHIRT, cx, cy, playerScale);
+  drawArmorBodyGrid(bodyId, GRID_FRONT_ARM, cx, cy, playerScale);
   if (usesCompositeArm) {
-    drawArmorBodyGrid(display, bodyId, GRID_FRONT_SHOULDER, cx, cy, playerScale);
+    drawArmorBodyGrid(bodyId, GRID_FRONT_SHOULDER, cx, cy, playerScale);
   }
   if (!isLunarBody(bodyId)) {
-    drawSkinLayer(display, 9, frontArmGrid, usesCompositeArm, COLOR_SKIN, cx, cy, playerScale);
+    drawSkinLayer(9, frontArmGrid, usesCompositeArm, COLOR_SKIN, cx, cy, playerScale);
   }
 
   // 烈焰光团 (在前臂之后)
   if (hasOrb) {
-    drawWeaponOrb(display, cx, cy, playerScale);
+    drawWeaponOrb(cx, cy, playerScale);
   }
 }
 
 // ============ 时钟 + 草膨胀边框 ============
 
-void drawClockWithBorder(MatrixPanel_I2S_DMA* display) {
+void drawClockWithBorder() {
   // 1. 取时间文本
   time_t now = time(nullptr);
   struct tm* tm_info = localtime(&now);
@@ -556,9 +565,9 @@ void drawClockWithBorder(MatrixPanel_I2S_DMA* display) {
       }
 
       if (minD == 1) {
-        display->drawPixelRGB888(x, y, bgIn[0], bgIn[1], bgIn[2]);
+        putPixel(x, y, bgIn[0], bgIn[1], bgIn[2]);
       } else if (minD == 2) {
-        display->drawPixelRGB888(x, y, bgOut[0], bgOut[1], bgOut[2]);
+        putPixel(x, y, bgOut[0], bgOut[1], bgOut[2]);
       }
     }
   }
@@ -567,54 +576,75 @@ void drawClockWithBorder(MatrixPanel_I2S_DMA* display) {
   for (int y = minY; y <= maxY; y++) {
     for (int x = minX; x <= maxX; x++) {
       if (s_clockMask[y * SCREEN_W + x]) {
-        display->drawPixelRGB888(x, y, tc[0], tc[1], tc[2]);
+        putPixel(x, y, tc[0], tc[1], tc[2]);
       }
     }
   }
 }
 
-}  // anon namespace
+// 取当前帧"动态状态"(翅膀帧 / 守卫帧 / 光团抖动 / 时钟字)
+//   只用于跟上次比对; 真正的渲染发生在 buildFrame
+struct DynamicState {
+  uint8_t wingFrame;
+  uint8_t guardianFrame;
+  int8_t  guardianBobYx10;  // *10 防 float 比对误差
+  uint8_t orbDy;
+  char    timeText[12];
+};
 
-// ============================================================
-// API 实现
-// ============================================================
+DynamicState computeDynamicState() {
+  DynamicState st = {};
+  uint32_t tick = (uint32_t)(s_animTimeSec * 60.0f);
 
-namespace TerrariaClockEffect {
+  // 翅膀帧
+  float wingTime = s_animTimeSec * 60.0f * ((float)s_config.wingSpeed / 100.0f);
+  st.wingFrame = ((uint32_t)(wingTime / 5.0f)) % 3;
 
-void init() {
-  s_active = false;
-  s_animStartMs = 0;
-  s_animTimeSec = 0.0f;
-  s_lastError = nullptr;
+  // 守卫
+  st.guardianFrame = (tick / 9) % 8;
+  float bobY = sinf((float)tick / 72.0f * (float)M_PI * 2.0f) * 1.5f;
+  st.guardianBobYx10 = (int8_t)(bobY * 10.0f);
+
+  // 光团
+  st.orbDy = ((tick % 5) < 3) ? 0 : 1;
+
+  // 时钟文本
+  time_t now = time(nullptr);
+  struct tm* tm_info = localtime(&now);
+  if (s_config.hourFormat == 12) {
+    int h = tm_info->tm_hour % 12;
+    if (h == 0) h = 12;
+    if (s_config.showSeconds) {
+      snprintf(st.timeText, sizeof(st.timeText), "%02d:%02d:%02d",
+               h, tm_info->tm_min, tm_info->tm_sec);
+    } else {
+      snprintf(st.timeText, sizeof(st.timeText), "%02d:%02d",
+               h, tm_info->tm_min);
+    }
+  } else {
+    if (s_config.showSeconds) {
+      snprintf(st.timeText, sizeof(st.timeText), "%02d:%02d:%02d",
+               tm_info->tm_hour, tm_info->tm_min, tm_info->tm_sec);
+    } else {
+      snprintf(st.timeText, sizeof(st.timeText), "%02d:%02d",
+               tm_info->tm_hour, tm_info->tm_min);
+    }
+  }
+  return st;
 }
 
-void deactivate() {
-  s_active = false;
+DynamicState s_lastDynamicState = {};
+
+bool dynamicStateChanged(const DynamicState& a, const DynamicState& b) {
+  return a.wingFrame != b.wingFrame ||
+         a.guardianFrame != b.guardianFrame ||
+         a.guardianBobYx10 != b.guardianBobYx10 ||
+         a.orbDy != b.orbDy ||
+         strcmp(a.timeText, b.timeText) != 0;
 }
 
-void applyConfig(const TerrariaModeConfig& config) {
-  s_config = config;
-  s_animStartMs = millis();
-  s_animTimeSec = 0.0f;
-  s_active = true;
-  s_lastError = nullptr;
-}
-
-void update() {
-  if (!s_active) return;
-  uint32_t now = millis();
-  s_animTimeSec = (float)(now - s_animStartMs) / 1000.0f;
-}
-
-bool isActive() { return s_active; }
-const TerrariaModeConfig& getConfig() { return s_config; }
-const char* getLastError() { return s_lastError; }
-
-void render() {
-  if (!s_active) return;
-  auto* display = DisplayManager::dma_display;
-  if (display == nullptr) return;
-
+// 把整个场景画到 s_renderBuffer (不直接刷 display)
+void buildFrame() {
   // ===== 1. 背景: 渐变天空 =====
   for (int y = 0; y < SCREEN_H; y++) {
     float t = (float)y / 63.0f;
@@ -622,18 +652,22 @@ void render() {
     uint8_t g = (uint8_t)(0x2C * (1 - t) + 0x89 * t);
     uint8_t b = (uint8_t)(0xF3 * (1 - t) + 0xF9 * t);
     for (int x = 0; x < SCREEN_W; x++) {
-      display->drawPixelRGB888(x, y, r, g, b);
+      putPixel(x, y, r, g, b);
     }
   }
 
-  // ===== 1.5 3 朵手画云 =====
+  // ===== 1.5 3 朵手画云 (做 2 圈切比雪夫膨胀 → 视觉上每朵云外扩 2 px) =====
   static const char* kCloudShapes[3][4] = {
     {"..####....", ".######...", "##########", ".########."},
     {".####.",     "######",     ".####.",     nullptr},
     {"...####...", ".########.", "##########", "..######.."},
   };
   static const uint8_t kCloudPos[3][2] = {{4, 6}, {26, 14}, {44, 4}};
+  constexpr int CLOUD_PAD = 2;
 
+  // 1) 把云像素标到 mask
+  static uint8_t s_cloudMask[SCREEN_H][SCREEN_W];
+  memset(s_cloudMask, 0, sizeof(s_cloudMask));
   for (int i = 0; i < 3; i++) {
     int ox = kCloudPos[i][0], oy = kCloudPos[i][1];
     for (int row = 0; row < 4; row++) {
@@ -643,14 +677,43 @@ void render() {
         if (line[col] == '#') {
           int px = ox + col, py = oy + row;
           if (px >= 0 && px < SCREEN_W && py >= 0 && py < SCREEN_H) {
-            display->drawPixelRGB888(px, py, 0xE8, 0xF0, 0xFF);
+            s_cloudMask[py][px] = 1;
           }
         }
       }
     }
   }
 
-  // ===== 1.6 草地: biome_forest_0/1/2 三块循环铺, blockSize=5 =====
+  // 2) 切比雪夫膨胀 2 圈: 对每个非云像素, 看 PAD 邻域内有没有云像素 → 标 2
+  for (int y = 0; y < SCREEN_H; y++) {
+    for (int x = 0; x < SCREEN_W; x++) {
+      if (s_cloudMask[y][x] == 1) continue;
+      bool nearCloud = false;
+      for (int dy = -CLOUD_PAD; dy <= CLOUD_PAD && !nearCloud; dy++) {
+        for (int dx = -CLOUD_PAD; dx <= CLOUD_PAD && !nearCloud; dx++) {
+          if (dx == 0 && dy == 0) continue;
+          int nx = x + dx, ny = y + dy;
+          if (nx < 0 || nx >= SCREEN_W || ny < 0 || ny >= SCREEN_H) continue;
+          if (s_cloudMask[ny][nx] == 1) nearCloud = true;
+        }
+      }
+      if (nearCloud) s_cloudMask[y][x] = 2;
+    }
+  }
+
+  // 3) 把云画到 render buffer (原始 + 膨胀都用同一个云白色)
+  for (int y = 0; y < SCREEN_H; y++) {
+    for (int x = 0; x < SCREEN_W; x++) {
+      if (s_cloudMask[y][x]) {
+        putPixel(x, y, 0xE8, 0xF0, 0xFF);
+      }
+    }
+  }
+
+  // ===== 1.6 草地: 用 sprite 像素生成 64×5 完整草地条 =====
+  //   思路: 不缩放, 直接重新合成一条 64×5 的草地长条贴最下方
+  //   方法: 把 16×16 sprite 列方向"等距取 5 列" + "行方向等距取 5 行"
+  //         合并 3 个 sprite 横向拼接, 64 列循环铺
   const TerrariaSprite* tiles[3] = {
     TerrariaSprites::getBiomeForest(0),
     TerrariaSprites::getBiomeForest(1),
@@ -658,32 +721,64 @@ void render() {
   };
   if (tiles[0] && tiles[1] && tiles[2]) {
     constexpr int blockSize = 5;
-    constexpr int groundY = SCREEN_H - blockSize;
-    int x = 0, idx = 0;
-    while (x < SCREEN_W) {
-      const TerrariaSprite* tile = tiles[idx % 3];
-      const float sx = (float)blockSize / (float)tile->w;
-      const float sy = (float)blockSize / (float)tile->h;
-      const uint8_t stride = (tile->fmt == 7) ? 7 : 5;
-      for (uint16_t i = 0; i < tile->pixelCount; i++) {
-        const uint8_t* p = tile->pixels + (size_t)i * stride;
-        uint16_t tx, ty;
-        uint8_t r, g, b;
-        if (tile->fmt == 7) {
-          tx = pgm_read_byte(p) | (pgm_read_byte(p+1) << 8);
-          ty = pgm_read_byte(p+2) | (pgm_read_byte(p+3) << 8);
-          r = pgm_read_byte(p+4); g = pgm_read_byte(p+5); b = pgm_read_byte(p+6);
-        } else {
-          tx = pgm_read_byte(p); ty = pgm_read_byte(p+1);
-          r = pgm_read_byte(p+2); g = pgm_read_byte(p+3); b = pgm_read_byte(p+4);
+    constexpr int groundY = SCREEN_H - blockSize;  // 59 → 草地占 59..63
+
+    // 1) 首次启动: 把 3 个 16×16 sprite 解到行优先 RGB 临时表
+    //    每个 sprite 1 KB, 3 个共 3 KB SRAM
+    static uint8_t kTileBuf[3][16][16][3] = {};
+    static bool kTileBufLoaded = false;
+    if (!kTileBufLoaded) {
+      for (int t = 0; t < 3; t++) {
+        const TerrariaSprite* tile = tiles[t];
+        const uint8_t stride = (tile->fmt == 7) ? 7 : 5;
+        for (uint16_t i = 0; i < tile->pixelCount; i++) {
+          const uint8_t* p = tile->pixels + (size_t)i * stride;
+          uint16_t tx, ty;
+          uint8_t r, g, b;
+          if (tile->fmt == 7) {
+            tx = pgm_read_byte(p) | (pgm_read_byte(p+1) << 8);
+            ty = pgm_read_byte(p+2) | (pgm_read_byte(p+3) << 8);
+            r = pgm_read_byte(p+4); g = pgm_read_byte(p+5); b = pgm_read_byte(p+6);
+          } else {
+            tx = pgm_read_byte(p); ty = pgm_read_byte(p+1);
+            r = pgm_read_byte(p+2); g = pgm_read_byte(p+3); b = pgm_read_byte(p+4);
+          }
+          if (tx < 16 && ty < 16) {
+            kTileBuf[t][ty][tx][0] = r;
+            kTileBuf[t][ty][tx][1] = g;
+            kTileBuf[t][ty][tx][2] = b;
+          }
         }
-        int px = x + (int)((float)tx * sx + 0.5f);
-        int py = groundY + (int)((float)ty * sy + 0.5f);
-        if (px < 0 || px >= SCREEN_W || py < 0 || py >= SCREEN_H) continue;
-        display->drawPixelRGB888(px, py, r, g, b);
       }
-      x += blockSize;
-      idx++;
+      kTileBufLoaded = true;
+    }
+
+    // 2) 反向采样: 跟 uniapp drawTileScaled 完全等价的 round 公式
+    //    sx = sy = blockSize / 16 = 5/16
+    //    源 ty → 目标 dy = round(ty * 5/16)
+    //    反推: 给定 dy, 取 ty = round(dy * 16/5) 中心化即 ty = floor((dy*16 + 8) / 5) 用整数算
+    //    最关键: dy=4 必须能取到 ty=13 (跟 uniapp round(4*0.3125*16)=round(12.5)=12 或 13)
+    //    用浮点更直观:
+    for (int x = 0; x < SCREEN_W; x += blockSize) {
+      int idx = (x / blockSize) % 3;
+      for (int dy = 0; dy < blockSize; dy++) {
+        int py = groundY + dy;
+        if (py < 0 || py >= SCREEN_H) continue;
+        int ty = (int)((float)dy * 16.0f / (float)blockSize + 0.5f);
+        if (ty < 0) ty = 0;
+        if (ty > 15) ty = 15;
+        for (int dx = 0; dx < blockSize; dx++) {
+          int px = x + dx;
+          if (px < 0 || px >= SCREEN_W) continue;
+          int tx = (int)((float)dx * 16.0f / (float)blockSize + 0.5f);
+          if (tx < 0) tx = 0;
+          if (tx > 15) tx = 15;
+          uint8_t r = kTileBuf[idx][ty][tx][0];
+          uint8_t g = kTileBuf[idx][ty][tx][1];
+          uint8_t b = kTileBuf[idx][ty][tx][2];
+          putPixel(px, py, r, g, b);
+        }
+      }
     }
   }
 
@@ -703,15 +798,88 @@ void render() {
       float bobY = sinf((float)tick / 72.0f * (float)M_PI * 2.0f) * 1.5f;
       float gx = cx + (float)s_config.guardianX;
       float gy = cy + (float)s_config.guardianY + bobY;
-      drawSpriteAnimFrame(display, guardian, idleFrame, gx, gy, playerScale);
+      drawSpriteAnimFrame(guardian, idleFrame, gx, gy, playerScale);
     }
   }
 
   // ===== 3. 角色合成 =====
-  drawPlayer(display, character, s_config.weaponId, playerScale, cx, cy);
+  drawPlayer(character, s_config.weaponId, playerScale, cx, cy);
 
   // ===== 4. 时钟 + 草膨胀边框 =====
-  drawClockWithBorder(display);
+  drawClockWithBorder();
+}
+
+// 把 s_renderBuffer 推到 display
+//   走项目统一的 DisplayManager::presentOffscreenFrame() 流程:
+//   - 内部已实现 dirty diff (跟 liveFrameBuffer 比对, 仅推差异像素)
+//   - 单/双缓冲都正确处理 (双缓冲会 flipDMABuffer)
+//   - 用 animationBuffer 跟 maze/snake 完全一致, 排除 buffer 内存布局差异
+void flushFrameToDisplay(MatrixPanel_I2S_DMA* /*display*/) {
+  DisplayManager::presentOffscreenFrame(&DisplayManager::animationBuffer[0][0]);
+  s_lastFrameValid = true;
+}
+
+}  // anon namespace
+
+// ============================================================
+// API 实现
+// ============================================================
+
+namespace TerrariaClockEffect {
+
+void init() {
+  s_active = false;
+  s_animStartMs = 0;
+  s_animTimeSec = 0.0f;
+  s_lastError = nullptr;
+}
+
+void deactivate() {
+  s_active = false;
+  s_lastFrameValid = false;
+  memset(&s_lastDynamicState, 0, sizeof(s_lastDynamicState));
+}
+
+void applyConfig(const TerrariaModeConfig& config) {
+  s_config = config;
+  s_animStartMs = millis();
+  s_animTimeSec = 0.0f;
+  s_active = true;
+  s_lastError = nullptr;
+  // 配置变化 → 强制下一帧重画 + 全屏推送
+  s_lastFrameValid = false;
+  memset(&s_lastDynamicState, 0, sizeof(s_lastDynamicState));
+}
+
+void update() {
+  if (!s_active) return;
+  uint32_t now = millis();
+  s_animTimeSec = (float)(now - s_animStartMs) / 1000.0f;
+}
+
+bool isActive() { return s_active; }
+const TerrariaModeConfig& getConfig() { return s_config; }
+const char* getLastError() { return s_lastError; }
+
+void render() {
+  if (!s_active) return;
+  auto* display = DisplayManager::dma_display;
+  if (display == nullptr) return;
+
+  // 1) 看动态状态有没有变 (没变 + 已经画过 → 直接返回, 不刷屏)
+  DynamicState now = computeDynamicState();
+  if (s_lastFrameValid && !dynamicStateChanged(now, s_lastDynamicState)) {
+    return;
+  }
+
+  // 2) 重建当前帧到 s_renderBuffer (只写 SRAM, 不碰 display)
+  buildFrame();
+
+  // 3) 跟上一帧 diff, 仅推差异像素到 display
+  flushFrameToDisplay(display);
+
+  // 4) 记录这次的动态状态
+  s_lastDynamicState = now;
 }
 
 }  // namespace TerrariaClockEffect
