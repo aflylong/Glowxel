@@ -1,1255 +1,1004 @@
 <!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>时间字体总览与生成器 (8x9约束)</title>
-    <style>
-      :root {
-        --bg: #060607;
-        --panel: #121215;
-        --line: rgba(255, 255, 255, 0.12);
-        --text: #f4f4f7;
-        --muted: #9da0ad;
-        --accent: #d31d8a;
-        --on: #f2f2f5;
-        --off: #0a0a0d;
-      }
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>时间字体工坊 · Glowxel PixelBoard</title>
+<style>
+:root{
+  --bg:#07070a;--panel:#111116;--card:#0d0d11;--line:rgba(255,255,255,0.1);
+  --text:#f0f0f4;--muted:#7a7d8a;--accent:#c8185a;--accent2:#3b82f6;
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:"IBM Plex Mono","Menlo","Consolas",monospace;
+  background:var(--bg);color:var(--text);min-height:100vh;
+  background-image:
+    radial-gradient(ellipse at 8% 6%,rgba(200,24,90,0.18) 0%,transparent 45%),
+    radial-gradient(ellipse at 92% 90%,rgba(59,130,246,0.14) 0%,transparent 45%);
+}
+.page{max-width:1560px;margin:0 auto;padding:20px 16px 48px;}
 
-      * {
-        box-sizing: border-box;
-      }
+/* ── header ── */
+.header{padding:18px 0 14px;border-bottom:1px solid var(--line);margin-bottom:18px;}
+.header h1{font-size:clamp(18px,2.5vw,28px);letter-spacing:-0.5px;}
+.header h1 span{color:var(--accent);}
+.header p{margin-top:6px;font-size:12px;color:var(--muted);line-height:1.6;}
 
-      body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: "IBM Plex Mono", "Menlo", "Consolas", monospace;
-        background:
-          radial-gradient(circle at 10% 8%, rgba(211, 29, 138, 0.2), transparent 42%),
-          radial-gradient(circle at 88% 88%, rgba(133, 138, 154, 0.18), transparent 44%),
-          var(--bg);
-        color: var(--text);
-      }
+/* ── layout ── */
+.layout{display:grid;grid-template-columns:260px 1fr;gap:16px;align-items:start;}
+@media(max-width:900px){.layout{grid-template-columns:1fr;}}
 
-      .page {
-        width: min(1420px, calc(100% - 24px));
-        margin: 0 auto;
-        padding: 20px 0 32px;
-        display: grid;
-        gap: 16px;
-      }
+/* ── sidebar ── */
+.sidebar{
+  position:sticky;top:16px;
+  display:flex;flex-direction:column;gap:12px;
+}
+.ctrl-panel{
+  border:1px solid var(--line);border-radius:var(--radius);
+  background:var(--panel);overflow:hidden;
+}
+.ctrl-panel-head{
+  padding:9px 12px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:7px;
+  font-size:11px;font-weight:600;letter-spacing:0.5px;color:var(--muted);
+  text-transform:uppercase;
+}
+.ctrl-panel-head .dot{
+  width:7px;height:7px;border-radius:50%;flex-shrink:0;
+}
+.ctrl-panel-body{padding:10px;}
 
-      .hero {
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        background: linear-gradient(180deg, rgba(18, 18, 22, 0.9), rgba(9, 9, 12, 0.96));
-        padding: 16px;
-      }
+/* ── option grid ── */
+.opt-grid{display:flex;flex-wrap:wrap;gap:5px;}
+.opt-btn{
+  border:1px solid rgba(255,255,255,0.13);border-radius:6px;
+  background:#0a0a0e;color:var(--muted);
+  font:inherit;font-size:11px;padding:5px 9px;
+  cursor:pointer;transition:border-color .12s,color .12s,background .12s;
+  display:flex;align-items:center;gap:5px;white-space:nowrap;
+}
+.opt-btn:hover{border-color:rgba(255,255,255,0.3);color:var(--text);}
+.opt-btn.active{border-color:var(--accent);color:var(--text);background:#1a0810;}
+.opt-btn .swatch{
+  width:10px;height:10px;border-radius:2px;flex-shrink:0;
+  border:1px solid rgba(255,255,255,0.15);
+}
 
-      .hero h1 {
-        margin: 0;
-        font-size: clamp(22px, 3vw, 34px);
-        line-height: 1.1;
-      }
+/* ── preview text chips ── */
+.preview-row{display:flex;gap:5px;flex-wrap:wrap;}
+.prev-chip{
+  border:1px solid rgba(255,255,255,0.13);border-radius:5px;
+  background:#0a0a0e;color:var(--muted);
+  font:inherit;font-size:12px;font-family:monospace;
+  padding:4px 10px;cursor:pointer;
+  transition:border-color .12s,color .12s;
+}
+.prev-chip:hover{border-color:rgba(255,255,255,0.3);color:var(--text);}
+.prev-chip.active{border-color:var(--accent2);color:var(--text);}
 
-      .hero p {
-        margin: 8px 0 0;
-        color: var(--muted);
-        font-size: 13px;
-      }
+/* ── scale slider ── */
+.slider-row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);}
+.slider-row input{flex:1;accent-color:var(--accent);}
+.slider-row strong{color:var(--text);min-width:20px;text-align:right;}
 
-      .accent {
-        color: var(--accent);
-      }
+/* ── action btn ── */
+.action-btn{
+  width:100%;border:1px solid #5a1030;background:#1a0810;
+  color:var(--text);border-radius:7px;font:inherit;font-size:12px;
+  padding:8px;cursor:pointer;transition:border-color .12s;
+}
+.action-btn:hover{border-color:#c8185a;}
 
-      .toolbar {
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        background: var(--panel);
-        padding: 12px;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 12px;
-      }
+/* ── stats ── */
+.stats-row{font-size:11px;color:var(--muted);padding:6px 0 0;text-align:center;}
 
-      .control {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--muted);
-        font-size: 13px;
-      }
+/* ── main content ── */
+.content{display:flex;flex-direction:column;gap:14px;}
+.section-head{
+  font-size:11px;font-weight:600;letter-spacing:0.8px;
+  text-transform:uppercase;color:var(--muted);
+  padding:0 0 8px;border-bottom:1px solid var(--line);
+  margin-bottom:2px;
+}
+.section-head span{color:var(--accent);}
 
-      input[type='range'] {
-        width: 180px;
-      }
+/* ── font card ── */
+.font-card{
+  border:1px solid var(--line);border-radius:var(--radius);
+  background:var(--card);
+  display:grid;
+  grid-template-columns:170px 1fr 148px;
+  gap:0;
+  overflow:hidden;
+}
+.font-card.fail{border-color:rgba(220,60,60,0.4);}
+.fc-info{
+  padding:12px;border-right:1px solid var(--line);
+  display:flex;flex-direction:column;gap:5px;justify-content:center;
+}
+.fc-name{font-size:12px;color:#eee;font-weight:600;}
+.fc-meta{font-size:10px;color:var(--muted);line-height:1.6;}
+.fc-badge{
+  display:inline-block;font-size:9px;padding:1px 5px;
+  border-radius:3px;border:1px solid rgba(255,255,255,0.12);
+  color:var(--muted);margin-top:2px;
+}
+.fc-badge.pass{border-color:rgba(80,200,80,0.4);color:#6dcc6d;}
+.fc-badge.fail{border-color:rgba(220,60,60,0.4);color:#e06060;}
 
-      button {
-        border: 1px solid #6a2452;
-        background: #220916;
-        color: var(--text);
-        border-radius: 8px;
-        font: inherit;
-        padding: 8px 12px;
-        cursor: pointer;
-      }
+.fc-strip{
+  padding:10px 12px;display:flex;align-items:center;
+  border-right:1px solid var(--line);overflow:hidden;
+}
+.fc-strip .strip-wrap{
+  background:#000;border-radius:5px;padding:5px 6px;
+  overflow-x:auto;line-height:0;
+}
+.fc-strip canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
 
-      button:hover {
-        border-color: #bf4b94;
-      }
+.fc-preview{
+  padding:10px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:5px;
+}
+.fc-preview .panel-frame{
+  border:1px solid rgba(255,255,255,0.12);border-radius:5px;
+  overflow:hidden;line-height:0;
+  box-shadow:0 0 12px rgba(0,0,0,0.6);
+}
+.fc-preview canvas{
+  image-rendering:pixelated;image-rendering:crisp-edges;
+  display:block;width:128px;height:128px;
+}
+.fc-preview .panel-label{
+  font-size:9px;color:var(--muted);letter-spacing:0.3px;
+}
 
-      .stats {
-        font-size: 12px;
-        color: var(--muted);
-      }
+/* ── json ── */
+pre{
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px;max-height:240px;overflow:auto;
+  background:#040406;color:#b0b4be;font-size:10px;line-height:1.5;
+}
+</style>
+</head>
+<body>
+<div class="page">
 
-      .section {
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        background: rgba(17, 17, 21, 0.9);
-        padding: 12px;
-      }
+  <div class="header">
+    <h1>时间字体工坊 <span>· Glowxel PixelBoard</span></h1>
+    <p>64×64 HUB75 LED 面板 · 每像素 = 一颗 RGB 灯 · 字形宽≤8 高≤9 · 实时预览真实设备效果</p>
+  </div>
 
-      .section h2 {
-        margin: 0 0 10px;
-        font-size: 15px;
-        color: var(--accent);
-      }
+  <div class="layout">
 
-      .cards {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
+    <!-- ── 左侧控制面板 ── -->
+    <aside class="sidebar">
 
-      .font-card {
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        border-radius: 10px;
-        background: #0d0d10;
-        padding: 10px;
-        display: grid;
-        grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
-        gap: 10px;
-        align-items: center;
-      }
-
-      .font-card.fail {
-        border-color: rgba(255, 99, 99, 0.65);
-      }
-
-      .font-head {
-        display: grid;
-        gap: 6px;
-      }
-
-      .font-name {
-        font-size: 13px;
-        color: #f7f7f8;
-      }
-
-      .font-meta {
-        font-size: 11px;
-        color: var(--muted);
-      }
-
-      .preview-line {
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 8px;
-        background: #000;
-        padding: 6px;
-        overflow-x: auto;
-      }
-
-      .preview-line canvas {
-        image-rendering: pixelated;
-        image-rendering: crisp-edges;
-        display: block;
-      }
-
-      pre {
-        margin: 0;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 10px;
-        max-height: 260px;
-        overflow: auto;
-        background: #040406;
-        color: #cdd0d7;
-        font-size: 11px;
-        line-height: 1.45;
-      }
-
-      @media (max-width: 760px) {
-        .font-card {
-          grid-template-columns: minmax(0, 1fr);
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <main class="page">
-      <section class="hero">
-        <h1>时间字体总览与生成器 <span class="accent">(宽≤8, 高≤9)</span></h1>
-        <p>页面会一次性展示每套字体的 <code>0-9</code> 和 <code>:</code>。上半区是固件已存在字体，下半区是基于现有字形生成的新字体。</p>
-      </section>
-
-      <section class="toolbar">
-        <div class="control">
-          <span>像素放大</span>
-          <input id="pixelScale" type="range" min="4" max="18" step="1" value="8" />
-          <strong id="pixelScaleText">8</strong>
+      <!-- 预览内容 -->
+      <div class="ctrl-panel">
+        <div class="ctrl-panel-head">
+          <span class="dot" style="background:#3b82f6"></span>预览内容
         </div>
-        <div class="control">
-          <span>字间距</span>
-          <input id="previewSpacing" type="range" min="1" max="4" step="1" value="1" />
-          <strong id="previewSpacingText">1</strong>
+        <div class="ctrl-panel-body">
+          <div class="preview-row" id="prevChips"></div>
         </div>
-        <button id="copyJsonBtn" type="button">复制全部字体 JSON</button>
-        <span class="stats" id="fontStats"></span>
-      </section>
+      </div>
 
-      <section class="section">
-        <h2>已有时间字体（固件同款）</h2>
-        <div class="cards" id="existingCards"></div>
-      </section>
+      <!-- 字形风格 -->
+      <div class="ctrl-panel">
+        <div class="ctrl-panel-head">
+          <span class="dot" style="background:#a855f7"></span>字形风格
+        </div>
+        <div class="ctrl-panel-body">
+          <div class="opt-grid" id="glyphStyleOpts"></div>
+        </div>
+      </div>
 
-      <section class="section">
-        <h2>新生成时间字体（基于已有字形）</h2>
-        <div class="cards" id="generatedCards"></div>
-      </section>
+      <!-- 字体颜色 -->
+      <div class="ctrl-panel">
+        <div class="ctrl-panel-head">
+          <span class="dot" style="background:#c8185a"></span>字体颜色
+        </div>
+        <div class="ctrl-panel-body" style="display:flex;flex-direction:column;gap:8px;">
+          <div class="opt-grid" id="colorOpts"></div>
+        </div>
+      </div>
 
-      <section class="section">
-        <h2>导出预览</h2>
-        <pre id="jsonOutput"></pre>
-      </section>
-    </main>
+      <!-- 背景色 -->
+      <div class="ctrl-panel">
+        <div class="ctrl-panel-head">
+          <span class="dot" style="background:#0ea5e9"></span>背景色
+        </div>
+        <div class="ctrl-panel-body">
+          <div class="opt-grid" id="bgOpts"></div>
+        </div>
+      </div>
 
-    <script>
-      const LIMIT_WIDTH = 8;
-      const LIMIT_HEIGHT = 9;
-      const GLYPH_LABELS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':'];
+      <!-- 叠加效果 -->
+      <div class="ctrl-panel">
+        <div class="ctrl-panel-head">
+          <span class="dot" style="background:#f59e0b"></span>叠加效果
+        </div>
+        <div class="ctrl-panel-body">
+          <div class="opt-grid" id="effectOpts"></div>
+        </div>
+      </div>
 
-      const EXISTING_FONTS = [
-        {
-          id: 'classic_5x7',
-          displayName: 'classic_5x7',
-          source: 'clock_font_renderer.cpp',
-          category: 'existing',
-          width: 5,
-          height: 7,
-          spacing: 1,
-          glyphs: [
-            [14, 17, 19, 21, 25, 17, 14, 0, 0],
-            [4, 12, 4, 4, 4, 4, 14, 0, 0],
-            [14, 17, 1, 2, 4, 8, 31, 0, 0],
-            [30, 1, 1, 14, 1, 1, 30, 0, 0],
-            [2, 6, 10, 18, 31, 2, 2, 0, 0],
-            [31, 16, 30, 1, 1, 17, 14, 0, 0],
-            [6, 8, 16, 30, 17, 17, 14, 0, 0],
-            [31, 1, 2, 4, 8, 8, 8, 0, 0],
-            [14, 17, 17, 14, 17, 17, 14, 0, 0],
-            [14, 17, 17, 15, 1, 2, 12, 0, 0],
-            [0, 12, 12, 0, 12, 12, 0, 0, 0]
-          ]
-        },
-        {
-          id: 'minimal_3x5',
-          displayName: 'minimal_3x5',
-          source: 'clock_font_renderer.cpp',
-          category: 'existing',
-          width: 3,
-          height: 5,
-          spacing: 1,
-          glyphs: [
-            [7, 5, 5, 5, 7, 0, 0, 0, 0],
-            [2, 6, 2, 2, 7, 0, 0, 0, 0],
-            [7, 1, 7, 4, 7, 0, 0, 0, 0],
-            [7, 1, 7, 1, 7, 0, 0, 0, 0],
-            [5, 5, 7, 1, 1, 0, 0, 0, 0],
-            [7, 4, 7, 1, 7, 0, 0, 0, 0],
-            [7, 4, 7, 5, 7, 0, 0, 0, 0],
-            [7, 1, 2, 2, 2, 0, 0, 0, 0],
-            [7, 5, 7, 5, 7, 0, 0, 0, 0],
-            [7, 5, 7, 1, 7, 0, 0, 0, 0],
-            [0, 2, 0, 2, 0, 0, 0, 0, 0]
-          ]
-        },
-        {
-          id: 'rounded_4x6',
-          displayName: 'rounded_4x6',
-          source: 'clock_font_renderer.cpp',
-          category: 'existing',
-          width: 4,
-          height: 6,
-          spacing: 1,
-          glyphs: [
-            [6, 9, 9, 9, 9, 6, 0, 0, 0],
-            [4, 12, 4, 4, 4, 14, 0, 0, 0],
-            [6, 9, 1, 2, 4, 15, 0, 0, 0],
-            [14, 1, 6, 1, 1, 14, 0, 0, 0],
-            [2, 6, 10, 15, 2, 2, 0, 0, 0],
-            [15, 8, 14, 1, 9, 6, 0, 0, 0],
-            [6, 8, 14, 9, 9, 6, 0, 0, 0],
-            [15, 1, 2, 4, 4, 4, 0, 0, 0],
-            [6, 9, 6, 9, 9, 6, 0, 0, 0],
-            [6, 9, 9, 7, 1, 6, 0, 0, 0],
-            [0, 4, 0, 0, 4, 0, 0, 0, 0]
-          ]
-        },
-        {
-          id: 'lcd_6x8',
-          displayName: 'lcd_6x8',
-          source: 'clock_font_renderer.cpp',
-          category: 'existing',
-          width: 6,
-          height: 8,
-          spacing: 1,
-          glyphs: [
-            [30, 51, 33, 33, 33, 33, 51, 30, 0],
-            [12, 28, 12, 12, 12, 12, 12, 63, 0],
-            [30, 51, 3, 6, 12, 24, 48, 63, 0],
-            [62, 3, 3, 14, 3, 3, 3, 62, 0],
-            [6, 14, 22, 38, 63, 6, 6, 6, 0],
-            [63, 48, 48, 62, 3, 3, 51, 30, 0],
-            [14, 24, 48, 62, 51, 51, 51, 30, 0],
-            [63, 3, 6, 12, 24, 24, 24, 24, 0],
-            [30, 51, 51, 30, 51, 51, 51, 30, 0],
-            [30, 51, 51, 31, 3, 6, 12, 56, 0],
-            [0, 12, 12, 0, 0, 12, 12, 0, 0]
-          ]
-        },
-        {
-          id: 'hollow_5x7',
-          displayName: 'hollow_5x7',
-          source: 'clock_font_renderer.cpp',
-          category: 'existing',
-          width: 5,
-          height: 7,
-          spacing: 1,
-          glyphs: [
-            [14, 17, 17, 17, 17, 17, 14, 0, 0],
-            [4, 12, 4, 4, 4, 4, 4, 0, 0],
-            [14, 17, 1, 2, 4, 8, 31, 0, 0],
-            [30, 1, 1, 14, 1, 1, 30, 0, 0],
-            [2, 6, 10, 18, 31, 2, 2, 0, 0],
-            [31, 16, 30, 1, 1, 17, 14, 0, 0],
-            [6, 8, 16, 30, 17, 17, 14, 0, 0],
-            [31, 1, 2, 4, 8, 8, 8, 0, 0],
-            [14, 17, 17, 14, 17, 17, 14, 0, 0],
-            [14, 17, 17, 15, 1, 2, 12, 0, 0],
-            [0, 8, 0, 0, 0, 8, 0, 0, 0]
-          ]
-        },
-        {
-          id: 'seven_seg_5x7',
-          displayName: 'seven_seg_5x7',
-          source: 'clock_font_renderer.cpp',
-          category: 'existing',
-          width: 5,
-          height: 7,
-          spacing: 1,
-          glyphs: [
-            [31, 17, 17, 17, 17, 17, 31, 0, 0],
-            [1, 1, 1, 1, 1, 1, 1, 0, 0],
-            [31, 1, 1, 31, 16, 16, 31, 0, 0],
-            [31, 1, 1, 31, 1, 1, 31, 0, 0],
-            [17, 17, 17, 31, 1, 1, 1, 0, 0],
-            [31, 16, 16, 31, 1, 1, 31, 0, 0],
-            [31, 16, 16, 31, 17, 17, 31, 0, 0],
-            [31, 1, 1, 1, 1, 1, 1, 0, 0],
-            [31, 17, 17, 31, 17, 17, 31, 0, 0],
-            [31, 17, 17, 31, 1, 1, 31, 0, 0],
-            [0, 4, 0, 0, 0, 4, 0, 0, 0]
-          ]
-        },
-        {
-          id: 'italic_6x7',
-          displayName: 'italic_6x7',
-          source: 'clock_font_renderer.cpp',
-          category: 'existing',
-          width: 6,
-          height: 7,
-          spacing: 1,
-          glyphs: [
-            [15, 17, 18, 18, 34, 60, 0, 0, 0],
-            [4, 12, 4, 4, 8, 8, 28, 0, 0],
-            [14, 17, 2, 4, 8, 16, 62, 0, 0],
-            [30, 1, 2, 12, 2, 1, 30, 0, 0],
-            [2, 6, 10, 18, 31, 4, 4, 0, 0],
-            [31, 16, 30, 1, 1, 18, 12, 0, 0],
-            [6, 8, 16, 30, 17, 18, 12, 0, 0],
-            [31, 1, 2, 4, 8, 8, 16, 0, 0],
-            [14, 17, 18, 12, 18, 33, 30, 0, 0],
-            [14, 17, 18, 15, 2, 4, 24, 0, 0],
-            [0, 8, 0, 0, 16, 0, 0, 0, 0]
-          ]
-        },
-        {
-          id: 'retro_5x7',
-          displayName: 'retro_5x7',
-          source: 'clock_font_renderer.cpp',
-          category: 'existing',
-          width: 5,
-          height: 7,
-          spacing: 1,
-          glyphs: [
-            [31, 17, 19, 21, 25, 17, 31, 0, 0],
-            [6, 14, 6, 6, 6, 6, 31, 0, 0],
-            [31, 1, 1, 31, 16, 16, 31, 0, 0],
-            [31, 1, 1, 31, 1, 1, 31, 0, 0],
-            [17, 17, 17, 31, 1, 1, 1, 0, 0],
-            [31, 16, 16, 31, 1, 1, 31, 0, 0],
-            [31, 16, 16, 31, 17, 17, 31, 0, 0],
-            [31, 1, 1, 1, 1, 1, 1, 0, 0],
-            [31, 17, 17, 31, 17, 17, 31, 0, 0],
-            [31, 17, 17, 31, 1, 1, 31, 0, 0],
-            [0, 12, 0, 0, 0, 12, 0, 0, 0]
-          ]
-        }
-      ];
+      <!-- 缩放 -->
+      <div class="ctrl-panel">
+        <div class="ctrl-panel-head">
+          <span class="dot" style="background:#6b7280"></span>字形条带缩放
+        </div>
+        <div class="ctrl-panel-body" style="display:flex;flex-direction:column;gap:8px;">
+          <div class="slider-row">
+            <span>像素大小</span>
+            <input id="pixelScale" type="range" min="4" max="16" step="1" value="7"/>
+            <strong id="pixelScaleVal">7</strong>
+          </div>
+          <div class="slider-row">
+            <span>字间距</span>
+            <input id="spacing" type="range" min="1" max="4" step="1" value="1"/>
+            <strong id="spacingVal">1</strong>
+          </div>
+        </div>
+      </div>
 
-      function createMatrix(width, height, value) {
-        const matrix = [];
-        for (let y = 0; y < height; y += 1) {
-          const row = [];
-          for (let x = 0; x < width; x += 1) {
-            row.push(value);
-          }
-          matrix.push(row);
-        }
-        return matrix;
+      <!-- 操作 -->
+      <div class="ctrl-panel">
+        <div class="ctrl-panel-body" style="display:flex;flex-direction:column;gap:6px;">
+          <button class="action-btn" id="copyJsonBtn">复制全部字体 JSON</button>
+          <div class="stats-row" id="statsRow"></div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ── 右侧字体列表 ── -->
+    <div class="content">
+      <div>
+        <div class="section-head">固件内置字体 <span id="existingCount"></span></div>
+        <div id="existingCards" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+      <div>
+        <div class="section-head">生成字体 <span id="generatedCount"></span></div>
+        <div id="generatedCards" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+      <div>
+        <div class="section-head">JSON 导出</div>
+        <pre id="jsonOut"></pre>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script>
+
+// ══════════════════════════════════════════════════════
+// 配置：四个独立维度
+// ══════════════════════════════════════════════════════
+
+// 1. 预览文字
+const PREVIEW_TEXTS = [
+  {label:'12:34',v:'12:34'},
+  {label:'23:59',v:'23:59'},
+  {label:'00:00',v:'00:00'},
+  {label:'88:88',v:'88:88'},
+];
+
+// 2. 字形风格（影响像素形状）
+const GLYPH_STYLES = [
+  {
+    id:'solid', label:'实心',
+    desc:'原始字形，每个像素完整点亮',
+    transform: null  // 不变形
+  },
+  {
+    id:'dot', label:'点阵',
+    desc:'每个像素缩成中心小点，周围留黑，颗粒感',
+    // 在渲染时每个像素只画中心 (scale-2)×(scale-2)
+    transform: 'dot'
+  },
+  {
+    id:'outline', label:'描边空心',
+    desc:'只保留字形轮廓像素，内部挖空',
+    transform: 'outline'
+  },
+  {
+    id:'shadow1', label:'投影+1',
+    desc:'字形右下偏移1像素画暗色阴影',
+    transform: 'shadow1'
+  },
+  {
+    id:'shadow2', label:'投影+2',
+    desc:'字形右下偏移2像素，阴影更深',
+    transform: 'shadow2'
+  },
+  {
+    id:'checker', label:'棋盘镂空',
+    desc:'字形内部棋盘格亮灭，半透明感',
+    transform: 'checker'
+  },
+  {
+    id:'noise', label:'像素噪点',
+    desc:'字形像素随机25%不亮，做旧/故障感',
+    transform: 'noise'
+  },
+  {
+    id:'bold1', label:'加粗×1',
+    desc:'每个像素向右扩展1px，字形更粗',
+    transform: 'bold1'
+  },
+  {
+    id:'glow_ring', label:'发光描边',
+    desc:'字形外扩1px画暗色同色光晕',
+    transform: 'glow_ring'
+  },
+];
+
+// 3. 字体颜色方案
+const COLOR_SCHEMES = [
+  // ── 纯色 ──
+  {id:'white',    label:'纯白',   group:'纯色', swatch:'#f5f5f5', colorFn: ()=>[245,245,245]},
+  {id:'warm',     label:'暖白',   group:'纯色', swatch:'#ffe8c0', colorFn: ()=>[255,232,192]},
+  {id:'amber',    label:'琥珀',   group:'纯色', swatch:'#ffb300', colorFn: ()=>[255,179,0]},
+  {id:'red',      label:'红',     group:'纯色', swatch:'#ff4444', colorFn: ()=>[255,68,68]},
+  {id:'rose',     label:'玫红',   group:'纯色', swatch:'#ff4d8d', colorFn: ()=>[255,77,141]},
+  {id:'magenta',  label:'品红',   group:'纯色', swatch:'#e040fb', colorFn: ()=>[224,64,251]},
+  {id:'blue',     label:'冷蓝',   group:'纯色', swatch:'#4fc3f7', colorFn: ()=>[79,195,247]},
+  {id:'cyan',     label:'青',     group:'纯色', swatch:'#00e5ff', colorFn: ()=>[0,229,255]},
+  {id:'green',    label:'绿',     group:'纯色', swatch:'#69ff47', colorFn: ()=>[105,255,71]},
+  {id:'lime',     label:'黄绿',   group:'纯色', swatch:'#c6ff00', colorFn: ()=>[198,255,0]},
+  // ── 渐变（逐像素，真实 LED 可实现）──
+  {id:'grad_tb',  label:'上→下',  group:'渐变', swatch:'linear-gradient(180deg,#ff4d8d,#4fc3f7)',
+    colorFn: (x,y,fw,fh)=>{
+      const t = fh>1 ? y/(fh-1) : 0;
+      return [lerp(255,79,t), lerp(77,195,t), lerp(141,247,t)];
+    }
+  },
+  {id:'grad_bt',  label:'下→上',  group:'渐变', swatch:'linear-gradient(180deg,#4fc3f7,#ff4d8d)',
+    colorFn: (x,y,fw,fh)=>{
+      const t = fh>1 ? y/(fh-1) : 0;
+      return [lerp(79,255,t), lerp(195,77,t), lerp(247,141,t)];
+    }
+  },
+  {id:'grad_lr',  label:'左→右',  group:'渐变', swatch:'linear-gradient(90deg,#ffb300,#00e5ff)',
+    colorFn: (x,y,fw,fh,ci,total,gx,tw)=>{
+      const t = tw>1 ? gx/(tw-1) : 0;
+      return [lerp(255,0,t), lerp(179,229,t), lerp(0,255,t)];
+    }
+  },
+  {id:'grad_fire',label:'火焰',   group:'渐变', swatch:'linear-gradient(180deg,#fff700,#ff4400)',
+    colorFn: (x,y,fw,fh)=>{
+      const t = fh>1 ? y/(fh-1) : 0;
+      return [lerp(255,255,t), lerp(247,68,t), lerp(0,0,t)];
+    }
+  },
+  {id:'grad_ice', label:'冰蓝',   group:'渐变', swatch:'linear-gradient(180deg,#ffffff,#0080ff)',
+    colorFn: (x,y,fw,fh)=>{
+      const t = fh>1 ? y/(fh-1) : 0;
+      return [lerp(255,0,t), lerp(255,128,t), lerp(255,255,t)];
+    }
+  },
+  {id:'grad_aurora',label:'极光', group:'渐变', swatch:'linear-gradient(180deg,#00ff87,#60efff,#a855f7)',
+    colorFn: (x,y,fw,fh)=>{
+      const t = fh>1 ? y/(fh-1) : 0;
+      if (t < 0.5) {
+        const s = t*2;
+        return [lerp(0,96,s), lerp(255,239,s), lerp(135,255,s)];
+      } else {
+        const s = (t-0.5)*2;
+        return [lerp(96,168,s), lerp(239,85,s), lerp(255,247,s)];
       }
+    }
+  },
+  // ── 多色（字符级）──
+  {id:'dual_hm',  label:'时:分双色', group:'多色', swatch:'linear-gradient(90deg,#4fc3f7 45%,#888 45% 55%,#ffb300 55%)',
+    colorFn: (x,y,fw,fh,ci)=>{
+      if (ci<=1) return [79,195,247];
+      if (ci===2) return [120,120,120];
+      return [255,179,0];
+    }
+  },
+  {id:'rainbow',  label:'彩虹字符', group:'多色', swatch:'linear-gradient(90deg,#ff4444,#ffb300,#69ff47,#00e5ff,#a855f7)',
+    colorFn: (x,y,fw,fh,ci,total)=>{
+      const hue = (ci / Math.max(total-1,1)) * 300;
+      return hslToRgb(hue/360, 1, 0.6);
+    }
+  },
+  {id:'breath_sim',label:'呼吸感', group:'多色', swatch:'radial-gradient(circle,#fff,#4fc3f7 60%,#001a33)',
+    // 字形中心亮，边缘暗（模拟呼吸灯中心感）
+    colorFn: (x,y,fw,fh)=>{
+      const cx=(fw-1)/2, cy=(fh-1)/2;
+      const dist=Math.sqrt((x-cx)**2+(y-cy)**2);
+      const maxD=Math.sqrt(cx**2+cy**2);
+      const t = maxD>0 ? dist/maxD : 0;
+      return [lerp(255,0,t*0.8), lerp(255,100,t*0.8), lerp(255,200,t*0.8)];
+    }
+  },
+];
 
-      function rowsToMatrix(rows, width, height) {
-        const matrix = createMatrix(width, height, false);
-        for (let y = 0; y < height; y += 1) {
-          const bits = rows[y];
-          for (let x = 0; x < width; x += 1) {
-            const mask = 1 << (width - x - 1);
-            if ((bits & mask) !== 0) {
-              matrix[y][x] = true;
-            }
-          }
-        }
-        return matrix;
+// 4. 背景色
+const BG_SCHEMES = [
+  {id:'black',   label:'纯黑',   swatch:'#000000', bg:[0,0,0]},
+  {id:'navy',    label:'深蓝',   swatch:'#050a1a', bg:[5,10,26]},
+  {id:'purple',  label:'深紫',   swatch:'#0d0520', bg:[13,5,32]},
+  {id:'forest',  label:'深绿',   swatch:'#021208', bg:[2,18,8]},
+  {id:'crimson', label:'深红',   swatch:'#150205', bg:[21,2,5]},
+  {id:'grid',    label:'网格底', swatch:'#0a0a0a', bg:[0,0,0], gridLines:true},
+  {id:'dim_glyph',label:'暗轮廓',swatch:'#080810', bg:[0,0,0], dimGlyph:true},
+];
+
+// 5. 叠加效果（可多选）
+const EFFECTS = [
+  {id:'none',     label:'无效果',  single:true},
+  {id:'scanline', label:'扫描线',  single:false, desc:'奇数行亮度-60%'},
+  {id:'vignette', label:'暗角',    single:false, desc:'四角渐暗'},
+  {id:'crt_curve',label:'CRT弯曲', single:false, desc:'模拟老显示器边缘暗化'},
+];
+
+// ══════════════════════════════════════════════════════
+// 全局状态
+// ══════════════════════════════════════════════════════
+const state = {
+  previewText: '12:34',
+  glyphStyle:  'solid',
+  colorScheme: 'white',
+  bgScheme:    'black',
+  effects:     new Set(['none']),
+};
+
+// ══════════════════════════════════════════════════════
+// 工具函数
+// ══════════════════════════════════════════════════════
+function lerp(a,b,t){ return Math.round(a+(b-a)*Math.max(0,Math.min(1,t))); }
+function hslToRgb(h,s,l){
+  let r,g,b;
+  if(s===0){r=g=b=l;}
+  else{
+    const q=l<0.5?l*(1+s):l+s-l*s, p=2*l-q;
+    const hue2rgb=(p,q,t)=>{
+      if(t<0)t+=1;if(t>1)t-=1;
+      if(t<1/6)return p+(q-p)*6*t;
+      if(t<1/2)return q;
+      if(t<2/3)return p+(q-p)*(2/3-t)*6;
+      return p;
+    };
+    r=hue2rgb(p,q,h+1/3);g=hue2rgb(p,q,h);b=hue2rgb(p,q,h-1/3);
+  }
+  return [Math.round(r*255),Math.round(g*255),Math.round(b*255)];
+}
+
+const PANEL=64;
+function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v));}
+
+// ══════════════════════════════════════════════════════
+// 字体数据
+// ══════════════════════════════════════════════════════
+const EXISTING_FONTS=[
+  {id:'classic_5x7',displayName:'classic_5x7',source:'固件内置',category:'existing',width:5,height:7,spacing:1,glyphs:[[14,17,19,21,25,17,14,0,0],[4,12,4,4,4,4,14,0,0],[14,17,1,2,4,8,31,0,0],[30,1,1,14,1,1,30,0,0],[2,6,10,18,31,2,2,0,0],[31,16,30,1,1,17,14,0,0],[6,8,16,30,17,17,14,0,0],[31,1,2,4,8,8,8,0,0],[14,17,17,14,17,17,14,0,0],[14,17,17,15,1,2,12,0,0],[0,12,12,0,12,12,0,0,0]]},
+  {id:'minimal_3x5',displayName:'minimal_3x5',source:'固件内置',category:'existing',width:3,height:5,spacing:1,glyphs:[[7,5,5,5,7,0,0,0,0],[2,6,2,2,7,0,0,0,0],[7,1,7,4,7,0,0,0,0],[7,1,7,1,7,0,0,0,0],[5,5,7,1,1,0,0,0,0],[7,4,7,1,7,0,0,0,0],[7,4,7,5,7,0,0,0,0],[7,1,2,2,2,0,0,0,0],[7,5,7,5,7,0,0,0,0],[7,5,7,1,7,0,0,0,0],[0,2,0,2,0,0,0,0,0]]},
+  {id:'rounded_4x6',displayName:'rounded_4x6',source:'固件内置',category:'existing',width:4,height:6,spacing:1,glyphs:[[6,9,9,9,9,6,0,0,0],[4,12,4,4,4,14,0,0,0],[6,9,1,2,4,15,0,0,0],[14,1,6,1,1,14,0,0,0],[2,6,10,15,2,2,0,0,0],[15,8,14,1,9,6,0,0,0],[6,8,14,9,9,6,0,0,0],[15,1,2,4,4,4,0,0,0],[6,9,6,9,9,6,0,0,0],[6,9,9,7,1,6,0,0,0],[0,4,0,0,4,0,0,0,0]]},
+  {id:'lcd_6x8',displayName:'lcd_6x8',source:'固件内置',category:'existing',width:6,height:8,spacing:1,glyphs:[[30,51,33,33,33,33,51,30,0],[12,28,12,12,12,12,12,63,0],[30,51,3,6,12,24,48,63,0],[62,3,3,14,3,3,3,62,0],[6,14,22,38,63,6,6,6,0],[63,48,48,62,3,3,51,30,0],[14,24,48,62,51,51,51,30,0],[63,3,6,12,24,24,24,24,0],[30,51,51,30,51,51,51,30,0],[30,51,51,31,3,6,12,56,0],[0,12,12,0,0,12,12,0,0]]},
+  {id:'hollow_5x7',displayName:'hollow_5x7',source:'固件内置',category:'existing',width:5,height:7,spacing:1,glyphs:[[14,17,17,17,17,17,14,0,0],[4,12,4,4,4,4,4,0,0],[14,17,1,2,4,8,31,0,0],[30,1,1,14,1,1,30,0,0],[2,6,10,18,31,2,2,0,0],[31,16,30,1,1,17,14,0,0],[6,8,16,30,17,17,14,0,0],[31,1,2,4,8,8,8,0,0],[14,17,17,14,17,17,14,0,0],[14,17,17,15,1,2,12,0,0],[0,8,0,0,0,8,0,0,0]]},
+  {id:'seven_seg_5x7',displayName:'seven_seg_5x7',source:'固件内置',category:'existing',width:5,height:7,spacing:1,glyphs:[[31,17,17,17,17,17,31,0,0],[1,1,1,1,1,1,1,0,0],[31,1,1,31,16,16,31,0,0],[31,1,1,31,1,1,31,0,0],[17,17,17,31,1,1,1,0,0],[31,16,16,31,1,1,31,0,0],[31,16,16,31,17,17,31,0,0],[31,1,1,1,1,1,1,0,0],[31,17,17,31,17,17,31,0,0],[31,17,17,31,1,1,31,0,0],[0,4,0,0,0,4,0,0,0]]},
+  {id:'italic_6x7',displayName:'italic_6x7',source:'固件内置',category:'existing',width:6,height:7,spacing:1,glyphs:[[15,17,18,18,34,60,0,0,0],[4,12,4,4,8,8,28,0,0],[14,17,2,4,8,16,62,0,0],[30,1,2,12,2,1,30,0,0],[2,6,10,18,31,4,4,0,0],[31,16,30,1,1,18,12,0,0],[6,8,16,30,17,18,12,0,0],[31,1,2,4,8,8,16,0,0],[14,17,18,12,18,33,30,0,0],[14,17,18,15,2,4,24,0,0],[0,8,0,0,16,0,0,0,0]]},
+  {id:'retro_5x7',displayName:'retro_5x7',source:'固件内置',category:'existing',width:5,height:7,spacing:1,glyphs:[[31,17,19,21,25,17,31,0,0],[6,14,6,6,6,6,31,0,0],[31,1,1,31,16,16,31,0,0],[31,1,1,31,1,1,31,0,0],[17,17,17,31,1,1,1,0,0],[31,16,16,31,1,1,31,0,0],[31,16,16,31,17,17,31,0,0],[31,1,1,1,1,1,1,0,0],[31,17,17,31,17,17,31,0,0],[31,17,17,31,1,1,31,0,0],[0,12,0,0,0,12,0,0,0]]},
+];
+
+// ══════════════════════════════════════════════════════
+// 矩阵工具
+// ══════════════════════════════════════════════════════
+function createMatrix(w,h,v){const m=[];for(let y=0;y<h;y++){const r=[];for(let x=0;x<w;x++)r.push(v);m.push(r);}return m;}
+function rowsToMatrix(rows,w,h){const m=createMatrix(w,h,false);for(let y=0;y<h;y++){const b=rows[y];for(let x=0;x<w;x++)if(b&(1<<(w-x-1)))m[y][x]=true;}return m;}
+function matrixToRows(m,w,h){const r=[];for(let y=0;y<h;y++){let b=0;for(let x=0;x<w;x++)if(m[y][x])b|=1<<(w-x-1);r.push(b);}while(r.length<9)r.push(0);return r;}
+function setPixel(m,x,y){if(x<0||y<0||x>=m[0].length||y>=m.length)return;m[y][x]=true;}
+function countOn(m){let n=0;for(let y=0;y<m.length;y++)for(let x=0;x<m[0].length;x++)if(m[y][x])n++;return n;}
+function copyRows(rows){const c=rows.slice();while(c.length<9)c.push(0);return c;}
+function resample(src,tw,th){const sh=src.length,sw=src[0].length,t=createMatrix(tw,th,false);for(let y=0;y<th;y++)for(let x=0;x<tw;x++)if(src[Math.floor(y*sh/th)][Math.floor(x*sw/tw)])t[y][x]=true;return t;}
+function buildColon(w,h){const m=createMatrix(w,h,false);const dw=w>=6?2:1,dx=Math.floor((w-dw)/2);let ty=Math.max(1,Math.floor((h-4)/3)),by=h-ty-1;if(by-ty<2)by=ty+2;if(by>=h)by=h-1;for(let x=dx;x<dx+dw;x++){setPixel(m,x,ty);setPixel(m,x,by);}return matrixToRows(m,w,h);}
+function applyColon(g,w,h){if(g.length>10)g[10]=buildColon(w,h);}
+function findFont(fonts,id){for(let i=0;i<fonts.length;i++)if(fonts[i].id===id)return fonts[i];return null;}
+function glyphIdx(c){if(c>='0'&&c<='9')return c.charCodeAt(0)-48;if(c===':')return 10;return -1;}
+
+
+// ══════════════════════════════════════════════════════
+// 字体生成
+// ══════════════════════════════════════════════════════
+function genNeoBold(bf){const w=6,h=8,g=[];for(let i=0;i<bf.glyphs.length;i++){const s=rowsToMatrix(bf.glyphs[i],bf.width,bf.height),t=createMatrix(w,h,false);for(let y=0;y<bf.height;y++)for(let x=0;x<bf.width;x++){if(!s[y][x])continue;setPixel(t,x,y);setPixel(t,x+1,y);if(y%2===0)setPixel(t,x,y+1);}g.push(matrixToRows(t,w,h));}applyColon(g,w,h);return{id:'neo_bold_6x8',displayName:'neo_bold_6x8',source:'classic_5x7',category:'generated',width:w,height:h,spacing:1,glyphs:g};}
+function genWireLcd(bf){const w=6,h=8,g=[];for(let i=0;i<bf.glyphs.length;i++){const s=rowsToMatrix(bf.glyphs[i],bf.width,bf.height),t=createMatrix(w,h,false);for(let y=0;y<h;y++)for(let x=0;x<w;x++){if(!s[y][x])continue;const nb=[{x:x-1,y},{x:x+1,y},{x,y:y-1},{x,y:y+1}];let e=false;for(let j=0;j<nb.length;j++){const nx=nb[j].x,ny=nb[j].y;if(nx<0||nx>=w||ny<0||ny>=h||!s[ny][nx]){e=true;break;}}if(e)t[y][x]=true;}g.push(countOn(t)===0?copyRows(bf.glyphs[i]):matrixToRows(t,w,h));}applyColon(g,w,h);return{id:'wire_lcd_6x8',displayName:'wire_lcd_6x8',source:'lcd_6x8',category:'generated',width:w,height:h,spacing:1,glyphs:g};}
+function genSlantRetro(bf){const w=7,h=7,g=[];for(let i=0;i<bf.glyphs.length;i++){const s=rowsToMatrix(bf.glyphs[i],bf.width,bf.height),t=createMatrix(w,h,false);for(let y=0;y<bf.height;y++){const sh=Math.floor((bf.height-1-y)/3);for(let x=0;x<bf.width;x++)if(s[y][x])setPixel(t,x+sh,y);}g.push(matrixToRows(t,w,h));}applyColon(g,w,h);return{id:'slant_retro_7x7',displayName:'slant_retro_7x7',source:'retro_5x7',category:'generated',width:w,height:h,spacing:1,glyphs:g};}
+function genPrismSeg(bf){const w=6,h=8,g=[];for(let i=0;i<bf.glyphs.length;i++){const s=rowsToMatrix(bf.glyphs[i],bf.width,bf.height),t=createMatrix(w,h,false);for(let y=0;y<bf.height;y++){const sh=y<3?1:0;for(let x=0;x<bf.width;x++){if(!s[y][x])continue;setPixel(t,x+sh,y);if(x>0&&x<bf.width-1)setPixel(t,x+sh,y+1);}}if(i!==10){const cy=Math.floor(h/2),cx=Math.floor(w/2);setPixel(t,cx-1,cy);t[cy][cx]=false;if(i%2===0){if(cy+1<h)t[cy+1][cx]=false;}else{if(cy-1>=0)t[cy-1][cx-1]=false;}}g.push(countOn(t)===0?copyRows(bf.glyphs[i]):matrixToRows(t,w,h));}applyColon(g,w,h);return{id:'prism_seg_6x8',displayName:'prism_seg_6x8',source:'seven_seg_5x7',category:'generated',width:w,height:h,spacing:1,glyphs:g};}
+function genArcRound(bf){const w=5,h=7,g=[];for(let i=0;i<bf.glyphs.length;i++){const s=rowsToMatrix(bf.glyphs[i],bf.width,bf.height),t=createMatrix(w,h,false);for(let y=0;y<bf.height;y++)for(let x=0;x<bf.width;x++){if(!s[y][x])continue;setPixel(t,x,y);if(y===0||y===bf.height-1)setPixel(t,x+1,y);if(x===0||x===bf.width-1)setPixel(t,x,y+1);if(y>=bf.height-2)setPixel(t,x,y+1);}g.push(matrixToRows(t,w,h));}applyColon(g,w,h);return{id:'arc_round_5x7',displayName:'arc_round_5x7',source:'rounded_4x6',category:'generated',width:w,height:h,spacing:1,glyphs:g};}
+function genCompactMin(bf){const w=4,h=6,g=[];for(let i=0;i<bf.glyphs.length;i++){const s=rowsToMatrix(bf.glyphs[i],bf.width,bf.height),t=createMatrix(w,h,false);for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(s[Math.floor(y*bf.height/h)][Math.floor(x*bf.width/w)])t[y][x]=true;g.push(matrixToRows(t,w,h));}applyColon(g,w,h);return{id:'compact_minimal_4x6',displayName:'compact_minimal_4x6',source:'minimal_3x5',category:'generated',width:w,height:h,spacing:1,glyphs:g};}
+function genStencil(bf){const w=6,h=8,g=[];for(let i=0;i<bf.glyphs.length;i++){const s=rowsToMatrix(bf.glyphs[i],bf.width,bf.height),t=createMatrix(w,h,false);for(let y=0;y<bf.height;y++)for(let x=0;x<bf.width;x++){if(!s[y][x])continue;setPixel(t,x,y);setPixel(t,x+1,y);}if(i!==10){const sx=Math.floor(w/2);for(let y=1;y<h-1;y++)if((y+i)%2===0)t[y][sx]=false;if(i%3===0)t[1][1]=false;}g.push(matrixToRows(t,w,h));}applyColon(g,w,h);return{id:'stencil_classic_6x8',displayName:'stencil_classic_6x8',source:'classic_5x7',category:'generated',width:w,height:h,spacing:1,glyphs:g};}
+function genPixelRail(bf){const w=5,h=8,g=[];for(let i=0;i<bf.glyphs.length;i++){const sc=resample(rowsToMatrix(bf.glyphs[i],bf.width,bf.height),w,h),t=createMatrix(w,h,false);for(let y=0;y<h;y++)for(let x=0;x<w;x++){if(!sc[y][x])continue;setPixel(t,x,y);if(x===0||x===w-1)setPixel(t,x,y+1);}if(i!==10){const ry=2+(i%3);for(let x=1;x<w-1;x++)t[ry][x]=true;}g.push(matrixToRows(t,w,h));}applyColon(g,w,h);return{id:'pixel_rail_5x8',displayName:'pixel_rail_5x8',source:'minimal_3x5',category:'generated',width:w,height:h,spacing:1,glyphs:g};}
+function genFrameLcd(bf){const w=7,h=9,g=[];for(let i=0;i<bf.glyphs.length;i++){const sc=resample(rowsToMatrix(bf.glyphs[i],bf.width,bf.height),w,h),t=createMatrix(w,h,false);for(let y=0;y<h;y++)for(let x=0;x<w;x++){if(!sc[y][x])continue;const nb=[{x:x-1,y},{x:x+1,y},{x,y:y-1},{x,y:y+1}];let e=false;for(let j=0;j<nb.length;j++){const nx=nb[j].x,ny=nb[j].y;if(nx<0||nx>=w||ny<0||ny>=h||!sc[ny][nx]){e=true;break;}}if(e)t[y][x]=true;}if(i!==10){const my=Math.floor(h/2);for(let x=1;x<w-1;x++)if((x+i)%2===0)t[my][x]=true;}g.push(matrixToRows(t,w,h));}applyColon(g,w,h);return{id:'frame_lcd_7x9',displayName:'frame_lcd_7x9',source:'lcd_6x8',category:'generated',width:w,height:h,spacing:1,glyphs:g};}
+
+function buildGeneratedFonts(ef){
+  const g=[];
+  const cl=findFont(ef,'classic_5x7');if(cl){g.push(genNeoBold(cl));g.push(genStencil(cl));}
+  const lc=findFont(ef,'lcd_6x8');if(lc){g.push(genWireLcd(lc));g.push(genFrameLcd(lc));}
+  const re=findFont(ef,'retro_5x7');if(re)g.push(genSlantRetro(re));
+  const sg=findFont(ef,'seven_seg_5x7');if(sg)g.push(genPrismSeg(sg));
+  const ro=findFont(ef,'rounded_4x6');if(ro)g.push(genArcRound(ro));
+  const mn=findFont(ef,'minimal_3x5');if(mn){g.push(genCompactMin(mn));g.push(genPixelRail(mn));}
+  return g;
+}
+
+const GENERATED_FONTS = buildGeneratedFonts(EXISTING_FONTS);
+const ALL_FONTS = EXISTING_FONTS.concat(GENERATED_FONTS);
+
+// ══════════════════════════════════════════════════════
+// 字形变形（字形风格层）
+// 输入：原始 boolean matrix，输出：变形后 matrix（同尺寸）
+// ══════════════════════════════════════════════════════
+function applyGlyphTransform(matrix, styleId, w, h) {
+  if (!styleId || styleId === 'solid') return matrix;
+
+  if (styleId === 'outline') {
+    const out = createMatrix(w, h, false);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      if (!matrix[y][x]) continue;
+      const nb = [[x-1,y],[x+1,y],[x,y-1],[x,y+1]];
+      let edge = false;
+      for (let k = 0; k < nb.length; k++) {
+        const nx=nb[k][0],ny=nb[k][1];
+        if (nx<0||nx>=w||ny<0||ny>=h||!matrix[ny][nx]) { edge=true; break; }
       }
+      if (edge) out[y][x] = true;
+    }
+    return out;
+  }
 
-      function matrixToRows(matrix, width, height) {
-        const rows = [];
-        for (let y = 0; y < height; y += 1) {
-          let bits = 0;
-          for (let x = 0; x < width; x += 1) {
-            if (matrix[y][x]) {
-              bits |= 1 << (width - x - 1);
-            }
-          }
-          rows.push(bits);
+  if (styleId === 'checker') {
+    const out = createMatrix(w, h, false);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++)
+      if (matrix[y][x] && (x+y)%2===0) out[y][x] = true;
+    return out;
+  }
+
+  if (styleId === 'noise') {
+    // 固定种子伪随机，保证同字体每次一样
+    const out = createMatrix(w, h, false);
+    let seed = 42;
+    const rand = () => { seed=(seed*1664525+1013904223)&0xffffffff; return (seed>>>0)/0xffffffff; };
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++)
+      if (matrix[y][x] && rand() > 0.25) out[y][x] = true;
+    return out;
+  }
+
+  if (styleId === 'bold1') {
+    const out = createMatrix(w, h, false);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      if (!matrix[y][x]) continue;
+      setPixel(out, x, y); setPixel(out, x+1, y);
+    }
+    return out;
+  }
+
+  // shadow1 / shadow2 / glow_ring 在渲染层处理，字形本身不变
+  return matrix;
+}
+
+// ══════════════════════════════════════════════════════
+// 渲染：字形条带（工具栏预览用）
+// ══════════════════════════════════════════════════════
+function drawStrip(canvas, font, scale, spacing) {
+  const count = 11; // 0-9 + :
+  const labels = ['0','1','2','3','4','5','6','7','8','9',':'];
+  const cw = count * font.width + (count-1) * spacing;
+  canvas.width = cw * scale;
+  canvas.height = font.height * scale;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  let cx = 0;
+  for (let i = 0; i < labels.length; i++) {
+    const idx = glyphIdx(labels[i]);
+    if (idx < 0) { cx += font.width + spacing; continue; }
+    const m = rowsToMatrix(font.glyphs[idx], font.width, font.height);
+    for (let y = 0; y < font.height; y++) for (let x = 0; x < font.width; x++) {
+      if (!m[y][x]) continue;
+      ctx.fillStyle = '#e8e8ec';
+      ctx.fillRect((cx+x)*scale, y*scale, scale, scale);
+    }
+    cx += font.width + spacing;
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// 渲染：64×64 时钟预览（核心）
+// ══════════════════════════════════════════════════════
+function calcTextW(text, font, spacing) {
+  return text.length * font.width + (text.length-1) * spacing;
+}
+
+function drawClockPreview(canvas, font) {
+  const text     = state.previewText;
+  const styleId  = state.glyphStyle;
+  const colorSch = COLOR_SCHEMES.find(c=>c.id===state.colorScheme) || COLOR_SCHEMES[0];
+  const bgSch    = BG_SCHEMES.find(b=>b.id===state.bgScheme) || BG_SCHEMES[0];
+  const spacing  = Number(document.getElementById('spacing').value);
+
+  canvas.width = PANEL;
+  canvas.height = PANEL;
+  const ctx = canvas.getContext('2d');
+
+  // ── 背景 ──
+  const bg = bgSch.bg;
+  ctx.fillStyle = `rgb(${bg[0]},${bg[1]},${bg[2]})`;
+  ctx.fillRect(0, 0, PANEL, PANEL);
+
+  const imgData = ctx.getImageData(0, 0, PANEL, PANEL);
+  const d = imgData.data;
+
+  function setLed(px, py, r, g, b, a) {
+    if (px<0||px>=PANEL||py<0||py>=PANEL) return;
+    const off=(py*PANEL+px)*4;
+    d[off]=r; d[off+1]=g; d[off+2]=b; d[off+3]=a===undefined?255:a;
+  }
+  function getLed(px, py) {
+    if (px<0||px>=PANEL||py<0||py>=PANEL) return [0,0,0,0];
+    const off=(py*PANEL+px)*4;
+    return [d[off],d[off+1],d[off+2],d[off+3]];
+  }
+
+  // ── 背景网格线 ──
+  if (bgSch.gridLines) {
+    for (let y=0;y<PANEL;y++) for (let x=0;x<PANEL;x++) {
+      if (x%4===3||y%4===3) setLed(x,y,18,18,22,255);
+    }
+  }
+
+  // ── 暗轮廓背景（字形位置用极暗色填充）──
+  if (bgSch.dimGlyph) {
+    const tw = calcTextW(text, font, spacing);
+    const sx = Math.floor((PANEL-tw)/2);
+    const sy = Math.floor((PANEL-font.height)/2);
+    let cx = sx;
+    for (let ci=0; ci<text.length; ci++) {
+      const idx = glyphIdx(text[ci]);
+      if (idx>=0) {
+        const m = rowsToMatrix(font.glyphs[idx], font.width, font.height);
+        for (let y=0;y<font.height;y++) for (let x=0;x<font.width;x++) {
+          if (m[y][x]) setLed(cx+x, sy+y, 20, 20, 30, 255);
         }
-        while (rows.length < 9) {
-          rows.push(0);
-        }
-        return rows;
       }
+      cx += font.width + spacing;
+    }
+  }
 
-      function setPixel(matrix, x, y) {
-        const height = matrix.length;
-        const width = matrix[0].length;
-        if (x < 0) {
-          return;
-        }
-        if (y < 0) {
-          return;
-        }
-        if (x >= width) {
-          return;
-        }
-        if (y >= height) {
-          return;
-        }
-        matrix[y][x] = true;
-      }
-
-      function countOnPixels(matrix) {
-        let count = 0;
-        for (let y = 0; y < matrix.length; y += 1) {
-          for (let x = 0; x < matrix[0].length; x += 1) {
-            if (matrix[y][x]) {
-              count += 1;
-            }
-          }
-        }
-        return count;
-      }
-
-      function copyBaseRows(baseRows) {
-        const copy = [];
-        for (let i = 0; i < baseRows.length; i += 1) {
-          copy.push(baseRows[i]);
-        }
-        while (copy.length < 9) {
-          copy.push(0);
-        }
-        return copy;
-      }
-
-      function buildSeparatedColonRows(width, height) {
-        const matrix = createMatrix(width, height, false);
-
-        let dotWidth = 1;
-        if (width >= 6) {
-          dotWidth = 2;
-        }
-
-        const dotX = Math.floor((width - dotWidth) / 2);
-        let topY = Math.floor((height - 4) / 3);
-        if (topY < 1) {
-          topY = 1;
-        }
-
-        let bottomY = height - topY - 1;
-        if (bottomY - topY < 2) {
-          bottomY = topY + 2;
-        }
-        if (bottomY >= height) {
-          bottomY = height - 1;
-        }
-
-        for (let x = dotX; x < dotX + dotWidth; x += 1) {
-          setPixel(matrix, x, topY);
-          setPixel(matrix, x, bottomY);
-        }
-
-        return matrixToRows(matrix, width, height);
-      }
-
-      function applySeparatedColonGlyph(glyphs, width, height) {
-        if (glyphs.length <= 10) {
-          return;
-        }
-        glyphs[10] = buildSeparatedColonRows(width, height);
-      }
-
-      function findFontById(fonts, id) {
-        for (let i = 0; i < fonts.length; i += 1) {
-          if (fonts[i].id === id) {
-            return fonts[i];
-          }
-        }
-        return null;
-      }
-
-      function generateNeoBoldFont(baseFont) {
-        const width = 6;
-        const height = 8;
-        const glyphs = [];
-
-        for (let i = 0; i < baseFont.glyphs.length; i += 1) {
-          const source = rowsToMatrix(baseFont.glyphs[i], baseFont.width, baseFont.height);
-          const target = createMatrix(width, height, false);
-          for (let y = 0; y < baseFont.height; y += 1) {
-            for (let x = 0; x < baseFont.width; x += 1) {
-              if (!source[y][x]) {
-                continue;
-              }
-              setPixel(target, x, y);
-              setPixel(target, x + 1, y);
-              if (y % 2 === 0) {
-                setPixel(target, x, y + 1);
-              }
-            }
-          }
-          glyphs.push(matrixToRows(target, width, height));
-        }
-
-        applySeparatedColonGlyph(glyphs, width, height);
-
-        return {
-          id: 'neo_bold_6x8',
-          displayName: 'neo_bold_6x8',
-          source: 'classic_5x7',
-          category: 'generated',
-          width,
-          height,
-          spacing: 1,
-          glyphs
-        };
-      }
-
-      function generateWireLcdFont(baseFont) {
-        const width = 6;
-        const height = 8;
-        const glyphs = [];
-
-        for (let i = 0; i < baseFont.glyphs.length; i += 1) {
-          const source = rowsToMatrix(baseFont.glyphs[i], baseFont.width, baseFont.height);
-          const target = createMatrix(width, height, false);
-
-          for (let y = 0; y < height; y += 1) {
-            for (let x = 0; x < width; x += 1) {
-              if (!source[y][x]) {
-                continue;
-              }
-              const neighbors = [
-                { x: x - 1, y },
-                { x: x + 1, y },
-                { x, y: y - 1 },
-                { x, y: y + 1 }
-              ];
-              let isEdge = false;
-              for (let j = 0; j < neighbors.length; j += 1) {
-                const nx = neighbors[j].x;
-                const ny = neighbors[j].y;
-                if (nx < 0 || nx >= width || ny < 0 || ny >= height) {
-                  isEdge = true;
-                  break;
-                }
-                if (!source[ny][nx]) {
-                  isEdge = true;
-                  break;
-                }
-              }
-              if (isEdge) {
-                target[y][x] = true;
-              }
-            }
-          }
-
-          if (countOnPixels(target) === 0) {
-            glyphs.push(copyBaseRows(baseFont.glyphs[i]));
-          } else {
-            glyphs.push(matrixToRows(target, width, height));
-          }
-        }
-
-        applySeparatedColonGlyph(glyphs, width, height);
-
-        return {
-          id: 'wire_lcd_6x8',
-          displayName: 'wire_lcd_6x8',
-          source: 'lcd_6x8',
-          category: 'generated',
-          width,
-          height,
-          spacing: 1,
-          glyphs
-        };
-      }
-
-      function generateSlantRetroFont(baseFont) {
-        const width = 7;
-        const height = 7;
-        const glyphs = [];
-
-        for (let i = 0; i < baseFont.glyphs.length; i += 1) {
-          const source = rowsToMatrix(baseFont.glyphs[i], baseFont.width, baseFont.height);
-          const target = createMatrix(width, height, false);
-
-          for (let y = 0; y < baseFont.height; y += 1) {
-            const shift = Math.floor((baseFont.height - 1 - y) / 3);
-            for (let x = 0; x < baseFont.width; x += 1) {
-              if (!source[y][x]) {
-                continue;
-              }
-              setPixel(target, x + shift, y);
-            }
-          }
-
-          glyphs.push(matrixToRows(target, width, height));
-        }
-
-        applySeparatedColonGlyph(glyphs, width, height);
-
-        return {
-          id: 'slant_retro_7x7',
-          displayName: 'slant_retro_7x7',
-          source: 'retro_5x7',
-          category: 'generated',
-          width,
-          height,
-          spacing: 1,
-          glyphs
-        };
-      }
-
-      function generatePrismSegFont(baseFont) {
-        const width = 6;
-        const height = 8;
-        const glyphs = [];
-
-        for (let i = 0; i < baseFont.glyphs.length; i += 1) {
-          const source = rowsToMatrix(baseFont.glyphs[i], baseFont.width, baseFont.height);
-          const target = createMatrix(width, height, false);
-
-          for (let y = 0; y < baseFont.height; y += 1) {
-            let shift = 0;
-            if (y < 3) {
-              shift = 1;
-            }
-            for (let x = 0; x < baseFont.width; x += 1) {
-              if (!source[y][x]) {
-                continue;
-              }
-
-              setPixel(target, x + shift, y);
-              if (x > 0 && x < baseFont.width - 1) {
-                setPixel(target, x + shift, y + 1);
-              }
-            }
-          }
-
-          if (i !== 10) {
-            const centerY = Math.floor(height / 2);
-            const centerX = Math.floor(width / 2);
-            setPixel(target, centerX - 1, centerY);
-            target[centerY][centerX] = false;
-
-            if (i % 2 === 0) {
-              if (centerY + 1 < height) {
-                target[centerY + 1][centerX] = false;
-              }
-            } else {
-              if (centerY - 1 >= 0) {
-                target[centerY - 1][centerX - 1] = false;
-              }
-            }
-          }
-
-          if (countOnPixels(target) === 0) {
-            glyphs.push(copyBaseRows(baseFont.glyphs[i]));
-          } else {
-            glyphs.push(matrixToRows(target, width, height));
+  // ── 阴影预处理（shadow1/shadow2）──
+  const shadowOffset = styleId==='shadow1'?1 : styleId==='shadow2'?2 : 0;
+  if (shadowOffset > 0) {
+    const tw = calcTextW(text, font, spacing);
+    const sx = Math.floor((PANEL-tw)/2);
+    const sy = Math.floor((PANEL-font.height)/2);
+    let cx = sx;
+    for (let ci=0; ci<text.length; ci++) {
+      const idx = glyphIdx(text[ci]);
+      if (idx>=0) {
+        const raw = rowsToMatrix(font.glyphs[idx], font.width, font.height);
+        const m = applyGlyphTransform(raw, 'solid', font.width, font.height);
+        for (let y=0;y<font.height;y++) for (let x=0;x<font.width;x++) {
+          if (!m[y][x]) continue;
+          const spx=cx+x+shadowOffset, spy=sy+y+shadowOffset;
+          if (getLed(spx,spy)[3]===0 || true) {
+            setLed(spx, spy, 30, 20, 10, 220);
           }
         }
-
-        applySeparatedColonGlyph(glyphs, width, height);
-
-        return {
-          id: 'prism_seg_6x8',
-          displayName: 'prism_seg_6x8',
-          source: 'seven_seg_5x7',
-          category: 'generated',
-          width,
-          height,
-          spacing: 1,
-          glyphs
-        };
       }
+      cx += font.width + spacing;
+    }
+  }
 
-      function generateArcRoundedFont(baseFont) {
-        const width = 5;
-        const height = 7;
-        const glyphs = [];
-
-        for (let i = 0; i < baseFont.glyphs.length; i += 1) {
-          const source = rowsToMatrix(baseFont.glyphs[i], baseFont.width, baseFont.height);
-          const target = createMatrix(width, height, false);
-
-          for (let y = 0; y < baseFont.height; y += 1) {
-            for (let x = 0; x < baseFont.width; x += 1) {
-              if (!source[y][x]) {
-                continue;
-              }
-
-              setPixel(target, x, y);
-              if (y === 0 || y === baseFont.height - 1) {
-                setPixel(target, x + 1, y);
-              }
-              if (x === 0 || x === baseFont.width - 1) {
-                setPixel(target, x, y + 1);
-              }
-              if (y >= baseFont.height - 2) {
-                setPixel(target, x, y + 1);
-              }
-            }
-          }
-
-          glyphs.push(matrixToRows(target, width, height));
-        }
-
-        applySeparatedColonGlyph(glyphs, width, height);
-
-        return {
-          id: 'arc_round_5x7',
-          displayName: 'arc_round_5x7',
-          source: 'rounded_4x6',
-          category: 'generated',
-          width,
-          height,
-          spacing: 1,
-          glyphs
-        };
+  // ── 发光底晕（glow_ring）──
+  if (styleId === 'glow_ring') {
+    const tw = calcTextW(text, font, spacing);
+    const sx = Math.floor((PANEL-tw)/2);
+    const sy = Math.floor((PANEL-font.height)/2);
+    // 先收集所有亮像素位置
+    const litSet = new Set();
+    let cx = sx;
+    for (let ci=0; ci<text.length; ci++) {
+      const idx = glyphIdx(text[ci]);
+      if (idx>=0) {
+        const m = rowsToMatrix(font.glyphs[idx], font.width, font.height);
+        for (let y=0;y<font.height;y++) for (let x=0;x<font.width;x++)
+          if (m[y][x]) litSet.add((sy+y)*PANEL+(cx+x));
       }
-
-      function generateCompactMinimalFont(baseFont) {
-        const width = 4;
-        const height = 6;
-        const glyphs = [];
-
-        for (let i = 0; i < baseFont.glyphs.length; i += 1) {
-          const source = rowsToMatrix(baseFont.glyphs[i], baseFont.width, baseFont.height);
-          const target = createMatrix(width, height, false);
-
-          for (let y = 0; y < height; y += 1) {
-            const sourceY = Math.floor((y * baseFont.height) / height);
-            for (let x = 0; x < width; x += 1) {
-              const sourceX = Math.floor((x * baseFont.width) / width);
-              if (source[sourceY][sourceX]) {
-                target[y][x] = true;
-              }
-            }
-          }
-
-          glyphs.push(matrixToRows(target, width, height));
-        }
-
-        applySeparatedColonGlyph(glyphs, width, height);
-
-        return {
-          id: 'compact_minimal_4x6',
-          displayName: 'compact_minimal_4x6',
-          source: 'minimal_3x5',
-          category: 'generated',
-          width,
-          height,
-          spacing: 1,
-          glyphs
-        };
-      }
-
-      function resampleMatrix(source, targetWidth, targetHeight) {
-        const sourceHeight = source.length;
-        const sourceWidth = source[0].length;
-        const target = createMatrix(targetWidth, targetHeight, false);
-
-        for (let y = 0; y < targetHeight; y += 1) {
-          const sourceY = Math.floor((y * sourceHeight) / targetHeight);
-          for (let x = 0; x < targetWidth; x += 1) {
-            const sourceX = Math.floor((x * sourceWidth) / targetWidth);
-            if (source[sourceY][sourceX]) {
-              target[y][x] = true;
-            }
-          }
-        }
-
-        return target;
-      }
-
-      function generateStencilClassicFont(baseFont) {
-        const width = 6;
-        const height = 8;
-        const glyphs = [];
-
-        for (let i = 0; i < baseFont.glyphs.length; i += 1) {
-          const source = rowsToMatrix(baseFont.glyphs[i], baseFont.width, baseFont.height);
-          const target = createMatrix(width, height, false);
-
-          for (let y = 0; y < baseFont.height; y += 1) {
-            for (let x = 0; x < baseFont.width; x += 1) {
-              if (!source[y][x]) {
-                continue;
-              }
-              setPixel(target, x, y);
-              setPixel(target, x + 1, y);
-            }
-          }
-
-          if (i !== 10) {
-            const slitX = Math.floor(width / 2);
-            for (let y = 1; y < height - 1; y += 1) {
-              if ((y + i) % 2 === 0) {
-                target[y][slitX] = false;
-              }
-            }
-            if (i % 3 === 0) {
-              target[1][1] = false;
-            }
-          }
-
-          glyphs.push(matrixToRows(target, width, height));
-        }
-
-        applySeparatedColonGlyph(glyphs, width, height);
-
-        return {
-          id: 'stencil_classic_6x8',
-          displayName: 'stencil_classic_6x8',
-          source: 'classic_5x7',
-          category: 'generated',
-          width,
-          height,
-          spacing: 1,
-          glyphs
-        };
-      }
-
-      function generatePixelRailFont(baseFont) {
-        const width = 5;
-        const height = 8;
-        const glyphs = [];
-
-        for (let i = 0; i < baseFont.glyphs.length; i += 1) {
-          const source = rowsToMatrix(baseFont.glyphs[i], baseFont.width, baseFont.height);
-          const scaled = resampleMatrix(source, width, height);
-          const target = createMatrix(width, height, false);
-
-          for (let y = 0; y < height; y += 1) {
-            for (let x = 0; x < width; x += 1) {
-              if (!scaled[y][x]) {
-                continue;
-              }
-              setPixel(target, x, y);
-              if (x === 0 || x === width - 1) {
-                setPixel(target, x, y + 1);
-              }
-            }
-          }
-
-          if (i !== 10) {
-            const railY = 2 + (i % 3);
-            for (let x = 1; x < width - 1; x += 1) {
-              target[railY][x] = true;
-            }
-          }
-
-          glyphs.push(matrixToRows(target, width, height));
-        }
-
-        applySeparatedColonGlyph(glyphs, width, height);
-
-        return {
-          id: 'pixel_rail_5x8',
-          displayName: 'pixel_rail_5x8',
-          source: 'minimal_3x5',
-          category: 'generated',
-          width,
-          height,
-          spacing: 1,
-          glyphs
-        };
-      }
-
-      function generateFrameLcdFont(baseFont) {
-        const width = 7;
-        const height = 9;
-        const glyphs = [];
-
-        for (let i = 0; i < baseFont.glyphs.length; i += 1) {
-          const source = rowsToMatrix(baseFont.glyphs[i], baseFont.width, baseFont.height);
-          const scaled = resampleMatrix(source, width, height);
-          const target = createMatrix(width, height, false);
-
-          for (let y = 0; y < height; y += 1) {
-            for (let x = 0; x < width; x += 1) {
-              if (!scaled[y][x]) {
-                continue;
-              }
-
-              const neighbors = [
-                { x: x - 1, y },
-                { x: x + 1, y },
-                { x, y: y - 1 },
-                { x, y: y + 1 }
-              ];
-              let edge = false;
-              for (let j = 0; j < neighbors.length; j += 1) {
-                const nx = neighbors[j].x;
-                const ny = neighbors[j].y;
-                if (nx < 0 || nx >= width || ny < 0 || ny >= height) {
-                  edge = true;
-                  break;
-                }
-                if (!scaled[ny][nx]) {
-                  edge = true;
-                  break;
-                }
-              }
-
-              if (edge) {
-                target[y][x] = true;
-              }
-            }
-          }
-
-          if (i !== 10) {
-            const midY = Math.floor(height / 2);
-            for (let x = 1; x < width - 1; x += 1) {
-              if ((x + i) % 2 === 0) {
-                target[midY][x] = true;
-              }
-            }
-          }
-
-          glyphs.push(matrixToRows(target, width, height));
-        }
-
-        applySeparatedColonGlyph(glyphs, width, height);
-
-        return {
-          id: 'frame_lcd_7x9',
-          displayName: 'frame_lcd_7x9',
-          source: 'lcd_6x8',
-          category: 'generated',
-          width,
-          height,
-          spacing: 1,
-          glyphs
-        };
-      }
-
-      function buildGeneratedFonts(existingFonts) {
-        const generated = [];
-
-        const classic = findFontById(existingFonts, 'classic_5x7');
-        if (classic !== null) {
-          generated.push(generateNeoBoldFont(classic));
-          generated.push(generateStencilClassicFont(classic));
-        }
-
-        const lcd = findFontById(existingFonts, 'lcd_6x8');
-        if (lcd !== null) {
-          generated.push(generateWireLcdFont(lcd));
-          generated.push(generateFrameLcdFont(lcd));
-        }
-
-        const retro = findFontById(existingFonts, 'retro_5x7');
-        if (retro !== null) {
-          generated.push(generateSlantRetroFont(retro));
-        }
-
-        const seg = findFontById(existingFonts, 'seven_seg_5x7');
-        if (seg !== null) {
-          generated.push(generatePrismSegFont(seg));
-        }
-
-        const rounded = findFontById(existingFonts, 'rounded_4x6');
-        if (rounded !== null) {
-          generated.push(generateArcRoundedFont(rounded));
-        }
-
-        const minimal = findFontById(existingFonts, 'minimal_3x5');
-        if (minimal !== null) {
-          generated.push(generateCompactMinimalFont(minimal));
-          generated.push(generatePixelRailFont(minimal));
-        }
-
-        return generated;
-      }
-
-      function isWithinLimit(font) {
-        if (font.width > LIMIT_WIDTH) {
-          return false;
-        }
-        if (font.height > LIMIT_HEIGHT) {
-          return false;
-        }
-        return true;
-      }
-
-      function glyphIndexFromLabel(label) {
-        if (label === ':') {
-          return 10;
-        }
-        if (label === '0') {
-          return 0;
-        }
-        if (label === '1') {
-          return 1;
-        }
-        if (label === '2') {
-          return 2;
-        }
-        if (label === '3') {
-          return 3;
-        }
-        if (label === '4') {
-          return 4;
-        }
-        if (label === '5') {
-          return 5;
-        }
-        if (label === '6') {
-          return 6;
-        }
-        if (label === '7') {
-          return 7;
-        }
-        if (label === '8') {
-          return 8;
-        }
-        if (label === '9') {
-          return 9;
-        }
-        return -1;
-      }
-
-      function drawPreviewLine(canvas, font, scale, spacing) {
-        const glyphCount = GLYPH_LABELS.length;
-        const contentWidth = glyphCount * font.width + (glyphCount - 1) * spacing;
-        canvas.width = contentWidth * scale;
-        canvas.height = font.height * scale;
-
-        const context = canvas.getContext('2d');
-        context.fillStyle = '#000000';
-        context.fillRect(0, 0, canvas.width, canvas.height);
-
-        let cursor = 0;
-        for (let i = 0; i < GLYPH_LABELS.length; i += 1) {
-          const index = glyphIndexFromLabel(GLYPH_LABELS[i]);
-          if (index < 0) {
-            continue;
-          }
-          const matrix = rowsToMatrix(font.glyphs[index], font.width, font.height);
-          for (let y = 0; y < font.height; y += 1) {
-            for (let x = 0; x < font.width; x += 1) {
-              if (!matrix[y][x]) {
-                continue;
-              }
-              context.fillStyle = '#f3f3f6';
-              context.fillRect((cursor + x) * scale, y * scale, scale, scale);
-            }
-          }
-          cursor += font.width + spacing;
-        }
-      }
-
-      function renderFontCard(container, font, scale, spacing) {
-        const card = document.createElement('article');
-        card.className = 'font-card';
-        if (!isWithinLimit(font)) {
-          card.classList.add('fail');
-        }
-
-        const head = document.createElement('div');
-        head.className = 'font-head';
-
-        const name = document.createElement('div');
-        name.className = 'font-name';
-        name.textContent = font.displayName;
-
-        const meta = document.createElement('div');
-        meta.className = 'font-meta';
-        const passText = isWithinLimit(font) ? '通过 8x9' : '超出 8x9';
-        const sourceText = font.category === 'existing' ? '固件内置' : `生成自 ${font.source}`;
-        meta.textContent = `${font.width}x${font.height} · ${sourceText} · ${passText}`;
-
-        head.appendChild(name);
-        head.appendChild(meta);
-
-        const previewWrap = document.createElement('div');
-        previewWrap.className = 'preview-line';
-        const previewCanvas = document.createElement('canvas');
-        drawPreviewLine(previewCanvas, font, scale, spacing);
-        previewWrap.appendChild(previewCanvas);
-
-        card.appendChild(head);
-        card.appendChild(previewWrap);
-        container.appendChild(card);
-      }
-
-      function buildPayload(existingFonts, generatedFonts) {
-        const payload = {
-          constraints: {
-            maxWidth: LIMIT_WIDTH,
-            maxHeight: LIMIT_HEIGHT,
-            glyphSet: '0123456789:'
-          },
-          existing: [],
-          generated: []
-        };
-
-        for (let i = 0; i < existingFonts.length; i += 1) {
-          payload.existing.push({
-            id: existingFonts[i].id,
-            width: existingFonts[i].width,
-            height: existingFonts[i].height,
-            spacing: existingFonts[i].spacing,
-            glyphs: existingFonts[i].glyphs
-          });
-        }
-
-        for (let i = 0; i < generatedFonts.length; i += 1) {
-          payload.generated.push({
-            id: generatedFonts[i].id,
-            source: generatedFonts[i].source,
-            width: generatedFonts[i].width,
-            height: generatedFonts[i].height,
-            spacing: generatedFonts[i].spacing,
-            glyphs: generatedFonts[i].glyphs
-          });
-        }
-
-        return payload;
-      }
-
-      const generatedFonts = buildGeneratedFonts(EXISTING_FONTS);
-      const pixelScaleInput = document.getElementById('pixelScale');
-      const pixelScaleText = document.getElementById('pixelScaleText');
-      const previewSpacingInput = document.getElementById('previewSpacing');
-      const previewSpacingText = document.getElementById('previewSpacingText');
-      const existingCards = document.getElementById('existingCards');
-      const generatedCards = document.getElementById('generatedCards');
-      const jsonOutput = document.getElementById('jsonOutput');
-      const fontStats = document.getElementById('fontStats');
-      const copyJsonBtn = document.getElementById('copyJsonBtn');
-
-      function rerender() {
-        const scale = Number(pixelScaleInput.value);
-        const spacing = Number(previewSpacingInput.value);
-        pixelScaleText.textContent = String(scale);
-        previewSpacingText.textContent = String(spacing);
-
-        existingCards.innerHTML = '';
-        generatedCards.innerHTML = '';
-
-        for (let i = 0; i < EXISTING_FONTS.length; i += 1) {
-          renderFontCard(existingCards, EXISTING_FONTS[i], scale, spacing);
-        }
-
-        for (let i = 0; i < generatedFonts.length; i += 1) {
-          renderFontCard(generatedCards, generatedFonts[i], scale, spacing);
-        }
-
-        const payload = buildPayload(EXISTING_FONTS, generatedFonts);
-        jsonOutput.textContent = JSON.stringify(payload, null, 2);
-
-        let passCount = 0;
-        const totalCount = EXISTING_FONTS.length + generatedFonts.length;
-        for (let i = 0; i < EXISTING_FONTS.length; i += 1) {
-          if (isWithinLimit(EXISTING_FONTS[i])) {
-            passCount += 1;
-          }
-        }
-        for (let i = 0; i < generatedFonts.length; i += 1) {
-          if (isWithinLimit(generatedFonts[i])) {
-            passCount += 1;
-          }
-        }
-
-        fontStats.textContent = `总字体 ${totalCount} 套，满足 8x9 约束 ${passCount} 套`;
-      }
-
-      pixelScaleInput.addEventListener('input', rerender);
-      previewSpacingInput.addEventListener('input', rerender);
-
-      copyJsonBtn.addEventListener('click', async function() {
-        if (navigator.clipboard === undefined) {
-          copyJsonBtn.textContent = '复制失败';
-          return;
-        }
-
-        try {
-          await navigator.clipboard.writeText(jsonOutput.textContent);
-          copyJsonBtn.textContent = '已复制 JSON';
-          window.setTimeout(function() {
-            copyJsonBtn.textContent = '复制全部字体 JSON';
-          }, 1200);
-        } catch (error) {
-          copyJsonBtn.textContent = '复制失败';
-        }
+      cx += font.width + spacing;
+    }
+    // 扩散光晕
+    const glowRgb = colorSch.colorFn(0,0,1,1,0,1,0,1);
+    litSet.forEach(key=>{
+      const py=Math.floor(key/PANEL), px=key%PANEL;
+      const ring=[[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[1,-1],[-1,1],[1,1]];
+      ring.forEach(([dx,dy])=>{
+        const nx=px+dx,ny=py+dy;
+        if(nx<0||nx>=PANEL||ny<0||ny>=PANEL) return;
+        if(litSet.has(ny*PANEL+nx)) return;
+        setLed(nx,ny,
+          Math.round(glowRgb[0]*0.3),
+          Math.round(glowRgb[1]*0.3),
+          Math.round(glowRgb[2]*0.3), 200);
       });
+    });
+  }
 
-      rerender();
-    </script>
-  </body>
+  // ── 主文字渲染 ──
+  const tw = calcTextW(text, font, spacing);
+  const startX = Math.floor((PANEL-tw)/2);
+  const startY = Math.floor((PANEL-font.height)/2);
+  let cursorX = startX;
+
+  for (let ci=0; ci<text.length; ci++) {
+    const idx = glyphIdx(text[ci]);
+    if (idx>=0) {
+      const raw = rowsToMatrix(font.glyphs[idx], font.width, font.height);
+      const m = applyGlyphTransform(raw, styleId, font.width, font.height);
+      const globalOffsetX = cursorX - startX;
+
+      for (let gy=0; gy<font.height; gy++) {
+        for (let gx=0; gx<font.width; gx++) {
+          if (!m[gy][gx]) continue;
+          const px = cursorX + gx;
+          const py = startY + gy;
+          if (px<0||px>=PANEL||py<0||py>=PANEL) continue;
+
+          // 点阵风格：只画中心点（在 LED 上就是灯亮，周围灯灭）
+          // 这里 scale=1，所以点阵效果通过跳过边缘像素实现
+          if (styleId === 'dot') {
+            // 只在字形像素的"中心"亮，边缘不亮
+            // 对于 1px 的字形像素，直接亮；对于连续区域，只亮中心
+            const neighbors = [[gx-1,gy],[gx+1,gy],[gx,gy-1],[gx,gy+1]];
+            let adjCount = 0;
+            neighbors.forEach(([nx,ny])=>{
+              if(nx>=0&&nx<font.width&&ny>=0&&ny<font.height&&raw[ny][nx]) adjCount++;
+            });
+            // 孤立像素或边缘像素才亮（颗粒感）
+            if (adjCount >= 3) continue; // 内部像素跳过
+          }
+
+          const rgb = colorSch.colorFn(gx, gy, font.width, font.height, ci, text.length, globalOffsetX+gx, tw);
+          setLed(px, py, rgb[0], rgb[1], rgb[2]);
+        }
+      }
+    }
+    cursorX += font.width + spacing;
+  }
+
+  // ── 叠加效果 ──
+  if (state.effects.has('scanline')) {
+    for (let y=0;y<PANEL;y++) {
+      if (y%2===0) continue;
+      for (let x=0;x<PANEL;x++) {
+        const off=(y*PANEL+x)*4;
+        d[off]=Math.round(d[off]*0.4);
+        d[off+1]=Math.round(d[off+1]*0.4);
+        d[off+2]=Math.round(d[off+2]*0.4);
+      }
+    }
+  }
+
+  if (state.effects.has('vignette')) {
+    const cx=PANEL/2, cy=PANEL/2, maxD=Math.sqrt(cx*cx+cy*cy);
+    for (let y=0;y<PANEL;y++) for (let x=0;x<PANEL;x++) {
+      const dist=Math.sqrt((x-cx)**2+(y-cy)**2);
+      const t=Math.pow(dist/maxD,2.2);
+      const factor=1-t*0.75;
+      const off=(y*PANEL+x)*4;
+      d[off]=Math.round(d[off]*factor);
+      d[off+1]=Math.round(d[off+1]*factor);
+      d[off+2]=Math.round(d[off+2]*factor);
+    }
+  }
+
+  if (state.effects.has('crt_curve')) {
+    const cx=PANEL/2, cy=PANEL/2;
+    for (let y=0;y<PANEL;y++) for (let x=0;x<PANEL;x++) {
+      const dx=(x-cx)/cx, dy=(y-cy)/cy;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      const factor=1-Math.pow(Math.max(0,dist-0.6),2)*1.8;
+      if (factor<=0) {
+        const off=(y*PANEL+x)*4;
+        d[off]=d[off+1]=d[off+2]=0;
+      } else if (factor<1) {
+        const off=(y*PANEL+x)*4;
+        d[off]=Math.round(d[off]*factor);
+        d[off+1]=Math.round(d[off+1]*factor);
+        d[off+2]=Math.round(d[off+2]*factor);
+      }
+    }
+  }
+
+  ctx.putImageData(imgData, 0, 0);
+}
+
+
+// ══════════════════════════════════════════════════════
+// UI 构建
+// ══════════════════════════════════════════════════════
+
+function buildOptGroup(containerId, items, stateKey, isMulti) {
+  const wrap = document.getElementById(containerId);
+  wrap.innerHTML = '';
+  items.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.type = 'button';
+
+    // swatch
+    if (item.swatch) {
+      const sw = document.createElement('span');
+      sw.className = 'swatch';
+      if (item.swatch.startsWith('linear')||item.swatch.startsWith('radial')) {
+        sw.style.background = item.swatch;
+      } else {
+        sw.style.backgroundColor = item.swatch;
+      }
+      btn.appendChild(sw);
+    }
+    btn.appendChild(document.createTextNode(item.label));
+
+    // active state
+    const isActive = isMulti
+      ? state[stateKey].has(item.id)
+      : state[stateKey] === item.id;
+    if (isActive) btn.classList.add('active');
+
+    btn.addEventListener('click', () => {
+      if (isMulti) {
+        if (item.id === 'none') {
+          state[stateKey].clear();
+          state[stateKey].add('none');
+        } else {
+          state[stateKey].delete('none');
+          if (state[stateKey].has(item.id)) {
+            state[stateKey].delete(item.id);
+            if (state[stateKey].size === 0) state[stateKey].add('none');
+          } else {
+            state[stateKey].add(item.id);
+          }
+        }
+      } else {
+        state[stateKey] = item.id;
+      }
+      buildOptGroup(containerId, items, stateKey, isMulti);
+      rerenderPreviews();
+    });
+
+    wrap.appendChild(btn);
+  });
+}
+
+function buildPreviewChips() {
+  const wrap = document.getElementById('prevChips');
+  wrap.innerHTML = '';
+  PREVIEW_TEXTS.forEach(pt => {
+    const btn = document.createElement('button');
+    btn.className = 'prev-chip' + (pt.v === state.previewText ? ' active' : '');
+    btn.type = 'button';
+    btn.textContent = pt.label;
+    btn.addEventListener('click', () => {
+      state.previewText = pt.v;
+      buildPreviewChips();
+      rerenderPreviews();
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+// 只重绘时钟 canvas（不重建 DOM）
+function rerenderPreviews() {
+  document.querySelectorAll('canvas.clock-cv').forEach(cv => {
+    const font = findFont(ALL_FONTS, cv.dataset.fontId);
+    if (font) drawClockPreview(cv, font);
+  });
+}
+
+// 全量重渲染（scale/spacing 变化）
+function rerender() {
+  const scale   = Number(document.getElementById('pixelScale').value);
+  const spacing = Number(document.getElementById('spacing').value);
+  document.getElementById('pixelScaleVal').textContent = scale;
+  document.getElementById('spacingVal').textContent = spacing;
+
+  ['existingCards','generatedCards'].forEach(id => {
+    document.getElementById(id).innerHTML = '';
+  });
+
+  EXISTING_FONTS.forEach(f => buildFontCard('existingCards', f, scale, spacing));
+  GENERATED_FONTS.forEach(f => buildFontCard('generatedCards', f, scale, spacing));
+
+  document.getElementById('existingCount').textContent = '(' + EXISTING_FONTS.length + ')';
+  document.getElementById('generatedCount').textContent = '(' + GENERATED_FONTS.length + ')';
+
+  // JSON
+  const payload = {
+    constraints:{maxWidth:8,maxHeight:9,glyphSet:'0123456789:'},
+    existing: EXISTING_FONTS.map(f=>({id:f.id,width:f.width,height:f.height,spacing:f.spacing,glyphs:f.glyphs})),
+    generated: GENERATED_FONTS.map(f=>({id:f.id,source:f.source,width:f.width,height:f.height,spacing:f.spacing,glyphs:f.glyphs}))
+  };
+  document.getElementById('jsonOut').textContent = JSON.stringify(payload, null, 2);
+
+  let pass=0;
+  ALL_FONTS.forEach(f=>{ if(f.width<=8&&f.height<=9) pass++; });
+  document.getElementById('statsRow').textContent = '共 '+ALL_FONTS.length+' 套 · 满足 8×9 约束 '+pass+' 套';
+}
+
+function buildFontCard(containerId, font, scale, spacing) {
+  const container = document.getElementById(containerId);
+  const card = document.createElement('article');
+  card.className = 'font-card' + (font.width<=8&&font.height<=9 ? '' : ' fail');
+
+  // 左：信息
+  const info = document.createElement('div');
+  info.className = 'fc-info';
+  info.innerHTML = `
+    <div class="fc-name">${font.displayName}</div>
+    <div class="fc-meta">${font.width}×${font.height} · 间距${font.spacing}<br>${font.source}</div>
+    <span class="fc-badge ${font.width<=8&&font.height<=9?'pass':'fail'}">${font.width<=8&&font.height<=9?'✓ 8×9 通过':'✗ 超出限制'}</span>
+  `;
+
+  // 中：字形条带
+  const stripDiv = document.createElement('div');
+  stripDiv.className = 'fc-strip';
+  const stripWrap = document.createElement('div');
+  stripWrap.className = 'strip-wrap';
+  const stripCv = document.createElement('canvas');
+  drawStrip(stripCv, font, scale, spacing);
+  stripWrap.appendChild(stripCv);
+  stripDiv.appendChild(stripWrap);
+
+  // 右：64×64 预览
+  const prevDiv = document.createElement('div');
+  prevDiv.className = 'fc-preview';
+  const frame = document.createElement('div');
+  frame.className = 'panel-frame';
+  const cv = document.createElement('canvas');
+  cv.className = 'clock-cv';
+  cv.dataset.fontId = font.id;
+  drawClockPreview(cv, font);
+  frame.appendChild(cv);
+  const lbl = document.createElement('div');
+  lbl.className = 'panel-label';
+  lbl.textContent = '64×64 LED';
+  prevDiv.appendChild(frame);
+  prevDiv.appendChild(lbl);
+
+  card.appendChild(info);
+  card.appendChild(stripDiv);
+  card.appendChild(prevDiv);
+  container.appendChild(card);
+}
+
+// ══════════════════════════════════════════════════════
+// 初始化
+// ══════════════════════════════════════════════════════
+buildPreviewChips();
+buildOptGroup('glyphStyleOpts', GLYPH_STYLES, 'glyphStyle', false);
+buildOptGroup('colorOpts',      COLOR_SCHEMES, 'colorScheme', false);
+buildOptGroup('bgOpts',         BG_SCHEMES,    'bgScheme',    false);
+buildOptGroup('effectOpts',     EFFECTS,       'effects',     true);
+
+document.getElementById('pixelScale').addEventListener('input', rerender);
+document.getElementById('spacing').addEventListener('input', rerender);
+
+document.getElementById('copyJsonBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('copyJsonBtn');
+  if (!navigator.clipboard) { btn.textContent = '复制失败'; return; }
+  try {
+    await navigator.clipboard.writeText(document.getElementById('jsonOut').textContent);
+    btn.textContent = '已复制 ✓';
+    setTimeout(()=>{ btn.textContent='复制全部字体 JSON'; }, 1400);
+  } catch(e) { btn.textContent = '复制失败'; }
+});
+
+rerender();
+
+</script>
+</body>
 </html>

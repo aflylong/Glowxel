@@ -1648,6 +1648,33 @@ class WebSocket {
     });
   }
 
+  async startTerrariaClock(config, options = {}) {
+    return this.runModeTransaction({
+      mode: "terraria_clock",
+      params: {
+        character: config.character,
+        weaponId: config.weaponId,
+        playerX: config.playerX,
+        playerY: config.playerY,
+        playerScale: config.playerScale,
+        guardianX: config.guardianX,
+        guardianY: config.guardianY,
+        wingSpeed: config.wingSpeed,
+        fontId: config.fontId,
+        fontScale: config.fontScale,
+        clockX: config.clockX,
+        clockY: config.clockY,
+        hourFormat: config.hourFormat,
+        showSeconds: config.showSeconds,
+        clockTextColor: normalizeHexColor(config.clockTextColor),
+        clockBgInner: normalizeHexColor(config.clockBgInner),
+        clockBgOuter: normalizeHexColor(config.clockBgOuter),
+      },
+      acceptedTimeout: options.acceptedTimeout,
+      finalTimeout: options.finalTimeout,
+    });
+  }
+
   async setPlanetScreensaver(config, options = {}) {
     return this.runModeTransaction({
       mode: "planet_screensaver",

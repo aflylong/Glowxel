@@ -54,6 +54,13 @@ namespace WebSocketCommandHandlers {
     bool& responseSent
   );
 
+  bool handleTerrariaCommand(
+    AsyncWebSocketClient* client,
+    JsonDocument& doc,
+    StaticJsonDocument<768>& response,
+    bool& responseSent
+  );
+
   bool handleEyesCommand(
     AsyncWebSocketClient* client,
     JsonDocument& doc,

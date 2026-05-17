@@ -33,7 +33,7 @@ export DOMAIN="your-domain.com"
 
 | 模块       | 本地路径                                  | 服务器路径                    |
 | ---------- | ----------------------------------------- | ----------------------------- |
-| 项目根目录 | `/Users/aflylong/Desktop/project/Glowxel` | `/home/ubuntu/glowxel-repo`   |
+| 项目根目录 | `（本地仓库根目录）` | `/home/ubuntu/glowxel-repo`   |
 | 后端服务   | `server/`                                 | `/home/ubuntu/glowxel-server` |
 | 官网       | `website/`                                | `/var/www/glowxel`            |
 | 后台管理   | `admin/`                                  | `/var/www/glowxel-admin`      |

@@ -401,6 +401,25 @@ TetrisModeConfig ConfigManager::tetrisConfig = makeDefaultTetrisModeConfig(false
 TetrisClockModeConfig ConfigManager::tetrisClockConfig = makeDefaultTetrisClockModeConfig();
 MazeModeConfig ConfigManager::mazeConfig = makeDefaultMazeModeConfig();
 SnakeModeConfig ConfigManager::snakeConfig = makeDefaultSnakeModeConfig();
+
+// Terraria 默认配置 (跟 uniapp data.config.terraria 默认值对齐, AGENTS.md 硬约束)
+//   战士 + 天顶剑, x=32 y=43 scale=60%, 守卫 (-29, -6), 翅膀速度 50%
+//   字体 lcd_6x8, fontScale=1, 时钟在 (32,6), 24 小时制
+//   字色 #5a4a3a, 内圈 #63971f, 外圈 #8FD71D
+TerrariaModeConfig ConfigManager::terrariaConfig = {
+  .character = TERRARIA_CHAR_WARRIOR,
+  .weaponId = 4956,
+  .playerX = 32, .playerY = 43, .playerScale = 60,
+  .guardianX = -29, .guardianY = -6,
+  .wingSpeed = 50,
+  .fontId = CLOCK_FONT_LCD_6X8, .fontScale = 1,
+  .clockX = 32, .clockY = 6,
+  .hourFormat = 24, .showSeconds = false,
+  .clockTextColor = {0x5A, 0x4A, 0x3A},
+  .clockBgInner = {0x63, 0x97, 0x1F},
+  .clockBgOuter = {0x8F, 0xD7, 0x1D},
+};
+
 DeviceParamsConfig ConfigManager::deviceParamsConfig = makeDefaultDeviceParamsConfig();
 PixelData* ConfigManager::staticImagePixels = nullptr;
 int ConfigManager::staticImagePixelCount = 0;
@@ -438,6 +457,7 @@ void ConfigManager::init() {
     loadTetrisClockConfig();
     loadMazeConfig();
     loadSnakeConfig();
+    loadTerrariaConfig();
     loadPacmanRoute();
     loadCanvasPixels();
   }
@@ -845,6 +865,22 @@ void ConfigManager::saveSnakeConfig() {
   preferences.end();
 }
 
+void ConfigManager::loadTerrariaConfig() {
+  preferences.begin("terraria", true);
+  size_t configSize = preferences.getBytesLength("config");
+  if (configSize == sizeof(TerrariaModeConfig)) {
+    preferences.getBytes("config", &terrariaConfig, sizeof(TerrariaModeConfig));
+  }
+  // size 不匹配 → 保留 .cpp 顶部静态初始化的默认值
+  preferences.end();
+}
+
+void ConfigManager::saveTerrariaConfig() {
+  preferences.begin("terraria", false);
+  preferences.putBytes("config", &terrariaConfig, sizeof(TerrariaModeConfig));
+  preferences.end();
+}
+
 void ConfigManager::loadPlanetScreensaverConfig() {
   preferences.begin("planet_ss", true);
   size_t configSize = preferences.getBytesLength("config");
@@ -1100,6 +1136,20 @@ void ConfigManager::resetToDefault() {
   tetrisClockConfig = makeDefaultTetrisClockModeConfig();
   mazeConfig = makeDefaultMazeModeConfig();
   snakeConfig = makeDefaultSnakeModeConfig();
+  // terraria 默认值 (与 .cpp 顶部静态初始化一致)
+  terrariaConfig = {
+    .character = TERRARIA_CHAR_WARRIOR,
+    .weaponId = 4956,
+    .playerX = 32, .playerY = 43, .playerScale = 60,
+    .guardianX = -29, .guardianY = -6,
+    .wingSpeed = 50,
+    .fontId = CLOCK_FONT_LCD_6X8, .fontScale = 1,
+    .clockX = 32, .clockY = 6,
+    .hourFormat = 24, .showSeconds = false,
+    .clockTextColor = {0x5A, 0x4A, 0x3A},
+    .clockBgInner = {0x63, 0x97, 0x1F},
+    .clockBgOuter = {0x8F, 0xD7, 0x1D},
+  };
   deviceParamsConfig = makeDefaultDeviceParamsConfig();
   DisplayManager::currentBrightness = deviceParamsConfig.displayBright;
 

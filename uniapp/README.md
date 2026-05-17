@@ -52,6 +52,6 @@ npm run dev:mp-weixin
 
 ## 相关文档
 
-1. [development-guardrails.md](/Users/aflylong/Desktop/project/Glowxel/uniapp/docs/development-guardrails.md)
-2. [设备显示迁移参考.md](/Users/aflylong/Desktop/project/Glowxel/uniapp/docs/设备显示迁移参考.md)
-3. [开发路线图.md](/Users/aflylong/Desktop/project/Glowxel/docs/开发路线图.md)
+1. [development-guardrails.md](./docs/development-guardrails.md)
+2. [设备显示迁移参考.md](./docs/设备显示迁移参考.md)
+3. [开发路线图.md](../docs/开发路线图.md)

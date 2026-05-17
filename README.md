@@ -88,8 +88,8 @@ platformio device monitor
 
 优先查看：
 
-1. [文档与页面索引.md](/Users/aflylong/Desktop/project/Glowxel/docs/文档与页面索引.md)
-2. [项目架构与接口文档.md](/Users/aflylong/Desktop/project/Glowxel/docs/项目架构与接口文档.md)
-3. [开发路线图.md](/Users/aflylong/Desktop/project/Glowxel/docs/开发路线图.md)
-4. [env-config.md](/Users/aflylong/Desktop/project/Glowxel/docs/env-config.md)
-5. [DEPLOY.md](/Users/aflylong/Desktop/project/Glowxel/DEPLOY.md)
+1. [文档与页面索引.md](./docs/文档与页面索引.md)
+2. [项目架构与接口文档.md](./docs/项目架构与接口文档.md)
+3. [开发路线图.md](./docs/开发路线图.md)
+4. [env-config.md](./docs/env-config.md)
+5. [DEPLOY.md](./DEPLOY.md)

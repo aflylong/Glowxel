@@ -12,6 +12,7 @@
 #include "runtime_mode_coordinator.h"
 #include "runtime_status_builder.h"
 #include <ctype.h>
+#include <esp_timer.h>
 namespace {
 struct SyncHttpRequest {
   String method;
@@ -211,7 +212,7 @@ String buildDeviceParamsJson() {
 }
 
 String buildRuntimeStatusJson() {
-  StaticJsonDocument<RuntimeStatusBuilder::kStatusJsonCapacity> doc;
+  DynamicJsonDocument doc(RuntimeStatusBuilder::kStatusJsonCapacity);
   RuntimeStatusBuilder::fillStatus(doc, true, true);
 
   if (doc.overflowed()) {
@@ -227,7 +228,9 @@ String buildRuntimeStatusJson() {
 }
 
 void sendDeviceParamsResponse(AsyncWebServerRequest* request) {
-  request->send(200, "application/json", buildDeviceParamsJson());
+  AsyncResponseStream* stream = request->beginResponseStream("application/json; charset=utf-8");
+  stream->print(buildDeviceParamsJson());
+  request->send(stream);
 }
 
 bool applyDeviceParamValue(const String& key, const String& value, String& errorMessage) {
@@ -3120,8 +3123,8 @@ String buildControlHubPage() {
   return html;
 }
 
-String buildRuntimeSettingsLitePage() {
-  return R"HTML(<!doctype html>
+// 设备控制页 HTML 存放在 Flash（PROGMEM），不占用 RAM
+static const char kRuntimeSettingsLitePageHtml[] PROGMEM = R"HTML(<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
@@ -3263,6 +3266,10 @@ String buildRuntimeSettingsLitePage() {
   </script>
 </body>
 </html>)HTML";
+
+// 返回 PROGMEM 指针供 request->send_P 使用
+const char* getRuntimeSettingsLitePageHtml() {
+  return kRuntimeSettingsLitePageHtml;
 }
 
 int hexValue(char ch) {
@@ -3437,6 +3444,37 @@ void sendSyncResponse(
   client.print(body);
 }
 
+// PROGMEM 版本：直接从 Flash 流式发送，不在 RAM 里组装 String
+void sendSyncResponseProgmem(
+  WiFiClient& client,
+  int statusCode,
+  const char* statusText,
+  const char* contentType,
+  const char* pgmBody,
+  size_t pgmLen
+) {
+  client.printf("HTTP/1.1 %d %s\r\n", statusCode, statusText);
+  client.printf("Content-Type: %s\r\n", contentType);
+  client.printf("Content-Length: %u\r\n", static_cast<unsigned>(pgmLen));
+  client.println("Access-Control-Allow-Origin: *");
+  client.println("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+  client.println("Access-Control-Allow-Headers: Content-Type");
+  client.println("Access-Control-Allow-Private-Network: true");
+  client.println("Cache-Control: no-store");
+  client.println("Connection: close");
+  client.println();
+  // 分块从 Flash 读取发送，每块 256 字节，不占 RAM
+  constexpr size_t kChunk = 256;
+  char chunk[kChunk];
+  size_t sent = 0;
+  while (sent < pgmLen) {
+    size_t toSend = (pgmLen - sent) < kChunk ? (pgmLen - sent) : kChunk;
+    memcpy_P(chunk, pgmBody + sent, toSend);
+    client.write(reinterpret_cast<const uint8_t*>(chunk), toSend);
+    sent += toSend;
+  }
+}
+
 void sendSyncRedirect(WiFiClient& client, const String& location) {
   client.println("HTTP/1.1 302 Found");
   client.printf("Location: %s\r\n", location.c_str());
@@ -3536,7 +3574,8 @@ void handlePortalSyncRequest(WiFiClient& client, const SyncHttpRequest& request)
       "{\"status\":\"ok\",\"message\":\"WiFi配置已清除，3秒后重启\"}"
     );
     client.flush();
-    delay(3000);
+    client.stop();
+    delay(500);   // 仅等待 TCP 发送完成，不再阻塞 3 秒
     ESP.restart();
     return;
   }
@@ -3578,7 +3617,8 @@ void handleSyncServerClient(WiFiClient& client) {
   }
 
   if (request.method == "GET" && request.path == "/") {
-    sendSyncResponse(client, 200, "OK", "text/html; charset=utf-8", buildRuntimeSettingsLitePage());
+    sendSyncResponseProgmem(client, 200, "OK", "text/html; charset=utf-8",
+      kRuntimeSettingsLitePageHtml, strlen_P(kRuntimeSettingsLitePageHtml));
     return;
   }
 
@@ -3668,7 +3708,8 @@ void handleSyncServerClient(WiFiClient& client) {
     ConfigManager::preferences.end();
     sendSyncResponse(client, 200, "OK", "application/json; charset=utf-8", "{\"status\":\"ok\",\"message\":\"WiFi配置已清除，3秒后重启\"}");
     client.flush();
-    delay(3000);
+    client.stop();
+    delay(500);
     ESP.restart();
     return;
   }
@@ -3784,8 +3825,15 @@ void WebServer::setupPortalRoutes() {
     ConfigManager::preferences.clear();
     ConfigManager::preferences.end();
     request->send(200, "application/json", "{\"status\":\"ok\",\"message\":\"WiFi配置已清除，3秒后重启\"}");
-    delay(3000);
-    ESP.restart();
+    // 用一次性定时器延迟重启，避免在 AsyncTCP 任务里 delay() 阻塞
+    static esp_timer_handle_t restartTimer = nullptr;
+    if (restartTimer == nullptr) {
+      esp_timer_create_args_t args = {};
+      args.callback = [](void*){ ESP.restart(); };
+      args.name = "restart_timer";
+      esp_timer_create(&args, &restartTimer);
+    }
+    esp_timer_start_once(restartTimer, 3000000); // 3 秒 (微秒)
   });
 
   auto captiveProbeHandler = [](AsyncWebServerRequest *request) {
@@ -3822,7 +3870,7 @@ void WebServer::setupRuntimeRoutes() {
   });
 
   server.on("/", HTTP_ANY, [](AsyncWebServerRequest *request){
-    request->send(200, "text/html; charset=utf-8", buildRuntimeSettingsLitePage());
+    request->send_P(200, "text/html; charset=utf-8", kRuntimeSettingsLitePageHtml);
   });
 
   server.on("/clear-wifi", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -3830,8 +3878,14 @@ void WebServer::setupRuntimeRoutes() {
     ConfigManager::preferences.clear();
     ConfigManager::preferences.end();
     request->send(200, "application/json", "{\"status\":\"ok\",\"message\":\"WiFi配置已清除，3秒后重启\"}");
-    delay(3000);
-    ESP.restart();
+    static esp_timer_handle_t restartTimer = nullptr;
+    if (restartTimer == nullptr) {
+      esp_timer_create_args_t args = {};
+      args.callback = [](void*){ ESP.restart(); };
+      args.name = "restart_timer";
+      esp_timer_create(&args, &restartTimer);
+    }
+    esp_timer_start_once(restartTimer, 3000000);
   });
 
   server.onNotFound([](AsyncWebServerRequest *request){
@@ -3903,7 +3957,9 @@ void WebServer::setupAPIRoutes() {
   });
 
   server.on("/status", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(200, "application/json", buildRuntimeStatusJson());
+    AsyncResponseStream* stream = request->beginResponseStream("application/json; charset=utf-8");
+    stream->print(buildRuntimeStatusJson());
+    request->send(stream);
   });
   
   server.on("/brightness", HTTP_POST, [](AsyncWebServerRequest *request){

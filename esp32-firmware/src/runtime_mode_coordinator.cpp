@@ -6,6 +6,7 @@
 #include "maze_effect.h"
 #include "mode_tags.h"
 #include "snake_effect.h"
+#include "terraria_clock_effect.h"
 #include "tetris_clock_effect.h"
 #include "tetris_effect.h"
 
@@ -18,6 +19,7 @@ bool shouldClearScreenBeforeBusinessModeEntryInternal(const String& businessMode
          businessModeTag == ModeTags::MAZE ||
          businessModeTag == ModeTags::SNAKE ||
          businessModeTag == ModeTags::PLANET_SCREENSAVER ||
+         businessModeTag == ModeTags::TERRARIA_CLOCK ||
          businessModeTag == ModeTags::TETRIS ||
          businessModeTag == ModeTags::TETRIS_CLOCK;
 }
@@ -118,6 +120,15 @@ bool renderAnimationBusinessFrame(const String& businessModeTag) {
     return true;
   }
 
+  if (businessModeTag == ModeTags::TERRARIA_CLOCK) {
+    TerrariaClockEffect::applyConfig(ConfigManager::terrariaConfig);
+    if (!TerrariaClockEffect::isActive()) {
+      return false;
+    }
+    TerrariaClockEffect::render();
+    return true;
+  }
+
   if (businessModeTag == ModeTags::EYES) {
     DisplayManager::clearScreen();
     DisplayManager::activateEyesEffect(ConfigManager::eyesConfig);
@@ -194,6 +205,7 @@ bool isRecoverableBusinessModeTag(const String& businessModeTag) {
       businessModeTag == ModeTags::TETRIS_CLOCK ||
       businessModeTag == ModeTags::MAZE ||
       businessModeTag == ModeTags::SNAKE ||
+      businessModeTag == ModeTags::TERRARIA_CLOCK ||
       businessModeTag == ModeTags::EYES ||
       businessModeTag == ModeTags::AMBIENT_EFFECT ||
       businessModeTag == ModeTags::LED_MATRIX_SHOWCASE ||
@@ -247,6 +259,7 @@ void deactivateRuntimeContent() {
   TetrisClockEffect::deactivate();
   MazeEffect::deactivate();
   SnakeEffect::deactivate();
+  TerrariaClockEffect::deactivate();
   if (DisplayManager::currentBusinessModeTag == ModeTags::ANIMATION ||
       DisplayManager::currentBusinessModeTag == ModeTags::GIF_PLAYER) {
     AnimationManager::freeGIFAnimation();

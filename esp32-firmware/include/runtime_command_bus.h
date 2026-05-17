@@ -82,6 +82,7 @@ struct RuntimeCommand {
   PlanetScreensaverNativeConfig planetConfig = {};
   MazeModeConfig mazeConfig = {};
   SnakeModeConfig snakeConfig = {};
+  TerrariaModeConfig terrariaConfig = {};
 };
 
 RuntimeCommand* createCommand(RuntimeCommandSource source, uint32_t clientId);

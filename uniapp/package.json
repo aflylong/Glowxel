@@ -16,5 +16,8 @@
   "description": "",
   "dependencies": {
     "pinia": "^3.0.4"
+  },
+  "devDependencies": {
+    "pngjs": "^7.0.0"
   }
 }

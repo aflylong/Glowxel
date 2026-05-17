@@ -2145,6 +2145,50 @@ bool executeModeSwitch(
     return true;
   }
 
+  if (command.businessModeTag == ModeTags::TERRARIA_CLOCK) {
+    const TerrariaModeConfig previousConfig = ConfigManager::terrariaConfig;
+    char activationError[kModeActivationErrorMessageSize] = "mode activation failed";
+    RuntimeModeCoordinator::deactivateRuntimeContent();
+    if (shouldClearScreenBeforeBusinessModeEntry(command.businessModeTag)) {
+      DisplayManager::clearScreen();
+    }
+    ConfigManager::terrariaConfig = command.terrariaConfig;
+
+    if (!RuntimeModeCoordinator::switchToMode(
+          MODE_ANIMATION,
+          command.businessModeTag,
+          true,
+          true)) {
+      copyModeActivationErrorMessage(
+        command.businessModeTag,
+        activationError,
+        sizeof(activationError)
+      );
+      ConfigManager::terrariaConfig = previousConfig;
+      RuntimeModeCoordinator::restoreCurrentModeFrame();
+      setErrorResponse(response, activationError);
+      return false;
+    }
+
+    ConfigManager::saveTerrariaConfig();
+    response["message"] = command.successMessage;
+    response["character"] = ConfigManager::terrariaConfig.character;
+    response["weaponId"] = ConfigManager::terrariaConfig.weaponId;
+    response["playerX"] = ConfigManager::terrariaConfig.playerX;
+    response["playerY"] = ConfigManager::terrariaConfig.playerY;
+    response["playerScale"] = ConfigManager::terrariaConfig.playerScale;
+    response["guardianX"] = ConfigManager::terrariaConfig.guardianX;
+    response["guardianY"] = ConfigManager::terrariaConfig.guardianY;
+    response["wingSpeed"] = ConfigManager::terrariaConfig.wingSpeed;
+    response["fontId"] = clockFontNameFromId(ConfigManager::terrariaConfig.fontId);
+    response["fontScale"] = ConfigManager::terrariaConfig.fontScale;
+    response["clockX"] = ConfigManager::terrariaConfig.clockX;
+    response["clockY"] = ConfigManager::terrariaConfig.clockY;
+    response["hourFormat"] = ConfigManager::terrariaConfig.hourFormat;
+    response["showSeconds"] = ConfigManager::terrariaConfig.showSeconds;
+    return true;
+  }
+
   return switchToTargetMode(
     fromMode,
     command.targetMode,

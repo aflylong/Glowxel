@@ -312,6 +312,14 @@ export default {
           type: "mode",
           bucket: "secondary",
         },
+        {
+          key: "terraria_clock",
+          name: "泰拉瑞亚时钟",
+          icon: "game",
+          variant: "gold",
+          type: "mode",
+          bucket: "secondary",
+        },
       ];
     },
   },
@@ -380,6 +388,8 @@ export default {
         this.openSpiritScreen();
       } else if (mode === "clock" || mode === "animation" || mode === "theme") {
         this.editClockWithMode(mode);
+      } else if (mode === "terraria_clock") {
+        this.openTerrariaClockEditor();
       } else if (mode === "ambient_effect" || mode === "led_matrix_showcase") {
         this.openLedMatrixShowcase();
       } else if (mode === "tetris") {
@@ -408,6 +418,12 @@ export default {
       }
       uni.navigateTo({
         url,
+      });
+    },
+
+    openTerrariaClockEditor() {
+      uni.navigateTo({
+        url: "/pages/clock-editor/terraria-clock",
       });
     },
 

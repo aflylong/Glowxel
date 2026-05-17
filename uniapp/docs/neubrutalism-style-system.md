@@ -611,11 +611,11 @@
 ## 8. 当前核心文件
 
 - 全局主题变量：
-  [light.css](/Users/aflylong/Desktop/project/Glowxel/uniapp/styles/themes/light.css)
+  [light.css](../styles/themes/light.css)
 - 全局视觉覆盖：
-  [neubrutalism-global.css](/Users/aflylong/Desktop/project/Glowxel/uniapp/styles/neubrutalism-global.css)
+  [neubrutalism-global.css](../styles/neubrutalism-global.css)
 - 公共样式系统：
-  [glx-style-system.css](/Users/aflylong/Desktop/project/Glowxel/uniapp/styles/glx-style-system.css)
+  [glx-style-system.css](../styles/glx-style-system.css)
 
 ## 9. 后续禁止回退
 

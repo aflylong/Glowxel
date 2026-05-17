@@ -17,6 +17,7 @@
 #include "tetris_effect.h"
 #include "eyes_effect.h"
 #include "snake_effect.h"
+#include "terraria_clock_effect.h"
 #include "theme_renderer.h"
 
 namespace {
@@ -340,6 +341,10 @@ void loop() {
                SnakeEffect::isActive()) {
       SnakeEffect::update();
       SnakeEffect::render();
+    } else if (DisplayManager::currentBusinessModeTag == ModeTags::TERRARIA_CLOCK &&
+               TerrariaClockEffect::isActive()) {
+      TerrariaClockEffect::update();
+      TerrariaClockEffect::render();
     } else if ((DisplayManager::currentBusinessModeTag == ModeTags::TEXT_DISPLAY ||
                 DisplayManager::currentBusinessModeTag == ModeTags::PLANET_SCREENSAVER) &&
                BoardNativeEffect::isActive()) {

@@ -7,6 +7,7 @@
 #include "clock_font_renderer.h"
 #include "maze_mode_types.h"
 #include "snake_mode_types.h"
+#include "terraria_mode_types.h"
 
 #define CONFIG_VERSION 12  // 改默认配置时递增此版本号
 
@@ -174,6 +175,8 @@ public:
   static void saveSnakeConfig();
   static void loadPlanetScreensaverConfig();
   static void savePlanetScreensaverConfig();
+  static void loadTerrariaConfig();
+  static void saveTerrariaConfig();
   static void loadDeviceParamsConfig();
   static void saveDeviceParamsConfig();
   static void loadPacmanRoute();
@@ -195,6 +198,7 @@ public:
   static TetrisClockModeConfig tetrisClockConfig;
   static MazeModeConfig mazeConfig;
   static SnakeModeConfig snakeConfig;
+  static TerrariaModeConfig terrariaConfig;
   static DeviceParamsConfig deviceParamsConfig;
 
   // 静态时钟的背景图片像素

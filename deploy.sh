@@ -8,16 +8,23 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-SERVER="ubuntu@175.178.153.146"
 SKIP_WEBSITE=false
 SKIP_ADMIN=false
 DB_ONLY=false
 
-# 数据库配置（从服务器 .env 获取）
-DEPLOY_SERVER="${DEPLOY_SERVER:-ubuntu@175.178.153.146}"
-DEPLOY_DB_NAME="${DEPLOY_DB_NAME:-matrix}"
-DEPLOY_DB_USER="${DEPLOY_DB_USER:-root}"
-DEPLOY_DB_PASSWORD="${DEPLOY_DB_PASSWORD:-matrix123}"
+# 数据库配置 —— 必须在执行前通过环境变量显式设置，脚本不提供任何默认值
+# export DEPLOY_SERVER="ubuntu@your-server"
+# export DEPLOY_DB_NAME="your_db_name"
+# export DEPLOY_DB_USER="your_db_user"
+# export DEPLOY_DB_PASSWORD="your_db_password"
+if [ -z "$DEPLOY_SERVER" ] || [ -z "$DEPLOY_DB_NAME" ] || [ -z "$DEPLOY_DB_USER" ] || [ -z "$DEPLOY_DB_PASSWORD" ]; then
+  echo "❌ 缺少必要环境变量，请先设置："
+  echo "   export DEPLOY_SERVER=\"ubuntu@your-server\""
+  echo "   export DEPLOY_DB_NAME=\"your_db_name\""
+  echo "   export DEPLOY_DB_USER=\"your_db_user\""
+  echo "   export DEPLOY_DB_PASSWORD=\"your_db_password\""
+  exit 1
+fi
 
 DB_NAME_ESCAPED=$(printf '%q' "$DEPLOY_DB_NAME")
 DB_USER_ESCAPED=$(printf '%q' "$DEPLOY_DB_USER")

@@ -39,6 +39,6 @@ website/
 
 ## 相关文档
 
-1. [项目架构与接口文档.md](/Users/aflylong/Desktop/project/Glowxel/docs/项目架构与接口文档.md)
-2. [开发路线图.md](/Users/aflylong/Desktop/project/Glowxel/docs/开发路线图.md)
-3. [env-config.md](/Users/aflylong/Desktop/project/Glowxel/docs/env-config.md)
+1. [项目架构与接口文档.md](../docs/项目架构与接口文档.md)
+2. [开发路线图.md](../docs/开发路线图.md)
+3. [env-config.md](../docs/env-config.md)

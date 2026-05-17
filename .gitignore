@@ -40,3 +40,10 @@ npm-debug.log*
 .codex-backups/
 **/.playwright-cli/
 **/test-results/
+
+# Terraria reverse-engineering 资料(永久保留本地,不入仓)
+esp32-firmware/terraria/Terraria-v*/
+esp32-firmware/terraria/_src_1405/
+esp32-firmware/terraria/_src_1449/
+esp32-firmware/terraria/_wings_xnb/
+esp32-firmware/terraria/_download/
