@@ -15,6 +15,8 @@
 #include "config_manager.h"
 #include "display_manager.h"
 #include "theme_assets/terraria/index.h"
+#include "theme_assets/terraria/sprites_biomes.h"
+#include "theme_assets/terraria/sprites_bosses.h"
 
 // ============ 渲染常量 ============
 
@@ -36,7 +38,7 @@ constexpr uint8_t COLOR_UNDERSHIRT[3]  = {160, 180, 215};
 constexpr uint8_t COLOR_PANTS[3]       = {255, 230, 175};
 constexpr uint8_t COLOR_SHOE[3]        = {160, 105, 60};
 
-// 4 职业 → 装备映射
+// 10 套装 → 装备映射
 struct CharSet {
   uint16_t armorHead;
   uint16_t armorBody;
@@ -44,11 +46,17 @@ struct CharSet {
   uint16_t wings;
   bool hasGuardian;
 };
-constexpr CharSet kCharSets[4] = {
-  {171, 177, 112, 29, false},
-  {169, 175, 110, 30, false},
-  {170, 176, 111, 31, false},
-  {189, 190, 130, 32, true},
+constexpr CharSet kCharSets[10] = {
+  {171, 177, 112, 29, false},  // warrior 耀斑
+  {169, 175, 110, 30, false},  // ranger 星旋
+  {170, 176, 111, 31, false},  // mage 星云
+  {189, 190, 130, 32, true},   // summoner 星尘
+  {157, 105, 98,  24, false},  // beetle 甲虫
+  {101, 66,  55,  11, false},  // spectre 幽灵
+  {134, 95,  79,  21, true},   // spooky 阴森
+  {46,  27,  26,  10, false},  // frost 冰霜
+  {41,  24,  23,  26, false},  // hallowed 神圣
+  {78,  51,  47,  27, false},  // chlorophyte 叶绿
 };
 
 // 武器属性
@@ -60,19 +68,27 @@ struct WeaponProps {
   int16_t rotateDeg;
   bool hideWeapon;
 };
-constexpr WeaponProps kWeaponProps[8] = {
-  {4956, 1, -5,  4,  0, false},
-  {3065, 1, -5,  4,  0, false},
-  {3531, 1, -5,  4,  0, false},
-  {5005, 1, -5,  4,  0, false},
-  {3475, 5,  4, -7,  0, false},
-  {3540, 5,  4, -7,  0, false},
-  {3541, 5, 22, -7, 90, false},
-  {3542, 5,  0,  0,  0, true},
+constexpr WeaponProps kWeaponProps[16] = {
+  {4956, 1, -5,  4,  0, false},  // 天顶剑
+  {3065, 1, -5,  4,  0, false},  // 星辉者
+  {3531, 1, -5,  4,  0, false},  // 星尘龙杖
+  {5005, 1, -5,  4,  0, false},  // 帝皇之刃
+  {3475, 5,  4, -7,  0, false},  // 星旋机枪
+  {3540, 5,  4, -7,  0, false},  // 幻影弓
+  {3541, 5, 22, -7, 90, false},  // 最后的棱镜
+  {3542, 5,  0,  0,  0, true},   // 星云烈焰(光团)
+  {757,  1, -5,  4,  0, false},  // 泰拉刃
+  {1258, 1, -5,  4,  0, false},  // 占有斧
+  {1569, 5, 22, -7, 90, false},  // 暴风雪法杖
+  {1571, 1, -5,  4,  0, false},  // 暴风雪法杖(近战)
+  {3018, 5,  4, -7,  0, false},  // 北极
+  {3827, 1, -5,  4,  0, false},  // 充能攻击
+  {4923, 1, -5,  4,  0, false},  // 永夜刃
+  {4952, 5, 22, -7, 90, false},  // 棱镜
 };
 
 const WeaponProps* findWeaponProps(uint16_t weaponId) {
-  for (size_t i = 0; i < 8; i++) {
+  for (size_t i = 0; i < 16; i++) {
     if (kWeaponProps[i].id == weaponId) return &kWeaponProps[i];
   }
   return nullptr;
@@ -82,6 +98,10 @@ constexpr uint16_t kLunarBodyIds[4] = {175, 176, 177, 190};
 bool isLunarBody(uint16_t id) {
   for (auto v : kLunarBodyIds) if (v == id) return true;
   return false;
+}
+bool isFullCoverHead(uint8_t character) {
+  // 月球套 + 甲虫 + 幽灵 头甲全包式(跳过头发)
+  return character <= 3 || character == 4 || character == 5;
 }
 
 // 网格位 (跟 build-firmware-sprites.js 输出 _gridIndex 一致)
@@ -98,6 +118,24 @@ bool isPlayerGridLayer(uint8_t layer) {
 }
 
 // ============ 状态 ============
+
+// 10 biome 天空渐变 (跟 uniapp terrariaBiome.js BIOME_SKY 严格一致)
+struct BiomeSkyGradient {
+  uint8_t top[3];
+  uint8_t bottom[3];
+};
+constexpr BiomeSkyGradient kBiomeSkies[10] = {
+  {{0x34, 0x2C, 0xF3}, {0x65, 0x89, 0xF9}},  // 0: forest
+  {{0x2A, 0x1E, 0x3E}, {0x70, 0x5C, 0x8E}},  // 1: corruption
+  {{0x4A, 0x14, 0x14}, {0xA0, 0x40, 0x3C}},  // 2: crimson
+  {{0x2C, 0x6E, 0x4F}, {0x63, 0xAA, 0x70}},  // 3: jungle
+  {{0xA0, 0xC0, 0xEC}, {0xDC, 0xE6, 0xF8}},  // 4: snow
+  {{0x14, 0x16, 0x33}, {0x3A, 0x3D, 0x66}},  // 5: dungeon
+  {{0x6E, 0x14, 0x0A}, {0xCE, 0x3A, 0x14}},  // 6: underworld
+  {{0xE0, 0x9A, 0xD2}, {0xB8, 0xCC, 0xF0}},  // 7: hallow
+  {{0x35, 0x6B, 0xC4}, {0x6B, 0xB6, 0xE0}},  // 8: ocean
+  {{0x4A, 0x32, 0x18}, {0x9F, 0x6E, 0x40}},  // 9: temple
+};
 
 uint32_t s_animStartMs = 0;
 float s_animTimeSec = 0.0f;
@@ -138,10 +176,11 @@ inline uint16_t toRGB565(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 // 把一段 PROGMEM 像素 (fmt=5 或 7) 画到 s_renderBuffer
+//   预缩放数据: 像素 x/y 已是缩放后坐标, spriteW/H 已是缩放后尺寸
+//   scale 参数仅作向后兼容, 内部不再使用
 //   sourceY 范围: [yMin, yMax) 内的 sprite 像素才画 (网格切片用)
-//   localOffsetY: sprite 局部 y - sourceYMin
 //   centerX/Y: 子图中心在屏幕上的位置
-//   spriteW/spriteH: 子图尺寸 (切片后)
+//   spriteW/spriteH: 子图尺寸 (预缩放后)
 //   tintColor: nullptr = 不染色; 否则灰度 lum × baseColor
 void drawPixelsRange(
   const uint8_t* sourcePixels,
@@ -155,8 +194,8 @@ void drawPixelsRange(
   const uint8_t* tintColor
 ) {
   if (sourcePixels == nullptr || pixelCount == 0) return;
-  const float ox = centerX - (float)spriteW * 0.5f * scale;
-  const float oy = centerY - (float)spriteH * 0.5f * scale;
+  const float ox = centerX - (float)spriteW * 0.5f;
+  const float oy = centerY - (float)spriteH * 0.5f;
   const uint8_t stride = (fmt == 7) ? 7 : 5;
 
   for (uint16_t i = 0; i < pixelCount; i++) {
@@ -186,8 +225,8 @@ void drawPixelsRange(
     }
 
     int localY = (int)y - (int)sourceYMin;
-    int px = (int)(ox + (float)x * scale + 0.5f);
-    int py = (int)(oy + (float)localY * scale + 0.5f);
+    int px = (int)(ox + (float)x + 0.5f);
+    int py = (int)(oy + (float)localY + 0.5f);
     putPixel(px, py, r, g, b);
   }
 }
@@ -204,33 +243,41 @@ void drawSpriteWhole(
                    sprite->w, sprite->h, scale, tintColor);
 }
 
-// 网格 sprite 取第 gridIndex 段 (每段 56 高度)
+// 网格 sprite 取第 gridIndex 段
+//   预缩放后每段高度 = sprite.h / numSegs (armor_body 6 段, player_layer 5 段)
+//   isPlayerLayer=true 时按 5 段切, 否则按 6 段切 (跟 uniapp gridFrame 一致)
 void drawSpriteGrid(
   const TerrariaSprite* sprite,
   uint8_t gridIndex,
   float centerX, float centerY, float scale,
-  const uint8_t* tintColor = nullptr
+  const uint8_t* tintColor = nullptr,
+  bool isPlayerLayer = false
 ) {
   if (sprite == nullptr) return;
-  uint16_t yMin = gridIndex * FRAME_H;
-  uint16_t yMax = yMin + FRAME_H;
-  if (yMax > sprite->h) return;
+  uint8_t numSegs = isPlayerLayer ? 5 : 6;
+  uint16_t segH = (sprite->h + numSegs / 2) / numSegs;  // round
+  uint16_t yMin = gridIndex * segH;
+  uint16_t yMax = yMin + segH;
+  if (yMax > sprite->h) yMax = sprite->h;
   drawPixelsRange(sprite->pixels, sprite->pixelCount, sprite->fmt,
                    yMin, yMax, centerX, centerY,
-                   sprite->w, FRAME_H, scale, tintColor);
+                   sprite->w, segH, scale, tintColor);
 }
 
 // 多帧差异 sprite: 画指定帧
-//   frame 0 = base;  frame N = base 整张 + delta[N-1] 整张 (delta 像素覆盖)
+//   frame 0 = base;  frame N = base 全像素 + delta[N-1] (set 段覆盖 + clear 段擦回背景)
+//   clearBgPainter: 当 delta 有 clear 段时, 擦掉旧像素并重画背景色
+//                   nullptr 表示这个 sprite 不需要 clear (wings/guardian 单 part 不动位置)
 void drawSpriteAnimFrame(
   const TerrariaSpriteAnim* anim,
   uint8_t frameIndex,
   float centerX, float centerY, float scale,
-  const uint8_t* tintColor = nullptr
+  const uint8_t* tintColor = nullptr,
+  void (*clearBgPainter)(int x, int y) = nullptr
 ) {
   if (anim == nullptr) return;
-  // 画 base
-  drawPixelsRange(anim->base.pixels, anim->base.pixelCount, anim->fmt,
+  // 画 base (set 段)
+  drawPixelsRange(anim->base.setPixels, anim->base.setCount, anim->fmt,
                    0, anim->h, centerX, centerY,
                    anim->w, anim->h, scale, tintColor);
   // 画 delta (如果不是 frame 0)
@@ -238,7 +285,26 @@ void drawSpriteAnimFrame(
   if (frameIndex - 1 >= anim->frameCount - 1) return;
   TerrariaFrameBlock delta;
   memcpy_P(&delta, &anim->deltas[frameIndex - 1], sizeof(delta));
-  drawPixelsRange(delta.pixels, delta.pixelCount, anim->fmt,
+
+  // 1) 先擦旧像素 (clear 段重画背景色)
+  //    clear 段坐标已经是预渲染坐标系下的 (x, y) — 对 boss 是屏幕坐标 0..63
+  //    对于 wings/guardian (clearCount=0) 这段空操作
+  if (delta.clearCount > 0 && delta.clearPixels != nullptr && clearBgPainter != nullptr) {
+    const float ox = centerX - (float)anim->w * 0.5f;
+    const float oy = centerY - (float)anim->h * 0.5f;
+    for (uint16_t i = 0; i < delta.clearCount; i++) {
+      uint8_t cx = pgm_read_byte(delta.clearPixels + i * 2);
+      uint8_t cy = pgm_read_byte(delta.clearPixels + i * 2 + 1);
+      int px = (int)(ox + (float)cx + 0.5f);
+      int py = (int)(oy + (float)cy + 0.5f);
+      if (px >= 0 && px < SCREEN_W && py >= 0 && py < SCREEN_H) {
+        clearBgPainter(px, py);
+      }
+    }
+  }
+
+  // 2) 再画新像素 (set 段)
+  drawPixelsRange(delta.setPixels, delta.setCount, anim->fmt,
                    0, anim->h, centerX, centerY,
                    anim->w, anim->h, scale, tintColor);
 }
@@ -253,7 +319,7 @@ void drawSkinLayer(
   const TerrariaSprite* sprite = TerrariaSprites::getPlayerLayer(layer);
   if (sprite == nullptr) return;
   if (useGrid && isPlayerGridLayer(layer)) {
-    drawSpriteGrid(sprite, gridIndex, cx, cy, scale, tintColor);
+    drawSpriteGrid(sprite, gridIndex, cx, cy, scale, tintColor, true);  // player_layer 5 段
   } else {
     drawSpriteWhole(sprite, cx, cy, scale, tintColor);
   }
@@ -294,23 +360,25 @@ void drawWings(
   float playerCenterX, float playerCenterY, float playerScale,
   uint8_t wingSpeedPct
 ) {
+  // v2: 翅膀已预渲染到 playerScale, 用 scale=1.0 直接画
   const TerrariaSpriteAnim* anim = TerrariaSprites::getWings(wingId);
   if (anim == nullptr) return;
 
-  // 帧索引: t = animTime * 60 * (wingSpeedPct/100), frame = (t/5) % 3 (普通翅膀)
-  // 强制扇动 (站立态也扇)
+  // 帧索引: 用 anim->frameStart 控制循环起点 (跳过空白折叠帧)
   float wingTime = s_animTimeSec * 60.0f * ((float)wingSpeedPct / 100.0f);
-  uint8_t frameIdx = ((uint32_t)(wingTime / 5.0f)) % 3;
+  uint8_t frameStart = anim->frameStart;
+  uint8_t animFrames = anim->frameCount - frameStart;
+  uint8_t frameIdx = frameStart;
+  if (animFrames > 0) {
+    frameIdx = frameStart + (((uint32_t)(wingTime / 5.0f)) % animFrames);
+  }
   if (frameIdx >= anim->frameCount) frameIdx = anim->frameCount - 1;
 
-  // 翅膀挂载点 (角色 sprite 局部 = (W/2, H/2 + 7), direction=1)
-  // 翅膀中心相对角色 sprite 中心: (num2 - 9) * dir = -9 * 1 = -9
-  // 翅膀中心 y 偏移: 7 + 2 = 9
-  // 转屏坐标: (-9) * scale 水平, +9 * scale 垂直
+  // 翅膀挂载点 (预渲染已包含缩放, 这里只加偏移 scale=1.0)
   float wingCx = playerCenterX + (-9.0f) * playerScale;
   float wingCy = playerCenterY + 9.0f * playerScale;
 
-  drawSpriteAnimFrame(anim, frameIdx, wingCx, wingCy, playerScale);
+  drawSpriteAnimFrame(anim, frameIdx, wingCx, wingCy, 1.0f);
 }
 
 // ============ 武器渲染 ============
@@ -335,13 +403,14 @@ void drawWeapon(
   const float handY = playerCenterY + (handLocalY - FRAME_H / 2.0f) * playerScale;
 
   // 武器本身的中心位置: useStyle=1 摆动剑从手部斜下发出, useStyle=5 水平居中
+  // 注意: sprite->w/h 是预缩放后尺寸, 不再乘 playerScale
   float drawCx, drawCy;
   if (wp->useStyle == 5) {
     drawCx = handX;
     drawCy = handY;
   } else {
-    drawCx = handX + (float)sprite->w / 2.0f * playerScale * dir;
-    drawCy = handY - (float)sprite->h / 2.0f * playerScale;
+    drawCx = handX + (float)sprite->w / 2.0f * dir;
+    drawCy = handY - (float)sprite->h / 2.0f;
   }
 
   // 旋转角度 (棱镜 90°)
@@ -380,8 +449,8 @@ void drawWeapon(
       float ny = lx * sinR + ly * cosR;
       lx = nx; ly = ny;
     }
-    int px = (int)(ox + lx * playerScale + 0.5f);
-    int py = (int)(oy + ly * playerScale + 0.5f);
+    int px = (int)(ox + lx + 0.5f);
+    int py = (int)(oy + ly + 0.5f);
     putPixel(px, py, r, g, b);
   }
 }
@@ -428,9 +497,9 @@ void drawPlayer(
   drawArmorBodyGrid(bodyId, GRID_BACK_ARM, cx, cy, playerScale);
   drawArmorBodyGrid(bodyId, GRID_BACK_SHOULDER, cx, cy, playerScale);
 
-  // ===== Step 5: 翅膀 =====
-  if (cs.wings != 0) {
-    drawWings(cs.wings, cx, cy, playerScale, s_config.wingSpeed);
+  // ===== Step 5: 翅膀 (独立 wingId, 不绑定职业) =====
+  if (s_config.wingId != 0) {
+    drawWings(s_config.wingId, cx, cy, playerScale, s_config.wingSpeed);
   }
 
   // ===== Step 6-8: 腿/裤皮肤 + 裤子 + 鞋子 =====
@@ -596,9 +665,19 @@ DynamicState computeDynamicState() {
   DynamicState st = {};
   uint32_t tick = (uint32_t)(s_animTimeSec * 60.0f);
 
-  // 翅膀帧
+  // 翅膀帧 (用实际 sprite 的 frameCount 和 frameStart, 不写死)
   float wingTime = s_animTimeSec * 60.0f * ((float)s_config.wingSpeed / 100.0f);
-  st.wingFrame = ((uint32_t)(wingTime / 5.0f)) % 3;
+  uint8_t wingAnimFrames = 3;  // fallback
+  uint8_t wingFrameStart = 1;
+  if (s_config.wingId != 0) {
+    const TerrariaSpriteAnim* wAnim = TerrariaSprites::getWings(s_config.wingId);
+    if (wAnim != nullptr) {
+      wingFrameStart = wAnim->frameStart;
+      wingAnimFrames = wAnim->frameCount - wingFrameStart;
+      if (wingAnimFrames == 0) wingAnimFrames = 1;
+    }
+  }
+  st.wingFrame = wingFrameStart + (((uint32_t)(wingTime / 5.0f)) % wingAnimFrames);
 
   // 守卫
   st.guardianFrame = (tick / 9) % 8;
@@ -644,13 +723,57 @@ bool dynamicStateChanged(const DynamicState& a, const DynamicState& b) {
 }
 
 // 把整个场景画到 s_renderBuffer (不直接刷 display)
+// ============ 背景色单点查询 (用于 boss delta clear 段擦回背景) ============
+//   逻辑必须跟 buildFrame 第 1/1.5/1.6 步完全一致
+//   1. 草地区 (y >= 59): 查 biome tile (palette)
+//   2. 天空 + 云区: 天空渐变, 云区域用云白色 (云没有 mask 可查 → 用屏幕坐标算)
+inline void paintBossBackground(int x, int y) {
+  if (x < 0 || x >= SCREEN_W || y < 0 || y >= SCREEN_H) return;
+
+  constexpr int blockSize = 5;
+  constexpr int groundY = SCREEN_H - blockSize;  // 59
+
+  // 1) 草地
+  if (y >= groundY) {
+    const TerrariaBiomeTile* tiles[3] = {
+      getBiomeTile(s_config.biome, 0),
+      getBiomeTile(s_config.biome, 1),
+      getBiomeTile(s_config.biome, 2),
+    };
+    int xBase = (x / blockSize) * blockSize;
+    int dx = x - xBase;
+    int dy = y - groundY;
+    const TerrariaBiomeTile* tile = tiles[(xBase / blockSize) % 3];
+    if (tile != nullptr) {
+      int tx = (int)((float)dx * 16.0f / (float)blockSize + 0.5f);
+      int ty = (int)((float)dy * 16.0f / (float)blockSize + 0.5f);
+      if (tx > 15) tx = 15; if (ty > 15) ty = 15;
+      uint8_t palIdx = pgm_read_byte(&tile->indices[ty * 16 + tx]);
+      const uint8_t* pe = tile->palette + (size_t)palIdx * 3;
+      putPixel(x, y, pgm_read_byte(pe), pgm_read_byte(pe+1), pgm_read_byte(pe+2));
+      return;
+    }
+  }
+
+  // 2) 云 (跟 buildFrame 1.5 节算法一致 — 但这里不重算 mask, 只查像素是否在某朵云的 bbox)
+  //    简化: 对 boss clear 像素, 直接用天空色; 云区有少数像素被 boss 遮挡时, 擦回天空色虽不完美,
+  //    但 boss bbox 通常远离云 (云在 y=4~17, boss 默认 y=20~50), 实际问题极少
+  const BiomeSkyGradient& sky = kBiomeSkies[s_config.biome < 10 ? s_config.biome : 0];
+  float t = (float)y / 63.0f;
+  uint8_t r = (uint8_t)((float)sky.top[0] * (1.0f - t) + (float)sky.bottom[0] * t);
+  uint8_t g = (uint8_t)((float)sky.top[1] * (1.0f - t) + (float)sky.bottom[1] * t);
+  uint8_t b = (uint8_t)((float)sky.top[2] * (1.0f - t) + (float)sky.bottom[2] * t);
+  putPixel(x, y, r, g, b);
+}
+
 void buildFrame() {
-  // ===== 1. 背景: 渐变天空 =====
+  // ===== 1. 背景: biome 天空渐变 =====
+  const BiomeSkyGradient& sky = kBiomeSkies[s_config.biome < 10 ? s_config.biome : 0];
   for (int y = 0; y < SCREEN_H; y++) {
     float t = (float)y / 63.0f;
-    uint8_t r = (uint8_t)(0x34 * (1 - t) + 0x65 * t);
-    uint8_t g = (uint8_t)(0x2C * (1 - t) + 0x89 * t);
-    uint8_t b = (uint8_t)(0xF3 * (1 - t) + 0xF9 * t);
+    uint8_t r = (uint8_t)((float)sky.top[0] * (1.0f - t) + (float)sky.bottom[0] * t);
+    uint8_t g = (uint8_t)((float)sky.top[1] * (1.0f - t) + (float)sky.bottom[1] * t);
+    uint8_t b = (uint8_t)((float)sky.top[2] * (1.0f - t) + (float)sky.bottom[2] * t);
     for (int x = 0; x < SCREEN_W; x++) {
       putPixel(x, y, r, g, b);
     }
@@ -710,73 +833,39 @@ void buildFrame() {
     }
   }
 
-  // ===== 1.6 草地: 用 sprite 像素生成 64×5 完整草地条 =====
-  //   思路: 不缩放, 直接重新合成一条 64×5 的草地长条贴最下方
-  //   方法: 把 16×16 sprite 列方向"等距取 5 列" + "行方向等距取 5 行"
-  //         合并 3 个 sprite 横向拼接, 64 列循环铺
-  const TerrariaSprite* tiles[3] = {
-    TerrariaSprites::getBiomeForest(0),
-    TerrariaSprites::getBiomeForest(1),
-    TerrariaSprites::getBiomeForest(2),
-  };
-  if (tiles[0] && tiles[1] && tiles[2]) {
-    constexpr int blockSize = 5;
-    constexpr int groundY = SCREEN_H - blockSize;  // 59 → 草地占 59..63
-
-    // 1) 首次启动: 把 3 个 16×16 sprite 解到行优先 RGB 临时表
-    //    每个 sprite 1 KB, 3 个共 3 KB SRAM
-    static uint8_t kTileBuf[3][16][16][3] = {};
-    static bool kTileBufLoaded = false;
-    if (!kTileBufLoaded) {
-      for (int t = 0; t < 3; t++) {
-        const TerrariaSprite* tile = tiles[t];
-        const uint8_t stride = (tile->fmt == 7) ? 7 : 5;
-        for (uint16_t i = 0; i < tile->pixelCount; i++) {
-          const uint8_t* p = tile->pixels + (size_t)i * stride;
-          uint16_t tx, ty;
-          uint8_t r, g, b;
-          if (tile->fmt == 7) {
-            tx = pgm_read_byte(p) | (pgm_read_byte(p+1) << 8);
-            ty = pgm_read_byte(p+2) | (pgm_read_byte(p+3) << 8);
-            r = pgm_read_byte(p+4); g = pgm_read_byte(p+5); b = pgm_read_byte(p+6);
-          } else {
-            tx = pgm_read_byte(p); ty = pgm_read_byte(p+1);
-            r = pgm_read_byte(p+2); g = pgm_read_byte(p+3); b = pgm_read_byte(p+4);
+  // ===== 1.6 草地: 用 palette 压缩 tile 渲染, 按 biome 切换 =====
+  //   数据: TerrariaBiomeTile (palette + 16×16 indices), 每 biome 3 个 tile 横向循环
+  //   缩放: 16×16 → 5×5 (反向采样 round)
+  {
+    const TerrariaBiomeTile* tiles[3] = {
+      getBiomeTile(s_config.biome, 0),
+      getBiomeTile(s_config.biome, 1),
+      getBiomeTile(s_config.biome, 2),
+    };
+    if (tiles[0] && tiles[1] && tiles[2]) {
+      constexpr int blockSize = 5;
+      constexpr int groundY = SCREEN_H - blockSize;  // 59 → 草地占 59..63
+      for (int x = 0; x < SCREEN_W; x += blockSize) {
+        const TerrariaBiomeTile* tile = tiles[(x / blockSize) % 3];
+        for (int dy = 0; dy < blockSize; dy++) {
+          int py = groundY + dy;
+          if (py < 0 || py >= SCREEN_H) continue;
+          int ty = (int)((float)dy * 16.0f / (float)blockSize + 0.5f);
+          if (ty < 0) ty = 0;
+          if (ty > 15) ty = 15;
+          for (int dx = 0; dx < blockSize; dx++) {
+            int px = x + dx;
+            if (px < 0 || px >= SCREEN_W) continue;
+            int tx = (int)((float)dx * 16.0f / (float)blockSize + 0.5f);
+            if (tx < 0) tx = 0;
+            if (tx > 15) tx = 15;
+            uint8_t palIdx = pgm_read_byte(&tile->indices[ty * 16 + tx]);
+            const uint8_t* palEntry = tile->palette + (size_t)palIdx * 3;
+            uint8_t r = pgm_read_byte(palEntry);
+            uint8_t g = pgm_read_byte(palEntry + 1);
+            uint8_t b = pgm_read_byte(palEntry + 2);
+            putPixel(px, py, r, g, b);
           }
-          if (tx < 16 && ty < 16) {
-            kTileBuf[t][ty][tx][0] = r;
-            kTileBuf[t][ty][tx][1] = g;
-            kTileBuf[t][ty][tx][2] = b;
-          }
-        }
-      }
-      kTileBufLoaded = true;
-    }
-
-    // 2) 反向采样: 跟 uniapp drawTileScaled 完全等价的 round 公式
-    //    sx = sy = blockSize / 16 = 5/16
-    //    源 ty → 目标 dy = round(ty * 5/16)
-    //    反推: 给定 dy, 取 ty = round(dy * 16/5) 中心化即 ty = floor((dy*16 + 8) / 5) 用整数算
-    //    最关键: dy=4 必须能取到 ty=13 (跟 uniapp round(4*0.3125*16)=round(12.5)=12 或 13)
-    //    用浮点更直观:
-    for (int x = 0; x < SCREEN_W; x += blockSize) {
-      int idx = (x / blockSize) % 3;
-      for (int dy = 0; dy < blockSize; dy++) {
-        int py = groundY + dy;
-        if (py < 0 || py >= SCREEN_H) continue;
-        int ty = (int)((float)dy * 16.0f / (float)blockSize + 0.5f);
-        if (ty < 0) ty = 0;
-        if (ty > 15) ty = 15;
-        for (int dx = 0; dx < blockSize; dx++) {
-          int px = x + dx;
-          if (px < 0 || px >= SCREEN_W) continue;
-          int tx = (int)((float)dx * 16.0f / (float)blockSize + 0.5f);
-          if (tx < 0) tx = 0;
-          if (tx > 15) tx = 15;
-          uint8_t r = kTileBuf[idx][ty][tx][0];
-          uint8_t g = kTileBuf[idx][ty][tx][1];
-          uint8_t b = kTileBuf[idx][ty][tx][2];
-          putPixel(px, py, r, g, b);
         }
       }
     }
@@ -789,7 +878,19 @@ void buildFrame() {
   const uint8_t character = s_config.character;
   const CharSet& charSet = kCharSets[character];
 
-  // ===== 2. 守卫 (仅召唤师) =====
+  // ===== 2. Boss (预渲染动画, base+delta(set+clear), 屏幕绝对坐标) — 最底层 =====
+  if (s_config.bossEnabled && s_config.bossId < ::kBossCount) {
+    const TerrariaSpriteAnim* bossAnim = ::getBossAnim(s_config.bossId);
+    if (bossAnim != nullptr) {
+      // 像素已是屏幕绝对坐标 (0~63), 用中心 (32,32) scale=1.0 直接画
+      // boss 多 part 移动会有"旧位置残留" → 传 paintBossBackground 用来擦回背景色
+      uint32_t tick = (uint32_t)(s_animTimeSec * 60.0f);
+      uint8_t bossFrame = (tick / 9) % bossAnim->frameCount;
+      drawSpriteAnimFrame(bossAnim, bossFrame, 32.0f, 32.0f, 1.0f, nullptr, paintBossBackground);
+    }
+  }
+
+  // ===== 3. 守卫 (仅召唤师) =====
   if (charSet.hasGuardian) {
     const TerrariaSpriteAnim* guardian = TerrariaSprites::getGuardian(623);
     if (guardian) {
@@ -802,7 +903,7 @@ void buildFrame() {
     }
   }
 
-  // ===== 3. 角色合成 =====
+  // ===== 4. 角色合成 — 最上层 =====
   drawPlayer(character, s_config.weaponId, playerScale, cx, cy);
 
   // ===== 4. 时钟 + 草膨胀边框 =====

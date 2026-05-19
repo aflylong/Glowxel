@@ -1626,7 +1626,7 @@ bool prepareTetrisClockTransaction(JsonObject params, const char*& reason) {
 }
 
 bool prepareTerrariaTransaction(JsonObject params, const char*& reason) {
-  // 必需字段 (跟 uniapp ws.startTerrariaClock(config) 完全对齐, 不发明字段)
+  // 必需字段
   if (!params.containsKey("character") ||
       !params.containsKey("weaponId") ||
       !params.containsKey("playerX") ||
@@ -1634,7 +1634,11 @@ bool prepareTerrariaTransaction(JsonObject params, const char*& reason) {
       !params.containsKey("playerScale") ||
       !params.containsKey("guardianX") ||
       !params.containsKey("guardianY") ||
+      !params.containsKey("guardianScale") ||
+      !params.containsKey("wingId") ||
       !params.containsKey("wingSpeed") ||
+      !params.containsKey("biome") ||
+      !params.containsKey("bossEnabled") ||
       !params.containsKey("fontId") ||
       !params.containsKey("fontScale") ||
       !params.containsKey("clockX") ||
@@ -1659,6 +1663,12 @@ bool prepareTerrariaTransaction(JsonObject params, const char*& reason) {
   else if (strcmp(characterStr, "ranger") == 0) character = TERRARIA_CHAR_RANGER;
   else if (strcmp(characterStr, "mage") == 0) character = TERRARIA_CHAR_MAGE;
   else if (strcmp(characterStr, "summoner") == 0) character = TERRARIA_CHAR_SUMMONER;
+  else if (strcmp(characterStr, "beetle") == 0) character = TERRARIA_CHAR_BEETLE;
+  else if (strcmp(characterStr, "spectre") == 0) character = TERRARIA_CHAR_SPECTRE;
+  else if (strcmp(characterStr, "spooky") == 0) character = TERRARIA_CHAR_SPOOKY;
+  else if (strcmp(characterStr, "frost") == 0) character = TERRARIA_CHAR_FROST;
+  else if (strcmp(characterStr, "hallowed") == 0) character = TERRARIA_CHAR_HALLOWED;
+  else if (strcmp(characterStr, "chlorophyte") == 0) character = TERRARIA_CHAR_CHLOROPHYTE;
   else {
     reason = "terraria_clock character invalid";
     return false;
@@ -1671,7 +1681,15 @@ bool prepareTerrariaTransaction(JsonObject params, const char*& reason) {
   const int playerScale = params["playerScale"].as<int>();
   const int guardianX = params["guardianX"].as<int>();
   const int guardianY = params["guardianY"].as<int>();
+  const int guardianScale = params["guardianScale"].as<int>();
+  const int wingId = params["wingId"].as<int>();
   const int wingSpeed = params["wingSpeed"].as<int>();
+  const int biome = params["biome"].as<int>();
+  const bool bossEnabled = params["bossEnabled"].as<bool>();
+  const int bossId = params.containsKey("bossId") ? params["bossId"].as<int>() : 0;
+  const int bossX = params.containsKey("bossX") ? params["bossX"].as<int>() : 48;
+  const int bossY = params.containsKey("bossY") ? params["bossY"].as<int>() : 32;
+  const int bossScale = params.containsKey("bossScale") ? params["bossScale"].as<int>() : 25;
   const int fontScale = params["fontScale"].as<int>();
   const int clockX = params["clockX"].as<int>();
   const int clockY = params["clockY"].as<int>();
@@ -1680,9 +1698,11 @@ bool prepareTerrariaTransaction(JsonObject params, const char*& reason) {
   if (playerX < 0 || playerX > 63 ||
       playerY < 0 || playerY > 63 ||
       playerScale < 20 || playerScale > 200 ||
-      guardianX < -32 || guardianX > 32 ||
-      guardianY < -32 || guardianY > 32 ||
+      guardianX < -64 || guardianX > 64 ||
+      guardianY < -64 || guardianY > 64 ||
+      guardianScale < 20 || guardianScale > 200 ||
       wingSpeed < 0 || wingSpeed > 200 ||
+      biome < 0 || biome > 8 ||
       fontScale < 1 || fontScale > 3 ||
       clockX < 0 || clockX > 63 ||
       clockY < 0 || clockY > 63 ||
@@ -1722,7 +1742,15 @@ bool prepareTerrariaTransaction(JsonObject params, const char*& reason) {
   command.terrariaConfig.playerScale = static_cast<uint8_t>(playerScale);
   command.terrariaConfig.guardianX = static_cast<int8_t>(guardianX);
   command.terrariaConfig.guardianY = static_cast<int8_t>(guardianY);
+  command.terrariaConfig.guardianScale = static_cast<uint8_t>(guardianScale);
+  command.terrariaConfig.wingId = static_cast<uint8_t>(wingId);
   command.terrariaConfig.wingSpeed = static_cast<uint8_t>(wingSpeed);
+  command.terrariaConfig.biome = static_cast<uint8_t>(biome);
+  command.terrariaConfig.bossEnabled = bossEnabled;
+  command.terrariaConfig.bossId = static_cast<uint8_t>(bossId);
+  command.terrariaConfig.bossX = static_cast<uint8_t>(bossX);
+  command.terrariaConfig.bossY = static_cast<uint8_t>(bossY);
+  command.terrariaConfig.bossScale = static_cast<uint8_t>(bossScale);
   command.terrariaConfig.fontId = fontId;
   command.terrariaConfig.fontScale = static_cast<uint8_t>(fontScale);
   command.terrariaConfig.clockX = static_cast<uint8_t>(clockX);

@@ -696,7 +696,13 @@ fs.writeFileSync(out, ...);
 D:\project\Pokemon\terraria-clock-preview\
 ├── terraria-glowxel-1456\           # 反编译 + 解包资产(1.45 GB)
 │   ├── _src_1456\                   # C# 反编译源码
+│   │   └── Terraria.ID\ArmorIDs.cs  # 盔甲/翅膀 ID 常量(★ 关键参考)
 │   ├── _extract_1456\               # PNG 资产
+│   │   ├── Armor_Head_*.png         # 头甲 (根目录)
+│   │   ├── Armor_Legs_*.png         # 腿甲 (根目录)
+│   │   ├── Armor\Armor_*.png        # Body 胸甲 (Armor 子文件夹!)
+│   │   ├── Wings_*.png              # 翅膀
+│   │   └── Item_*.png               # 武器/物品
 │   ├── _data\                       # 整理后的 JSON 元数据
 │   ├── reports\                     # 资产分析报告
 │   └── _wings_xnb\                  # XNB 原文件
@@ -709,27 +715,242 @@ D:\project\Pokemon\terraria-clock-preview\
 
 D:\project\Glowxel\                  # 主仓库(只保留产物)
 ├── uniapp\
-│   ├── static\terraria\             # 8 个 .js sprite bundle(328 KB)
-│   ├── utils\terraria*.js           # 渲染逻辑
-│   ├── utils\clockTerrariaBorder.js # 草膨胀边框
+│   ├── static\terraria\             # sprite bundle
+│   │   ├── armor_heads.js           # 11 个头甲
+│   │   ├── armor_bodies.js          # 10 个胸甲
+│   │   ├── armor_legs.js            # 10 个腿甲
+│   │   ├── wings.js                 # 42 个翅膀(1.2 MB)
+│   │   ├── weapons.js               # 16 把武器
+│   │   ├── player_layers.js         # 角色皮肤层
+│   │   ├── summon_guardian.js        # 守卫 8 帧
+│   │   ├── misc.js                  # 草地 + 特效
+│   │   ├── sprites_tiles.js         # 地形瓦片
+│   │   └── bosses\                  # 33 个 boss(按 slug 分文件)
+│   │       ├── _index.js
+│   │       ├── king_slime.js
+│   │       └── ... (共 33 个)
+│   ├── utils\
+│   │   ├── terrariaRenderer.js      # 主渲染(CHARACTERS 定义 + 合成逻辑)
+│   │   ├── terrariaWings.js         # 翅膀渲染 + WING_LIST
+│   │   ├── terrariaBosses.js        # Boss 渲染
+│   │   ├── terrariaBiome.js         # 地形/天空
+│   │   ├── terrariaSprites.js       # Sprite 加载/解码
+│   │   └── clockTerrariaBorder.js   # 草膨胀边框
 │   ├── tools\build-terraria-sprites.js  # 资产转换脚本
 │   └── pages\clock-editor\terraria-clock.vue  # 编辑页
 ├── esp32-firmware\
+│   ├── terraria\_png\               # build 脚本的 PNG 输入源
 │   ├── include\theme_assets\terraria\  # PROGMEM 资产(9 个 .h)
 │   ├── include\terraria_clock_effect.h
 │   ├── include\terraria_mode_types.h
 │   ├── src\terraria_clock_effect.cpp
-│   └── src\clock_font_renderer.cpp     # rasterizeClockTextToMask
+│   └── src\clock_font_renderer.cpp
+├── _wings_preview\                  # 51 个翅膀 PNG 预览
+├── _armor_preview\sets\             # 40 套盔甲组装预览 PNG
+├── _boss_source\                    # 17 个 wiki GIF/WebP 原图
 ├── docs\
-│   ├── esp32-firmware-architecture.md     # 板载架构文档
+│   ├── esp32-firmware-architecture.md
 │   └── terraria-clock-development-summary.md  # 本文档
 └── .kiro\specs\terraria-clock-board\
-    └── design.md                          # 板载设计 spec
+    └── design.md
 ```
 
 ---
 
-## 12. 下次做类似项目的建议
+## 12. 阶段 6: 第二代深度扩展(33 Boss + 42 翅膀 + 10 套装)
+
+> 时间: 2025 年 5 月  
+> 目标: 让泰拉瑞亚时钟从"4 职业看腻"变成"33 boss + 10 套装 + 42 翅膀自由搭配"
+
+### 12.1 Boss 系统(33 个)
+
+**架构**: 按 slug 懒加载(一个 boss 一个 .js 文件),避免一次性加载全部 boss 数据导致内存爆炸。
+
+```
+uniapp/static/terraria/bosses/
+  _index.js              — 33 个 boss 的索引(slug/nameZh/biome)
+  king_slime.js          — 每个 boss 独立编码(palette+delta 或 webp 静态)
+  eye_of_cthulhu.js
+  ... (共 33 个)
+```
+
+**Boss 渲染特性**:
+- `terrariaBosses.js` 支持: palette+delta 编码 / 多组件拼接 / flipX / orbit 动画 / 静态拼接
+- 每个 boss 独立 X/Y/scale, 用户可单独调节位置
+- Boss 尺寸不限制,用户自行调缩放
+
+**33 个 Boss 完整列表**:
+
+| # | slug | 中文名 | 渲染方式 |
+|---|---|---|---|
+| 1 | king_slime | 史莱姆王 | webp静态 |
+| 2 | eye_of_cthulhu | 克苏鲁之眼 | 多帧动画 |
+| 3 | eater_of_worlds | 世界吞噬者 | 静态拼接(间距44px) |
+| 4 | brain_of_cthulhu | 克苏鲁之脑 | 本体动画 |
+| 5 | queen_bee | 蜂王 | 4帧飞行循环 |
+| 6 | skeletron | 骷髅王 | 静态(放弃动画) |
+| 7 | deerclops | 巨鹿 | GIF转码 |
+| 8 | wall_of_flesh | 血肉墙 | 多组件拼接 |
+| 9 | queen_slime | 史莱姆女皇 | webp主体+Extra_185翅膀4帧 |
+| 10 | the_twins | 双子魔眼 | 多组件 |
+| 11 | destroyer | 毁灭者 | 静态拼接(间距40px) |
+| 12 | skeletron_prime | 机械骷髅王 | 多组件 |
+| 13 | plantera | 世纪之花 | 本体动画 |
+| 14 | golem | 石巨人 | webp静态 |
+| 15 | duke_fishron | 猪龙鱼公爵 | flipX强制翻转 |
+| 16 | empress_of_light | 光之女皇 | 多组件 |
+| 17 | lunatic_cultist | 拜月教邪教徒 | 动画 |
+| 18 | martian_saucer | 火星飞碟 | 多组件 |
+| 19 | moon_lord | 月亮领主 | 多组件拼接 |
+| 20 | pumpking | 南瓜王 | 多组件 |
+| 21 | mourning_wood | 悼木 | GIF转码 |
+| 22 | ice_queen | 冰雪女王 | GIF转码 |
+| 23 | santa_nk1 | 圣诞坦克 | GIF转码 |
+| 24 | everscream | 常青尖叫怪 | GIF转码 |
+| 25-28 | solar/nebula/stardust/vortex_pillar | 四柱 | 动画 |
+| 29 | flying_dutchman | 飞行荷兰人 | 多组件 |
+| 30 | mothron | 蛾怪 | GIF转码 |
+| 31 | betsy | 双足翼龙 | GIF转码 |
+| 32 | dark_mage | 暗黑法师 | spritesheet切割 |
+| 33 | ogre | 食人魔 | spritesheet切割 |
+
+**踩坑记录**:
+- 史莱姆女皇的 shader 着色(亮度→LUT 采样)在 64×64 上不够准确,最终用 webp 原图保色
+- 骷髅王 spritesheet(760×456)定位切割失败,用户放弃
+- 毁灭者/世界吞噬者做动画效果像"抽搐",最终改为静态拼接
+
+### 12.2 地形系统(9 种天空 + 草地)
+
+```
+uniapp/utils/terrariaBiome.js
+```
+
+| biome | 天空渐变 | 草地 |
+|---|---|---|
+| forest | 蓝→浅蓝 | 绿草5行铺满 |
+| corruption | 紫黑 | 紫色腐化 |
+| crimson | 暗红 | 红色猩红 |
+| hallow | 粉蓝渐变 | 彩色神圣 |
+| desert | 橙黄 | 沙土 |
+| snow | 灰蓝 | 白雪 |
+| jungle | 深绿 | 丛林绿 |
+| mushroom | 深蓝 | 蘑菇蓝 |
+| underworld | 暗红渐变 | 灰岩(地狱) |
+
+Boss 按 biome 分组显示(切换地形后显示对应 boss 列表)。
+
+### 12.3 翅膀系统(42 种,独立可选)
+
+**文件**:
+- `uniapp/static/terraria/wings.js` — 42 个翅膀 sprite 数据(base + delta 差异帧)
+- `uniapp/utils/terrariaWings.js` — 渲染逻辑 + WING_LIST 名称表
+- 翅膀选择独立于盔甲,用户可自由搭配
+
+**帧数分布**:
+- 4 帧: 大多数标准翅膀(1-3, 5-21, 23-27, 29-32, 35-38, 46)
+- 6 帧: Wings 34 (Jim), Wings 39 (Leinfors)  
+- 7 帧: Wings 43 (Grox)
+- 8 帧: Wings 48 (Chippy), Wings 51 (Luna)
+- 11 帧: Wings 49 (Heroicis), Wings 50 (Kazzymodus)
+
+**排除的翅膀**: 4(Jetpack) / 22(Hoverboard) / 28(Lazure平台) / 33(Yoraiz0r) / 41(Safeman) / 45(长尾彩虹) / 47(ChickenBones)
+— 要么是脚底装备不是翅膀,要么造型不适合 64×64 显示。
+
+**特殊翅膀(未来扩展)**:
+- Wings_40 (Ghostar): 需要源码查组装方式(多帧复杂翅膀)
+- Wings_44 (彩虹/光之女皇): 需要渐变处理
+
+**动画逻辑**:
+```js
+// 跳过帧0(折叠态),从帧1开始循环
+function getWingFrameByTime(animTimeSec, wingSpeed, frameCount) {
+  const animFrames = frameCount - 1;
+  return 1 + (Math.floor(animTimeSec * 60 * wingSpeed / 5) % animFrames);
+}
+```
+
+**Lunar 翅膀特效**:
+- 29 Solar: 暖橙脉冲叠加层
+- 31 Nebula: 4 方向偏移副本(粉色脉冲)
+- 32 Stardust: 蓝白发光叠加层
+
+### 12.4 盔甲套装扩展(4 → 10 套)
+
+**新增 6 套中后期盔甲**, 从源码 `ArmorIDs.cs` 查证 Head/Body/Legs ID:
+
+| 套装 | ID (head/body/legs) | 翅膀 | 武器 | 游戏阶段 |
+|---|---|---|---|---|
+| 耀斑 | 171/177/112 | 29 耀斑之翼 | 天顶剑/星辉者 | 终局·战士 |
+| 星旋 | 169/175/110 | 30 星旋加速器 | 星旋机枪/幻影弓 | 终局·射手 |
+| 星云 | 170/176/111 | 31 星云斗篷 | 最后的棱镜/星云烈焰 | 终局·法师 |
+| 星尘 | 189/190/130 | 32 星尘之翼 | 星尘龙杖/帝皇之刃 | 终局·召唤 |
+| **甲虫** | 157/105/98 | 24 甲虫翅膀 | 泰拉刃/占有斧 | 中后期·战 |
+| **幽灵** | 101/66/55 | 11 幽灵之翼 | 暴风雪法杖/棱镜 | 中后期·法 |
+| **阴森** | 134/95/79 | 21 阴森翅膀 | 暴风雪法杖/星尘龙杖 | 中后期·召唤 |
+| **冰霜** | 46/27/26 | 10 冰冻翅膀 | 北极/暴风雪法杖 | 中期·混合 |
+| **神圣** | 41/24/23 | 26 猪龙鱼翅膀 | 泰拉刃/充能攻击 | 中期·战 |
+| **叶绿** | 78/51/47 | 27 蛾翼 | 永夜刃/棱镜 | 中期·射 |
+
+**Body 文件发现**: 解包目录中 body armor PNG 不叫 `Armor_Body_X.png`, 而是在 `Armor/Armor_X.png` 子文件夹里。build 脚本已做重命名拷贝处理。
+
+### 12.5 武器扩展(8 → 16 把)
+
+新增武器(从源码 `ItemID.cs` 确认 ID):
+
+| ID | 名称 | 类型 | useStyle | 套装关联 |
+|---|---|---|---|---|
+| 757 | 泰拉刃 | 近战 | 1(摆动) | 甲虫/神圣 |
+| 1258 | 占有斧 | 近战 | 1 | 甲虫 |
+| 1569 | 暴风雪法杖 | 魔法 | 5(水平) | 幽灵/冰霜 |
+| 1571 | 暴风雪法杖 | 近战 | 1 | 阴森 |
+| 3018 | 北极 | 远程 | 5 | 冰霜 |
+| 3827 | 充能攻击 | 近战 | 1 | 神圣 |
+| 4923 | 永夜刃 | 近战 | 1 | 叶绿 |
+| 4952 | 棱镜 | 魔法 | 5(旋转90°) | 叶绿 |
+
+### 12.6 Build 脚本更新
+
+`uniapp/tools/build-terraria-sprites.js` 已更新:
+- 头甲: 4 → 11 个
+- 胸甲: 4 → 10 个
+- 腿甲: 4 → 10 个
+- 翅膀: 4 → 42 个(自动检测帧数)
+- 武器: 8 → 16 个
+- misc.js 加了空数据保护(PNG 缺失时不覆盖已有数据)
+
+**运行方式**:
+```bash
+cd uniapp
+node tools/build-terraria-sprites.js
+```
+
+**前置条件**: 
+- PNG 文件放在 `esp32-firmware/terraria/_png/` 目录
+- 需要 pngjs 依赖(`uniapp/node_modules/pngjs`)
+
+### 12.7 UI 变化(terraria-clock.vue)
+
+角色 Tab 新增:
+- **翅膀选择网格**(42 个按钮, 独立于盔甲选择)
+- **翅膀速度调节**(±10% 步进, 范围 0~200%)
+- 职业选择从 4 个扩展到 10 个
+- 切换职业自动同步对应翅膀(可手动覆盖)
+
+### 12.8 per-boss 位置记忆
+
+每个 boss 独立保存 `{x, y, scale}`:
+```js
+config.terraria.bossOverrides = {
+  king_slime: { x: 53, y: 41, scale: 27 },
+  eye_of_cthulhu: { x: 53, y: 22, scale: 27 },
+  // ... 33 个
+}
+```
+切换 boss 时从这里加载,调整时写回。
+
+---
+
+## 13. 下次做类似项目的建议
 
 如果未来要做 Pokemon / Kamen Rider / 其他游戏主题:
 

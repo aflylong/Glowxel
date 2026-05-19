@@ -84,41 +84,57 @@ function emitSingleSprite(varName, sprite) {
 }
 
 function emitAnimSprite(varName, anim) {
-  // anim = { w, h, frameCount, fmt, base: {n,b}, deltas: [{n,b},...] }
+  // anim = { w, h, frameCount, fmt, base: {n,b}, deltas: [{n,b,cN?,cB?},...] }
+  // 新格式 deltas 带 clear 段 (cN/cB) — 移动后旧位置擦回背景, 修重影
   const stride = anim.fmt === 7 ? 7 : 5;
   let out = '';
   out += `// ${varName}: ${anim.w}x${anim.h}, ${anim.frameCount} frames, fmt=${anim.fmt}\n`;
 
-  // base
+  // base (没有 clear 段, base 就是帧 0 全像素)
   const baseBuf = decodeBase64(anim.base.b);
   const baseArrName = `k${varName}BasePixels`;
   out += `static const uint8_t ${baseArrName}[] PROGMEM = {\n`;
   out += bufferToCArray(baseBuf);
   out += `\n};\n`;
 
-  // 每个 delta
-  const deltaArrNames = [];
+  // 每个 delta (set 段 + clear 段)
+  const deltaItems = [];
   for (let i = 0; i < anim.deltas.length; i++) {
-    const dBuf = decodeBase64(anim.deltas[i].b);
-    const dArrName = `k${varName}Delta${i}Pixels`;
-    out += `static const uint8_t ${dArrName}[] PROGMEM = {\n`;
-    out += bufferToCArray(dBuf);
+    const d = anim.deltas[i];
+    const setBuf = decodeBase64(d.b);
+    const setArrName = `k${varName}Delta${i}SetPixels`;
+    out += `static const uint8_t ${setArrName}[] PROGMEM = {\n`;
+    out += bufferToCArray(setBuf);
     out += `\n};\n`;
-    deltaArrNames.push({ name: dArrName, n: anim.deltas[i].n });
+
+    // clear 段 (新格式)
+    let clearArrName = 'nullptr';
+    let clearN = 0;
+    if (d.cN && d.cB) {
+      const clearBuf = decodeBase64(d.cB);
+      clearArrName = `k${varName}Delta${i}ClearPixels`;
+      out += `static const uint8_t ${clearArrName}[] PROGMEM = {\n`;
+      out += bufferToCArray(clearBuf);
+      out += `\n};\n`;
+      clearN = d.cN;
+    }
+
+    deltaItems.push({ setName: setArrName, setN: d.n, clearName: clearArrName, clearN });
   }
 
   // delta 索引数组
   const deltasArrName = `k${varName}Deltas`;
   out += `static const TerrariaFrameBlock ${deltasArrName}[] PROGMEM = {\n`;
-  for (const d of deltaArrNames) {
-    out += `  { .pixelCount = ${d.n}, .pixels = ${d.name} },\n`;
+  for (const d of deltaItems) {
+    out += `  { .setCount = ${d.setN}, .setPixels = ${d.setName}, .clearCount = ${d.clearN}, .clearPixels = ${d.clearName} },\n`;
   }
   out += `};\n`;
 
-  // wrapper struct
+  // wrapper struct (base 也用 TerrariaFrameBlock 但 clear 永远为空)
   out += `static const TerrariaSpriteAnim k${varName} PROGMEM = {\n`;
   out += `  .w = ${anim.w}, .h = ${anim.h}, .frameCount = ${anim.frameCount},\n`;
-  out += `  .base = { .pixelCount = ${anim.base.n}, .pixels = ${baseArrName} },\n`;
+  out += `  .frameStart = ${anim.frameStart || 0},\n`;
+  out += `  .base = { .setCount = ${anim.base.n}, .setPixels = ${baseArrName}, .clearCount = 0, .clearPixels = nullptr },\n`;
   out += `  .deltas = ${deltasArrName},\n`;
   out += `  .fmt = ${anim.fmt},\n`;
   out += `};\n\n`;
@@ -133,39 +149,10 @@ function main() {
   console.log('[build-firmware] 输出:', OUT_DIR);
   console.log('');
 
-  // 先输出共享 sprite 类型定义
-  const typesH = `// Terraria sprite 类型定义
-// 不要手改; 由 uniapp/tools/build-firmware-sprites.js 生成同步
-#pragma once
-
-#include <Arduino.h>
-#include <pgmspace.h>
-
-// 单帧 sprite
-struct TerrariaSprite {
-  uint16_t w;
-  uint16_t h;
-  uint16_t pixelCount;
-  const uint8_t* pixels;
-  uint8_t fmt;  // 5 = 每像素 5 字节 (x8,y8,r,g,b); 7 = 每像素 7 字节 (x16,y16,r,g,b)
-};
-
-// 多帧差异: base (帧 0) + (frameCount-1) 个 delta
-struct TerrariaFrameBlock {
-  uint16_t pixelCount;
-  const uint8_t* pixels;
-};
-
-struct TerrariaSpriteAnim {
-  uint16_t w;
-  uint16_t h;
-  uint8_t frameCount;
-  TerrariaFrameBlock base;
-  const TerrariaFrameBlock* deltas;
-  uint8_t fmt;
-};
-`;
-  fs.writeFileSync(path.join(OUT_DIR, 'terraria_sprite_types.h'), typesH);
+// 把共享类型也写一份(避免 build-firmware-sprites.js 跟 build-biomes-firmware.js 不一致)
+//   注: terraria_sprite_types.h 现在由仓库直接维护(里面新增了 setCount/clearCount 字段),
+//       这个脚本不再覆盖它, 避免破坏手工添加的字段
+//   const typesH = ... fs.writeFileSync(...) ←  禁用
 
   let totalBytes = 0;
 

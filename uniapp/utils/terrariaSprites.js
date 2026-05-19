@@ -34,25 +34,47 @@ function _b64ToU8(b64) {
 function _decodeSpriteIfNeeded(v) {
   if (!v || typeof v !== 'object') return v;
 
-  // 多帧差异 sprite: { w, h, frameCount, fmt, base: {n,b}, deltas: [{n,b},...] }
+  // 多帧差异 sprite: { w, h, frameCount, fmt, base: {n,b}, deltas: [{n,b,cN?,cB?},...] }
+  // delta 现在带 clear 段 (cN/cB) — 解决移动后旧位置残留 (重影)
   if (v.base && Array.isArray(v.deltas)) {
     const basePixels = _decodePixelBlock(v.base, v.fmt);
-    const deltaPixels = v.deltas.map(d => _decodePixelBlock(d, v.fmt));
-    // 预合成每一帧的完整像素列表 (帧 0 = base, 帧 N = base 像素 + delta N-1, delta 覆盖 base 同位置)
+    // 预合成每一帧:
+    //   frame 0 = base
+    //   frame N = (base 像素去掉 delta[N-1].clear) 再覆盖 delta[N-1].set
     const frames = [basePixels];
-    for (const delta of deltaPixels) {
-      // 用 Map 合成: 先放 base 所有像素, delta 像素覆盖
+    for (const delta of v.deltas) {
       const map = new Map();
+      // 1) 先放 base 像素
       for (const px of basePixels) map.set(px[0] + ',' + px[1], px);
-      for (const px of delta)      map.set(px[0] + ',' + px[1], px);
+      // 2) clear 段: 删掉 base 的旧像素 (frame_i 不再占的位置)
+      if (delta.cN && delta.cB) {
+        const cu8 = _b64ToU8(delta.cB);
+        const cstride = (v.fmt === 7) ? 4 : 2;
+        for (let i = 0; i < delta.cN; i++) {
+          const o = i * cstride;
+          let cx, cy;
+          if (v.fmt === 7) {
+            cx = cu8[o] | (cu8[o+1] << 8);
+            cy = cu8[o+2] | (cu8[o+3] << 8);
+          } else {
+            cx = cu8[o]; cy = cu8[o+1];
+          }
+          map.delete(cx + ',' + cy);
+        }
+      }
+      // 3) set 段: 覆盖 / 新增
+      const setPixels = _decodePixelBlock({ n: delta.n, b: delta.b }, v.fmt);
+      for (const px of setPixels) map.set(px[0] + ',' + px[1], px);
       frames.push(Array.from(map.values()));
     }
-    return { w: v.w, h: v.h, frameCount: v.frameCount, frames };
+    const out = { w: v.w, h: v.h, frameCount: v.frameCount, frames };
+    if (v.frameStart != null) out.frameStart = v.frameStart;
+    return out;
   }
 
-  // 单帧 sprite: { w, h, fmt, n, b }
-  if (v.b && v.fmt) {
-    const pixels = _decodePixelBlock({ n: v.n, b: v.b }, v.fmt);
+  // 单帧 sprite: { w, h, fmt, n, b } — 即使 n=0 (空 sprite) 也要返回 pixels: []
+  if (v.fmt !== undefined && v.n !== undefined) {
+    const pixels = v.n > 0 ? _decodePixelBlock({ n: v.n, b: v.b }, v.fmt) : [];
     return { w: v.w, h: v.h, pixels };
   }
 
@@ -153,14 +175,17 @@ function cropSprite(sprite, sx, sy, sw, sh) {
   return out;
 }
 
-// armor_bodies / player_layers 网格位取 (1 个网格 = 40×56 一段, 按 gridName 索引)
+// armor_bodies / player_layers 网格位取 (按 gridName 索引)
+// 预缩放后每段高度 = sprite.h / 网格段数 (armor_body 6段, player_layer 5段)
 //   spriteName 例: 'armor_body_177', 'player_0_3'
 //   gridName 例: 'torso', 'front_arm', 'back_arm_holding' 等
 export function gridFrame(sprite, gridName, isPlayerLayer) {
   if (!sprite) return [];
   const idx = isPlayerLayer ? PLAYER_GRID_INDEX[gridName] : ARMOR_BODY_GRID_INDEX[gridName];
   if (idx === undefined) return [];
-  return cropSprite(sprite, 0, idx * FRAME_H, FRAME_W, FRAME_H);
+  const numSegs = isPlayerLayer ? 5 : 6;
+  const segH = Math.round(sprite.h / numSegs);
+  return cropSprite(sprite, 0, idx * segH, sprite.w, segH);
 }
 
 // 多帧条带取第 N 帧
@@ -177,13 +202,13 @@ export function stripFrame(sprite, frameIndex, frameH = FRAME_H) {
 
 // 头甲条带: 取整张 (优化版资产已切到 frame 0 = 40×56, 直接整张返回)
 export function headFrame0(sprite) {
-  if (!sprite) return [];
+  if (!sprite || !sprite.pixels) return [];
   return sprite.pixels.slice();
 }
 
 // 整张 sprite 像素 (武器/草地/特效 用整张)
 export function wholeSprite(sprite) {
-  if (!sprite) return [];
+  if (!sprite || !sprite.pixels) return [];
   return sprite.pixels.slice();
 }
 
@@ -207,16 +232,30 @@ export function tintPixels(pixelList, baseColor) {
 
 // ============================================================
 // 把局部像素列表画到目标 Map<"x,y", "#hex">
+// 数据已预缩放: 像素 x/y 是缩放后坐标; spriteW/H 应该传缩放后尺寸
+// scale 参数仅作向后兼容, 内部不使用
 // ============================================================
 
-export function drawPixelsToMap(targetMap, pixelList, centerX, centerY, scale, spriteW = FRAME_W, spriteH = FRAME_H) {
+export function drawPixelsToMap(targetMap, pixelList, centerX, centerY, scale, spriteW, spriteH) {
   if (!pixelList || pixelList.length === 0) return;
-  const ox = centerX - spriteW / 2 * scale;
-  const oy = centerY - spriteH / 2 * scale;
+  // 自动从像素推 sprite 实际尺寸 (兼容旧调用没传 spriteW/H)
+  let w = spriteW;
+  let h = spriteH;
+  if (w == null || h == null) {
+    let maxX = 0, maxY = 0;
+    for (const [x, y] of pixelList) {
+      if (x > maxX) maxX = x;
+      if (y > maxY) maxY = y;
+    }
+    w = w == null ? maxX + 1 : w;
+    h = h == null ? maxY + 1 : h;
+  }
+  const ox = centerX - w / 2;
+  const oy = centerY - h / 2;
   for (const [x, y, r, g, b, a] of pixelList) {
     if (a < 5) continue;
-    const px = Math.round(ox + x * scale);
-    const py = Math.round(oy + y * scale);
+    const px = Math.round(ox + x);
+    const py = Math.round(oy + y);
     if (px < 0 || px >= 64 || py < 0 || py >= 64) continue;
     const hex = '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
     targetMap.set(`${px},${py}`, hex);

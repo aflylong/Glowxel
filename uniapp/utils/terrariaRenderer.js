@@ -9,9 +9,14 @@ import {
   tintPixels, drawPixelsToMap, flipPixelsX, rotatePixels,
 } from './terrariaSprites.js';
 import { renderWings } from './terrariaWings.js';
+import { drawBiomeSky, drawClouds as drawBiomeClouds, drawBiomeGround } from './terrariaBiome.js';
+import { drawBoss } from './terrariaBosses.js';
 
 const FRAME_W = 40;
 const FRAME_H = 56;
+// 预缩放后单层尺寸 (40*0.27=11, 56*0.27≈15)
+const SCALED_FRAME_W = 11;
+const SCALED_FRAME_H = 15;
 
 const HOLD_FRAME_NUM = 3;
 const LEG_FRAME_STAND = 0;
@@ -28,12 +33,18 @@ const DEFAULT_COLORS = {
   shoeColor:       [160, 105, 60],
 };
 
-// 4 职业 → 装备映射
+// 10 套装 → 装备映射
 export const CHARACTERS = {
-  warrior:  { name: '战士',   armorSet: '耀斑',   armor: { head: 171, body: 177, legs: 112 }, wings: 29, weapons: [{ id: 4956, name: '天顶剑' }, { id: 3065, name: '星辉者' }], hasGuardian: false },
-  ranger:   { name: '射手',   armorSet: '星旋',   armor: { head: 169, body: 175, legs: 110 }, wings: 30, weapons: [{ id: 3475, name: '星旋机枪' }, { id: 3540, name: '幻影弓' }], hasGuardian: false },
-  mage:     { name: '法师',   armorSet: '星云',   armor: { head: 170, body: 176, legs: 111 }, wings: 31, weapons: [{ id: 3541, name: '最后的棱镜' }, { id: 3542, name: '星云烈焰' }], hasGuardian: false },
-  summoner: { name: '召唤师', armorSet: '星尘',   armor: { head: 189, body: 190, legs: 130 }, wings: 32, weapons: [{ id: 3531, name: '星尘龙杖' }, { id: 5005, name: '帝皇之刃' }], hasGuardian: true },
+  warrior:    { name: '战士',     armorSet: '耀斑',   armor: { head: 171, body: 177, legs: 112 }, wings: 29, weapons: [{ id: 4956, name: '天顶剑' }, { id: 3065, name: '星辉者' }], hasGuardian: false },
+  ranger:     { name: '射手',     armorSet: '星旋',   armor: { head: 169, body: 175, legs: 110 }, wings: 30, weapons: [{ id: 3475, name: '星旋机枪' }, { id: 3540, name: '幻影弓' }], hasGuardian: false },
+  mage:       { name: '法师',     armorSet: '星云',   armor: { head: 170, body: 176, legs: 111 }, wings: 31, weapons: [{ id: 3541, name: '最后的棱镜' }, { id: 3542, name: '星云烈焰' }], hasGuardian: false },
+  summoner:   { name: '召唤师',   armorSet: '星尘',   armor: { head: 189, body: 190, legs: 130 }, wings: 32, weapons: [{ id: 3531, name: '星尘龙杖' }, { id: 5005, name: '帝皇之刃' }], hasGuardian: true },
+  beetle:     { name: '甲虫战士', armorSet: '甲虫',   armor: { head: 157, body: 105, legs: 98 },  wings: 24, weapons: [{ id: 757, name: '泰拉刃' }, { id: 1258, name: '占有斧' }], hasGuardian: false },
+  spectre:    { name: '幽灵法师', armorSet: '幽灵',   armor: { head: 101, body: 66, legs: 55 },   wings: 11, weapons: [{ id: 1569, name: '暴风雪法杖' }, { id: 3541, name: '最后的棱镜' }], hasGuardian: false },
+  spooky:     { name: '万圣召唤', armorSet: '阴森',   armor: { head: 134, body: 95, legs: 79 },   wings: 21, weapons: [{ id: 1571, name: '暴风雪法杖' }, { id: 3531, name: '星尘龙杖' }], hasGuardian: true },
+  frost:      { name: '冰霜混合', armorSet: '冰霜',   armor: { head: 46, body: 27, legs: 26 },    wings: 10, weapons: [{ id: 3018, name: '北极' }, { id: 1569, name: '暴风雪法杖' }], hasGuardian: false },
+  hallowed:   { name: '神圣战士', armorSet: '神圣',   armor: { head: 41, body: 24, legs: 23 },    wings: 26, weapons: [{ id: 757, name: '泰拉刃' }, { id: 3827, name: '充能攻击' }], hasGuardian: false },
+  chlorophyte:{ name: '叶绿射手', armorSet: '叶绿',   armor: { head: 78, body: 51, legs: 47 },    wings: 27, weapons: [{ id: 4923, name: '永夜刃' }, { id: 4952, name: '棱镜' }], hasGuardian: false },
 };
 
 // 武器属性
@@ -46,6 +57,14 @@ const WEAPON_PROPS = {
   3540: { useStyle: 5, ofs: { x:  4, y: -7 } },
   3541: { useStyle: 5, ofs: { x: 22, y: -7 }, rotate: 90 },
   3542: { useStyle: 5, ofs: { x:  0, y:  0 }, hideWeapon: true, overlay: 'orb' },
+  757:  { useStyle: 1, ofs: { x: -5, y:  4 } },
+  1258: { useStyle: 1, ofs: { x: -5, y:  4 } },
+  1569: { useStyle: 5, ofs: { x: 22, y: -7 }, rotate: 90 },
+  1571: { useStyle: 1, ofs: { x: -5, y:  4 } },
+  3018: { useStyle: 5, ofs: { x:  4, y: -7 } },
+  3827: { useStyle: 1, ofs: { x: -5, y:  4 } },
+  4923: { useStyle: 1, ofs: { x: -5, y:  4 } },
+  4952: { useStyle: 5, ofs: { x: 22, y: -7 }, rotate: 90 },
 };
 
 // ============================================================
@@ -57,9 +76,25 @@ export function renderTerrariaScene(config, animTimeSec) {
   const ch = CHARACTERS[config.characterId];
   if (!ch) return pixels;
 
-  drawSky(pixels);
-  drawClouds(pixels);
-  drawGround(pixels);
+  // 背景: biome 天空渐变 + 云 + 地面
+  const biome = config.biome || 'forest';
+  drawBiomeSky(pixels, biome);
+  drawBiomeClouds(pixels);
+  const handled = drawBiomeGround(pixels, biome);
+  if (!handled) {
+    drawGround(pixels);  // forest 走 sprite 草地
+  }
+
+  // 备份背景 (供 boss delta clear 段查询擦回)
+  const bgSnapshot = new Map(pixels);
+
+  // Boss (在角色后面)
+  // 板载用 base+delta(set+clear), uniapp 渲染同款算法; 位置/缩放已预渲染到屏幕坐标
+  // bgPainter: clear 段擦回背景色 (查 bgSnapshot)
+  if (config.bossEnabled && config.bossId) {
+    const bgPainter = (x, y) => bgSnapshot.get(`${x},${y}`) || null;
+    drawBoss(pixels, config.bossId, animTimeSec, bgPainter);
+  }
 
   if (ch.hasGuardian) {
     drawGuardian(pixels, config, animTimeSec);
@@ -183,7 +218,7 @@ function drawPlayer(targetMap, config, ch, animTimeSec) {
   const legsId = ch.armor.legs;
 
   const drawLayer = (pixelList) => {
-    drawPixelsToMap(targetMap, pixelList, cx, cy, playerScale, FRAME_W, FRAME_H);
+    drawPixelsToMap(targetMap, pixelList, cx, cy, 1.0, SCALED_FRAME_W, SCALED_FRAME_H);
   };
 
   // ===== Step 1-2: 后臂皮肤 + 后臂内衬 + 后臂上衣袖 =====
@@ -197,9 +232,10 @@ function drawPlayer(targetMap, config, ch, animTimeSec) {
   drawLayer(getArmorBodyFrame(bodyId, 'back_arm'));
   drawLayer(getArmorBodyFrame(bodyId, 'back_shoulder'));
 
-  // ===== Step 5: 翅膀 =====
-  if (ch.wings) {
-    renderWings(targetMap, ch.wings, cx, cy, playerScale, 1, animTimeSec, (config.wingSpeedPct || 50) / 100);
+  // ===== Step 5: 翅膀 (用 config.wingId, 独立于职业) =====
+  const wingId = config.wingId != null ? config.wingId : ch.wings;
+  if (wingId) {
+    renderWings(targetMap, wingId, cx, cy, playerScale, 1, animTimeSec, (config.wingSpeedPct || 50) / 100);
   }
 
   // ===== Step 6-8: 腿/裤皮肤 + 裤子 + 鞋子 =====
@@ -233,7 +269,7 @@ function drawPlayer(targetMap, config, ch, animTimeSec) {
     if (armor) {
       const frame = headFrame0(armor);
       const headOffY = isHolding ? 2 : 0;
-      drawPixelsToMap(targetMap, frame, cx, cy + headOffY * playerScale, playerScale, FRAME_W, FRAME_H);
+      drawPixelsToMap(targetMap, frame, cx, cy + headOffY * playerScale, 1.0, SCALED_FRAME_W, SCALED_FRAME_H);
     }
   }
 
@@ -289,7 +325,7 @@ function drawWeaponAndFrontArm(targetMap, config, ch, isHolding, bodyFrameIdx, u
   }
 
   const drawLayer = (pixelList) => {
-    drawPixelsToMap(targetMap, pixelList, cx, cy, playerScale, FRAME_W, FRAME_H);
+    drawPixelsToMap(targetMap, pixelList, cx, cy, 1.0, SCALED_FRAME_W, SCALED_FRAME_H);
   };
 
   // 前臂层
@@ -346,11 +382,12 @@ function drawWeapon(targetMap, weaponId, playerCenterX, playerCenterY, playerSca
     drawCx = handX;
     drawCy = handY;
   } else {
-    drawCx = handX + wW / 2 * playerScale * dir;
-    drawCy = handY - wH / 2 * playerScale;
+    // wW/wH 是预缩放后实际尺寸, 不再乘 playerScale
+    drawCx = handX + wW / 2 * dir;
+    drawCy = handY - wH / 2;
   }
 
-  drawPixelsToMap(targetMap, pixels, drawCx, drawCy, playerScale, wW, wH);
+  drawPixelsToMap(targetMap, pixels, drawCx, drawCy, 1.0, wW, wH);
 }
 
 // 法师烈焰光团

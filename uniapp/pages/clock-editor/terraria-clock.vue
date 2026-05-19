@@ -130,6 +130,125 @@
             </view>
           </view>
 
+          <!-- 翅膀 -->
+          <view class="card-title-section">
+            <Icon name="palette" :size="32" />
+            <text class="card-title">翅膀</text>
+          </view>
+          <view class="weapon-grid">
+            <view
+              v-for="wing in wingList"
+              :key="wing.id"
+              class="weapon-btn"
+              :class="{ active: config.terraria.wingId === wing.id }"
+              @click="selectWing(wing.id)"
+            >
+              <text>{{ wing.name }}</text>
+            </view>
+          </view>
+
+          <!-- 守卫(召唤师专属) -->
+          <view v-if="hasGuardian">
+            <view class="card-title-section">
+              <Icon name="ai" :size="32" />
+              <text class="card-title">守卫</text>
+            </view>
+            <view class="setting-item-row">
+              <text class="setting-label">守卫 X</text>
+              <view class="setting-control-buttons">
+                <view class="control-btn" @click="adjustTerraria('guardianX', -1)"><text class="control-icon">-</text></view>
+                <text class="setting-value-large">{{ config.terraria.guardianX }}</text>
+                <view class="control-btn" @click="adjustTerraria('guardianX', 1)"><text class="control-icon">+</text></view>
+              </view>
+            </view>
+            <view class="setting-item-row">
+              <text class="setting-label">守卫 Y</text>
+              <view class="setting-control-buttons">
+                <view class="control-btn" @click="adjustTerraria('guardianY', -1)"><text class="control-icon">-</text></view>
+                <text class="setting-value-large">{{ config.terraria.guardianY }}</text>
+                <view class="control-btn" @click="adjustTerraria('guardianY', 1)"><text class="control-icon">+</text></view>
+              </view>
+            </view>
+            <view class="setting-item-row">
+              <text class="setting-label">守卫缩放%</text>
+              <view class="setting-control-buttons">
+                <view class="control-btn" @click="adjustTerraria('guardianScale', -1)"><text class="control-icon">-</text></view>
+                <text class="setting-value-large">{{ config.terraria.guardianScale }}</text>
+                <view class="control-btn" @click="adjustTerraria('guardianScale', 1)"><text class="control-icon">+</text></view>
+              </view>
+            </view>
+          </view>
+
+        </view>
+
+        <!-- Tab 4: 地形 + Boss -->
+        <view v-show="currentTab === 4" class="settings-card">
+
+          <!-- 地形 -->
+          <view class="card-title-section">
+            <Icon name="palette" :size="32" />
+            <text class="card-title">地形</text>
+          </view>
+          <view class="biome-grid">
+            <view
+              v-for="b in biomeList"
+              :key="b.id"
+              class="biome-btn"
+              :class="{ active: config.terraria.biome === b.id }"
+              @click="selectBiome(b.id)"
+            >
+              <text>{{ b.name }}</text>
+            </view>
+          </view>
+
+          <!-- Boss (默认展示, 不可关闭) -->
+          <view class="card-title-section">
+            <Icon name="ai" :size="32" />
+            <text class="card-title">Boss</text>
+          </view>
+
+          <view>
+            <!-- Boss 选择 (按当前地形过滤) -->
+            <view class="boss-grid">
+              <view
+                v-for="bs in availableBosses"
+                :key="bs.slug"
+                class="boss-btn"
+                :class="{ active: config.terraria.bossId === bs.slug }"
+                @click="selectBoss(bs.slug)"
+              >
+                <text>{{ bs.nameZh }}</text>
+                <text class="boss-size">{{ bs.w }}×{{ bs.h }}</text>
+              </view>
+            </view>
+
+            <!-- Boss 位置 + 缩放 -->
+            <view class="setting-item-row">
+              <text class="setting-label">Boss X</text>
+              <view class="setting-control-buttons">
+                <view class="control-btn" @click="adjustTerraria('bossX', -1)"><text class="control-icon">-</text></view>
+                <text class="setting-value-large">{{ config.terraria.bossX }}</text>
+                <view class="control-btn" @click="adjustTerraria('bossX', 1)"><text class="control-icon">+</text></view>
+              </view>
+            </view>
+            <view class="setting-item-row">
+              <text class="setting-label">Boss Y</text>
+              <view class="setting-control-buttons">
+                <view class="control-btn" @click="adjustTerraria('bossY', -1)"><text class="control-icon">-</text></view>
+                <text class="setting-value-large">{{ config.terraria.bossY }}</text>
+                <view class="control-btn" @click="adjustTerraria('bossY', 1)"><text class="control-icon">+</text></view>
+              </view>
+            </view>
+            <view class="setting-item-row">
+              <text class="setting-label">Boss 缩放%</text>
+              <view class="setting-control-buttons">
+                <view class="control-btn" @click="adjustTerraria('bossScale', -1)"><text class="control-icon">-</text></view>
+                <text class="setting-value-large">{{ config.terraria.bossScale }}</text>
+                <view class="control-btn" @click="adjustTerraria('bossScale', 1)"><text class="control-icon">+</text></view>
+              </view>
+            </view>
+          </view>
+
         </view>
 
       </view>
@@ -186,12 +305,25 @@ import ClockFontPanel from "../../components/clock-editor/ClockFontPanel.vue";
 import ClockTextSettingsCard from "../../components/clock-editor/ClockTextSettingsCard.vue";
 import { getClockFontOptions, drawClockTextToPixels } from "../../utils/clockCanvas.js";
 import { renderTerrariaScene, CHARACTERS } from "../../utils/terrariaRenderer.js";
+import { WING_LIST } from "../../utils/terrariaWings.js";
 import { preloadAll as preloadTerrariaSprites } from "../../utils/terrariaSprites.js";
 import { applyTerrariaClockBorder } from "../../utils/clockTerrariaBorder.js";
+import { BIOME_LIST } from "../../utils/terrariaBiome.js";
+import { getBossesForBiome } from "../../utils/terrariaBosses.js";
 
-// 角色 X / Y / 缩放 / 翅膀速度全部用板载默认值, 不开放调整
-// 守卫位置也固定为 (-29, -19), 不调整
-// 这里保留空对象只是给历史 adjustTerraria(...) 调用一个安全降级
+// 各字段调节范围 (有变化才放这, 别的字段不限制)
+const TERRARIA_RANGE = {
+  playerX:        { min: 0,    max: 63  },
+  playerY:        { min: 0,    max: 63  },
+  playerScale:    { min: 20,   max: 200 },
+  guardianX:      { min: -64,  max: 64  },
+  guardianY:      { min: -64,  max: 64  },
+  guardianScale:  { min: 20,   max: 200 },
+  wingSpeedPct:   { min: 0,    max: 200 },
+  bossX:          { min: 0,    max: 63  },
+  bossY:          { min: 0,    max: 63  },
+  bossScale:      { min: 5,    max: 200 },
+};
 
 export default {
   mixins: [
@@ -244,6 +376,7 @@ export default {
         { index: 1, label: "时间", icon: "time" },
         { index: 2, label: "字体", icon: "text" },
         { index: 3, label: "角色", icon: "game" },
+        { index: 4, label: "地形", icon: "palette" },
       ],
 
       characterList: Object.keys(CHARACTERS).map(id => ({
@@ -251,6 +384,8 @@ export default {
         name: CHARACTERS[id].name,
         armorSet: CHARACTERS[id].armorSet,
       })),
+
+      wingList: WING_LIST,
 
       config: {
         font: "lcd_6x8",
@@ -276,17 +411,65 @@ export default {
         terraria: {
           characterId: "warrior",
           weaponId: 4956,
-          playerX: 32,
-          playerY: 43,
-          playerScale: 60,
-          // 守卫位置固定 (-29, -19), 不开放调整
-          guardianX: -29,
-          guardianY: -19,
+          playerX: 14,
+          playerY: 51,
+          playerScale: 27,
+          guardianX: -10,
+          guardianY: -18,
+          guardianScale: 27,
           wingSpeedPct: 50,
+          wingId: 29,
+          // 地形 + Boss
+          biome: "forest",
+          bossEnabled: true,
+          bossId: "king_slime",
+          bossX: 53,
+          bossY: 41,
+          bossScale: 27,
+          // 每个 boss 独立保存自己的 X/Y/scale (slug -> {x, y, scale})
+          // 切 boss 时从这里加载, 调整 X/Y/scale 时写回这里
+          bossOverrides: {
+            king_slime:        { x: 53, y: 41, scale: 27 },  // 1
+            eye_of_cthulhu:    { x: 53, y: 22, scale: 27 },  // 2
+            eater_of_worlds:   { x: 48, y: 49, scale: 27 },  // 3
+            brain_of_cthulhu:  { x: 32, y: 27, scale: 27 },  // 4
+            queen_bee:         { x: 52, y: 32, scale: 25 },  // 5
+            skeletron:         { x: 32, y: 48, scale: 38 },  // 6
+            deerclops:         { x: 53, y: 31, scale: 25 },  // 7
+            wall_of_flesh:     { x: 63, y: 33, scale: 36 },  // 8
+            queen_slime:       { x: 32, y: 35, scale: 25 },  // 9
+            the_twins:         { x: 53, y: 32, scale: 25 },  // 10
+            destroyer:         { x: 48, y: 49, scale: 27 },  // 11
+            skeletron_prime:   { x: 32, y: 36, scale: 50 },  // 12
+            plantera:          { x: 32, y: 48, scale: 27 },  // 13
+            golem:             { x: 32, y: 32, scale: 30 },  // 14
+            duke_fishron:      { x: 60, y: 34, scale: 28 },  // 15
+            empress_of_light:  { x: 32, y: 35, scale: 25 },  // 16
+            lunatic_cultist:   { x: 49, y: 50, scale: 28 },  // 17
+            martian_saucer:    { x: 32, y: 23, scale: 27 },  // 18
+            moon_lord:         { x: 32, y: 26, scale: 21 },  // 19
+            pumpking:          { x: 32, y: 41, scale: 30 },  // 20
+            mourning_wood:     { x: 32, y: 31, scale: 30 },  // 21
+            ice_queen:         { x: 32, y: 28, scale: 27 },  // 22
+            santa_nk1:         { x: 55, y: 35, scale: 30 },  // 23
+            everscream:        { x: 32, y: 30, scale: 30 },  // 24
+            solar_pillar:      { x: 32, y: 23, scale: 17 },  // 25
+            nebula_pillar:     { x: 32, y: 23, scale: 17 },  // 26
+            stardust_pillar:   { x: 32, y: 23, scale: 17 },  // 27
+            vortex_pillar:     { x: 32, y: 23, scale: 17 },  // 28
+            flying_dutchman:   { x: 53, y: 7,  scale: 19 },  // 29
+            mothron:           { x: 51, y: 32, scale: 28 },  // 30
+            betsy:             { x: 54, y: 27, scale: 30 },  // 31
+            dark_mage:         { x: 48, y: 35, scale: 25 },  // 32
+            ogre:              { x: 54, y: 35, scale: 25 },  // 33
+          },
+          // 时钟边框色
           clockBgInner: "#63971f",
           clockBgOuter: "#8FD71D",
         },
       },
+
+      biomeList: BIOME_LIST,
 
       presetColors: [
         { name: "土色", hex: "#5a4a3a" },
@@ -308,6 +491,13 @@ export default {
     currentWeapons() {
       const ch = CHARACTERS[this.config.terraria.characterId];
       return ch ? ch.weapons : [];
+    },
+    hasGuardian() {
+      const ch = CHARACTERS[this.config.terraria.characterId];
+      return !!(ch && ch.hasGuardian);
+    },
+    availableBosses() {
+      return getBossesForBiome(this.config.terraria.biome) || [];
     },
   },
 
@@ -357,10 +547,87 @@ export default {
       if (!ch) return;
       this.config.terraria.characterId = charId;
       this.config.terraria.weaponId = ch.weapons[0].id;
+      this.config.terraria.wingId = ch.wings;
       this.scheduleRender();
     },
     selectWeapon(weaponId) {
       this.config.terraria.weaponId = weaponId;
+      this.scheduleRender();
+    },
+    selectWing(wingId) {
+      this.config.terraria.wingId = wingId;
+      this.scheduleRender();
+    },
+    adjustTerraria(key, delta) {
+      const r = TERRARIA_RANGE[key];
+      const cur = this.config.terraria[key];
+      let next = cur + delta;
+      if (r) {
+        next = Math.max(r.min, Math.min(r.max, next));
+      }
+      if (next !== cur) {
+        this.config.terraria[key] = next;
+        // boss 字段 (bossX/Y/Scale) 同步写回 bossOverrides[bossId]
+        if (key === 'bossX' || key === 'bossY' || key === 'bossScale') {
+          this._saveBossOverride();
+        }
+        this.scheduleRender();
+      }
+    },
+    // 把当前 bossX/Y/Scale 存到 bossOverrides[bossId]
+    _saveBossOverride() {
+      const t = this.config.terraria;
+      if (!t.bossId) return;
+      if (!t.bossOverrides) t.bossOverrides = {};
+      t.bossOverrides[t.bossId] = {
+        x: t.bossX, y: t.bossY, scale: t.bossScale,
+      };
+    },
+    // 从 bossOverrides[slug] 加载到 bossX/Y/Scale, 如果没有就用默认 48/32/25
+    _loadBossOverride(slug) {
+      const t = this.config.terraria;
+      const o = t.bossOverrides && t.bossOverrides[slug];
+      if (o) {
+        t.bossX = o.x;
+        t.bossY = o.y;
+        t.bossScale = o.scale;
+      } else {
+        t.bossX = 48;
+        t.bossY = 32;
+        t.bossScale = 25;
+      }
+    },
+    _biomeToIndex(biome) {
+      // 跟 BIOME_LIST 顺序对齐, 板载 sprites_tiles.h getBiomeTile 用同样的 index
+      const map = {
+        forest: 0, corruption: 1, crimson: 2, jungle: 3, snow: 4,
+        dungeon: 5, underworld: 6, hallow: 7, ocean: 8, temple: 9,
+      };
+      return map[biome] !== undefined ? map[biome] : 0;
+    },
+    _bossSlugToIndex(slug) {
+      const list = ['king_slime','eye_of_cthulhu','eater_of_worlds','brain_of_cthulhu','queen_bee','skeletron','deerclops','wall_of_flesh','queen_slime','the_twins','destroyer','skeletron_prime','plantera','golem','duke_fishron','empress_of_light','lunatic_cultist','martian_saucer','moon_lord','pumpking','mourning_wood','ice_queen','santa_nk1','everscream','solar_pillar','nebula_pillar','stardust_pillar','vortex_pillar','flying_dutchman','mothron','betsy','dark_mage','ogre'];
+      const idx = list.indexOf(slug);
+      return idx >= 0 ? idx : 0;
+    },
+    selectBiome(biomeId) {
+      if (this.config.terraria.biome === biomeId) return;
+      this.config.terraria.biome = biomeId;
+      // 切地形时 boss 列表会变, 自动选第一个
+      const list = getBossesForBiome(biomeId);
+      if (list.length > 0) {
+        this.config.terraria.bossId = list[0].slug;
+        this._loadBossOverride(list[0].slug);
+      }
+      this.scheduleRender();
+    },
+    selectBoss(slug) {
+      this.config.terraria.bossId = slug;
+      this._loadBossOverride(slug);
+      this.scheduleRender();
+    },
+    toggleBoss() {
+      this.config.terraria.bossEnabled = !this.config.terraria.bossEnabled;
       this.scheduleRender();
     },
 
@@ -381,7 +648,15 @@ export default {
           playerScale: t.playerScale,
           guardianX: t.guardianX,
           guardianY: t.guardianY,
+          guardianScale: t.guardianScale,
+          wingId: t.wingId,
           wingSpeed: t.wingSpeedPct,
+          biome: this._biomeToIndex(t.biome),
+          bossEnabled: !!t.bossEnabled,
+          bossId: this._bossSlugToIndex(t.bossId),
+          bossX: t.bossX,
+          bossY: t.bossY,
+          bossScale: t.bossScale,
           fontId: this.config.font,
           fontScale: this.config.time.fontSize || 1,
           clockX: this.config.time.x,
@@ -744,6 +1019,57 @@ export default {
   color: var(--text-primary);
 }
 .weapon-btn.active text { color: #000; font-weight: 700; }
+
+/* 地形网格 (Tab 4) */
+.biome-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+  margin-bottom: 8rpx;
+}
+.biome-btn {
+  padding: 14rpx 8rpx;
+  background: var(--bg-tertiary);
+  border: 2rpx solid var(--nb-ink);
+  text-align: center;
+}
+.biome-btn.active { background: var(--nb-yellow); }
+.biome-btn text { font-size: 22rpx; color: var(--text-primary); }
+.biome-btn.active text { color: #000; font-weight: 700; }
+
+/* Boss 网格 */
+.boss-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10rpx;
+  margin-bottom: 8rpx;
+}
+.boss-btn {
+  display: flex;
+  flex-direction: column;
+  padding: 14rpx 8rpx;
+  background: var(--bg-tertiary);
+  border: 2rpx solid var(--nb-ink);
+  text-align: center;
+  gap: 4rpx;
+}
+.boss-btn.active { background: var(--nb-yellow); }
+.boss-btn text { font-size: 22rpx; color: var(--text-primary); }
+.boss-btn .boss-size { font-size: 18rpx; color: var(--text-secondary); }
+.boss-btn.active text { color: #000; font-weight: 700; }
+.boss-btn.active .boss-size { color: #333; }
+
+/* Boss 开关 */
+.toggle-btn {
+  margin-left: auto;
+  padding: 6rpx 18rpx;
+  background: var(--bg-tertiary);
+  border: 2rpx solid var(--nb-ink);
+  font-size: 22rpx;
+}
+.toggle-btn.active { background: var(--nb-yellow); }
+.toggle-btn text { font-size: 22rpx; color: var(--text-primary); }
+.toggle-btn.active text { color: #000; font-weight: 700; }
 
 /* 复用 setting-item-row 样式 (同组其他页公共块) */
 .setting-item-row {
