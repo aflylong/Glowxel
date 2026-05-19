@@ -403,15 +403,18 @@ TetrisClockModeConfig ConfigManager::tetrisClockConfig = makeDefaultTetrisClockM
 MazeModeConfig ConfigManager::mazeConfig = makeDefaultMazeModeConfig();
 SnakeModeConfig ConfigManager::snakeConfig = makeDefaultSnakeModeConfig();
 
-// Terraria 默认配置 (跟 uniapp data.config.terraria 默认值对齐, AGENTS.md 硬约束)
+// Terraria 默认配置 (�?uniapp data.config.terraria 默认值对�? AGENTS.md 硬约�?
 TerrariaModeConfig ConfigManager::terrariaConfig = {
   .character = TERRARIA_CHAR_WARRIOR,
   .weaponId = 4956,
   .playerX = 14, .playerY = 51, .playerScale = 27,
   .guardianX = -10, .guardianY = -18, .guardianScale = 27,
   .wingId = 29, .wingSpeed = 50,
+  .maskId = 0,
+  .dragonX = -12, .dragonY = -3, .dragonAngle = 75,
+  .bladeX = -8, .bladeY = 1, .bladeAngle = 105,
   .biome = 0,
-  .bossEnabled = false, .bossId = 0,
+  .bossEnabled = true, .bossId = 0,
   .bossX = 48, .bossY = 32, .bossScale = 25,
   .fontId = CLOCK_FONT_LCD_6X8, .fontScale = 1,
   .clockX = 32, .clockY = 6,
@@ -430,8 +433,7 @@ uint8_t* ConfigManager::pacmanRouteData = nullptr;
 uint16_t ConfigManager::pacmanRouteLength = 0;
 
 void ConfigManager::init() {
-  // 检查配置版本，版本不匹配说明固件更新了默认配置，清除旧的
-  preferences.begin("clock", true);
+  // 检查配置版本，版本不匹配说明固件更新了默认配置，清除旧�?  preferences.begin("clock", true);
   int savedVersion = preferences.getInt("cfgVer", 0);
   preferences.end();
 
@@ -615,11 +617,11 @@ void ConfigManager::loadStaticImagePixels() {
         preferences.getBytes("pixels", staticImagePixels, pixelDataSize);
         clockConfig.image.show = true;
       } else {
-        Serial.println("✗ 静态时钟像素数据内存分配失败");
+        Serial.println("静态时钟像素数据内存分配失败");
         staticImagePixelCount = 0;
       }
     } else {
-      Serial.println("✗ 静态时钟像素数据大小不匹配");
+      Serial.println("�?静态时钟像素数据大小不匹配");
       staticImagePixelCount = 0;
     }
   }
@@ -662,11 +664,11 @@ void ConfigManager::loadAnimImagePixels() {
         preferences.getBytes("pixels", animImagePixels, pixelDataSize);
         animClockConfig.image.show = true;
       } else {
-        Serial.println("✗ 动态时钟像素数据内存分配失败");
+        Serial.println("动态时钟像素数据内存分配失败");
         animImagePixelCount = 0;
       }
     } else {
-      Serial.println("✗ 动态时钟像素数据大小不匹配");
+      Serial.println("�?动态时钟像素数据大小不匹配");
       animImagePixelCount = 0;
     }
   }
@@ -872,8 +874,7 @@ void ConfigManager::loadTerrariaConfig() {
   if (configSize == sizeof(TerrariaModeConfig)) {
     preferences.getBytes("config", &terrariaConfig, sizeof(TerrariaModeConfig));
   }
-  // size 不匹配 → 保留 .cpp 顶部静态初始化的默认值
-  preferences.end();
+  // size 不匹�?�?保留 .cpp 顶部静态初始化的默认�?  preferences.end();
 }
 
 void ConfigManager::saveTerrariaConfig() {
@@ -1137,15 +1138,18 @@ void ConfigManager::resetToDefault() {
   tetrisClockConfig = makeDefaultTetrisClockModeConfig();
   mazeConfig = makeDefaultMazeModeConfig();
   snakeConfig = makeDefaultSnakeModeConfig();
-  // terraria 默认值 (与 .cpp 顶部静态初始化一致)
+  // terraria 默认�?(�?.cpp 顶部静态初始化一�?
   terrariaConfig = {
     .character = TERRARIA_CHAR_WARRIOR,
     .weaponId = 4956,
     .playerX = 14, .playerY = 51, .playerScale = 27,
     .guardianX = -10, .guardianY = -18, .guardianScale = 27,
     .wingId = 29, .wingSpeed = 50,
+    .maskId = 0,
+    .dragonX = -12, .dragonY = -3, .dragonAngle = 75,
+    .bladeX = -8, .bladeY = 1, .bladeAngle = 105,
     .biome = 0,
-    .bossEnabled = false, .bossId = 0,
+    .bossEnabled = true, .bossId = 0,
     .bossX = 48, .bossY = 32, .bossScale = 25,
     .fontId = CLOCK_FONT_LCD_6X8, .fontScale = 1,
     .clockX = 32, .clockY = 6,

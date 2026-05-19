@@ -38,6 +38,23 @@ function decodeSpritePixels(sprite) {
 
 // 把一组像素映射到网格大小并缩放
 function scaleRegion(pixels, srcW, srcH) {
+  // 像素极少时用正向映射 (直接缩放坐标), 避免反向采样丢失
+  const dstW = Math.max(1, Math.round(srcW * SCALE));
+  const dstH = Math.max(1, Math.round(srcH * SCALE));
+  if (pixels.length <= 20) {
+    const seen = new Set();
+    const result = [];
+    for (const p of pixels) {
+      const dx = Math.round(p.x * SCALE);
+      const dy = Math.round(p.y * SCALE);
+      if (dx < 0 || dx >= dstW || dy < 0 || dy >= dstH) continue;
+      const k = dx + ',' + dy;
+      if (seen.has(k)) continue;
+      seen.add(k);
+      result.push({x: dx, y: dy, r: p.r, g: p.g, b: p.b});
+    }
+    return { pixels: result, w: dstW, h: dstH };
+  }
   const srcBuf = new Uint8Array(srcW * srcH * 4);
   for (const p of pixels) {
     if (p.x >= 0 && p.x < srcW && p.y >= 0 && p.y < srcH) {
@@ -45,8 +62,6 @@ function scaleRegion(pixels, srcW, srcH) {
       srcBuf[idx]=p.r; srcBuf[idx+1]=p.g; srcBuf[idx+2]=p.b; srcBuf[idx+3]=255;
     }
   }
-  const dstW = Math.max(1, Math.round(srcW * SCALE));
-  const dstH = Math.max(1, Math.round(srcH * SCALE));
   const result = [];
   for (let dy = 0; dy < dstH; dy++) {
     for (let dx = 0; dx < dstW; dx++) {

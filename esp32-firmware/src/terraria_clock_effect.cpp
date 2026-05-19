@@ -17,6 +17,7 @@
 #include "theme_assets/terraria/index.h"
 #include "theme_assets/terraria/sprites_biomes.h"
 #include "theme_assets/terraria/sprites_bosses.h"
+#include "theme_assets/terraria/sprites_summon_extras.h"
 
 // ============ 渲染常量 ============
 
@@ -46,17 +47,22 @@ struct CharSet {
   uint16_t wings;
   bool hasGuardian;
 };
-constexpr CharSet kCharSets[10] = {
+constexpr CharSet kCharSets[15] = {
   {171, 177, 112, 29, false},  // warrior 耀斑
   {169, 175, 110, 30, false},  // ranger 星旋
   {170, 176, 111, 31, false},  // mage 星云
   {189, 190, 130, 32, true},   // summoner 星尘
   {157, 105, 98,  24, false},  // beetle 甲虫
   {101, 66,  55,  11, false},  // spectre 幽灵
-  {134, 95,  79,  21, true},   // spooky 阴森
+  {134, 95,  79,  21, false},  // spooky 阴森 (无守卫)
   {46,  27,  26,  10, false},  // frost 冰霜
   {41,  24,  23,  26, false},  // hallowed 神圣
   {78,  51,  47,  27, false},  // chlorophyte 叶绿
+  {261, 230, 213, 49, false},  // crystal 水晶忍者
+  {160, 168, 103, 6,  false},  // bee 蜜蜂
+  {68,  45,  41,  14, false},  // pirate 海盗
+  {9,   9,   9,   1,  false},  // molten 熔岩
+  {0,   0,   0,   0,  false},  // novice 新手 (无盔甲)
 };
 
 // 武器属性
@@ -68,27 +74,31 @@ struct WeaponProps {
   int16_t rotateDeg;
   bool hideWeapon;
 };
-constexpr WeaponProps kWeaponProps[16] = {
+constexpr WeaponProps kWeaponProps[20] = {
   {4956, 1, -5,  4,  0, false},  // 天顶剑
-  {3065, 1, -5,  4,  0, false},  // 星辉者
+  {5005, 1, -5,  4,  0, true},   // 泰拉棱镜 (hideWeapon, 背后飞剑)
   {3531, 1, -5,  4,  0, false},  // 星尘龙杖
-  {5005, 1, -5,  4,  0, false},  // 帝皇之刃
   {3475, 5,  4, -7,  0, false},  // 星旋机枪
   {3540, 5,  4, -7,  0, false},  // 幻影弓
   {3541, 5, 22, -7, 90, false},  // 最后的棱镜
-  {3542, 5,  0,  0,  0, true},   // 星云烈焰(光团)
+  {3542, 5,  0,  0,  0, true},   // 星云烈焰(4px光团)
   {757,  1, -5,  4,  0, false},  // 泰拉刃
-  {1258, 1, -5,  4,  0, false},  // 占有斧
-  {1569, 5, 22, -7, 90, false},  // 暴风雪法杖
-  {1571, 1, -5,  4,  0, false},  // 暴风雪法杖(近战)
-  {3018, 5,  4, -7,  0, false},  // 北极
-  {3827, 1, -5,  4,  0, false},  // 充能攻击
-  {4923, 1, -5,  4,  0, false},  // 永夜刃
-  {4952, 5, 22, -7, 90, false},  // 棱镜
+  {1122, 1, -5,  4,  0, false},  // 占有斧
+  {1931, 5, 18, -14,  0, false},  // 暴风雪法杖
+  {1947, 5,  4, -7,  0, false},  // 北极
+  {3827, 1, -12, 14,  0, false},  // 飞龙
+  {4923, 1, -5,  4,  0, false},  // 星光
+  {4952, 5, 22, -7, 90, false},  // 棱彩光辉
+  {24,   1, -5,  4,  0, false},  // 木剑
+  {3507, 1, -5,  4,  0, false},  // 铜短剑
+  {2880, 1, -5,  4,  0, false},  // 波涌之刃
+  {1121, 5,  4, -7,  0, false},  // 蜂枪
+  {121,  1, -5,  4,  0, false},  // 烈焰巨剑
+  {3852, 1, -5,  4,  0, false},  // 魔典法杖
 };
 
 const WeaponProps* findWeaponProps(uint16_t weaponId) {
-  for (size_t i = 0; i < 16; i++) {
+  for (size_t i = 0; i < 20; i++) {
     if (kWeaponProps[i].id == weaponId) return &kWeaponProps[i];
   }
   return nullptr;
@@ -455,19 +465,32 @@ void drawWeapon(
   }
 }
 
-// 法师烈焰光团 (3542): 手部画 dust_242_f0 + 1px 抖动
+// 法师烈焰光团 (3542): 手部 4 像素 (2×2 粉紫) + 白色闪烁
 void drawWeaponOrb(float cx, float cy, float scale) {
-  const TerrariaSprite* sprite = TerrariaSprites::getDust242();
-  if (sprite == nullptr) return;
-  // 手部位置 (useStyle=5 朝右)
   float handLocalX = 26.0f;
   float handLocalY = 38.0f;
-  float handX = cx + (handLocalX - FRAME_W / 2.0f) * scale;
-  float handY = cy + (handLocalY - FRAME_H / 2.0f) * scale;
-  // 1px 抖动
+  int handX = (int)(cx + (handLocalX - FRAME_W / 2.0f) * scale + 0.5f);
+  int handY = (int)(cy + (handLocalY - FRAME_H / 2.0f) * scale + 0.5f);
+
   uint32_t tick = (uint32_t)(s_animTimeSec * 60.0f);
-  int dy = ((tick % 5) < 3) ? 0 : 1;
-  drawSpriteWhole(sprite, handX, handY + dy, scale, nullptr);
+  uint8_t flashIdx = (tick / 4) % 4;
+
+  // 4 像素颜色 (粉/紫/浅粉/深紫)
+  static const uint8_t colors[4][3] = {
+    {0xFF, 0x66, 0xCC}, {0xCC, 0x33, 0xFF},
+    {0xFF, 0x88, 0xDD}, {0xAA, 0x22, 0xEE},
+  };
+  static const int8_t offsets[4][2] = {{0,0},{1,0},{0,1},{1,1}};
+
+  for (int i = 0; i < 4; i++) {
+    int px = handX + offsets[i][0];
+    int py = handY + offsets[i][1];
+    if (i == flashIdx) {
+      putPixel(px, py, 0xFF, 0xFF, 0xFF);
+    } else {
+      putPixel(px, py, colors[i][0], colors[i][1], colors[i][2]);
+    }
+  }
 }
 
 // ============ 角色 16 step 合成 ============
@@ -477,11 +500,12 @@ void drawPlayer(
   float playerScale, float cx, float cy
 ) {
   const CharSet& cs = kCharSets[character];
-  const uint16_t headId = cs.armorHead;
+  // 面具优先: maskId > 0 时替代套装头甲
+  const uint16_t headId = (s_config.maskId > 0) ? s_config.maskId : cs.armorHead;
   const uint16_t bodyId = cs.armorBody;
   const uint16_t legsId = cs.armorLegs;
 
-  const bool isHolding = (weaponId != 0);
+  const bool isHolding = (weaponId != 0 && weaponId != 5005);  // 5005 帝皇之刃不手持
   const bool usesCompositeArm = isHolding;
 
   // 网格位选择
@@ -525,9 +549,34 @@ void drawPlayer(
 
   // ===== Step 15: 头甲 (持械时下移 2px) =====
   float headOffY = isHolding ? 2.0f : 0.0f;
-  drawArmorHead(headId, cx, cy + headOffY * playerScale, playerScale);
+  if (headId > 0) {
+    drawArmorHead(headId, cx, cy + headOffY * playerScale, playerScale);
+  }
 
-  // ===== Step 16: 头发 — Lunar 头甲全包式跳过 (4 职业全跳) =====
+  // ===== Step 16: 头发 (无头甲时画, hairColor 直接填色) =====
+  if (headId == 0) {
+    const TerrariaSprite* hairSprite = TerrariaSprites::getPlayerLayer(15);
+    if (hairSprite != nullptr && hairSprite->pixelCount > 0) {
+      static const uint8_t HAIR_COLOR[3] = {215, 90, 55};
+      const float ox = cx - (float)hairSprite->w * 0.5f;
+      const float oy = cy - (float)hairSprite->h * 0.5f;
+      const uint8_t stride = (hairSprite->fmt == 7) ? 7 : 5;
+      for (uint16_t i = 0; i < hairSprite->pixelCount; i++) {
+        const uint8_t* p = hairSprite->pixels + (size_t)i * stride;
+        uint16_t hx, hy;
+        if (hairSprite->fmt == 7) {
+          hx = pgm_read_byte(p) | (pgm_read_byte(p+1) << 8);
+          hy = pgm_read_byte(p+2) | (pgm_read_byte(p+3) << 8);
+        } else {
+          hx = pgm_read_byte(p);
+          hy = pgm_read_byte(p+1);
+        }
+        int px = (int)(ox + (float)hx + 0.5f);
+        int py = (int)(oy + (float)hy + 0.5f);
+        putPixel(px, py, HAIR_COLOR[0], HAIR_COLOR[1], HAIR_COLOR[2]);
+      }
+    }
+  }
 
   // ===== 武器 + 前臂层 =====
   // 武器在前臂之前画
@@ -900,6 +949,77 @@ void buildFrame() {
       float gx = cx + (float)s_config.guardianX;
       float gy = cy + (float)s_config.guardianY + bobY;
       drawSpriteAnimFrame(guardian, idleFrame, gx, gy, playerScale);
+    }
+  }
+
+  // ===== 3.5 星尘龙 (持星尘龙杖 3531 时) =====
+  if (s_config.weaponId == 3531) {
+    float drX = cx + (float)s_config.dragonX;
+    float drY = cy + (float)s_config.dragonY;
+    uint32_t tick = (uint32_t)(s_animTimeSec * 60.0f);
+    drX += sinf(tick * 0.02f) * 2.0f;
+    drY += sinf(tick * 0.03f) * 2.0f;
+    float angle = (float)s_config.dragonAngle * (float)M_PI / 180.0f + sinf(tick * 0.04f) * 0.2f;
+    float cosA = cosf(angle), sinA = sinf(angle);
+    // 用真正 sprite 旋转绘制
+    const TerrariaSprite* drSprite = &kStardustDragon;
+    float sprCx = (float)drSprite->w * 0.5f;
+    float sprCy = (float)drSprite->h * 0.5f;
+    const uint8_t* p = drSprite->pixels;
+    for (uint16_t i = 0; i < drSprite->pixelCount; i++) {
+      uint8_t lx = pgm_read_byte(p + i*5);
+      uint8_t ly = pgm_read_byte(p + i*5 + 1);
+      uint8_t r = pgm_read_byte(p + i*5 + 2);
+      uint8_t g = pgm_read_byte(p + i*5 + 3);
+      uint8_t b = pgm_read_byte(p + i*5 + 4);
+      float rx = (float)lx - sprCx;
+      float ry = (float)ly - sprCy;
+      float nx = rx * cosA - ry * sinA;
+      float ny = rx * sinA + ry * cosA;
+      int px = (int)(drX + nx + 0.5f);
+      int py = (int)(drY + ny + 0.5f);
+      putPixel(px, py, r, g, b);
+    }
+  }
+
+  // ===== 3.6 帝皇飞剑 (持帝皇之刃 5005 时) =====
+  if (s_config.weaponId == 5005) {
+    float blX = cx + (float)s_config.bladeX;
+    float blY = cy + (float)s_config.bladeY + sinf(s_animTimeSec * 2.0f) * 2.0f;
+    float angle = (float)s_config.bladeAngle * (float)M_PI / 180.0f;  // 固定角度,不摆动
+    float cosA = cosf(angle), sinA = sinf(angle);
+    // 彩虹 hue
+    uint32_t hue = ((uint32_t)(s_animTimeSec * 60.0f)) % 360;
+    uint8_t hr, hg, hb;
+    if (hue < 60)       { hr = 255; hg = hue * 255 / 60; hb = 0; }
+    else if (hue < 120) { hr = (120 - hue) * 255 / 60; hg = 255; hb = 0; }
+    else if (hue < 180) { hr = 0; hg = 255; hb = (hue - 120) * 255 / 60; }
+    else if (hue < 240) { hr = 0; hg = (240 - hue) * 255 / 60; hb = 255; }
+    else if (hue < 300) { hr = (hue - 240) * 255 / 60; hg = 0; hb = 255; }
+    else                { hr = 255; hg = 0; hb = (360 - hue) * 255 / 60; }
+    // 用真正 sprite 旋转 + 着色
+    const TerrariaSprite* blSprite = &kEmpressBlade;
+    float sprCx = (float)blSprite->w * 0.5f;
+    float sprCy = (float)blSprite->h * 0.5f;
+    const uint8_t* p = blSprite->pixels;
+    for (uint16_t i = 0; i < blSprite->pixelCount; i++) {
+      uint8_t lx = pgm_read_byte(p + i*5);
+      uint8_t ly = pgm_read_byte(p + i*5 + 1);
+      uint8_t sr = pgm_read_byte(p + i*5 + 2);
+      uint8_t sg = pgm_read_byte(p + i*5 + 3);
+      uint8_t sb = pgm_read_byte(p + i*5 + 4);
+      // 亮度 × hue 着色
+      uint16_t lum = ((uint16_t)sr + sg + sb) / 3;
+      uint8_t cr = (uint8_t)((uint16_t)hr * lum / 255);
+      uint8_t cg = (uint8_t)((uint16_t)hg * lum / 255);
+      uint8_t cb = (uint8_t)((uint16_t)hb * lum / 255);
+      float rx = (float)lx - sprCx;
+      float ry = (float)ly - sprCy;
+      float nx = rx * cosA - ry * sinA;
+      float ny = rx * sinA + ry * cosA;
+      int px = (int)(blX + nx + 0.5f);
+      int py = (int)(blY + ny + 0.5f);
+      putPixel(px, py, cr, cg, cb);
     }
   }
 

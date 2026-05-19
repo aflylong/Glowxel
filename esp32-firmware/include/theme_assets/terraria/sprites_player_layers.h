@@ -105,21 +105,22 @@ static const TerrariaSprite kPlayerLayer_0 PROGMEM = {
   .pixels = kPlayerLayer_0Pixels, .fmt = 5,
 };
 
-// PlayerLayer_1: 11x15, 0 pixels, fmt=5
+// PlayerLayer_1: 11x15, 4 pixels, fmt=5
 static const uint8_t kPlayerLayer_1Pixels[] PROGMEM = {
-
+  0x05, 0x05, 0xf1, 0xf1, 0xf1, 0x06, 0x05, 0xf1, 0xf1, 0xf1, 0x05, 0x06, 0xf1, 0xf1, 0xf1, 0x06,
+  0x06, 0xf1, 0xf1, 0xf1
 };
 static const TerrariaSprite kPlayerLayer_1 PROGMEM = {
-  .w = 11, .h = 15, .pixelCount = 0,
+  .w = 11, .h = 15, .pixelCount = 4,
   .pixels = kPlayerLayer_1Pixels, .fmt = 5,
 };
 
-// PlayerLayer_2: 11x15, 1 pixels, fmt=5
+// PlayerLayer_2: 11x15, 2 pixels, fmt=5
 static const uint8_t kPlayerLayer_2Pixels[] PROGMEM = {
-  0x06, 0x06, 0xb4, 0xb4, 0xb4
+  0x06, 0x05, 0xb4, 0xb4, 0xb4, 0x06, 0x06, 0xb4, 0xb4, 0xb4
 };
 static const TerrariaSprite kPlayerLayer_2 PROGMEM = {
-  .w = 11, .h = 15, .pixelCount = 1,
+  .w = 11, .h = 15, .pixelCount = 2,
   .pixels = kPlayerLayer_2Pixels, .fmt = 5,
 };
 
@@ -154,6 +155,16 @@ static const uint8_t kPlayerLayer_12Pixels[] PROGMEM = {
 static const TerrariaSprite kPlayerLayer_12 PROGMEM = {
   .w = 11, .h = 15, .pixelCount = 0,
   .pixels = kPlayerLayer_12Pixels, .fmt = 5,
+};
+
+// PlayerLayer_15: 11x15, 4 pixels, fmt=5
+static const uint8_t kPlayerLayer_15Pixels[] PROGMEM = {
+  0x05, 0x05, 0x32, 0x32, 0x32, 0x06, 0x05, 0x32, 0x32, 0x32, 0x05, 0x06, 0x32, 0x32, 0x32, 0x06,
+  0x06, 0x32, 0x32, 0x32
+};
+static const TerrariaSprite kPlayerLayer_15 PROGMEM = {
+  .w = 11, .h = 15, .pixelCount = 4,
+  .pixels = kPlayerLayer_15Pixels, .fmt = 5,
 };
 
 // 网格位枚举

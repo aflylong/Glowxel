@@ -35,37 +35,54 @@ const DEFAULT_COLORS = {
 
 // 10 套装 → 装备映射
 export const CHARACTERS = {
-  warrior:    { name: '战士',     armorSet: '耀斑',   armor: { head: 171, body: 177, legs: 112 }, wings: 29, weapons: [{ id: 4956, name: '天顶剑' }, { id: 3065, name: '星辉者' }], hasGuardian: false },
+  warrior:    { name: '战士',     armorSet: '耀斑',   armor: { head: 171, body: 177, legs: 112 }, wings: 29, weapons: [{ id: 4956, name: '天顶剑' }, { id: 757, name: '泰拉刃' }], hasGuardian: false },
   ranger:     { name: '射手',     armorSet: '星旋',   armor: { head: 169, body: 175, legs: 110 }, wings: 30, weapons: [{ id: 3475, name: '星旋机枪' }, { id: 3540, name: '幻影弓' }], hasGuardian: false },
   mage:       { name: '法师',     armorSet: '星云',   armor: { head: 170, body: 176, legs: 111 }, wings: 31, weapons: [{ id: 3541, name: '最后的棱镜' }, { id: 3542, name: '星云烈焰' }], hasGuardian: false },
-  summoner:   { name: '召唤师',   armorSet: '星尘',   armor: { head: 189, body: 190, legs: 130 }, wings: 32, weapons: [{ id: 3531, name: '星尘龙杖' }, { id: 5005, name: '帝皇之刃' }], hasGuardian: true },
-  beetle:     { name: '甲虫战士', armorSet: '甲虫',   armor: { head: 157, body: 105, legs: 98 },  wings: 24, weapons: [{ id: 757, name: '泰拉刃' }, { id: 1258, name: '占有斧' }], hasGuardian: false },
-  spectre:    { name: '幽灵法师', armorSet: '幽灵',   armor: { head: 101, body: 66, legs: 55 },   wings: 11, weapons: [{ id: 1569, name: '暴风雪法杖' }, { id: 3541, name: '最后的棱镜' }], hasGuardian: false },
-  spooky:     { name: '万圣召唤', armorSet: '阴森',   armor: { head: 134, body: 95, legs: 79 },   wings: 21, weapons: [{ id: 1571, name: '暴风雪法杖' }, { id: 3531, name: '星尘龙杖' }], hasGuardian: true },
-  frost:      { name: '冰霜混合', armorSet: '冰霜',   armor: { head: 46, body: 27, legs: 26 },    wings: 10, weapons: [{ id: 3018, name: '北极' }, { id: 1569, name: '暴风雪法杖' }], hasGuardian: false },
-  hallowed:   { name: '神圣战士', armorSet: '神圣',   armor: { head: 41, body: 24, legs: 23 },    wings: 26, weapons: [{ id: 757, name: '泰拉刃' }, { id: 3827, name: '充能攻击' }], hasGuardian: false },
-  chlorophyte:{ name: '叶绿射手', armorSet: '叶绿',   armor: { head: 78, body: 51, legs: 47 },    wings: 27, weapons: [{ id: 4923, name: '永夜刃' }, { id: 4952, name: '棱镜' }], hasGuardian: false },
+  summoner:   { name: '召唤师',   armorSet: '星尘',   armor: { head: 189, body: 190, legs: 130 }, wings: 32, weapons: [{ id: 3531, name: '星尘龙杖' }, { id: 5005, name: '泰拉棱镜' }], hasGuardian: true },
+  beetle:     { name: '甲虫战士', armorSet: '甲虫',   armor: { head: 157, body: 105, legs: 98 },  wings: 24, weapons: [{ id: 757, name: '泰拉刃' }, { id: 1122, name: '占有斧' }], hasGuardian: false },
+  spectre:    { name: '幽灵法师', armorSet: '幽灵',   armor: { head: 101, body: 66, legs: 55 },   wings: 11, weapons: [{ id: 1931, name: '暴风雪法杖' }, { id: 3541, name: '最后的棱镜' }], hasGuardian: false },
+  spooky:     { name: '万圣召唤', armorSet: '阴森',   armor: { head: 134, body: 95, legs: 79 },   wings: 21, weapons: [{ id: 3531, name: '星尘龙杖' }, { id: 1931, name: '暴风雪法杖' }], hasGuardian: false },
+  frost:      { name: '冰霜混合', armorSet: '冰霜',   armor: { head: 46, body: 27, legs: 26 },    wings: 10, weapons: [{ id: 1947, name: '北极' }, { id: 1931, name: '暴风雪法杖' }], hasGuardian: false },
+  hallowed:   { name: '神圣战士', armorSet: '神圣',   armor: { head: 41, body: 24, legs: 23 },    wings: 26, weapons: [{ id: 757, name: '泰拉刃' }, { id: 3827, name: '飞龙' }], hasGuardian: false },
+  chlorophyte:{ name: '叶绿射手', armorSet: '叶绿',   armor: { head: 78, body: 51, legs: 47 },    wings: 27, weapons: [{ id: 4923, name: '星光' }, { id: 4952, name: '棱彩光辉' }], hasGuardian: false },
+  // 新增 4 套 boss 关联
+  crystal:    { name: '水晶忍者', armorSet: '凝胶',   armor: { head: 261, body: 230, legs: 213 }, wings: 49, weapons: [{ id: 2880, name: '波涌之刃' }, { id: 757, name: '泰拉刃' }], hasGuardian: false },
+  bee:        { name: '蜜蜂套',   armorSet: '蜜蜂',   armor: { head: 160, body: 168, legs: 103 }, wings: 6,  weapons: [{ id: 1121, name: '蜂枪' }, { id: 121, name: '烈焰巨剑' }], hasGuardian: false },
+  pirate:     { name: '海盗',     armorSet: '海盗',   armor: { head: 68, body: 45, legs: 41 },    wings: 14, weapons: [{ id: 3852, name: '魔典法杖' }, { id: 757, name: '泰拉刃' }], hasGuardian: false },
+  molten:     { name: '熔岩战士', armorSet: '熔岩',   armor: { head: 9, body: 9, legs: 9 },       wings: 1,  weapons: [{ id: 121, name: '烈焰巨剑' }, { id: 757, name: '泰拉刃' }], hasGuardian: false },
+  // 新手 (无盔甲)
+  novice:     { name: '新手',     armorSet: '无',     armor: { head: 0, body: 0, legs: 0 },       wings: 0,  weapons: [{ id: 3507, name: '铜短剑' }, { id: 24, name: '木剑' }], hasGuardian: false },
 };
 
 // 武器属性
 const WEAPON_PROPS = {
-  4956: { useStyle: 1, ofs: { x: -5, y:  4 } },
-  3065: { useStyle: 1, ofs: { x: -5, y:  4 } },
-  3531: { useStyle: 1, ofs: { x: -5, y:  4 } },
-  5005: { useStyle: 1, ofs: { x: -5, y:  4 } },
-  3475: { useStyle: 5, ofs: { x:  4, y: -7 } },
-  3540: { useStyle: 5, ofs: { x:  4, y: -7 } },
-  3541: { useStyle: 5, ofs: { x: 22, y: -7 }, rotate: 90 },
-  3542: { useStyle: 5, ofs: { x:  0, y:  0 }, hideWeapon: true, overlay: 'orb' },
-  757:  { useStyle: 1, ofs: { x: -5, y:  4 } },
-  1258: { useStyle: 1, ofs: { x: -5, y:  4 } },
-  1569: { useStyle: 5, ofs: { x: 22, y: -7 }, rotate: 90 },
-  1571: { useStyle: 1, ofs: { x: -5, y:  4 } },
-  3018: { useStyle: 5, ofs: { x:  4, y: -7 } },
-  3827: { useStyle: 1, ofs: { x: -5, y:  4 } },
-  4923: { useStyle: 1, ofs: { x: -5, y:  4 } },
-  4952: { useStyle: 5, ofs: { x: 22, y: -7 }, rotate: 90 },
+  4956: { useStyle: 1, ofs: { x: -5, y:  4 } },   // 天顶剑
+  3531: { useStyle: 1, ofs: { x: -5, y:  4 } },   // 星尘龙杖
+  5005: { useStyle: 1, ofs: { x: -5, y:  4 } },   // 泰拉棱镜
+  3475: { useStyle: 5, ofs: { x:  4, y: -7 } },   // 星旋机枪
+  3540: { useStyle: 5, ofs: { x:  4, y: -7 } },   // 幻影弓
+  3541: { useStyle: 5, ofs: { x: 22, y: -7 }, rotate: 90 },   // 最后的棱镜
+  3542: { useStyle: 5, ofs: { x:  0, y:  0 }, hideWeapon: true, overlay: 'orb' },   // 星云烈焰 (4px 光团)
+  757:  { useStyle: 1, ofs: { x: -5, y:  4 } },   // 泰拉刃
+  1122: { useStyle: 1, ofs: { x: -5, y:  4 } },   // 占有斧
+  1931: { useStyle: 5, ofs: { x: 18, y: -14 } },   // 暴风雪法杖
+  1947: { useStyle: 5, ofs: { x:  4, y: -7 } },   // 北极
+  3827: { useStyle: 1, ofs: { x: -12, y: 14 } },   // 飞龙
+  4923: { useStyle: 1, ofs: { x: -5, y:  4 } },   // 星光
+  4952: { useStyle: 5, ofs: { x: 22, y: -7 }, rotate: 90 },   // 棱彩光辉
+  24:   { useStyle: 1, ofs: { x: -5, y:  4 } },   // 木剑
+  3507: { useStyle: 1, ofs: { x: -5, y:  4 } },   // 铜短剑
+  2880: { useStyle: 1, ofs: { x: -5, y:  4 } },   // 波涌之刃
+  1121: { useStyle: 5, ofs: { x:  4, y: -7 } },   // 蜂枪
+  121:  { useStyle: 1, ofs: { x: -5, y:  4 } },   // 烈焰巨剑
+  3852: { useStyle: 1, ofs: { x: -5, y:  4 } },   // 魔典法杖
 };
+
+// 获取武器默认偏移 (供 UI 切换武器时读取)
+export function getWeaponOfs(weaponId) {
+  const wp = WEAPON_PROPS[weaponId];
+  return wp ? { x: wp.ofs.x, y: wp.ofs.y, rotate: wp.rotate || 0 } : { x: -5, y: 4, rotate: 0 };
+}
 
 // ============================================================
 // 主渲染入口
@@ -96,8 +113,18 @@ export function renderTerrariaScene(config, animTimeSec) {
     drawBoss(pixels, config.bossId, animTimeSec, bgPainter);
   }
 
+  // 召唤物:
+  //   穿星尘套装(hasGuardian) → 星尘守卫(被动,永远显示)
+  //   持星尘龙杖(3531) → 星尘龙(额外)
+  //   持泰拉棱镜(5005) → 帝皇飞剑(额外)
   if (ch.hasGuardian) {
     drawGuardian(pixels, config, animTimeSec);
+  }
+  if (config.weaponId === 3531) {
+    drawStardustDragon(pixels, config, animTimeSec);
+  }
+  if (config.weaponId === 5005) {
+    drawEmpressBlade(pixels, config, animTimeSec);
   }
 
   drawPlayer(pixels, config, ch, animTimeSec);
@@ -201,6 +228,111 @@ function drawGuardian(targetMap, config, animTimeSec) {
 }
 
 // ============================================================
+// 星尘龙 (完整拼接 sprite, 持星尘龙杖 3531 时显示)
+//   4 段已预拼接成一张 9×22 sprite, 在角色旁浮动
+// ============================================================
+function drawStardustDragon(targetMap, config, animTimeSec) {
+  const sprite = getSprite('stardust_dragon');
+  if (!sprite || !sprite.pixels) return;
+  const cx = config.playerX + (config.dragonX || 8);
+  const cy = config.playerY + (config.dragonY || 0);
+  const tick = animTimeSec * 60;
+
+  // 浮动: 缓慢上下 + 轻微左右
+  const floatX = cx + Math.sin(tick * 0.02) * 2;
+  const floatY = cy + Math.sin(tick * 0.03) * 2;
+
+  // 旋转: 用 config.dragonAngle 控制基础角度 (度), 加轻微摆动
+  const baseAngleDeg = config.dragonAngle || -90;
+  const angle = (baseAngleDeg * Math.PI / 180) + Math.sin(tick * 0.04) * 0.2;
+  const cosA = Math.cos(angle);
+  const sinA = Math.sin(angle);
+
+  const sprCx = sprite.w / 2;
+  const sprCy = sprite.h / 2;
+
+  for (const px of sprite.pixels) {
+    const [lx, ly, r, g, b, a] = px;
+    if (a < 5) continue;
+    const rx = lx - sprCx;
+    const ry = ly - sprCy;
+    const nx = rx * cosA - ry * sinA;
+    const ny = rx * sinA + ry * cosA;
+    const sx = Math.round(floatX + nx);
+    const sy = Math.round(floatY + ny);
+    if (sx < 0 || sx >= 64 || sy < 0 || sy >= 64) continue;
+    const hex = '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+    targetMap.set(`${sx},${sy}`, hex);
+  }
+}
+
+// ============================================================
+// 帝皇飞剑 / 泰拉棱镜 (背后悬浮 + 彩虹变色, 持泰拉棱镜 5005 时显示)
+//   飞剑在角色背后缓慢绕圈悬浮, 颜色随时间 hue 循环
+// ============================================================
+function drawEmpressBlade(targetMap, config, animTimeSec) {
+  const sprite = getSprite('empress_blade');
+  if (!sprite || !sprite.pixels) return;
+  const cx = config.playerX;
+  const cy = config.playerY;
+
+  // 悬浮位置: 用 config.bladeX/Y 控制
+  const floatX = cx + (config.bladeX || -12);
+  const floatY = cy + (config.bladeY || -5) + Math.sin(animTimeSec * 2) * 2;
+
+  // 轻微旋转 (用 config.bladeAngle 控制基础角度, 固定不摆动)
+  const baseAngleDeg = config.bladeAngle || -45;
+  const angle = (baseAngleDeg * Math.PI / 180);
+  const cosA = Math.cos(angle);
+  const sinA = Math.sin(angle);
+
+  // 彩虹变色: hue 随时间循环
+  const hue = (animTimeSec * 60) % 360;  // 每 6 秒一圈
+
+  const sprCx = sprite.w / 2;
+  const sprCy = sprite.h / 2;
+
+  for (const px of sprite.pixels) {
+    const [lx, ly, r, g, b, a] = px;
+    if (a < 5) continue;
+
+    // 旋转
+    const rx = lx - sprCx;
+    const ry = ly - sprCy;
+    const nx = rx * cosA - ry * sinA;
+    const ny = rx * sinA + ry * cosA;
+    const sx = Math.round(floatX + nx);
+    const sy = Math.round(floatY + ny);
+    if (sx < 0 || sx >= 64 || sy < 0 || sy >= 64) continue;
+
+    // 彩虹着色: 用原像素亮度 × hue 色相
+    const lum = (r + g + b) / (3 * 255);
+    const hsl = hueToRgb(hue, 0.9, Math.max(0.3, lum));
+    const hex = '#' + ((hsl[0] << 16) | (hsl[1] << 8) | hsl[2]).toString(16).padStart(6, '0');
+    targetMap.set(`${sx},${sy}`, hex);
+  }
+}
+
+// HSL → RGB (h: 0-360, s: 0-1, l: 0-1) → [r, g, b] 0-255
+function hueToRgb(h, s, l) {
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  const m = l - c / 2;
+  let r1, g1, b1;
+  if (h < 60)       { r1 = c; g1 = x; b1 = 0; }
+  else if (h < 120) { r1 = x; g1 = c; b1 = 0; }
+  else if (h < 180) { r1 = 0; g1 = c; b1 = x; }
+  else if (h < 240) { r1 = 0; g1 = x; b1 = c; }
+  else if (h < 300) { r1 = x; g1 = 0; b1 = c; }
+  else              { r1 = c; g1 = 0; b1 = x; }
+  return [
+    Math.round((r1 + m) * 255),
+    Math.round((g1 + m) * 255),
+    Math.round((b1 + m) * 255),
+  ];
+}
+
+// ============================================================
 // 角色 16 步合成
 // ============================================================
 function drawPlayer(targetMap, config, ch, animTimeSec) {
@@ -208,12 +340,12 @@ function drawPlayer(targetMap, config, ch, animTimeSec) {
   const cx = config.playerX;
   const cy = config.playerY;
 
-  const isHolding = !!config.weaponId;
+  const isHolding = !!config.weaponId && config.weaponId !== 5005;  // 5005 泰拉棱镜不手持
   const bodyFrameIdx = isHolding ? HOLD_FRAME_NUM : 0;
   const usesCompositeArm = isHolding;
   const legFrameIdx = LEG_FRAME_STAND;
 
-  const headId = ch.armor.head;
+  const headId = config.maskId ? config.maskId : ch.armor.head;  // 面具优先
   const bodyId = ch.armor.body;
   const legsId = ch.armor.legs;
 
@@ -273,7 +405,22 @@ function drawPlayer(targetMap, config, ch, animTimeSec) {
     }
   }
 
-  // ===== Step 16: 头发 (Lunar 头甲全包式跳过, 当前 4 职业全是 Lunar) =====
+  // ===== Step 16: 头发 (没头甲 或 非全包式头甲时画) =====
+  if (headId === 0) {
+    // novice / 无头甲: 画头发 (layer 15, 直接用 hairColor 填色)
+    const hairSprite = getSprite('player_0_15');
+    if (hairSprite && hairSprite.pixels && hairSprite.pixels.length > 0) {
+      // 头发像素极少, 手动放大: 每个像素扩展为 2×2 块
+      const expanded = [];
+      for (const [x, y, , , , a] of hairSprite.pixels) {
+        expanded.push([x, y, ...DEFAULT_COLORS.hairColor, a]);
+        expanded.push([x + 1, y, ...DEFAULT_COLORS.hairColor, a]);
+        expanded.push([x, y + 1, ...DEFAULT_COLORS.hairColor, a]);
+        expanded.push([x + 1, y + 1, ...DEFAULT_COLORS.hairColor, a]);
+      }
+      drawPixelsToMap(targetMap, expanded, cx, cy, 1.0, SCALED_FRAME_W, SCALED_FRAME_H);
+    }
+  }
 
   // ===== 武器 + 前臂 =====
   drawWeaponAndFrontArm(targetMap, config, ch, isHolding, bodyFrameIdx, usesCompositeArm, bodyId, animTimeSec);
@@ -317,10 +464,10 @@ function drawWeaponAndFrontArm(targetMap, config, ch, isHolding, bodyFrameIdx, u
   const cy = config.playerY;
   const dir = 1;
 
-  // 武器
+  // 武器 (5005 泰拉棱镜不手持, 只在背后显示飞剑召唤物)
   let pendingOrb = null;
-  if (isHolding && config.weaponId) {
-    drawWeapon(targetMap, config.weaponId, cx, cy, playerScale, dir);
+  if (isHolding && config.weaponId && config.weaponId !== 5005) {
+    drawWeapon(targetMap, config.weaponId, cx, cy, playerScale, dir, config.weaponOfsX, config.weaponOfsY, config.weaponRotate);
     if (config.weaponId === 3542) pendingOrb = { id: 3542 };
   }
 
@@ -351,7 +498,7 @@ function drawWeaponAndFrontArm(targetMap, config, ch, isHolding, bodyFrameIdx, u
 }
 
 // 画武器
-function drawWeapon(targetMap, weaponId, playerCenterX, playerCenterY, playerScale, dir) {
+function drawWeapon(targetMap, weaponId, playerCenterX, playerCenterY, playerScale, dir, extraOfsX, extraOfsY, extraRotate) {
   const wp = WEAPON_PROPS[weaponId];
   if (!wp || wp.hideWeapon) return;
   const sprite = getSprite('item_' + weaponId);
@@ -361,8 +508,12 @@ function drawWeapon(targetMap, weaponId, playerCenterX, playerCenterY, playerSca
   let wW = sprite.w;
   let wH = sprite.h;
 
-  const handLocalX = (dir > 0 ? 26 : 14) + wp.ofs.x * dir;
-  const handLocalY = 38 + wp.ofs.y;
+  // extraOfsX/Y 是绝对值, 直接替代 wp.ofs (调试时覆盖默认)
+  const ofsX = extraOfsX != null ? extraOfsX : wp.ofs.x;
+  const ofsY = extraOfsY != null ? extraOfsY : wp.ofs.y;
+  const rotateDeg = extraRotate != null ? extraRotate : (wp.rotate || 0);
+  const handLocalX = (dir > 0 ? 26 : 14) + ofsX * dir;
+  const handLocalY = 38 + ofsY;
   const handX = playerCenterX + (handLocalX - FRAME_W / 2) * playerScale;
   const handY = playerCenterY + (handLocalY - FRAME_H / 2) * playerScale;
 
@@ -370,8 +521,8 @@ function drawWeapon(targetMap, weaponId, playerCenterX, playerCenterY, playerSca
     pixels = flipPixelsX(pixels, wW);
   }
 
-  if (wp.rotate) {
-    const rotated = rotatePixels(pixels, wp.rotate, wW, wH);
+  if (rotateDeg) {
+    const rotated = rotatePixels(pixels, rotateDeg, wW, wH);
     pixels = rotated.pixels;
     wW = rotated.w;
     wH = rotated.h;
@@ -390,18 +541,36 @@ function drawWeapon(targetMap, weaponId, playerCenterX, playerCenterY, playerSca
   drawPixelsToMap(targetMap, pixels, drawCx, drawCy, 1.0, wW, wH);
 }
 
-// 法师烈焰光团
+// 法师烈焰光团 (4 像素 + 白色闪烁)
 function drawWeaponOrb(targetMap, config, animTimeSec) {
-  const sprite = getSprite('dust_242_f0');
-  if (!sprite) return;
   const playerScale = config.playerScale / 100;
   const cx = config.playerX;
   const cy = config.playerY;
 
-  const handX = cx + (26 - FRAME_W / 2) * playerScale;
-  const handY = cy + (38 - FRAME_H / 2) * playerScale;
+  // 手部位置
+  const handX = Math.round(cx + (26 - FRAME_W / 2) * playerScale);
+  const handY = Math.round(cy + (38 - FRAME_H / 2) * playerScale);
 
-  const t = animTimeSec * 60;
-  const r = (t % 5 < 2.5) ? 0 : 1;
-  drawPixelsToMap(targetMap, sprite.pixels, handX, handY + r, playerScale, sprite.w, sprite.h);
+  const tick = animTimeSec * 60;
+
+  // 4 个像素点 (2×2 方块), 粉紫色
+  const colors = [
+    [0xFF, 0x66, 0xCC],  // 粉
+    [0xCC, 0x33, 0xFF],  // 紫
+    [0xFF, 0x88, 0xDD],  // 浅粉
+    [0xAA, 0x22, 0xEE],  // 深紫
+  ];
+
+  // 白色闪烁: 每隔几 tick 随机一个点变白
+  const flashIdx = Math.floor(tick / 4) % 4;
+
+  const offsets = [[0, 0], [1, 0], [0, 1], [1, 1]];
+  for (let i = 0; i < 4; i++) {
+    const px = handX + offsets[i][0];
+    const py = handY + offsets[i][1];
+    if (px < 0 || px >= 64 || py < 0 || py >= 64) continue;
+    const c = (i === flashIdx) ? [0xFF, 0xFF, 0xFF] : colors[i];
+    const hex = '#' + ((c[0] << 16) | (c[1] << 8) | c[2]).toString(16).padStart(6, '0');
+    targetMap.set(`${px},${py}`, hex);
+  }
 }

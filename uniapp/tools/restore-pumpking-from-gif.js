@@ -116,16 +116,26 @@ function renderFrameTo64(framePixels, frameSize, params) {
 }
 
 // ============ base + delta(set+clear) ============
+// 颜色容差: |Δr|+|Δg|+|Δb| <= COLOR_TOLERANCE 视为相同 (修 GIF 量化导致的伪差异)
+const COLOR_TOLERANCE = 12;
 
 function computeDelta(basePixels, framePixels) {
   const baseMap = new Map();
-  for (const p of basePixels) baseMap.set(p.x * 64 + p.y, (p.r << 16) | (p.g << 8) | p.b);
+  for (const p of basePixels) baseMap.set(p.x * 64 + p.y, p);
   const set = [];
   const seen = new Set();
   for (const p of framePixels) {
     const k = p.x * 64 + p.y;
     seen.add(k);
-    if (baseMap.get(k) !== ((p.r << 16) | (p.g << 8) | p.b)) set.push(p);
+    const bp = baseMap.get(k);
+    if (!bp) {
+      set.push(p);  // 新位置
+    } else {
+      const dr = Math.abs(bp.r - p.r);
+      const dg = Math.abs(bp.g - p.g);
+      const db = Math.abs(bp.b - p.b);
+      if (dr + dg + db > COLOR_TOLERANCE) set.push(p);
+    }
   }
   const clear = [];
   for (const p of basePixels) {

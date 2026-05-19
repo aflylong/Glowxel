@@ -47,3 +47,10 @@ esp32-firmware/terraria/_src_1405/
 esp32-firmware/terraria/_src_1449/
 esp32-firmware/terraria/_wings_xnb/
 esp32-firmware/terraria/_download/
+esp32-firmware/terraria/_png/
+
+# Terraria 构建中间产物
+uniapp/static/terraria/prescaled/
+
+# 备份文件
+*.backup_*

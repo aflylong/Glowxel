@@ -27,6 +27,31 @@ inline const TerrariaSprite* getArmorHead(uint16_t id) {
     case 46: return &kArmorHead_46;
     case 41: return &kArmorHead_41;
     case 78: return &kArmorHead_78;
+    case 261: return &kArmorHead_261;
+    case 160: return &kArmorHead_160;
+    case 68: return &kArmorHead_68;
+    case 9: return &kArmorHead_9;
+    case 164: return &kArmorHead_164;
+    case 154: return &kArmorHead_154;
+    case 153: return &kArmorHead_153;
+    case 146: return &kArmorHead_146;
+    case 150: return &kArmorHead_150;
+    case 98: return &kArmorHead_98;
+    case 276: return &kArmorHead_276;
+    case 147: return &kArmorHead_147;
+    case 260: return &kArmorHead_260;
+    case 148: return &kArmorHead_148;
+    case 155: return &kArmorHead_155;
+    case 149: return &kArmorHead_149;
+    case 151: return &kArmorHead_151;
+    case 152: return &kArmorHead_152;
+    case 168: return &kArmorHead_168;
+    case 251: return &kArmorHead_251;
+    case 186: return &kArmorHead_186;
+    case 174: return &kArmorHead_174;
+    case 187: return &kArmorHead_187;
+    case 137: return &kArmorHead_137;
+    case 141: return &kArmorHead_141;
     default: return nullptr;
   }
 }
@@ -43,6 +68,10 @@ inline const TerrariaSprite* getArmorBody(uint16_t id) {
     case 27: return &kArmorBody_27;
     case 24: return &kArmorBody_24;
     case 51: return &kArmorBody_51;
+    case 230: return &kArmorBody_230;
+    case 168: return &kArmorBody_168;
+    case 45: return &kArmorBody_45;
+    case 9: return &kArmorBody_9;
     default: return nullptr;
   }
 }
@@ -59,6 +88,10 @@ inline const TerrariaSprite* getArmorLegs(uint16_t id) {
     case 26: return &kArmorLegs_26;
     case 23: return &kArmorLegs_23;
     case 47: return &kArmorLegs_47;
+    case 213: return &kArmorLegs_213;
+    case 103: return &kArmorLegs_103;
+    case 41: return &kArmorLegs_41;
+    case 9: return &kArmorLegs_9;
     default: return nullptr;
   }
 }
@@ -67,51 +100,28 @@ inline const TerrariaSpriteAnim* getWings(uint16_t id) {
   switch (id) {
     case 1: return &kWings_1;
     case 2: return &kWings_2;
-    case 3: return &kWings_3;
-    case 5: return &kWings_5;
     case 6: return &kWings_6;
-    case 7: return &kWings_7;
-    case 8: return &kWings_8;
-    case 9: return &kWings_9;
     case 10: return &kWings_10;
     case 11: return &kWings_11;
-    case 12: return &kWings_12;
-    case 13: return &kWings_13;
     case 14: return &kWings_14;
-    case 15: return &kWings_15;
-    case 16: return &kWings_16;
-    case 17: return &kWings_17;
-    case 18: return &kWings_18;
-    case 19: return &kWings_19;
-    case 20: return &kWings_20;
     case 21: return &kWings_21;
     case 23: return &kWings_23;
     case 24: return &kWings_24;
-    case 25: return &kWings_25;
     case 26: return &kWings_26;
     case 27: return &kWings_27;
     case 29: return &kWings_29;
     case 30: return &kWings_30;
     case 31: return &kWings_31;
     case 32: return &kWings_32;
-    case 34: return &kWings_34;
-    case 35: return &kWings_35;
-    case 36: return &kWings_36;
     case 37: return &kWings_37;
     case 38: return &kWings_38;
-    case 39: return &kWings_39;
-    case 42: return &kWings_42;
-    case 43: return &kWings_43;
-    case 48: return &kWings_48;
     case 49: return &kWings_49;
-    case 51: return &kWings_51;
     default: return nullptr;
   }
 }
 
 inline const TerrariaSprite* getWeapon(uint16_t id) {
   switch (id) {
-    case 3065: return &kWeapon_3065;
     case 3475: return &kWeapon_3475;
     case 3531: return &kWeapon_3531;
     case 3540: return &kWeapon_3540;
@@ -120,13 +130,18 @@ inline const TerrariaSprite* getWeapon(uint16_t id) {
     case 4956: return &kWeapon_4956;
     case 5005: return &kWeapon_5005;
     case 757: return &kWeapon_757;
-    case 1258: return &kWeapon_1258;
-    case 1569: return &kWeapon_1569;
-    case 1571: return &kWeapon_1571;
-    case 3018: return &kWeapon_3018;
+    case 1122: return &kWeapon_1122;
+    case 1931: return &kWeapon_1931;
+    case 1947: return &kWeapon_1947;
     case 3827: return &kWeapon_3827;
     case 4923: return &kWeapon_4923;
     case 4952: return &kWeapon_4952;
+    case 1121: return &kWeapon_1121;
+    case 121: return &kWeapon_121;
+    case 3852: return &kWeapon_3852;
+    case 24: return &kWeapon_24;
+    case 3507: return &kWeapon_3507;
+    case 2880: return &kWeapon_2880;
     default: return nullptr;
   }
 }
@@ -146,6 +161,7 @@ inline const TerrariaSprite* getPlayerLayer(uint16_t id) {
     case 10: return &kPlayerLayer_10;
     case 11: return &kPlayerLayer_11;
     case 12: return &kPlayerLayer_12;
+    case 15: return &kPlayerLayer_15;
     default: return nullptr;
   }
 }

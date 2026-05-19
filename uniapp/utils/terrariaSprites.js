@@ -13,6 +13,7 @@ const WINGS_RAW          = require('../static/terraria/wings.js');
 const WEAPONS_RAW        = require('../static/terraria/weapons.js');
 const PLAYER_LAYERS_RAW  = require('../static/terraria/player_layers.js');
 const SUMMON_GUARDIAN_RAW = require('../static/terraria/summon_guardian.js');
+const SUMMON_EXTRAS_RAW  = require('../static/terraria/summon_extras.js');
 const MISC_RAW           = require('../static/terraria/misc.js');
 
 // 启动时把 base64 压缩格式解码成 pixels 数组
@@ -115,6 +116,7 @@ const WINGS          = _decodeBundle(WINGS_RAW);
 const WEAPONS        = _decodeBundle(WEAPONS_RAW);
 const PLAYER_LAYERS  = _decodeBundle(PLAYER_LAYERS_RAW);
 const SUMMON_GUARDIAN = _decodeBundle(SUMMON_GUARDIAN_RAW);
+const SUMMON_EXTRAS  = _decodeBundle(SUMMON_EXTRAS_RAW);
 const MISC           = _decodeBundle(MISC_RAW);
 
 // 网格位映射 (armor_bodies.js / player_layers.js 内嵌的 _gridIndex)
@@ -139,6 +141,8 @@ export function getSprite(name) {
   if (name.startsWith('item_'))       return WEAPONS[name];
   if (name.startsWith('player_0_'))   return PLAYER_LAYERS[name];
   if (name === 'projectile_623')      return SUMMON_GUARDIAN.projectile_623;
+  if (name === 'stardust_dragon')    return SUMMON_EXTRAS.stardust_dragon;
+  if (name === 'empress_blade')      return SUMMON_EXTRAS.empress_blade;
   return MISC[name] || null;  // biome_forest_*, dust_242_f0, extra_171
 }
 

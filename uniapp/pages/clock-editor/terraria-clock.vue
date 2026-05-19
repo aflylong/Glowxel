@@ -120,13 +120,37 @@
           </view>
           <view class="weapon-grid">
             <view
-              v-for="w in currentWeapons"
+              v-for="w in allWeapons"
               :key="w.id"
               class="weapon-btn"
               :class="{ active: config.terraria.weaponId === w.id }"
               @click="selectWeapon(w.id)"
             >
               <text>{{ w.name }}</text>
+            </view>
+          </view>
+
+          <!-- Boss 面具 -->
+          <view class="card-title-section">
+            <Icon name="game" :size="32" />
+            <text class="card-title">面具 (可选)</text>
+          </view>
+          <view class="weapon-grid">
+            <view
+              class="weapon-btn"
+              :class="{ active: !config.terraria.maskId }"
+              @click="selectMask(0)"
+            >
+              <text>套装头甲</text>
+            </view>
+            <view
+              v-for="m in maskList"
+              :key="m.id"
+              class="weapon-btn"
+              :class="{ active: config.terraria.maskId === m.id }"
+              @click="selectMask(m.id)"
+            >
+              <text>{{ m.name }}</text>
             </view>
           </view>
 
@@ -153,29 +177,36 @@
               <Icon name="ai" :size="32" />
               <text class="card-title">守卫</text>
             </view>
-            <view class="setting-item-row">
-              <text class="setting-label">守卫 X</text>
-              <view class="setting-control-buttons">
-                <view class="control-btn" @click="adjustTerraria('guardianX', -1)"><text class="control-icon">-</text></view>
-                <text class="setting-value-large">{{ config.terraria.guardianX }}</text>
-                <view class="control-btn" @click="adjustTerraria('guardianX', 1)"><text class="control-icon">+</text></view>
-              </view>
+            <!-- 守卫/星尘龙/飞剑 调整已隐藏 (数据保留) -->
+          </view>
+
+          <!-- 武器位置微调 -->
+          <view class="card-title-section">
+            <Icon name="palette" :size="32" />
+            <text class="card-title">武器位置</text>
+          </view>
+          <view class="setting-item-row">
+            <text class="setting-label">武器 X</text>
+            <view class="setting-control-buttons">
+              <view class="control-btn" @click="adjustTerraria('weaponOfsX', -1)"><text class="control-icon">-</text></view>
+              <text class="setting-value-large">{{ config.terraria.weaponOfsX }}</text>
+              <view class="control-btn" @click="adjustTerraria('weaponOfsX', 1)"><text class="control-icon">+</text></view>
             </view>
-            <view class="setting-item-row">
-              <text class="setting-label">守卫 Y</text>
-              <view class="setting-control-buttons">
-                <view class="control-btn" @click="adjustTerraria('guardianY', -1)"><text class="control-icon">-</text></view>
-                <text class="setting-value-large">{{ config.terraria.guardianY }}</text>
-                <view class="control-btn" @click="adjustTerraria('guardianY', 1)"><text class="control-icon">+</text></view>
-              </view>
+          </view>
+          <view class="setting-item-row">
+            <text class="setting-label">武器 Y</text>
+            <view class="setting-control-buttons">
+              <view class="control-btn" @click="adjustTerraria('weaponOfsY', -1)"><text class="control-icon">-</text></view>
+              <text class="setting-value-large">{{ config.terraria.weaponOfsY }}</text>
+              <view class="control-btn" @click="adjustTerraria('weaponOfsY', 1)"><text class="control-icon">+</text></view>
             </view>
-            <view class="setting-item-row">
-              <text class="setting-label">守卫缩放%</text>
-              <view class="setting-control-buttons">
-                <view class="control-btn" @click="adjustTerraria('guardianScale', -1)"><text class="control-icon">-</text></view>
-                <text class="setting-value-large">{{ config.terraria.guardianScale }}</text>
-                <view class="control-btn" @click="adjustTerraria('guardianScale', 1)"><text class="control-icon">+</text></view>
-              </view>
+          </view>
+          <view class="setting-item-row">
+            <text class="setting-label">旋转°</text>
+            <view class="setting-control-buttons">
+              <view class="control-btn" @click="adjustTerraria('weaponRotate', -15)"><text class="control-icon">-</text></view>
+              <text class="setting-value-large">{{ config.terraria.weaponRotate }}°</text>
+              <view class="control-btn" @click="adjustTerraria('weaponRotate', 15)"><text class="control-icon">+</text></view>
             </view>
           </view>
 
@@ -304,7 +335,7 @@ import PixelPreviewBoard from "../../components/PixelPreviewBoard.vue";
 import ClockFontPanel from "../../components/clock-editor/ClockFontPanel.vue";
 import ClockTextSettingsCard from "../../components/clock-editor/ClockTextSettingsCard.vue";
 import { getClockFontOptions, drawClockTextToPixels } from "../../utils/clockCanvas.js";
-import { renderTerrariaScene, CHARACTERS } from "../../utils/terrariaRenderer.js";
+import { renderTerrariaScene, CHARACTERS, getWeaponOfs } from "../../utils/terrariaRenderer.js";
 import { WING_LIST } from "../../utils/terrariaWings.js";
 import { preloadAll as preloadTerrariaSprites } from "../../utils/terrariaSprites.js";
 import { applyTerrariaClockBorder } from "../../utils/clockTerrariaBorder.js";
@@ -320,6 +351,15 @@ const TERRARIA_RANGE = {
   guardianY:      { min: -64,  max: 64  },
   guardianScale:  { min: 20,   max: 200 },
   wingSpeedPct:   { min: 0,    max: 200 },
+  dragonX:        { min: -32,  max: 32  },
+  dragonY:        { min: -32,  max: 32  },
+  dragonAngle:    { min: -180, max: 180 },
+  bladeX:         { min: -32,  max: 32  },
+  bladeY:         { min: -32,  max: 32  },
+  bladeAngle:     { min: -180, max: 180 },
+  weaponOfsX:     { min: -20,  max: 20  },
+  weaponOfsY:     { min: -20,  max: 20  },
+  weaponRotate:   { min: -180, max: 180 },
   bossX:          { min: 0,    max: 63  },
   bossY:          { min: 0,    max: 63  },
   bossScale:      { min: 5,    max: 200 },
@@ -411,12 +451,22 @@ export default {
         terraria: {
           characterId: "warrior",
           weaponId: 4956,
+          maskId: 0,  // 0 = 使用套装头甲, >0 = boss 面具 ID
           playerX: 14,
           playerY: 51,
           playerScale: 27,
           guardianX: -10,
           guardianY: -18,
           guardianScale: 27,
+          dragonX: -12,
+          dragonY: -3,
+          dragonAngle: 75,
+          bladeX: -8,
+          bladeY: 1,
+          bladeAngle: 105,
+          weaponOfsX: 0,
+          weaponOfsY: 0,
+          weaponRotate: 0,
           wingSpeedPct: 50,
           wingId: 29,
           // 地形 + Boss
@@ -492,6 +542,41 @@ export default {
       const ch = CHARACTERS[this.config.terraria.characterId];
       return ch ? ch.weapons : [];
     },
+    allWeapons() {
+      // 所有 20 把武器(用户可自由选)
+      const all = [];
+      for (const ch of Object.values(CHARACTERS)) {
+        for (const w of ch.weapons) {
+          if (!all.find(a => a.id === w.id)) all.push(w);
+        }
+      }
+      return all;
+    },
+    maskList() {
+      return [
+        { id: 164, name: '史莱姆王' },
+        { id: 154, name: '克苏鲁之眼' },
+        { id: 153, name: '世界吞噬者' },
+        { id: 146, name: '克苏鲁之脑' },
+        { id: 150, name: '蜂王' },
+        { id: 98,  name: '骷髅王' },
+        { id: 276, name: '巨鹿' },
+        { id: 147, name: '血肉墙' },
+        { id: 260, name: '史莱姆女皇' },
+        { id: 148, name: '双子魔眼' },
+        { id: 155, name: '毁灭者' },
+        { id: 149, name: '机械骷髅王' },
+        { id: 151, name: '世纪之花' },
+        { id: 152, name: '石巨人' },
+        { id: 168, name: '巨鱼公爵' },
+        { id: 251, name: '光之女皇' },
+        { id: 186, name: '邪教徒' },
+        { id: 174, name: '火星生物' },
+        { id: 187, name: '月亮领主' },
+        { id: 137, name: '南瓜王' },
+        { id: 141, name: '树面具' },
+      ];
+    },
     hasGuardian() {
       const ch = CHARACTERS[this.config.terraria.characterId];
       return !!(ch && ch.hasGuardian);
@@ -506,6 +591,7 @@ export default {
 
   onLoad() {
     this.clockMode = "terraria_clock";
+    this._loadTerrariaConfig();
     this.ensureValidCurrentTab();
 
     try {
@@ -547,15 +633,27 @@ export default {
       if (!ch) return;
       this.config.terraria.characterId = charId;
       this.config.terraria.weaponId = ch.weapons[0].id;
+      const ofs = getWeaponOfs(ch.weapons[0].id);
+      this.config.terraria.weaponOfsX = ofs.x;
+      this.config.terraria.weaponOfsY = ofs.y;
+      this.config.terraria.weaponRotate = ofs.rotate;
       this.config.terraria.wingId = ch.wings;
       this.scheduleRender();
     },
     selectWeapon(weaponId) {
       this.config.terraria.weaponId = weaponId;
+      const ofs = getWeaponOfs(weaponId);
+      this.config.terraria.weaponOfsX = ofs.x;
+      this.config.terraria.weaponOfsY = ofs.y;
+      this.config.terraria.weaponRotate = ofs.rotate;
       this.scheduleRender();
     },
     selectWing(wingId) {
       this.config.terraria.wingId = wingId;
+      this.scheduleRender();
+    },
+    selectMask(maskId) {
+      this.config.terraria.maskId = maskId || 0;
       this.scheduleRender();
     },
     adjustTerraria(key, delta) {
@@ -582,6 +680,25 @@ export default {
       t.bossOverrides[t.bossId] = {
         x: t.bossX, y: t.bossY, scale: t.bossScale,
       };
+    },
+    _saveTerrariaConfig() {
+      uni.setStorageSync('terraria_clock_config', {
+        font: this.config.font,
+        hourFormat: this.config.hourFormat,
+        showSeconds: this.config.showSeconds,
+        time: this.config.time,
+        terraria: this.config.terraria,
+      });
+    },
+    _loadTerrariaConfig() {
+      const saved = uni.getStorageSync('terraria_clock_config');
+      if (saved && typeof saved === 'object') {
+        if (saved.font) this.config.font = saved.font;
+        if (saved.hourFormat) this.config.hourFormat = saved.hourFormat;
+        if (saved.showSeconds !== undefined) this.config.showSeconds = saved.showSeconds;
+        if (saved.time) Object.assign(this.config.time, saved.time);
+        if (saved.terraria) Object.assign(this.config.terraria, saved.terraria);
+      }
     },
     // 从 bossOverrides[slug] 加载到 bossX/Y/Scale, 如果没有就用默认 48/32/25
     _loadBossOverride(slug) {
@@ -651,6 +768,13 @@ export default {
           guardianScale: t.guardianScale,
           wingId: t.wingId,
           wingSpeed: t.wingSpeedPct,
+          maskId: t.maskId || 0,
+          dragonX: t.dragonX || -12,
+          dragonY: t.dragonY || -3,
+          dragonAngle: t.dragonAngle || 75,
+          bladeX: t.bladeX || -8,
+          bladeY: t.bladeY || 1,
+          bladeAngle: t.bladeAngle || 105,
           biome: this._biomeToIndex(t.biome),
           bossEnabled: !!t.bossEnabled,
           bossId: this._bossSlugToIndex(t.bossId),
@@ -668,6 +792,7 @@ export default {
           clockBgOuter: t.clockBgOuter,
         });
         this.showSendSuccess("已应用");
+        this._saveTerrariaConfig();
       } catch (err) {
         await this.deviceStore.rollbackBusinessMode(previousMode, {
           expectedMode: "terraria_clock",

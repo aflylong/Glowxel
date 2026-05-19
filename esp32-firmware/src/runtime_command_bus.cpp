@@ -1669,6 +1669,11 @@ bool prepareTerrariaTransaction(JsonObject params, const char*& reason) {
   else if (strcmp(characterStr, "frost") == 0) character = TERRARIA_CHAR_FROST;
   else if (strcmp(characterStr, "hallowed") == 0) character = TERRARIA_CHAR_HALLOWED;
   else if (strcmp(characterStr, "chlorophyte") == 0) character = TERRARIA_CHAR_CHLOROPHYTE;
+  else if (strcmp(characterStr, "crystal") == 0) character = TERRARIA_CHAR_CRYSTAL;
+  else if (strcmp(characterStr, "bee") == 0) character = TERRARIA_CHAR_BEE;
+  else if (strcmp(characterStr, "pirate") == 0) character = TERRARIA_CHAR_PIRATE;
+  else if (strcmp(characterStr, "molten") == 0) character = TERRARIA_CHAR_MOLTEN;
+  else if (strcmp(characterStr, "novice") == 0) character = TERRARIA_CHAR_NOVICE;
   else {
     reason = "terraria_clock character invalid";
     return false;
@@ -1702,7 +1707,7 @@ bool prepareTerrariaTransaction(JsonObject params, const char*& reason) {
       guardianY < -64 || guardianY > 64 ||
       guardianScale < 20 || guardianScale > 200 ||
       wingSpeed < 0 || wingSpeed > 200 ||
-      biome < 0 || biome > 8 ||
+      biome < 0 || biome > 9 ||
       fontScale < 1 || fontScale > 3 ||
       clockX < 0 || clockX > 63 ||
       clockY < 0 || clockY > 63 ||
@@ -1745,6 +1750,13 @@ bool prepareTerrariaTransaction(JsonObject params, const char*& reason) {
   command.terrariaConfig.guardianScale = static_cast<uint8_t>(guardianScale);
   command.terrariaConfig.wingId = static_cast<uint8_t>(wingId);
   command.terrariaConfig.wingSpeed = static_cast<uint8_t>(wingSpeed);
+  command.terrariaConfig.maskId = params.containsKey("maskId") ? params["maskId"].as<uint16_t>() : 0;
+  command.terrariaConfig.dragonX = params.containsKey("dragonX") ? params["dragonX"].as<int8_t>() : -12;
+  command.terrariaConfig.dragonY = params.containsKey("dragonY") ? params["dragonY"].as<int8_t>() : -3;
+  command.terrariaConfig.dragonAngle = params.containsKey("dragonAngle") ? params["dragonAngle"].as<int16_t>() : 75;
+  command.terrariaConfig.bladeX = params.containsKey("bladeX") ? params["bladeX"].as<int8_t>() : -8;
+  command.terrariaConfig.bladeY = params.containsKey("bladeY") ? params["bladeY"].as<int8_t>() : 1;
+  command.terrariaConfig.bladeAngle = params.containsKey("bladeAngle") ? params["bladeAngle"].as<int16_t>() : 105;
   command.terrariaConfig.biome = static_cast<uint8_t>(biome);
   command.terrariaConfig.bossEnabled = bossEnabled;
   command.terrariaConfig.bossId = static_cast<uint8_t>(bossId);

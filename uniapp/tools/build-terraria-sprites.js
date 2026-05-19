@@ -293,9 +293,18 @@ function main() {
   console.log('');
 
   // 1. armor_heads.js
-  console.log('[1/8] armor_heads (11 头甲 frame 0)');
+  console.log('[1/8] armor_heads (15 套装头甲 + 22 boss 面具)');
   const armorHeads = {};
-  for (const id of [169, 170, 171, 189, 157, 101, 156, 134, 46, 41, 78]) {
+  // 原 11 套装 + 新 4 套装 + 22 boss 面具 (去重)
+  const headIds = new Set([
+    // 套装头甲 (15)
+    169, 170, 171, 189, 157, 101, 156, 134, 46, 41, 78,
+    261, 160, 68, 9,
+    // boss 面具 (22)
+    164, 154, 153, 146, 150, 98, 276, 147, 260, 148, 155,
+    149, 151, 152, 168, 251, 186, 174, 187, 137, 141,
+  ]);
+  for (const id of headIds) {
     armorHeads['armor_head_' + id] = extractFrame('Armor_Head_' + id, 0, 56);
   }
   writeBundle('armor_heads.js', armorHeads);
@@ -307,7 +316,9 @@ function main() {
     ['front_arm', [5, 0]], ['front_shoulder', [0, 1]], ['back_arm_holding', [5, 3]],
   ];
   const armorBodies = {};
-  for (const id of [175, 176, 177, 190, 105, 66, 95, 27, 24, 51]) {
+  // 原 10 + 新 4: 230 水晶忍者 / 168 蜜蜂 / 45 海盗 / 48 熔岩
+  for (const id of [175, 176, 177, 190, 105, 66, 95, 27, 24, 51,
+                    230, 168, 45, 9]) {
     const allPixels = [];
     for (let i = 0; i < GRID_POSITIONS.length; i++) {
       const [, [col, row]] = GRID_POSITIONS[i];
@@ -326,9 +337,11 @@ function main() {
   writeBundle('armor_bodies.js', armorBodies);
 
   // 3. armor_legs.js
-  console.log('[3/8] armor_legs (10 腿甲 frame 0)');
+  console.log('[3/8] armor_legs (14 腿甲 frame 0)');
   const armorLegs = {};
-  for (const id of [110, 111, 112, 130, 98, 55, 79, 26, 23, 47]) {
+  // 原 10 + 新 4: 213 水晶忍者 / 103 蜜蜂 / 41 海盗 / 49 熔岩
+  for (const id of [110, 111, 112, 130, 98, 55, 79, 26, 23, 47,
+                    213, 103, 41, 9]) {
     armorLegs['armor_legs_' + id] = extractFrame('Armor_Legs_' + id, 0, 56);
   }
   writeBundle('armor_legs.js', armorLegs);
@@ -342,24 +355,29 @@ function main() {
   // frameStart 是动画起始帧 (有些翅膀第0帧是折叠态不参与循环)
   // 数据来源: Terraria/Player.cs::WingFrame() + 实测 PNG 尺寸
   const WING_FRAMES = {
-    1:  [4, 4, 0], 2:  [4, 4, 0], 3:  [4, 4, 0], 5:  [4, 4, 0], 6:  [4, 4, 0],
-    7:  [4, 4, 0], 8:  [4, 4, 0], 9:  [4, 4, 0], 10: [4, 4, 0], 11: [4, 4, 0],
-    12: [4, 4, 0],     // Steampunk 108x240/4=60
-    13: [4, 4, 0], 14: [4, 4, 0], 15: [4, 4, 0], 16: [4, 4, 0], 17: [4, 4, 0],
-    18: [4, 4, 0], 19: [4, 4, 0], 20: [4, 4, 0], 21: [4, 4, 0], 23: [4, 4, 0],
-    24: [4, 4, 0], 25: [4, 4, 0], 26: [4, 4, 0], 27: [4, 4, 0], 29: [4, 4, 0],
-    30: [4, 4, 1],     // Vortex: 1-3
-    31: [4, 4, 0], 32: [4, 4, 0],
-    34: [6, 6, 0],     // Jim's
-    35: [4, 4, 0], 36: [4, 4, 0], 37: [4, 4, 0], 38: [4, 4, 0],
-    39: [6, 6, 0],     // Leinfors
-    42: [4, 4, 0], 46: [4, 4, 0],
-    43: [7, 7, 1],     // Grox: PNG 80x420/7=60, 用 1-6
-    48: [8, 8, 0],     // Chippy: 90x512/8=64
-    49: [11, 11, 0],   // Heroicis: 120x1034/11=94
-    50: [11, 10, 0],   // Kazzymodus: PNG 11帧, 实际有像素 10 帧
-    51: [8, 6, 2],     // Luna: 86x248/8=31, 用 2-7
+    // 10 套装专属
+    1:  [4, 4, 0],     // 恶魔之翼 (特色经典)
+    2:  [4, 4, 0],     // 天使之翼 (特色经典)
+    6:  [4, 4, 0],     // 仙女之翼 (特色)
+    10: [4, 4, 0],     // 冰冻翅膀 (冰霜套)
+    11: [4, 4, 0],     // 幽灵之翼 (幽灵套)
+    14: [4, 4, 0],     // 蝙蝠翅膀 (特色)
+    21: [4, 4, 0],     // 阴森翅膀 (阴森套)
+    23: [4, 4, 0],     // 节日翅膀 (特色)
+    24: [4, 4, 0],     // 甲虫翅膀 (甲虫套)
+    26: [4, 4, 0],     // 猪龙鱼翅膀 (神圣套 / boss 掉)
+    27: [4, 4, 0],     // 蛾翼 (叶绿套 / boss 掉)
+    29: [4, 4, 0],     // 耀斑之翼 (耀斑套)
+    30: [4, 4, 1],     // 星旋加速器 (星旋套)
+    31: [4, 4, 0],     // 星云斗篷 (星云套)
+    32: [4, 4, 0],     // 星尘之翼 (星尘套)
+    // boss 必掉
+    37: [4, 4, 0],     // 花妖翅膀 (贝齐 boss 掉)
+    38: [4, 4, 0],     // Arkhalis 紫电 (特色)
+    // 45 长尾彩虹翼 — 之前被排除(Jetpack 类), 暂不加
+    49: [11, 11, 0],   // Heroicis (11 帧最长动画 / boss 掉)
   };
+  // 精选 18 个翅膀 (原 42 → 18, 后续可加 44/45 等)
   for (const [idStr, params] of Object.entries(WING_FRAMES)) {
     const id = parseInt(idStr);
     const [sliceFrames, animFrames, frameStart] = params;
@@ -380,9 +398,10 @@ function main() {
   writeBundle('wings.js', wings);
 
   // 5. weapons.js
-  console.log('[5/8] weapons (16 武器整张)');
+  console.log('[5/8] weapons (20 武器整张)');
   const weapons = {};
-  for (const id of [3065, 3475, 3531, 3540, 3541, 3542, 4956, 5005, 757, 1258, 1569, 1571, 3018, 3827, 4923, 4952]) {
+  for (const id of [3475, 3531, 3540, 3541, 3542, 4956, 5005, 757, 1122, 1931, 1947, 3827, 4923, 4952,
+                    1121, 121, 3852, 24, 3507, 2880]) {
     weapons['item_' + id] = extractWhole('Item_' + id);
   }
   writeBundle('weapons.js', weapons);
@@ -409,7 +428,9 @@ function main() {
     playerLayers['player_0_' + layer] = { w: 40, h: 56 * PLAYER_GRID_POSITIONS.length, pixels: allPixels };
   }
   for (const layer of PLAYER_STRIP_LAYERS) {
-    playerLayers['player_0_' + layer] = extractFrame('Player_0_' + layer, 0, 56);
+    // layer 15 (头发) frame 0 是空的, 实际头发在 frame 1
+    const frameIdx = (layer === 15) ? 1 : 0;
+    playerLayers['player_0_' + layer] = extractFrame('Player_0_' + layer, frameIdx, 56);
   }
   playerLayers._gridIndex = {
     torso: 0, back_arm: 1, back_shoulder: 2, front_arm: 3, front_shoulder: 4,

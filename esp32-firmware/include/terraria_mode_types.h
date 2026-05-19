@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-// 10 个套装 (跟 uniapp CHARACTERS 键名严格对齐)
+// 15 个套装 (跟 uniapp CHARACTERS 键名严格对齐)
 enum TerrariaCharacter : uint8_t {
   TERRARIA_CHAR_WARRIOR     = 0,  // 耀斑 Solar Flare
   TERRARIA_CHAR_RANGER      = 1,  // 星旋 Vortex
@@ -15,6 +15,11 @@ enum TerrariaCharacter : uint8_t {
   TERRARIA_CHAR_FROST       = 7,  // 冰霜
   TERRARIA_CHAR_HALLOWED    = 8,  // 神圣
   TERRARIA_CHAR_CHLOROPHYTE = 9,  // 叶绿
+  TERRARIA_CHAR_CRYSTAL     = 10, // 水晶忍者 (史莱姆女皇)
+  TERRARIA_CHAR_BEE         = 11, // 蜜蜂 (蜂王)
+  TERRARIA_CHAR_PIRATE      = 12, // 海盗 (飞行荷兰人)
+  TERRARIA_CHAR_MOLTEN      = 13, // 熔岩
+  TERRARIA_CHAR_NOVICE      = 14, // 新手 (无盔甲)
 };
 
 struct TerrariaModeConfig {
@@ -35,6 +40,19 @@ struct TerrariaModeConfig {
   // 翅膀 (独立选择, 不绑定职业)
   uint8_t wingId;           // Wings ID (1..51, 0=无翅膀)
   uint8_t wingSpeed;        // 0..200 (50 = 默认)
+
+  // 面具 (0=使用套装头甲, >0=boss 面具 head ID)
+  uint16_t maskId;
+
+  // 星尘龙位置
+  int8_t dragonX;
+  int8_t dragonY;
+  int16_t dragonAngle;      // 度
+
+  // 帝皇飞剑位置
+  int8_t bladeX;
+  int8_t bladeY;
+  int16_t bladeAngle;       // 度
 
   // 地形 (跟 uniapp BIOME_LIST 对齐)
   uint8_t biome;            // 0=forest,1=corruption,2=crimson,3=jungle,4=snow,5=dungeon,6=underworld,7=hallow,8=ocean,9=temple

@@ -10,46 +10,24 @@ const BODY_FRAME_H = 56;
 
 // 翅膀名称表 (用于 UI 选择列表) — 源自 ArmorIDs.cs Wing class
 export const WING_LIST = [
-  { id: 1,  name: '恶魔之翼' },       // DemonWings
-  { id: 2,  name: '天使之翼' },       // AngelWings
-  { id: 3,  name: 'Red之翼' },        // RedsWings
-  { id: 5,  name: '蝴蝶翅膀' },       // ButterflyWings
-  { id: 6,  name: '仙女之翼' },       // FairyWings
-  { id: 7,  name: '鸟妖翅膀' },       // HarpyWings
-  { id: 8,  name: '骨翼' },           // BoneWings
-  { id: 9,  name: '烈焰之翼' },       // FlameWings
-  { id: 10, name: '冰冻翅膀' },       // FrozenWings
-  { id: 11, name: '幽灵之翼' },       // SpectreWings
-  { id: 12, name: '蒸汽朋克翅膀' },   // SteampunkWings
-  { id: 13, name: '树叶翅膀' },       // LeafWings
-  { id: 14, name: '蝙蝠翅膀' },       // BatWings
-  { id: 15, name: '蜜蜂翅膀' },       // BeeWings
-  { id: 16, name: 'D-Town之翼' },     // DTownsWings
-  { id: 17, name: 'Will之翼' },       // WillsWings
-  { id: 18, name: 'Crowno之翼' },     // CrownosWings
-  { id: 19, name: 'Cenx之翼' },       // CenxsWings
-  { id: 20, name: '破损仙女翅膀' },   // TatteredFairyWings
-  { id: 21, name: '阴森翅膀' },       // SpookyWings
-  { id: 23, name: '节日翅膀' },       // FestiveWings
-  { id: 24, name: '甲虫翅膀' },       // BeetleWings
-  { id: 25, name: '鳍翼' },           // FinWings
-  { id: 26, name: '猪龙鱼翅膀' },     // FishronWings
-  { id: 27, name: '蛾翼' },           // MothronWings
-  { id: 29, name: '耀斑之翼' },       // SolarWings
-  { id: 30, name: '星旋加速器' },     // VortexBooster
-  { id: 31, name: '星云斗篷' },       // NebulaMantle
-  { id: 32, name: '星尘之翼' },       // StardustWings
-  { id: 34, name: 'Jim之翼' },        // JimsWings
-  { id: 35, name: 'Skiphs之爪' },     // SkiphssPaws
-  { id: 36, name: 'Loki之翼' },       // LokisWings
-  { id: 37, name: '花妖翅膀' },       // BetsyWings
-  { id: 38, name: 'Arkhalis之翼' },   // ArkhalisWings
-  { id: 39, name: 'Leinfors之翼' },   // LeinforsWings
-  { id: 42, name: '美食蛮人之翼' },   // FoodBarbarianWings
-  { id: 43, name: 'Grox之翼' },       // GroxTheGreatWings
-  { id: 48, name: 'Chippy之翼' },     // ChippysWings
-  { id: 49, name: 'Heroicis之翼' },   // HeroicisWings
-  { id: 51, name: 'Luna之翼' },       // LunasWings
+  { id: 1,  name: '恶魔之翼' },
+  { id: 2,  name: '天使之翼' },
+  { id: 6,  name: '仙女之翼' },
+  { id: 10, name: '冰冻翅膀' },
+  { id: 11, name: '幽灵之翼' },
+  { id: 14, name: '蝙蝠翅膀' },
+  { id: 21, name: '阴森翅膀' },
+  { id: 23, name: '节日翅膀' },
+  { id: 24, name: '甲虫翅膀' },
+  { id: 26, name: '猪龙鱼翅膀' },
+  { id: 27, name: '蛾翼' },
+  { id: 29, name: '耀斑之翼' },
+  { id: 30, name: '星旋加速器' },
+  { id: 31, name: '星云斗篷' },
+  { id: 32, name: '星尘之翼' },
+  { id: 37, name: '花妖翅膀' },
+  { id: 38, name: 'Arkhalis之翼' },
+  { id: 49, name: 'Heroicis之翼' },
 ];
 
 // 根据 sprite 的 frameCount + frameStart 循环

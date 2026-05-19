@@ -50,3 +50,12 @@ The following rules are mandatory for this repository and take precedence over d
 14. Build scripts that produce `static/terraria/*.js` MUST validate output before writing — if the output is empty or smaller than 50% of the existing file, refuse to overwrite and exit with a clear warning. Don't trust "PNG missing → empty output → write" as acceptable behavior.
     <!-- 凡是产出 static/terraria/*.js 的 build 脚本, 写文件前必须校验: 输出为空 / 输出小于现有文件 50%, 都要拒绝写入并报警。绝对不许"PNG 缺失 → 空输出 → 写入"成为正常行为。 -->
 
+
+# Build Pipeline Rules (构建流水线硬约束)
+
+15. `build-terraria-sprites.js` 输出全分辨率到 `static/terraria/`, 跑完后**必须**接着跑 `build-uniapp-prescaled.js` 并 copy prescaled/ 里的 A 类文件(armor_heads/bodies/legs/weapons/wings)回 static/。**绝对不能**让全分辨率数据留在 static/ 里。
+    <!-- build-terraria-sprites.js 跑完后必须 prescale + copy, 否则 uniapp 加载全分辨率数据导致比例错误。 -->
+
+16. **不需要 prescale 的文件**(B 类): summon_guardian.js / summon_extras.js / misc.js / sprites_tiles.js / bosses_compact.js / player_layers.js — 这些**绝对不能被 prescaled/ 覆盖**。
+    <!-- B 类文件渲染时自己处理缩放, prescale 会破坏它们。 -->
+
