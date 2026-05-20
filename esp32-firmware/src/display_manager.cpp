@@ -1987,10 +1987,23 @@ static void ensureAmbientWaterTrigLut() {
   s_ambientWaterTrigLutReady = true;
 }
 
-static float wrapAmbientTrigAngle(float angle) {
-  float wrapped = angle - floorf(angle / kAmbientTrigTau) * kAmbientTrigTau;
+static inline float wrapAmbientTrigAngle(float angle) {
+  // 性能优化：ESP32 LX6 FPU 没有硬件 floor 指令，floorf() 是软件实现 + 函数调用，约 15-25 周期。
+  // 改为 (int) 强转 + 负数修正，FPU 单指令 cvt.s.w 约 1 周期。
+  // 数学等价：floor(x) == (int)x（x≥0）或 (int)x - 1（x<0 且非整数）
+  // 浮点精度差异 ≤ 1 ULP，远小于 LUT 索引步长（1/128），对查表结果零影响。
+  static constexpr float kInvAmbientTrigTau = 1.0f / kAmbientTrigTau;
+  float scaled = angle * kInvAmbientTrigTau;
+  int k = (int)scaled;
+  if ((float)k > scaled) {
+    k--;  // 处理负数：(int) 是向 0 截断，floor 是向 -∞ 取整
+  }
+  float wrapped = angle - (float)k * kAmbientTrigTau;
+  // 防御性：处理浮点累积误差导致 wrapped 越界
   if (wrapped < 0.0f) {
     wrapped += kAmbientTrigTau;
+  } else if (wrapped >= kAmbientTrigTau) {
+    wrapped -= kAmbientTrigTau;
   }
   return wrapped;
 }
@@ -1998,8 +2011,15 @@ static float wrapAmbientTrigAngle(float angle) {
 static float ambientWaterSin(float angle) {
   ensureAmbientWaterTrigLut();
   float wrapped = wrapAmbientTrigAngle(angle);
-  float position = wrapped * ((float)kAmbientWaterTrigLutSize / kAmbientTrigTau);
+  // 性能优化：浮点除法在 ESP32 LX6 上是 ~16 周期，乘法 ~5 周期。提前换成乘以倒数常量。
+  static constexpr float kAmbientWaterTrigLutScale =
+    (float)kAmbientWaterTrigLutSize / kAmbientTrigTau;
+  float position = wrapped * kAmbientWaterTrigLutScale;
   int baseIndex = (int)position;
+  // 防御性边界：浮点累积可能让 position == kAmbientWaterTrigLutSize（导致 LUT 越界）
+  if (baseIndex >= kAmbientWaterTrigLutSize) {
+    baseIndex = kAmbientWaterTrigLutSize - 1;
+  }
   float alpha = position - (float)baseIndex;
   return mixf(
     s_ambientWaterTrigLut[baseIndex],
@@ -2027,6 +2047,30 @@ static inline float sampleAmbientWaterUnitPowLut(
   int index0 = (int)clamped;
   int index1 = index0 < kAmbientWaterPowLutSize ? (index0 + 1) : index0;
   return mixf(lut[index0], lut[index1], clamped - (float)index0);
+}
+
+// caustics 专用 pow LUT：与 uniapp waterWorldPreview.js 中 Math.pow(x, n) 严格对齐
+// ridge 三次迭代的指数：2.3 - index * 0.3 → 2.3 / 2.0 / 1.7
+// energyPower：1.42
+// brightBand：3.4
+// 每张 LUT (128+1)*4 = 516 字节，5 张共约 2.5KB 静态内存
+static float s_ambientWaterCausticRidge23Lut[kAmbientWaterPowLutSize + 1];
+static float s_ambientWaterCausticRidge20Lut[kAmbientWaterPowLutSize + 1];
+static float s_ambientWaterCausticRidge17Lut[kAmbientWaterPowLutSize + 1];
+static float s_ambientWaterCausticEnergy142Lut[kAmbientWaterPowLutSize + 1];
+static float s_ambientWaterCausticBrightBand34Lut[kAmbientWaterPowLutSize + 1];
+static bool s_ambientWaterCausticPowLutsReady = false;
+
+static void ensureAmbientWaterCausticPowLuts() {
+  if (s_ambientWaterCausticPowLutsReady) {
+    return;
+  }
+  buildAmbientWaterUnitPowLut(s_ambientWaterCausticRidge23Lut, 2.3f);
+  buildAmbientWaterUnitPowLut(s_ambientWaterCausticRidge20Lut, 2.0f);
+  buildAmbientWaterUnitPowLut(s_ambientWaterCausticRidge17Lut, 1.7f);
+  buildAmbientWaterUnitPowLut(s_ambientWaterCausticEnergy142Lut, 1.42f);
+  buildAmbientWaterUnitPowLut(s_ambientWaterCausticBrightBand34Lut, 3.4f);
+  s_ambientWaterCausticPowLutsReady = true;
 }
 
 static unsigned long ambientPresetMinRenderIntervalMs(uint8_t preset) {
@@ -4764,6 +4808,7 @@ static float sampleAmbientWaterCausticField(
   float speedUnit,
   float intensityUnit
 ) {
+  ensureAmbientWaterCausticPowLuts();
   // 优化：提取循环不变量，避免每像素重复计算
   const float scaleX = 11.6f + intensityUnit * 2.2f;
   const float scaleY = 13.4f + intensityUnit * 2.8f;
@@ -4785,7 +4830,12 @@ static float sampleAmbientWaterCausticField(
   const float twistFactors[3] = {0.66f, 0.56f, 0.46f};  // 0.66 - index * 0.1
   const float ridgeScalesX[3] = {2.2f, 2.62f, 3.04f};  // 2.2 + index * 0.42
   const float ridgeScalesY[3] = {1.8f, 2.16f, 2.52f};  // 1.8 + index * 0.36
-  const float ridgeExponents[3] = {2.3f, 2.0f, 1.7f};  // 2.3 - index * 0.3
+  // 与 uniapp 严格对齐：Math.pow(ridge, 2.3 - index * 0.3) → 2.3 / 2.0 / 1.7
+  const float* const ridgePowLuts[3] = {
+    s_ambientWaterCausticRidge23Lut,
+    s_ambientWaterCausticRidge20Lut,
+    s_ambientWaterCausticRidge17Lut
+  };
 
   for (int index = 0; index < 3; index++) {
     const float indexFloat = (float)index;
@@ -4806,25 +4856,16 @@ static float sampleAmbientWaterCausticField(
       )
     );
     
-    // 优化：使用快速幂运算替代 powf
-    float ridgeClamped = clampUnit(ridge);
-    float ridgePower;
-    if (index == 0) {
-      ridgePower = ridgeClamped * ridgeClamped * ridgeClamped * sqrtf(ridgeClamped);  // x^2.3 ≈ x^2 * x^0.3
-    } else if (index == 1) {
-      ridgePower = ridgeClamped * ridgeClamped;  // x^2.0
-    } else {
-      ridgePower = ridgeClamped * sqrtf(ridgeClamped);  // x^1.7 ≈ x * x^0.7
-    }
-    energy += ridgePower;
+    // 与 uniapp 对齐：Math.pow(clampUnit(ridge), 2.3 - index * 0.3)
+    energy += sampleAmbientWaterUnitPowLut(ridgePowLuts[index], ridge);
   }
 
   float swell = 0.5f + 0.5f * ambientWaterSin(swellPhase);
   float focus = smoothstepf(0.16f, 0.98f, ny);
   
-  // 优化：使用快速幂运算 x^1.42 ≈ x * x^0.42
-  float energyNorm = clampUnit(energy / 2.55f);
-  float energyPower = energyNorm * sqrtf(sqrtf(energyNorm));  // x^1.42 ≈ x * x^(1/2.4)
+  // 与 uniapp 对齐：Math.pow(clampUnit(energy / 2.55), 1.42)
+  float energyNorm = energy / 2.55f;
+  float energyPower = sampleAmbientWaterUnitPowLut(s_ambientWaterCausticEnergy142Lut, energyNorm);
   
   return clampUnit(energyPower * (0.72f + swell * 0.28f) * focus);
 }
@@ -5020,11 +5061,10 @@ static void renderAmbientWaterCaustics(
       float haze = 0.5f + 0.5f * waveScratchC[x];
       caustic = clampUnit(caustic * 0.76f + lowWave * 0.12f + crossWave * 0.12f);
       
-      // 优化：使用快速幂运算替代 powf(x, 3.4)
-      // x^3.4 ≈ x^3 * x^0.4 ≈ x^3 * sqrt(sqrt(x))
+      // 与 uniapp 对齐：Math.pow(clampUnit(1 - abs(sin(...))), 3.4)
       float brightBandBase = clampUnit(1.0f - fabsf(waveScratchD[x]));
-      float brightBandCubed = brightBandBase * brightBandBase * brightBandBase;
-      float brightBand = caustic * brightBandCubed * sqrtf(sqrtf(brightBandBase));
+      float brightBand = caustic * sampleAmbientWaterUnitPowLut(
+        s_ambientWaterCausticBrightBand34Lut, brightBandBase);
       
       float dustFlash = pow5fExact(clampUnit(0.5f + 0.5f * waveScratchE[x])) * dustFlashMultiplier;
       float darkShade = smoothstepf(0.46f, 0.96f, 1.0f - caustic) * 0.2f;
