@@ -78,4 +78,40 @@ struct TerrariaModeConfig {
   uint8_t clockBgOuter[3];   // RGB
 };
 
+// ============ 轮播引擎数据结构 ============
+
+enum RotateStrategy : uint8_t {
+  ROTATE_FIXED      = 0,
+  ROTATE_RANDOM     = 1,
+  ROTATE_SEQUENTIAL = 2,
+};
+
+enum RotateMode : uint8_t {
+  ROTATE_MODE_ELEMENT = 0,
+  ROTATE_MODE_COMBO   = 1,
+};
+
+struct RotateCombo {
+  uint8_t  character;    // 0~14
+  uint16_t weaponId;
+  uint8_t  wingId;       // 0~49
+  uint8_t  biome;        // 0~9
+  uint8_t  bossId;       // 0~32
+  uint8_t  reserved[2];
+};  // 8 bytes
+
+struct RotateConfig {
+  bool enabled;
+  RotateMode mode;
+  uint16_t interval;               // 秒
+  RotateStrategy armorStrategy;
+  RotateStrategy weaponStrategy;
+  RotateStrategy wingStrategy;
+  RotateStrategy biomeStrategy;
+  RotateStrategy bossStrategy;
+  RotateStrategy comboStrategy;
+  uint8_t comboCount;              // 0~20
+  RotateCombo combos[20];          // 160 bytes
+};  // ~172 bytes
+
 #endif

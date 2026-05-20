@@ -259,6 +259,7 @@ export function drawPixelsToMap(targetMap, pixelList, centerX, centerY, scale, s
   for (const [x, y, r, g, b, a] of pixelList) {
     if (a < 5) continue;
     const px = Math.round(ox + x);
+    const px = Math.round(ox + x);
     const py = Math.round(oy + y);
     if (px < 0 || px >= 64 || py < 0 || py >= 64) continue;
     const hex = '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');

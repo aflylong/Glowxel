@@ -5,6 +5,7 @@
 #include "device_mode_tag_codec.h"
 #include "mode_tags.h"
 #include "runtime_mode_coordinator.h"
+#include "terraria_auto_rotate.h"
 
 // 静态成员初始化
 Preferences ConfigManager::preferences;
@@ -874,7 +875,10 @@ void ConfigManager::loadTerrariaConfig() {
   if (configSize == sizeof(TerrariaModeConfig)) {
     preferences.getBytes("config", &terrariaConfig, sizeof(TerrariaModeConfig));
   }
-  // size 不匹�?�?保留 .cpp 顶部静态初始化的默认�?  preferences.end();
+  // size 不匹配则保留 .cpp 顶部静态初始化的默认值
+  preferences.end();
+  // 加载轮播配置
+  TerrariaAutoRotate::loadFromFlash();
 }
 
 void ConfigManager::saveTerrariaConfig() {

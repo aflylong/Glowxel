@@ -14,6 +14,7 @@
 #include "clock_font_renderer.h"
 #include "config_manager.h"
 #include "display_manager.h"
+#include "terraria_auto_rotate.h"
 #include "theme_assets/terraria/index.h"
 #include "theme_assets/terraria/sprites_biomes.h"
 #include "theme_assets/terraria/sprites_bosses.h"
@@ -1086,6 +1087,9 @@ void render() {
   if (!s_active) return;
   auto* display = DisplayManager::dma_display;
   if (display == nullptr) return;
+
+  // 0) 轮播引擎: 检查是否到切换时刻
+  TerrariaAutoRotate::tick();
 
   // 1) 看动态状态有没有变 (没变 + 已经画过 → 直接返回, 不刷屏)
   DynamicState now = computeDynamicState();

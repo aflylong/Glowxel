@@ -12,6 +12,7 @@
 #include "mode_tags.h"
 #include "runtime_mode_coordinator.h"
 #include "snake_effect.h"
+#include "terraria_auto_rotate.h"
 #include "tetris_clock_effect.h"
 #include "tetris_effect.h"
 #include "web_server.h"
@@ -1772,6 +1773,38 @@ bool prepareTerrariaTransaction(JsonObject params, const char*& reason) {
   memcpy(command.terrariaConfig.clockTextColor, textColor, 3);
   memcpy(command.terrariaConfig.clockBgInner, bgInner, 3);
   memcpy(command.terrariaConfig.clockBgOuter, bgOuter, 3);
+
+  // 解析 autoRotate 轮播配置 (可选字段, 向后兼容)
+  if (params.containsKey("autoRotate")) {
+    JsonObject ar = params["autoRotate"];
+    RotateConfig rc = {};
+    rc.enabled = ar["enabled"] | false;
+    rc.mode = (RotateMode)(ar["mode"].as<int>());
+    rc.interval = ar["interval"] | 60;
+    if (ar.containsKey("strategies")) {
+      JsonObject st = ar["strategies"];
+      rc.armorStrategy = (RotateStrategy)(st["armor"].as<int>());
+      rc.weaponStrategy = (RotateStrategy)(st["weapon"].as<int>());
+      rc.wingStrategy = (RotateStrategy)(st["wing"].as<int>());
+      rc.biomeStrategy = (RotateStrategy)(st["biome"].as<int>());
+      rc.bossStrategy = (RotateStrategy)(st["boss"].as<int>());
+    }
+    rc.comboStrategy = (RotateStrategy)(ar["comboStrategy"].as<int>());
+    if (ar.containsKey("combos")) {
+      JsonArray combos = ar["combos"];
+      rc.comboCount = min((size_t)20, combos.size());
+      for (uint8_t i = 0; i < rc.comboCount; i++) {
+        JsonObject c = combos[i];
+        rc.combos[i].character = c["char"] | 0;
+        rc.combos[i].weaponId = c["weapon"] | 4956;
+        rc.combos[i].wingId = c["wing"] | 29;
+        rc.combos[i].biome = c["biome"] | 0;
+        rc.combos[i].bossId = c["boss"] | 0;
+      }
+    }
+    TerrariaAutoRotate::applyConfig(rc);
+    TerrariaAutoRotate::saveToFlash();
+  }
 
   reason = nullptr;
   return true;

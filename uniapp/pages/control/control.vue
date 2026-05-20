@@ -315,7 +315,7 @@ export default {
         {
           key: "terraria_clock",
           name: "泰拉瑞亚时钟",
-          icon: "game",
+          icon: "layers",
           variant: "gold",
           type: "mode",
           bucket: "secondary",

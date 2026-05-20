@@ -95,30 +95,29 @@
         <!-- Tab 3: 角色配置 -->
         <view v-show="currentTab === 3" class="settings-card">
 
-          <!-- 4 职业 -->
-          <view class="card-title-section">
-            <Icon name="game" :size="32" />
-            <text class="card-title">职业 / 套装</text>
+          <!-- 子 tabs: 套装 / 武器 / 面具 / 翅膀 -->
+          <view class="equip-tabs">
+            <view class="equip-tab" :class="{ active: equipTab === 0 }" @click="onEquipTab(0)"><text>套装</text></view>
+            <view class="equip-tab" :class="{ active: equipTab === 1 }" @click="onEquipTab(1)"><text>武器</text></view>
+            <view class="equip-tab" :class="{ active: equipTab === 2 }" @click="onEquipTab(2)"><text>面具</text></view>
+            <view class="equip-tab" :class="{ active: equipTab === 3 }" @click="onEquipTab(3)"><text>翅膀</text></view>
           </view>
-          <view class="character-grid">
+
+          <!-- 套装列表 -->
+          <view v-if="equipTab === 0" class="weapon-grid">
             <view
               v-for="ch in characterList"
               :key="ch.id"
-              class="character-btn"
+              class="weapon-btn"
               :class="{ active: config.terraria.characterId === ch.id }"
               @click="selectCharacter(ch.id)"
             >
-              <text class="character-name">{{ ch.name }}</text>
-              <text class="character-set">{{ ch.armorSet }}盔甲</text>
+              <text>{{ ch.armorSet }}</text>
             </view>
           </view>
 
-          <!-- 武器 -->
-          <view class="card-title-section">
-            <Icon name="cup" :size="32" />
-            <text class="card-title">武器</text>
-          </view>
-          <view class="weapon-grid">
+          <!-- 武器列表 -->
+          <view v-if="equipTab === 1" class="weapon-grid">
             <view
               v-for="w in allWeapons"
               :key="w.id"
@@ -130,18 +129,14 @@
             </view>
           </view>
 
-          <!-- Boss 面具 -->
-          <view class="card-title-section">
-            <Icon name="game" :size="32" />
-            <text class="card-title">面具 (可选)</text>
-          </view>
-          <view class="weapon-grid">
+          <!-- 面具列表 -->
+          <view v-if="equipTab === 2" class="weapon-grid">
             <view
               class="weapon-btn"
               :class="{ active: !config.terraria.maskId }"
               @click="selectMask(0)"
             >
-              <text>套装头甲</text>
+              <text>默认</text>
             </view>
             <view
               v-for="m in maskList"
@@ -154,12 +149,8 @@
             </view>
           </view>
 
-          <!-- 翅膀 -->
-          <view class="card-title-section">
-            <Icon name="palette" :size="32" />
-            <text class="card-title">翅膀</text>
-          </view>
-          <view class="weapon-grid">
+          <!-- 翅膀列表 -->
+          <view v-if="equipTab === 3" class="weapon-grid">
             <view
               v-for="wing in wingList"
               :key="wing.id"
@@ -171,42 +162,29 @@
             </view>
           </view>
 
-          <!-- 守卫(召唤师专属) -->
-          <view v-if="hasGuardian">
-            <view class="card-title-section">
-              <Icon name="ai" :size="32" />
-              <text class="card-title">守卫</text>
-            </view>
-            <!-- 守卫/星尘龙/飞剑 调整已隐藏 (数据保留) -->
-          </view>
-
-          <!-- 武器位置微调 -->
-          <view class="card-title-section">
-            <Icon name="palette" :size="32" />
-            <text class="card-title">武器位置</text>
-          </view>
+          <!-- 角色位置/大小调整 -->
           <view class="setting-item-row">
-            <text class="setting-label">武器 X</text>
+            <text class="setting-label">大小%</text>
             <view class="setting-control-buttons">
-              <view class="control-btn" @click="adjustTerraria('weaponOfsX', -1)"><text class="control-icon">-</text></view>
-              <text class="setting-value-large">{{ config.terraria.weaponOfsX }}</text>
-              <view class="control-btn" @click="adjustTerraria('weaponOfsX', 1)"><text class="control-icon">+</text></view>
+              <view class="control-btn" @click="adjustTerraria('playerScale', -1)"><text class="control-icon">-</text></view>
+              <text class="setting-value-large">{{ config.terraria.playerScale }}</text>
+              <view class="control-btn" @click="adjustTerraria('playerScale', 1)"><text class="control-icon">+</text></view>
             </view>
           </view>
           <view class="setting-item-row">
-            <text class="setting-label">武器 Y</text>
+            <text class="setting-label">X</text>
             <view class="setting-control-buttons">
-              <view class="control-btn" @click="adjustTerraria('weaponOfsY', -1)"><text class="control-icon">-</text></view>
-              <text class="setting-value-large">{{ config.terraria.weaponOfsY }}</text>
-              <view class="control-btn" @click="adjustTerraria('weaponOfsY', 1)"><text class="control-icon">+</text></view>
+              <view class="control-btn" @click="adjustTerraria('playerX', -1)"><text class="control-icon">-</text></view>
+              <text class="setting-value-large">{{ config.terraria.playerX }}</text>
+              <view class="control-btn" @click="adjustTerraria('playerX', 1)"><text class="control-icon">+</text></view>
             </view>
           </view>
           <view class="setting-item-row">
-            <text class="setting-label">旋转°</text>
+            <text class="setting-label">Y</text>
             <view class="setting-control-buttons">
-              <view class="control-btn" @click="adjustTerraria('weaponRotate', -15)"><text class="control-icon">-</text></view>
-              <text class="setting-value-large">{{ config.terraria.weaponRotate }}°</text>
-              <view class="control-btn" @click="adjustTerraria('weaponRotate', 15)"><text class="control-icon">+</text></view>
+              <view class="control-btn" @click="adjustTerraria('playerY', -1)"><text class="control-icon">-</text></view>
+              <text class="setting-value-large">{{ config.terraria.playerY }}</text>
+              <view class="control-btn" @click="adjustTerraria('playerY', 1)"><text class="control-icon">+</text></view>
             </view>
           </view>
 
@@ -215,16 +193,18 @@
         <!-- Tab 4: 地形 + Boss -->
         <view v-show="currentTab === 4" class="settings-card">
 
-          <!-- 地形 -->
-          <view class="card-title-section">
-            <Icon name="palette" :size="32" />
-            <text class="card-title">地形</text>
+          <!-- 子 tabs: 地形 / Boss -->
+          <view class="equip-tabs">
+            <view class="equip-tab" :class="{ active: terrainTab === 0 }" @click="onTerrainTab(0)"><text>地形</text></view>
+            <view class="equip-tab" :class="{ active: terrainTab === 1 }" @click="onTerrainTab(1)"><text>Boss</text></view>
           </view>
-          <view class="biome-grid">
+
+          <!-- 地形列表 -->
+          <view v-if="terrainTab === 0" class="weapon-grid">
             <view
               v-for="b in biomeList"
               :key="b.id"
-              class="biome-btn"
+              class="weapon-btn"
               :class="{ active: config.terraria.biome === b.id }"
               @click="selectBiome(b.id)"
             >
@@ -232,50 +212,81 @@
             </view>
           </view>
 
-          <!-- Boss (默认展示, 不可关闭) -->
-          <view class="card-title-section">
-            <Icon name="ai" :size="32" />
-            <text class="card-title">Boss</text>
+          <!-- Boss 列表 -->
+          <view v-if="terrainTab === 1" class="weapon-grid">
+            <view
+              v-for="bs in availableBosses"
+              :key="bs.slug"
+              class="weapon-btn"
+              :class="{ active: config.terraria.bossId === bs.slug }"
+              @click="selectBoss(bs.slug)"
+            >
+              <text>{{ bs.nameZh }}</text>
+            </view>
           </view>
 
-          <view>
-            <!-- Boss 选择 (按当前地形过滤) -->
-            <view class="boss-grid">
-              <view
-                v-for="bs in availableBosses"
-                :key="bs.slug"
-                class="boss-btn"
-                :class="{ active: config.terraria.bossId === bs.slug }"
-                @click="selectBoss(bs.slug)"
-              >
-                <text>{{ bs.nameZh }}</text>
-                <text class="boss-size">{{ bs.w }}×{{ bs.h }}</text>
-              </view>
-            </view>
+            <!-- Boss 位置 + 缩放 已隐藏 (数据保留) -->
 
-            <!-- Boss 位置 + 缩放 -->
-            <view class="setting-item-row">
-              <text class="setting-label">Boss X</text>
-              <view class="setting-control-buttons">
-                <view class="control-btn" @click="adjustTerraria('bossX', -1)"><text class="control-icon">-</text></view>
-                <text class="setting-value-large">{{ config.terraria.bossX }}</text>
-                <view class="control-btn" @click="adjustTerraria('bossX', 1)"><text class="control-icon">+</text></view>
+        </view>
+
+        <!-- Tab 5: 轮播设置 -->
+        <view v-show="currentTab === 5" class="settings-card">
+
+          <!-- 总开关 -->
+          <view class="setting-item-row">
+            <text class="setting-label">自动轮播</text>
+            <view class="setting-control-buttons">
+              <view class="weapon-btn" :class="{ active: config.terraria.autoRotate.enabled }" style="padding:8rpx 24rpx" @click="toggleAutoRotate">
+                <text>{{ config.terraria.autoRotate.enabled ? '开启' : '关闭' }}</text>
               </view>
             </view>
-            <view class="setting-item-row">
-              <text class="setting-label">Boss Y</text>
-              <view class="setting-control-buttons">
-                <view class="control-btn" @click="adjustTerraria('bossY', -1)"><text class="control-icon">-</text></view>
-                <text class="setting-value-large">{{ config.terraria.bossY }}</text>
-                <view class="control-btn" @click="adjustTerraria('bossY', 1)"><text class="control-icon">+</text></view>
+          </view>
+
+          <!-- 模式切换 -->
+          <view class="equip-tabs">
+            <view class="equip-tab" :class="{ active: config.terraria.autoRotate.mode === 'element' }" @click="setRotateMode('element')"><text>元素随机</text></view>
+            <view class="equip-tab" :class="{ active: config.terraria.autoRotate.mode === 'combo' }" @click="setRotateMode('combo')"><text>组合轮播</text></view>
+          </view>
+
+          <!-- 元素随机模式 -->
+          <view v-if="config.terraria.autoRotate.mode === 'element'">
+            <view v-for="item in rotateElements" :key="item.key" class="setting-item-row">
+              <text class="setting-label">{{ item.label }}</text>
+              <view class="setting-control-buttons" style="gap:8rpx">
+                <view class="weapon-btn" :class="{ active: config.terraria.autoRotate.strategies[item.key] === 'fixed' }" style="padding:6rpx 16rpx" @click="setStrategy(item.key, 'fixed')"><text>固定</text></view>
+                <view class="weapon-btn" :class="{ active: config.terraria.autoRotate.strategies[item.key] === 'random' }" style="padding:6rpx 16rpx" @click="setStrategy(item.key, 'random')"><text>随机</text></view>
+                <view class="weapon-btn" :class="{ active: config.terraria.autoRotate.strategies[item.key] === 'sequential' }" style="padding:6rpx 16rpx" @click="setStrategy(item.key, 'sequential')"><text>顺序</text></view>
               </view>
             </view>
+          </view>
+
+          <!-- 组合轮播模式 -->
+          <view v-if="config.terraria.autoRotate.mode === 'combo'">
             <view class="setting-item-row">
-              <text class="setting-label">Boss 缩放%</text>
+              <text class="setting-label">切换方式</text>
+              <view class="setting-control-buttons" style="gap:8rpx">
+                <view class="weapon-btn" :class="{ active: config.terraria.autoRotate.comboStrategy === 'random' }" style="padding:6rpx 16rpx" @click="setComboStrategy('random')"><text>随机</text></view>
+                <view class="weapon-btn" :class="{ active: config.terraria.autoRotate.comboStrategy === 'sequential' }" style="padding:6rpx 16rpx" @click="setComboStrategy('sequential')"><text>顺序</text></view>
+              </view>
+            </view>
+            <!-- 收藏列表 -->
+            <view v-for="(combo, idx) in config.terraria.autoRotate.combos" :key="idx" class="setting-item-row">
+              <text class="setting-label">{{ combo.name }}</text>
               <view class="setting-control-buttons">
-                <view class="control-btn" @click="adjustTerraria('bossScale', -1)"><text class="control-icon">-</text></view>
-                <text class="setting-value-large">{{ config.terraria.bossScale }}</text>
-                <view class="control-btn" @click="adjustTerraria('bossScale', 1)"><text class="control-icon">+</text></view>
+                <view class="weapon-btn" style="padding:6rpx 16rpx;background:#ff4444" @click="removeCombo(idx)"><text style="color:#fff">删除</text></view>
+              </view>
+            </view>
+            <view class="setting-item-row" v-if="config.terraria.autoRotate.combos.length < 20">
+              <view class="weapon-btn" style="padding:12rpx 24rpx;width:100%;text-align:center" @click="addCurrentAsCombo"><text>+ 收藏当前配置</text></view>
+            </view>
+          </view>
+
+          <!-- 切换间隔 -->
+          <view style="margin-top:16rpx">
+            <text class="setting-label" style="margin-bottom:8rpx;display:block">切换间隔</text>
+            <view class="weapon-grid">
+              <view v-for="iv in intervalOptions" :key="iv.value" class="weapon-btn" :class="{ active: config.terraria.autoRotate.interval === iv.value }" @click="setRotateInterval(iv.value)">
+                <text>{{ iv.label }}</text>
               </view>
             </view>
           </view>
@@ -386,6 +397,8 @@ export default {
       toast: null,
       isReady: false,
       clockMode: "terraria_clock",
+      equipTab: 0,
+      terrainTab: 0,
 
       contentHeight: "calc(100vh - 112rpx - 120rpx - 80rpx)",
 
@@ -411,12 +424,13 @@ export default {
 
       fontOptions: getClockFontOptions(),
 
-      currentTab: 1,
+      currentTab: 3,
       tabDefinitions: [
+        { index: 3, label: "角色", icon: "user" },
+        { index: 4, label: "地形", icon: "map" },
+        { index: 5, label: "轮播", icon: "refresh" },
         { index: 1, label: "时间", icon: "time" },
         { index: 2, label: "字体", icon: "text" },
-        { index: 3, label: "角色", icon: "game" },
-        { index: 4, label: "地形", icon: "palette" },
       ],
 
       characterList: Object.keys(CHARACTERS).map(id => ({
@@ -516,6 +530,21 @@ export default {
           // 时钟边框色
           clockBgInner: "#63971f",
           clockBgOuter: "#8FD71D",
+          // 轮播配置
+          autoRotate: {
+            enabled: false,
+            mode: 'element',
+            interval: 60,
+            strategies: {
+              armor: 'fixed',
+              weapon: 'fixed',
+              wing: 'fixed',
+              biome: 'fixed',
+              boss: 'fixed',
+            },
+            combos: [],
+            comboStrategy: 'random',
+          },
         },
       },
 
@@ -584,6 +613,25 @@ export default {
     availableBosses() {
       return getBossesForBiome(this.config.terraria.biome) || [];
     },
+    rotateElements() {
+      return [
+        { key: 'armor', label: '盔甲' },
+        { key: 'weapon', label: '武器' },
+        { key: 'wing', label: '翅膀' },
+        { key: 'biome', label: '地形' },
+        { key: 'boss', label: 'Boss' },
+      ];
+    },
+    intervalOptions() {
+      return [
+        { value: 30, label: '30秒' },
+        { value: 60, label: '1分钟' },
+        { value: 300, label: '5分钟' },
+        { value: 600, label: '10分钟' },
+        { value: 1800, label: '30分钟' },
+        { value: 3600, label: '1小时' },
+      ];
+    },
   },
 
   onUnload() { this.cleanupTransientState(); },
@@ -628,6 +676,47 @@ export default {
   },
 
   methods: {
+    switchEquipTab(idx) {
+      this.equipTab = idx;
+    },
+    onEquipTab(idx) {
+      this.equipTab = idx;
+    },
+    onTerrainTab(idx) {
+      this.terrainTab = idx;
+    },
+    toggleAutoRotate() {
+      this.config.terraria.autoRotate.enabled = !this.config.terraria.autoRotate.enabled;
+    },
+    setRotateMode(mode) {
+      this.config.terraria.autoRotate.mode = mode;
+    },
+    setStrategy(key, strategy) {
+      this.config.terraria.autoRotate.strategies[key] = strategy;
+    },
+    setComboStrategy(strategy) {
+      this.config.terraria.autoRotate.comboStrategy = strategy;
+    },
+    setRotateInterval(val) {
+      this.config.terraria.autoRotate.interval = val;
+    },
+    addCurrentAsCombo() {
+      const t = this.config.terraria;
+      const ch = CHARACTERS[t.characterId];
+      if (!ch) return;
+      if (t.autoRotate.combos.length >= 20) return;
+      t.autoRotate.combos.push({
+        name: ch.armorSet + ' + ' + (ch.weapons.find(w => w.id === t.weaponId)?.name || ''),
+        characterId: t.characterId,
+        weaponId: t.weaponId,
+        wingId: t.wingId,
+        biome: t.biome,
+        bossId: t.bossId,
+      });
+    },
+    removeCombo(idx) {
+      this.config.terraria.autoRotate.combos.splice(idx, 1);
+    },
     selectCharacter(charId) {
       const ch = CHARACTERS[charId];
       if (!ch) return;
@@ -790,6 +879,26 @@ export default {
           clockTextColor: this.config.time.color,
           clockBgInner: t.clockBgInner,
           clockBgOuter: t.clockBgOuter,
+          autoRotate: t.autoRotate.enabled ? {
+            enabled: true,
+            mode: t.autoRotate.mode === 'combo' ? 1 : 0,
+            interval: t.autoRotate.interval,
+            strategies: {
+              armor: ['fixed','random','sequential'].indexOf(t.autoRotate.strategies.armor),
+              weapon: ['fixed','random','sequential'].indexOf(t.autoRotate.strategies.weapon),
+              wing: ['fixed','random','sequential'].indexOf(t.autoRotate.strategies.wing),
+              biome: ['fixed','random','sequential'].indexOf(t.autoRotate.strategies.biome),
+              boss: ['fixed','random','sequential'].indexOf(t.autoRotate.strategies.boss),
+            },
+            combos: t.autoRotate.combos.map(c => ({
+              char: Object.keys(CHARACTERS).indexOf(c.characterId),
+              weapon: c.weaponId,
+              wing: c.wingId,
+              biome: this._biomeToIndex(c.biome),
+              boss: this._bossSlugToIndex(c.bossId),
+            })),
+            comboStrategy: t.autoRotate.comboStrategy === 'sequential' ? 2 : 1,
+          } : undefined,
         });
         this.showSendSuccess("已应用");
         this._saveTerrariaConfig();
@@ -1126,7 +1235,7 @@ export default {
 /* 武器 */
 .weapon-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 12rpx;
   margin-bottom: 8rpx;
 }
@@ -1144,6 +1253,57 @@ export default {
   color: var(--text-primary);
 }
 .weapon-btn.active text { color: #000; font-weight: 700; }
+
+/* 横向 tabs (套装/武器/面具/翅膀) */
+.equip-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 16rpx;
+  border-bottom: 2rpx solid var(--nb-ink);
+}
+.equip-tab {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  border-bottom: 4rpx solid transparent;
+}
+.equip-tab.active {
+  border-bottom-color: var(--nb-yellow);
+}
+.equip-tab text {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+.equip-tab.active text {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+.htabs-scroll {
+  white-space: nowrap;
+  margin-bottom: 16rpx;
+}
+.htabs-row {
+  display: inline-flex;
+  gap: 12rpx;
+  padding: 4rpx 0;
+}
+.htab-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 14rpx 24rpx;
+  background: var(--bg-tertiary);
+  border: 2rpx solid var(--nb-ink);
+  border-radius: 8rpx;
+  white-space: nowrap;
+}
+.htab-item.active {
+  background: var(--nb-yellow);
+}
+.htab-item text {
+  font-size: 24rpx;
+  color: var(--text-primary);
+}
+.htab-item.active text { color: #000; font-weight: 700; }
 
 /* 地形网格 (Tab 4) */
 .biome-grid {
