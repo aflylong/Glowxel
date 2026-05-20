@@ -19,6 +19,7 @@
           :width="64"
           :height="64"
           :pixels="currentPreviewPixels"
+          :refresh-token="previewRefreshTick"
           :zoom="previewZoom"
           :offset-x="previewOffset.x"
           :offset-y="previewOffset.y"
@@ -532,6 +533,7 @@ export default {
       previewOffset: { x: 0, y: 0 },
       previewContainerSize: { width: 320, height: 320 },
       previewDisplayPixels: new Map(),
+      previewRefreshTick: 0,
       sendingPreviewPixels: new Map(),
       sendingPreviewTick: 0,
       previewPlaybackStartedAt: 0,
@@ -920,11 +922,12 @@ export default {
       });
     },
     renderPreviewFrame(progress) {
-      // 使用预渲染的第一帧（静态预览）
       let frameMap;
       if (this.previewSequence && this.previewSequence.maps && this.previewSequence.maps.length > 0) {
-        // 始终使用第一帧
-        frameMap = this.previewSequence.maps[0];
+        // 根据 progress 选择对应帧
+        const frameCount = this.previewSequence.maps.length;
+        const frameIndex = Math.min(frameCount - 1, Math.floor(progress * frameCount));
+        frameMap = this.previewSequence.maps[frameIndex];
         
         // 只有显示时钟时才复制frameMap，避免污染缓存
         if (this.clockConfig.time.show) {
@@ -943,12 +946,12 @@ export default {
           );
         }
       } else {
-        // 回退：如果没有序列，实时渲染第一帧
+        // 回退：实时渲染当前进度帧
         frameMap = buildPlanetScreensaverPreviewFrame(
           {
             ...this.config,
           },
-          0,  // 始终使用第一帧
+          progress,
         );
         
         if (this.clockConfig.time.show) {
@@ -1243,11 +1246,39 @@ export default {
         return;
       }
       
-      // 只渲染第一帧作为静态预览
-      this.previewSequence = buildPlanetScreensaverPreviewSequence(this.config);
+      const cycleDuration = getPlanetPreviewCycleDuration(this.config.speed);
+      this.previewPlaybackStartedAt = Date.now() - preservedProgress * cycleDuration;
       
-      // 显示静态预览（不启动动画循环）
-      this.renderPreviewFrame(0);
+      // 实时渲染动画循环 (跟板载一致，每帧实时计算)
+      const tick = () => {
+        const progress = this.getCurrentPreviewProgress();
+        const frameMap = buildPlanetScreensaverPreviewFrame(this.config, progress);
+        
+        if (frameMap && this.clockConfig.time.show) {
+          const text = this.getPlanetTimeText();
+          const placement = this.resolveBoardTimePlacement(text);
+          drawClockTextToPixels(
+            text,
+            placement.x,
+            placement.y,
+            this.clockConfig.time.color,
+            frameMap,
+            this.clockConfig.font,
+            placement.fontSize,
+            "left",
+          );
+        }
+        
+        if (frameMap) {
+          this.previewDisplayPixels = frameMap;
+          this.previewRefreshTick += 1;
+        }
+        
+        // 帧间隔跟板载一致: cycleDuration / 48帧
+        const frameInterval = getPlanetPreviewCycleDuration(this.config.speed) / 48;
+        this.previewTimer = setTimeout(tick, Math.max(60, frameInterval));
+      };
+      tick();
     },
     stopPreviewPlayback() {
       if (this.previewTimer) {

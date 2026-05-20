@@ -366,13 +366,13 @@ const PRESET_DEFINITIONS = {
     hint: "对应原始生成器里的 Black Hole，重点看吸积盘弯曲和高亮边在 64×64 下是否还成立。",
     relativeScale: 2,
   },
-  // galaxy: {
-  //   id: "galaxy",
-  //   sourceLabel: "Galaxy",
-  //   label: "星系",
-  //   hint: "对应原始生成器里的 Galaxy，主要验证旋臂层叠、倾斜和旋转是否还能读出来。",
-  //   relativeScale: 1,
-  // },
+  galaxy: {
+    id: "galaxy",
+    sourceLabel: "Galaxy",
+    label: "星系",
+    hint: "对应原始生成器里的 Galaxy，主要验证旋臂层叠、倾斜和旋转是否还能读出来。",
+    relativeScale: 1,
+  },
   portal_green: {
     id: "portal_green",
     sourceLabel: "Portal Green",
@@ -1363,9 +1363,10 @@ function renderClouds(buffer, frame, layer) {
     let sphereY = sphere[1] + smoothstep(0, layer.cloudCurve, Math.abs(sphere[0] - 0.4));
     sphereY *= layer.stretch;
 
-    // 云层噪声计算 - 6次循环，平衡质量和性能
+    // 云层噪声计算 (默认9次, 地球3次, 跟板载一致)
+    const noiseLoops = layer.noiseLoops || 9;
     let cloudNoise = 0;
-    for (let index = 0; index < 6; index += 1) {
+    for (let index = 0; index < noiseLoops; index += 1) {
       cloudNoise += circleNoiseCloud(
         sphere[0] * layer.size * 0.3 + index + 11 + timeOffset,
         sphereY * layer.size * 0.3,
@@ -2418,7 +2419,7 @@ function renderPortalPreset(buffer, frame) {
 }
 
 function getWetTerranCloudCover(seed) {
-  return seededRange(seed, "wet_terran_cloud_cover", 0.35, 0.6);
+  return seededRange(seed, "wet_terran_cloud_cover", 0.31, 0.56);
 }
 
 function getIslandCloudCover(seed) {
@@ -2566,6 +2567,64 @@ function resolveEarthLandColor(latitudeDegrees, lightValue, terrainValue, moistu
   return scaleColor(color, 0.74 + lightValue * 0.5);
 }
 
+// ============ 地球夜晚面 + 城市灯光 ============
+// 城市灯光坐标 (经度, 纬度) — 主要人口密集区
+// 板载同步时直接复制这个数组
+const EARTH_CITY_LIGHTS = [
+  { lon: 139.7, lat: 35.7 },   // 东京
+  { lon: 121.5, lat: 31.2 },   // 上海
+  { lon: 116.4, lat: 39.9 },   // 北京
+  { lon: 77.2,  lat: 28.6 },   // 新德里
+  { lon: 2.3,   lat: 48.9 },   // 巴黎
+  { lon: -0.1,  lat: 51.5 },   // 伦敦
+  { lon: -74.0, lat: 40.7 },   // 纽约
+  { lon: -43.2, lat: -22.9 },  // 里约
+  { lon: 37.6,  lat: 55.8 },   // 莫斯科
+  { lon: -118.2, lat: 34.1 },  // 洛杉矶
+  { lon: 151.2, lat: -33.9 },  // 悉尼
+  { lon: 55.3,  lat: 25.3 },   // 迪拜
+];
+
+// 夜晚面底色
+const EARTH_NIGHT_BASE = [0.02, 0.02, 0.06];
+// 城市灯光颜色 (暖黄)
+const EARTH_CITY_GLOW = [1.0, 0.85, 0.4];
+// 城市灯光半径 (经纬度)
+const EARTH_CITY_RADIUS = 6.0;
+// 晨昏线过渡区间 (light 值)
+const EARTH_TERMINATOR_START = 0.05;
+const EARTH_TERMINATOR_END = 0.18;
+
+function resolveEarthNightColor(longitude, latitude) {
+  // 基础夜晚色
+  let nightR = EARTH_NIGHT_BASE[0];
+  let nightG = EARTH_NIGHT_BASE[1];
+  let nightB = EARTH_NIGHT_BASE[2];
+
+  // 检查是否在城市灯光范围内
+  for (const city of EARTH_CITY_LIGHTS) {
+    let dLon = longitude - city.lon;
+    // 经度环绕
+    if (dLon > 180) dLon -= 360;
+    if (dLon < -180) dLon += 360;
+    const dLat = latitude - city.lat;
+    const dist = Math.sqrt(dLon * dLon + dLat * dLat);
+    if (dist < EARTH_CITY_RADIUS) {
+      const intensity = (1 - dist / EARTH_CITY_RADIUS) * 0.7;
+      nightR += EARTH_CITY_GLOW[0] * intensity;
+      nightG += EARTH_CITY_GLOW[1] * intensity;
+      nightB += EARTH_CITY_GLOW[2] * intensity;
+    }
+  }
+
+  return makeColor(
+    clamp01(nightR),
+    clamp01(nightG),
+    clamp01(nightB),
+    1,
+  );
+}
+
 function renderEarthAtmosphere(buffer, offset, distanceFromCenter, lightValue) {
   const outerGlow = smoothstep(0.34, 0.5, distanceFromCenter) * (1 - smoothstep(0.47, 0.5, distanceFromCenter));
   if (outerGlow <= 0) {
@@ -2632,14 +2691,15 @@ function renderEarthClouds(buffer, frame) {
     pixelsScale: 1,
     lightOrigin: [0.38, 0.38],
     cloudCover: getEarthCloudCover(frame.config.seed),
-    timeSpeed: 0.12,      // 改回接近原来的值，稍微调整
-    timeFactor: 0.72,     // 改回原来的值
-    stretch: 2.15,        // 改回原来的值
-    cloudCurve: 1.18,     // 改回原来的值
-    lightBorder1: 0.52,   // 改回原来的值
-    lightBorder2: 0.66,   // 改回原来的值
-    size: 8.6,            // 改回原来的值
-    octaves: 4,           // 改回原来的值
+    timeSpeed: 0.12,
+    timeFactor: 0.72,
+    stretch: 2.15,
+    cloudCurve: 1.18,
+    lightBorder1: 0.52,
+    lightBorder2: 0.66,
+    size: 8.6,
+    octaves: 4,
+    noiseLoops: 3,        // 地球云层只循环3次 (跟板载一致)
     colors: [
       EARTH_CLOUD_BRIGHT,
       EARTH_CLOUD_SOFT,
@@ -2706,7 +2766,7 @@ function renderTerranWet(buffer, frame) {
     planeScale: 1,
     pixelsScale: 1,
     lightOrigin: [0.39, 0.39],
-    rotationOffset: 0.2,
+    rotationOffset: 0,      // 板载是 0.0
     timeSpeed: 0.1,
     ditherSize: 3.951,
     lightBorder1: 0.287,
@@ -2730,13 +2790,12 @@ function renderTerranWet(buffer, frame) {
     lightOrigin: [0.39, 0.39],
     cloudCover: getWetTerranCloudCover(frame.config.seed),
     timeSpeed: 0.1,
-    timeFactor: 0.5,
     stretch: 2,
     cloudCurve: 1.3,
     lightBorder1: 0.52,
     lightBorder2: 0.62,
     size: 7.315,
-    octaves: 2,
+    octaves: 1,             // 板载是 1
     colors: [
       rgba(0.960784, 1, 0.909804),
       rgba(0.87451, 0.878431, 0.909804),
@@ -2788,7 +2847,7 @@ function renderIslands(buffer, frame) {
     planeScale: 1,
     pixelsScale: 1,
     lightOrigin: [0.39, 0.39],
-    rotationOffset: 0.2,
+    rotationOffset: 0,      // 板载是 0.0
     timeSpeed: 0.2,
     lightBorder1: 0.32,
     lightBorder2: 0.534,
@@ -3333,15 +3392,17 @@ function buildPlanetScreensaverPreviewSequenceFromNormalized(normalized) {
   const delays = [];
   const frameDelay = getFrameDelay(normalized.speed);
 
-  // 只渲染第一帧作为静态预览
-  const firstProgress = 0;
-  maps.push(renderPlanetScreensaverPreviewMap(normalized, preset, firstProgress));
-  delays.push(frameDelay);
+  // 渲染完整序列
+  for (let i = 0; i < FRAME_COUNT; i++) {
+    const progress = i / FRAME_COUNT;
+    maps.push(renderPlanetScreensaverPreviewMap(normalized, preset, progress));
+    delays.push(frameDelay);
+  }
 
   const sequence = {
     cacheKey,
     config: normalized,
-    frameCount: 1,  // 只有1帧
+    frameCount: FRAME_COUNT,
     frameDelay,
     maps,
     delays,
