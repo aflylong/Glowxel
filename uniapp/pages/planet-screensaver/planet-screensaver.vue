@@ -327,11 +327,6 @@ const PLANET_TIME_FONT_IDS = new Set(
 );
 const PLANET_PAGE_STORAGE_KEY = "planet_screensaver_page_state";
 const PLANET_FIXED_PALETTE_COLOR_SEED = PLANET_REFERENCE_DEFAULT_COLOR_SEED;
-const PLANET_EARTH_SIZE_OPTIONS = Object.freeze([
-  { id: "small", label: "远景" },
-  { id: "medium", label: "标准" },
-  { id: "large", label: "近景" },
-]);
 const PLANET_PORTAL_COLOR_OPTIONS = Object.freeze([
   { id: "portal_green", label: "绿色" },
   { id: "portal_blue", label: "蓝色" },
@@ -492,10 +487,6 @@ function normalizePlanetPageState(saved) {
   };
 }
 
-function isEarthPresetValue(preset) {
-  return preset === "earth";
-}
-
 function isPortalPresetValue(preset) {
   return (
     preset === "portal_green" ||
@@ -505,7 +496,7 @@ function isPortalPresetValue(preset) {
 }
 
 function isFixedPalettePresetValue(preset) {
-  return isEarthPresetValue(preset) || isPortalPresetValue(preset);
+  return isPortalPresetValue(preset);
 }
 
 export default {
@@ -575,9 +566,6 @@ export default {
       }
       return this.deviceStore.isConnected;
     },
-    isEarthPreset() {
-      return isEarthPresetValue(this.config.preset);
-    },
     isFixedPalettePreset() {
       return isFixedPalettePresetValue(this.config.preset);
     },
@@ -585,15 +573,9 @@ export default {
       return isPortalPresetValue(this.config.preset);
     },
     displaySizeOptions() {
-      if (this.isEarthPreset) {
-        return PLANET_EARTH_SIZE_OPTIONS;
-      }
       return this.sizeOptions;
     },
     sizeSectionLabel() {
-      if (this.isEarthPreset) {
-        return "地球视角";
-      }
       if (this.isPortalPreset) {
         return "传送门大小";
       }
@@ -606,9 +588,6 @@ export default {
       return !isPortalPresetValue(this.config.preset);
     },
     randomPlanetActionLabel() {
-      if (this.isEarthPreset) {
-        return "随机云层";
-      }
       if (isPortalPresetValue(this.config.preset)) {
         return "随机纹理";
       }
@@ -1074,9 +1053,6 @@ export default {
       this.schedulePreviewRefresh(progress);
     },
     handleRandomColor() {
-      if (this.isEarthPreset) {
-        return;
-      }
       const progress = this.getCurrentPreviewProgress();
       this.config.colorSeed = createRandomPlanetColorSeed();
       this.schedulePreviewRefresh(progress);

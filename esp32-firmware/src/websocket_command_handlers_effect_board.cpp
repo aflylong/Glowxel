@@ -112,8 +112,7 @@ bool handlePlanetScreensaverCommand(
 
   const char* preset = doc["preset"];
   if (preset == nullptr ||
-      (strcmp(preset, "earth") != 0 &&
-       strcmp(preset, "terran_wet") != 0 &&
+      (strcmp(preset, "terran_wet") != 0 &&
        strcmp(preset, "terran_dry") != 0 &&
        strcmp(preset, "islands") != 0 &&
        strcmp(preset, "no_atmosphere") != 0 &&

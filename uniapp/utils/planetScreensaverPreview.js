@@ -5,11 +5,6 @@ const PREVIEW_CENTER = CANVAS_SIZE * 0.5;
 const TWO_PI = Math.PI * 2;
 const PLANET_DEFAULT_COLOR_SEED = 33521;
 const PLANET_REFERENCE_DEFAULT_COLOR_SEED = 20260415;
-const EARTH_MAP_WIDTH = 128;
-const EARTH_MAP_HEIGHT = 64;
-const EARTH_CENTER_LONGITUDE_RADIANS = 135 * Math.PI / 180;
-const EARTH_STATIC_DETAIL_SEED = 4.15;
-const EARTH_STATIC_CLIMATE_SEED = 7.31;
 
 const PLANET_PREVIEW_MIN_PIXELS = 12;
 const PLANET_PREVIEW_MAX_PIXELS = 5000;
@@ -21,12 +16,6 @@ const PLANET_SIZE_OPTIONS = [
   { id: "small", label: "小" },
   { id: "medium", label: "中" },
   { id: "large", label: "大" },
-];
-
-const PLANET_EARTH_SIZE_OPTIONS = [
-  { id: "small", label: "远景" },
-  { id: "medium", label: "标准" },
-  { id: "large", label: "近景" },
 ];
 
 const PLANET_DIRECTION_OPTIONS = [
@@ -58,8 +47,6 @@ const RING_TIME_BASE = 314.15;
 const PREVIEW_CACHE = new Map();
 const STARFIELD_CACHE = new Map();
 const PLANET_COLOR_VARIANT_CACHE = new Map();
-const EARTH_SURFACE_CACHE = new Map();  // 地球表面缓存
-const EARTH_TERRAIN_CACHE = new Map();  // 地球地形值缓存
 let ACTIVE_PREVIEW_CENTER_X = PREVIEW_CENTER;
 let ACTIVE_PREVIEW_CENTER_Y = PREVIEW_CENTER;
 
@@ -73,89 +60,6 @@ const COLOR_SPACE_BLUE = rgba(0.14902, 0.258824, 0.501961, 1);
 const COLOR_SPACE_TEAL = rgba(0.109804, 0.388235, 0.431373, 1);
 const COLOR_SPACE_ROSE = rgba(0.341176, 0.14902, 0.301961, 1);
 const STAR_BLOB_COLOR = rgba(1, 1, 0.894118, 1);
-const EARTH_LIGHT_DIRECTION = [-0.45, 0.35, 0.82];
-const EARTH_OCEAN_DEEP = [0.031373, 0.152941, 0.443137];
-const EARTH_OCEAN_MID = [0.058824, 0.32549, 0.639216];
-const EARTH_OCEAN_SHALLOW = [0.164706, 0.568627, 0.8];
-const EARTH_OCEAN_COAST = [0.470588, 0.772549, 0.847059];
-const EARTH_LAND_LUSH = [0.188235, 0.545098, 0.258824];
-const EARTH_LAND_DARK = [0.094118, 0.321569, 0.160784];
-const EARTH_LAND_DRY = [0.560784, 0.482353, 0.239216];
-const EARTH_LAND_HIGHLAND = [0.337255, 0.290196, 0.172549];
-const EARTH_LAND_COAST = [0.756863, 0.701961, 0.447059];
-const EARTH_ICE_BRIGHT = [0.921569, 0.964706, 1];
-const EARTH_ICE_SHADOW = [0.678431, 0.803922, 0.921569];
-const EARTH_CLOUD_BRIGHT = rgba(0.980392, 1, 0.992157, 1);
-const EARTH_CLOUD_SOFT = rgba(0.878431, 0.92549, 0.972549, 1);
-const EARTH_CLOUD_MID = rgba(0.470588, 0.580392, 0.752941, 1);
-const EARTH_CLOUD_SHADOW = rgba(0.262745, 0.329412, 0.490196, 1);
-
-const EARTH_LAND_HEX_ROWS = [
-  "00000000000000000000000000000000",
-  "00000000000000000000000000000000",
-  "000000001f80ff000000000000000000",
-  "00000003feffff8003c0000060000000",
-  "0000060070ffff80040000000c000000",
-  "00000000c00fff8000000801fe000000",
-  "00001beefc0fff00000030fffffc3800",
-  "07fffc93a703fe0003f802dffffffff7",
-  "f7ffffff83c7e0600ff5ffffffffffff",
-  "13ffffff038380001effffffffffffff",
-  "07effffc0e0080003cfffffffffffe38",
-  "00c0fffe07c000020e7fffffffffc0c0",
-  "00003fffefe0000711ffffffffff01c0",
-  "00001fffeff00003ffffffffffffe000",
-  "00001fffff180001ffffffffffffe000",
-  "00000fffffe00001fffb9fffffffa000",
-  "00000ffffe000005ebc3bfffffff3000",
-  "00000ffffc00000705ffdffffffc0000",
-  "00000ffff800000708ff9fffffcc4000",
-  "000007fff8000003f007ffffffc5c000",
-  "000003ffe0000007f90fffffffe20000",
-  "000000fd2000000fffffbfffffe00000",
-  "000000781800001ffff7dfffffe00000",
-  "000000380000003ffffbf0ffffc00000",
-  "000000188800003ffffbf87e7c000000",
-  "0000001d8a80003ffffdf03c3c000000",
-  "00000001c000003ffffdc0301e000000",
-  "000000004000003fffff00101e000000",
-  "0000000025c0001fffffc01004000000",
-  "000000000fe0000fffffc00810080000",
-  "000000000ffc00001fff800028400000",
-  "000000000ffc00001fff000011cc0000",
-  "000000001fff00001ffe000009b10000",
-  "000000001fffe0000ffc00000c10f000",
-  "000000000ffff00007fc000003007000",
-  "000000000fffe00007fc000000200800",
-  "0000000007ffc00007fc40000003a000",
-  "0000000007ffc0000ffc4000000f3000",
-  "0000000001ffc0000ff8c000001ff000",
-  "0000000001ff800007f08000007ff800",
-  "0000000001ff000007f8800000fffc00",
-  "0000000001fe000007f0000000fffc00",
-  "0000000001fc000003e00000007ffe00",
-  "0000000001f8000003c000000078fc00",
-  "0000000003f000000000000000007c00",
-  "0000000003f000000000000000002802",
-  "0000000003c000000000000000001002",
-  "00000000038000000000000000000008",
-  "00000000070000000000000000000000",
-  "00000000070000000000008000000000",
-  "00000000072000000000000000000000",
-  "00000000018000000000000000000000",
-  "00000000000000000000000000000000",
-  "00000000000000000000000000000000",
-  "00000000000000000000000000000000",
-  "00000000004000000000100008800000",
-  "00000000008000000009ff8ffffffe00",
-  "0000000007c0000fffffff7ffffffff8",
-  "0001ff8fffc0003fffffffffffffffe0",
-  "00fffffff80007ffffffffffffffffc0",
-  "000ffffff82703ffffffffffffffff80",
-  "003fffffffefffffffffffffffffffe0",
-  "00000000000000000000000000000000",
-  "00000000000000000000000000000000",
-];
 
 const SMALL_STAR_PATTERNS = [
   [[0, 0]],
@@ -285,17 +189,7 @@ const PORTAL_TEMPLATE_ROWS = [
   "0000000000000000000000000000000000000000000000000000000000000000",
 ];
 
-const EARTH_BACKGROUND_SEED = 20260415;
-const EARTH_OCEAN_SEED = 13697;
-
 const PRESET_DEFINITIONS = {
-  earth: {
-    id: "earth",
-    sourceLabel: "Earth",
-    label: "地球",
-    hint: "固定地球海陆轮廓，默认面向亚洲太平洋，云层随时间流动但大陆不漂移。",
-    relativeScale: 1,
-  },
   terran_wet: {
     id: "terran_wet",
     sourceLabel: "Terran Wet",
@@ -444,7 +338,7 @@ function isPortalPresetValue(presetId) {
 }
 
 function isFixedPalettePlanetPreset(presetId) {
-  return presetId === "earth" || isPortalPresetValue(presetId);
+  return isPortalPresetValue(presetId);
 }
 
 function clamp(value, min, max) {
@@ -614,10 +508,6 @@ function buildUntiledRand(seed) {
     return fract(Math.sin(x * 12.9898 + y * 78.233) * 15.5453 * seed);
   };
 }
-
-const EARTH_TERRAIN_RAND = buildTiledRand(EARTH_STATIC_DETAIL_SEED, 18, 2, 1);
-const EARTH_MOISTURE_RAND = buildTiledRand(EARTH_STATIC_CLIMATE_SEED, 20, 1, 1);
-const EARTH_OCEAN_RAND = buildTiledRand(EARTH_OCEAN_SEED, 24, 2, 1);
 
 function noise2(x, y, randValue) {
   const ix = Math.floor(x);
@@ -809,81 +699,6 @@ function scaleColor(color, factor) {
   return makeColor(color[0] * factor, color[1] * factor, color[2] * factor, color[3]);
 }
 
-function decodeEarthHexRows(rows) {
-  const mask = new Uint8Array(EARTH_MAP_WIDTH * EARTH_MAP_HEIGHT);
-  for (let row = 0; row < EARTH_MAP_HEIGHT; row += 1) {
-    const line = rows[row] || "";
-    let column = 0;
-    for (let index = 0; index < line.length && column < EARTH_MAP_WIDTH; index += 1) {
-      const value = parseInt(line[index], 16);
-      if (!Number.isFinite(value)) {
-        continue;
-      }
-      for (let bit = 3; bit >= 0 && column < EARTH_MAP_WIDTH; bit -= 1) {
-        mask[row * EARTH_MAP_WIDTH + column] = (value >> bit) & 1;
-        column += 1;
-      }
-    }
-  }
-  return mask;
-}
-
-function wrapEarthColumn(column) {
-  let wrapped = column % EARTH_MAP_WIDTH;
-  if (wrapped < 0) {
-    wrapped += EARTH_MAP_WIDTH;
-  }
-  return wrapped;
-}
-
-function clampEarthRow(row) {
-  if (row < 0) {
-    return 0;
-  }
-  if (row >= EARTH_MAP_HEIGHT) {
-    return EARTH_MAP_HEIGHT - 1;
-  }
-  return row;
-}
-
-function readEarthMask(mask, column, row) {
-  return mask[clampEarthRow(row) * EARTH_MAP_WIDTH + wrapEarthColumn(column)] === 1;
-}
-
-function buildEarthNeighborMask(mask, sourceLand, neighborLand, radius) {
-  const derived = new Uint8Array(mask.length);
-  for (let row = 0; row < EARTH_MAP_HEIGHT; row += 1) {
-    for (let column = 0; column < EARTH_MAP_WIDTH; column += 1) {
-      const index = row * EARTH_MAP_WIDTH + column;
-      const currentLand = mask[index] === 1;
-      if (currentLand !== sourceLand) {
-        continue;
-      }
-      let hit = false;
-      for (let dy = -radius; dy <= radius && !hit; dy += 1) {
-        const nextRow = clampEarthRow(row + dy);
-        for (let dx = -radius; dx <= radius; dx += 1) {
-          if (dx === 0 && dy === 0) {
-            continue;
-          }
-          if (readEarthMask(mask, column + dx, nextRow) === neighborLand) {
-            hit = true;
-            break;
-          }
-        }
-      }
-      if (hit) {
-        derived[index] = 1;
-      }
-    }
-  }
-  return derived;
-}
-
-const EARTH_LAND_MASK = decodeEarthHexRows(EARTH_LAND_HEX_ROWS);
-const EARTH_COAST_LAND_MASK = buildEarthNeighborMask(EARTH_LAND_MASK, true, false, 1);
-const EARTH_SHALLOW_WATER_MASK = buildEarthNeighborMask(EARTH_LAND_MASK, false, true, 2);
-
 function nextPlanetSeededRandom(state) {
   const nextState = (Math.imul(state >>> 0, 1664525) + 1013904223) >>> 0;
   return {
@@ -1048,17 +863,6 @@ function getDefaultSizeScale(sizeId) {
 }
 
 function getSizeScaleForPreset(presetId, sizeId) {
-  if (presetId === "earth") {
-    if (sizeId === "small") {
-      return 0.72;
-    }
-    if (sizeId === "medium") {
-      return 0.86;
-    }
-    if (sizeId === "large") {
-      return 0.98;
-    }
-  }
   if (presetId === "gas_giant_2") {
     if (sizeId === "small") {
       return 1.15;
@@ -1167,7 +971,7 @@ function getPlanetPreviewCycleDuration(speedId) {
 }
 
 function renderBackgroundStars(buffer, frame) {
-  const starSeed = frame.preset.id === "earth" ? EARTH_BACKGROUND_SEED : frame.config.seed;
+  const starSeed = frame.config.seed;
   const cacheKey = `${starSeed}:${frame.preset.id}:${frame.config.size}:${frame.config.planetX}:${frame.config.planetY}`;
   let background = STARFIELD_CACHE.get(cacheKey);
   if (!background) {
@@ -2430,288 +2234,12 @@ function getGasGiantCloudCover(seed) {
   return seededRange(seed, "gas_giant_one_cloud_cover", 0.28, 0.5);
 }
 
-function getEarthCloudCover(seed) {
-  // 恢复原来的云层覆盖率范围，保证云层正常成形
-  return seededRange(seed, "earth_cloud_cover", 0.46, 0.60);
-}
-
 function normalizeLongitude360(value) {
   return mod(value, 360);
 }
 
 function normalizeLongitudeDegrees(value) {
   return mod(value + 180, 360) - 180;
-}
-
-function isEarthLandCoordinate(longitudeDegrees, latitudeDegrees) {
-  const longitude360 = normalizeLongitude360(longitudeDegrees);
-  const latitudeClamped = clamp(latitudeDegrees, -89.999, 89.999);
-  const column = wrapEarthColumn(
-    Math.floor((longitude360 / 360) * EARTH_MAP_WIDTH),
-  );
-  const row = clampEarthRow(
-    Math.floor(((90 - latitudeClamped) / 180) * EARTH_MAP_HEIGHT),
-  );
-  return readEarthMask(EARTH_LAND_MASK, column, row);
-}
-
-function hasEarthNeighborState(longitudeDegrees, latitudeDegrees, expectedLand) {
-  const longitude360 = normalizeLongitude360(longitudeDegrees);
-  const latitudeClamped = clamp(latitudeDegrees, -89.999, 89.999);
-  const column = wrapEarthColumn(
-    Math.floor((longitude360 / 360) * EARTH_MAP_WIDTH),
-  );
-  const row = clampEarthRow(
-    Math.floor(((90 - latitudeClamped) / 180) * EARTH_MAP_HEIGHT),
-  );
-  const index = row * EARTH_MAP_WIDTH + column;
-  if (expectedLand) {
-    return EARTH_SHALLOW_WATER_MASK[index] === 1;
-  }
-  return EARTH_COAST_LAND_MASK[index] === 1;
-}
-
-function resolveEarthSphereSample(u, v, frame) {
-  const viewX = u * 2 - 1;
-  const viewY = 1 - v * 2;
-  const radiusSquared = viewX * viewX + viewY * viewY;
-  if (radiusSquared > 1) {
-    return null;
-  }
-  const sphereZ = Math.sqrt(Math.max(0, 1 - radiusSquared));
-  // 使用预计算的旋转矩阵（避免每像素重复计算cos/sin）
-  const cosRotation = frame.earthCosRotation;
-  const sinRotation = frame.earthSinRotation;
-  const worldX = viewX * cosRotation + sphereZ * sinRotation;
-  const worldZ = sphereZ * cosRotation - viewX * sinRotation;
-  const light = clamp(
-    viewX * EARTH_LIGHT_DIRECTION[0] +
-      viewY * EARTH_LIGHT_DIRECTION[1] +
-      sphereZ * EARTH_LIGHT_DIRECTION[2],
-    0,
-    1,
-  );
-  return {
-    sphereX: viewX,
-    sphereY: viewY,
-    sphereZ,
-    longitude: normalizeLongitudeDegrees((Math.atan2(worldX, worldZ) * 180) / Math.PI),
-    latitude: clamp((Math.asin(viewY) * 180) / Math.PI, -90, 90),
-    light,
-  };
-}
-
-function getEarthTerrainValue(longitudeDegrees, latitudeDegrees) {
-  const longitude = normalizeLongitude360(longitudeDegrees) / 360;
-  const latitude = (latitudeDegrees + 90) / 180;
-  return fbm2(longitude * 8.2 + 0.37, latitude * 5.6 + 0.19, EARTH_TERRAIN_RAND, 4);
-}
-
-function getEarthMoistureValue(longitudeDegrees, latitudeDegrees) {
-  const longitude = normalizeLongitude360(longitudeDegrees) / 360;
-  const latitude = (latitudeDegrees + 90) / 180;
-  return fbm2(longitude * 6.1 + 1.73, latitude * 4.9 + 0.88, EARTH_MOISTURE_RAND, 3);
-}
-
-function getEarthOceanValue(longitudeDegrees, latitudeDegrees) {
-  const longitude = normalizeLongitude360(longitudeDegrees) / 360;
-  const latitude = (latitudeDegrees + 90) / 180;
-  return fbm2(longitude * 7.4 + 2.31, latitude * 7.2 + 1.17, EARTH_OCEAN_RAND, 3);
-}
-
-function resolveEarthOceanColor(latitudeDegrees, lightValue, oceanValue, nearLand) {
-  const deepOcean = makeColor(...EARTH_OCEAN_DEEP, 1);
-  const midOcean = makeColor(...EARTH_OCEAN_MID, 1);
-  const tropicalOcean = makeColor(...EARTH_OCEAN_SHALLOW, 1);
-  const shorelineOcean = makeColor(...EARTH_OCEAN_COAST, 1);
-  const polarOcean = makeColor(0.666667, 0.819608, 0.905882, 1);
-  const tropicalFactor = 1 - smoothstep(10, 48, Math.abs(latitudeDegrees));
-  const polarFactor = smoothstep(58, 82, Math.abs(latitudeDegrees));
-  let color = mixColor(deepOcean, midOcean, clamp01(lightValue * 0.6 + oceanValue * 0.35));
-  color = mixColor(color, tropicalOcean, tropicalFactor * 0.42);
-  color = mixColor(color, polarOcean, polarFactor * 0.35);
-  if (nearLand) {
-    color = mixColor(color, shorelineOcean, 0.4);
-  }
-  return scaleColor(color, 0.76 + lightValue * 0.48);
-}
-
-function resolveEarthLandColor(latitudeDegrees, lightValue, terrainValue, moistureValue, isCoastline) {
-  const tropicalForest = makeColor(...EARTH_LAND_LUSH, 1);
-  const temperateGreen = makeColor(0.431373, 0.658824, 0.290196, 1);
-  const dryGrass = makeColor(0.627451, 0.623529, 0.305882, 1);
-  const desert = makeColor(...EARTH_LAND_DRY, 1);
-  const mountain = makeColor(...EARTH_LAND_HIGHLAND, 1);
-  const taiga = makeColor(...EARTH_LAND_DARK, 1);
-  const snow = makeColor(...EARTH_ICE_BRIGHT, 1);
-  const coast = makeColor(...EARTH_LAND_COAST, 1);
-  const polarFactor = smoothstep(56, 80, Math.abs(latitudeDegrees));
-  let color = temperateGreen;
-  if (Math.abs(latitudeDegrees) > 52) {
-    color = taiga;
-  }
-  if (moistureValue < 0.3 && Math.abs(latitudeDegrees) < 38) {
-    color = desert;
-  } else if (moistureValue < 0.45 && Math.abs(latitudeDegrees) < 42) {
-    color = dryGrass;
-  } else if (moistureValue > 0.62 && Math.abs(latitudeDegrees) < 28) {
-    color = tropicalForest;
-  }
-  if (terrainValue > 0.7) {
-    color = mountain;
-  }
-  color = mixColor(color, snow, polarFactor * 0.78);
-  if (isCoastline) {
-    color = mixColor(color, coast, 0.34);
-  }
-  return scaleColor(color, 0.74 + lightValue * 0.5);
-}
-
-// ============ 地球夜晚面 + 城市灯光 ============
-// 城市灯光坐标 (经度, 纬度) — 主要人口密集区
-// 板载同步时直接复制这个数组
-const EARTH_CITY_LIGHTS = [
-  { lon: 139.7, lat: 35.7 },   // 东京
-  { lon: 121.5, lat: 31.2 },   // 上海
-  { lon: 116.4, lat: 39.9 },   // 北京
-  { lon: 77.2,  lat: 28.6 },   // 新德里
-  { lon: 2.3,   lat: 48.9 },   // 巴黎
-  { lon: -0.1,  lat: 51.5 },   // 伦敦
-  { lon: -74.0, lat: 40.7 },   // 纽约
-  { lon: -43.2, lat: -22.9 },  // 里约
-  { lon: 37.6,  lat: 55.8 },   // 莫斯科
-  { lon: -118.2, lat: 34.1 },  // 洛杉矶
-  { lon: 151.2, lat: -33.9 },  // 悉尼
-  { lon: 55.3,  lat: 25.3 },   // 迪拜
-];
-
-// 夜晚面底色
-const EARTH_NIGHT_BASE = [0.02, 0.02, 0.06];
-// 城市灯光颜色 (暖黄)
-const EARTH_CITY_GLOW = [1.0, 0.85, 0.4];
-// 城市灯光半径 (经纬度)
-const EARTH_CITY_RADIUS = 6.0;
-// 晨昏线过渡区间 (light 值)
-const EARTH_TERMINATOR_START = 0.05;
-const EARTH_TERMINATOR_END = 0.18;
-
-function resolveEarthNightColor(longitude, latitude) {
-  // 基础夜晚色
-  let nightR = EARTH_NIGHT_BASE[0];
-  let nightG = EARTH_NIGHT_BASE[1];
-  let nightB = EARTH_NIGHT_BASE[2];
-
-  // 检查是否在城市灯光范围内
-  for (const city of EARTH_CITY_LIGHTS) {
-    let dLon = longitude - city.lon;
-    // 经度环绕
-    if (dLon > 180) dLon -= 360;
-    if (dLon < -180) dLon += 360;
-    const dLat = latitude - city.lat;
-    const dist = Math.sqrt(dLon * dLon + dLat * dLat);
-    if (dist < EARTH_CITY_RADIUS) {
-      const intensity = (1 - dist / EARTH_CITY_RADIUS) * 0.7;
-      nightR += EARTH_CITY_GLOW[0] * intensity;
-      nightG += EARTH_CITY_GLOW[1] * intensity;
-      nightB += EARTH_CITY_GLOW[2] * intensity;
-    }
-  }
-
-  return makeColor(
-    clamp01(nightR),
-    clamp01(nightG),
-    clamp01(nightB),
-    1,
-  );
-}
-
-function renderEarthAtmosphere(buffer, offset, distanceFromCenter, lightValue) {
-  const outerGlow = smoothstep(0.34, 0.5, distanceFromCenter) * (1 - smoothstep(0.47, 0.5, distanceFromCenter));
-  if (outerGlow <= 0) {
-    return;
-  }
-  const atmosphere = makeColor(0.427451, 0.803922, 1, 1);
-  blendPixel(buffer, offset, atmosphere, outerGlow * (0.2 + lightValue * 0.18));
-}
-
-function renderEarthSurface(buffer, frame) {
-  const pixels = useLayerPixels(frame.config.pixels, 1);
-
-  createLayerIterator(frame.preset.relativeScale, 1, frame.sizeScale, (offset, u, v) => {
-    const pixelU = quantizeUv(u, pixels);
-    const pixelV = quantizeUv(v, pixels);
-    const sample = resolveEarthSphereSample(pixelU, pixelV, frame);
-    if (!sample) {
-      return;
-    }
-
-    const distanceFromCenter = distance2(pixelU, pixelV, 0.5, 0.5);
-    const isLand = isEarthLandCoordinate(sample.longitude, sample.latitude);
-    
-    // 优化：缓存邻域检查结果，避免重复计算坐标转换
-    let isCoastline = false;
-    let nearLand = false;
-    if (isLand) {
-      isCoastline = hasEarthNeighborState(sample.longitude, sample.latitude, false);
-    } else {
-      nearLand = hasEarthNeighborState(sample.longitude, sample.latitude, true);
-    }
-    
-    const terrainValue = getEarthTerrainValue(sample.longitude, sample.latitude);
-    const moistureValue = getEarthMoistureValue(sample.longitude, sample.latitude);
-    const oceanValue = getEarthOceanValue(sample.longitude, sample.latitude);
-
-    let color;
-    if (Math.abs(sample.latitude) > 77) {
-      color = mixColor(
-        makeColor(...EARTH_ICE_SHADOW, 1),
-        makeColor(...EARTH_ICE_BRIGHT, 1),
-        sample.light,
-      );
-    } else if (isLand) {
-      color = resolveEarthLandColor(
-        sample.latitude,
-        sample.light,
-        terrainValue,
-        moistureValue,
-        isCoastline,
-      );
-    } else {
-      color = resolveEarthOceanColor(sample.latitude, sample.light, oceanValue, nearLand);
-    }
-
-    blendPixel(buffer, offset, color, 1);
-    renderEarthAtmosphere(buffer, offset, distanceFromCenter, sample.light);
-  });
-}
-
-function renderEarthClouds(buffer, frame) {
-  renderClouds(buffer, frame, {
-    planeScale: 1,
-    pixelsScale: 1,
-    lightOrigin: [0.38, 0.38],
-    cloudCover: getEarthCloudCover(frame.config.seed),
-    timeSpeed: 0.12,
-    timeFactor: 0.72,
-    stretch: 2.15,
-    cloudCurve: 1.18,
-    lightBorder1: 0.52,
-    lightBorder2: 0.66,
-    size: 8.6,
-    octaves: 4,
-    noiseLoops: 3,        // 地球云层只循环3次 (跟板载一致)
-    colors: [
-      EARTH_CLOUD_BRIGHT,
-      EARTH_CLOUD_SOFT,
-      EARTH_CLOUD_MID,
-      EARTH_CLOUD_SHADOW,
-    ],
-  });
-}
-
-function renderEarth(buffer, frame) {
-  renderEarthSurface(buffer, frame);
-  renderEarthClouds(buffer, frame);
 }
 
 function buildFrameState(config, preset, progressValue) {
@@ -2723,11 +2251,6 @@ function buildFrameState(config, preset, progressValue) {
   const motionFactor = directionFactor;
   const spinFactor = directionFactor;
   const spinAngle = progress * spinFactor * TWO_PI;
-  
-  // 预计算地球旋转矩阵（避免每像素重复计算）
-  const earthRotation = EARTH_CENTER_LONGITUDE_RADIANS + spinAngle;
-  const earthCosRotation = Math.cos(earthRotation);
-  const earthSinRotation = Math.sin(earthRotation);
   
   // 传送门使用真实时间（固定60秒周期），不受速度影响
   const realTimeSeconds = (Date.now() / 1000) % 60;  // 0-60秒循环
@@ -2746,8 +2269,6 @@ function buildFrameState(config, preset, progressValue) {
     frameDelay: getFrameDelay(speedValue),
     sizeScale: getSizeScaleForPreset(config.preset, config.size),
     shaderSeed: convertShaderSeed(config.seed),
-    earthCosRotation,
-    earthSinRotation,
     portalProgress,  // 传送门专用的progress（固定60秒）
   };
 }
@@ -3220,9 +2741,6 @@ function renderStarPreset(buffer, frame) {
 
 function renderPresetToBuffer(buffer, frame) {
   switch (frame.preset.id) {
-    case "earth":
-      renderEarth(buffer, frame);
-      return;
     case "terran_wet":
       renderTerranWet(buffer, frame);
       return;
