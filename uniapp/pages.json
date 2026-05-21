@@ -7,6 +7,15 @@
   },
   "pages": [
     {
+      "path": "pages/control/control",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "black",
+        "backgroundColor": "#FFFFFF",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
       "path": "pages/library/library",
       "style": {
         "navigationStyle": "custom",
@@ -44,15 +53,6 @@
     },
     {
       "path": "pages/ble-config/ble-config",
-      "style": {
-        "navigationStyle": "custom",
-        "navigationBarTextStyle": "black",
-        "backgroundColor": "#FFFFFF",
-        "enablePullDownRefresh": false
-      }
-    },
-    {
-      "path": "pages/control/control",
       "style": {
         "navigationStyle": "custom",
         "navigationBarTextStyle": "black",
@@ -378,7 +378,7 @@
     "animationDuration": 200,
     "enablePullDownRefresh": false
   },
-  "tabBar": {
+  "tabBar_HIDDEN_KEEP_FOR_RESTORE": {
     "color": "#8A8A8A",
     "selectedColor": "#333333",
     "backgroundColor": "#FFFFFF",

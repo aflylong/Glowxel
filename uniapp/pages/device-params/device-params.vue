@@ -609,7 +609,8 @@ export default {
           uni.navigateBack();
           return;
         }
-        uni.switchTab({
+        // 兼容 tabBar 隐藏后的"设备-only"启动模式，用 reLaunch 而不是 switchTab
+        uni.reLaunch({
           url: "/pages/control/control",
         });
       }, 0);
