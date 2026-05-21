@@ -162,32 +162,6 @@
             </view>
           </view>
 
-          <!-- 角色位置/大小调整 -->
-          <view class="setting-item-row">
-            <text class="setting-label">大小%</text>
-            <view class="setting-control-buttons">
-              <view class="control-btn" @click="adjustTerraria('playerScale', -1)"><text class="control-icon">-</text></view>
-              <text class="setting-value-large">{{ config.terraria.playerScale }}</text>
-              <view class="control-btn" @click="adjustTerraria('playerScale', 1)"><text class="control-icon">+</text></view>
-            </view>
-          </view>
-          <view class="setting-item-row">
-            <text class="setting-label">X</text>
-            <view class="setting-control-buttons">
-              <view class="control-btn" @click="adjustTerraria('playerX', -1)"><text class="control-icon">-</text></view>
-              <text class="setting-value-large">{{ config.terraria.playerX }}</text>
-              <view class="control-btn" @click="adjustTerraria('playerX', 1)"><text class="control-icon">+</text></view>
-            </view>
-          </view>
-          <view class="setting-item-row">
-            <text class="setting-label">Y</text>
-            <view class="setting-control-buttons">
-              <view class="control-btn" @click="adjustTerraria('playerY', -1)"><text class="control-icon">-</text></view>
-              <text class="setting-value-large">{{ config.terraria.playerY }}</text>
-              <view class="control-btn" @click="adjustTerraria('playerY', 1)"><text class="control-icon">+</text></view>
-            </view>
-          </view>
-
         </view>
 
         <!-- Tab 4: 地形 + Boss -->
