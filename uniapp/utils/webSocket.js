@@ -1559,6 +1559,11 @@ class WebSocket {
             loop: config.loop,
           };
 
+    // 水世界可选透传 colorTheme 字段（板载用 4 主色派生 palette / 彩虹流转）
+    if (isWaterWorldPreset && config.colorTheme) {
+      params.colorTheme = config.colorTheme;
+    }
+
     if (options.clockConfig) {
       params.config = options.clockConfig;
     }
@@ -1649,35 +1654,48 @@ class WebSocket {
   }
 
   async startTerrariaClock(config, options = {}) {
+    const params = {
+      character: config.character,
+      weaponId: config.weaponId,
+      playerX: config.playerX,
+      playerY: config.playerY,
+      playerScale: config.playerScale,
+      guardianX: config.guardianX,
+      guardianY: config.guardianY,
+      guardianScale: config.guardianScale,
+      wingId: config.wingId,
+      wingSpeed: config.wingSpeed,
+      biome: config.biome,
+      bossEnabled: config.bossEnabled,
+      bossId: config.bossId,
+      bossX: config.bossX,
+      bossY: config.bossY,
+      bossScale: config.bossScale,
+      fontId: config.fontId,
+      fontScale: config.fontScale,
+      clockX: config.clockX,
+      clockY: config.clockY,
+      hourFormat: config.hourFormat,
+      showSeconds: config.showSeconds,
+      clockTextColor: normalizeHexColor(config.clockTextColor),
+      clockBgInner: normalizeHexColor(config.clockBgInner),
+      clockBgOuter: normalizeHexColor(config.clockBgOuter),
+    };
+    // 可选字段：板载侧 containsKey 判断（向后兼容）
+    if (config.maskId !== undefined) params.maskId = config.maskId;
+    if (config.dragonX !== undefined) params.dragonX = config.dragonX;
+    if (config.dragonY !== undefined) params.dragonY = config.dragonY;
+    if (config.dragonAngle !== undefined) params.dragonAngle = config.dragonAngle;
+    if (config.bladeX !== undefined) params.bladeX = config.bladeX;
+    if (config.bladeY !== undefined) params.bladeY = config.bladeY;
+    if (config.bladeAngle !== undefined) params.bladeAngle = config.bladeAngle;
+    // 自动轮播配置（可选，开启时才传）
+    if (config.autoRotate) {
+      params.autoRotate = config.autoRotate;
+    }
     return this.runModeTransaction({
       mode: "terraria_clock",
-      params: {
-        character: config.character,
-        weaponId: config.weaponId,
-        playerX: config.playerX,
-        playerY: config.playerY,
-        playerScale: config.playerScale,
-        guardianX: config.guardianX,
-        guardianY: config.guardianY,
-        guardianScale: config.guardianScale,
-        wingId: config.wingId,
-        wingSpeed: config.wingSpeed,
-        biome: config.biome,
-        bossEnabled: config.bossEnabled,
-        bossId: config.bossId,
-        bossX: config.bossX,
-        bossY: config.bossY,
-        bossScale: config.bossScale,
-        fontId: config.fontId,
-        fontScale: config.fontScale,
-        clockX: config.clockX,
-        clockY: config.clockY,
-        hourFormat: config.hourFormat,
-        showSeconds: config.showSeconds,
-        clockTextColor: normalizeHexColor(config.clockTextColor),
-        clockBgInner: normalizeHexColor(config.clockBgInner),
-        clockBgOuter: normalizeHexColor(config.clockBgOuter),
-      },
+      params,
       acceptedTimeout: options.acceptedTimeout,
       finalTimeout: options.finalTimeout,
     });

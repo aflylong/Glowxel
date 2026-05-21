@@ -24,6 +24,33 @@ const WATER_WORLD_PRESET_CONFIGS = Object.freeze({
   }),
 });
 const WATER_WORLD_COLOR_THEME_OPTIONS = Object.freeze([
+  // —— 新风格色板（动画感、强对比，差异明显） ——
+  Object.freeze({
+    id: "aurora-violet",
+    label: "极光紫蓝",
+    swatches: Object.freeze(["#1a0f4a", "#5a2dd8", "#3ee0c8"]),
+  }),
+  Object.freeze({
+    id: "neon-pink",
+    label: "霓虹粉海",
+    swatches: Object.freeze(["#3a0a4f", "#e63ab8", "#ffd6f3"]),
+  }),
+  Object.freeze({
+    id: "sunset-coral",
+    label: "夕阳珊瑚",
+    swatches: Object.freeze(["#3a1428", "#ff6b4a", "#ffe49a"]),
+  }),
+  Object.freeze({
+    id: "emerald-tide",
+    label: "翡翠潮",
+    swatches: Object.freeze(["#06302a", "#1ec48a", "#a8f5d4"]),
+  }),
+  Object.freeze({
+    id: "anime-cyan",
+    label: "动漫蓝白",
+    swatches: Object.freeze(["#1c4a8a", "#5ec8ff", "#f0fbff"]),
+  }),
+  // —— 兼容色板（老用户存档保持可用） ——
   Object.freeze({
     id: "ocean-blue",
     label: "海水蓝",
@@ -51,6 +78,41 @@ const WATER_WORLD_COLOR_THEME_OPTIONS = Object.freeze([
   }),
 ]);
 const WATER_WORLD_COLOR_THEME_MAP = Object.freeze({
+  // 极光紫蓝：深紫底 + 紫罗兰中段 + 青绿亮
+  "aurora-violet": Object.freeze({
+    deep: Object.freeze({ r: 26, g: 15, b: 74 }),
+    mid: Object.freeze({ r: 90, g: 45, b: 216 }),
+    light: Object.freeze({ r: 62, g: 224, b: 200 }),
+    foam: Object.freeze({ r: 232, g: 248, b: 255 }),
+  }),
+  // 霓虹粉海：紫红底 + 霓虹粉中段 + 浅粉亮
+  "neon-pink": Object.freeze({
+    deep: Object.freeze({ r: 58, g: 10, b: 79 }),
+    mid: Object.freeze({ r: 230, g: 58, b: 184 }),
+    light: Object.freeze({ r: 255, g: 214, b: 243 }),
+    foam: Object.freeze({ r: 255, g: 240, b: 250 }),
+  }),
+  // 夕阳珊瑚：暗红紫底 + 珊瑚橙中段 + 金黄亮
+  "sunset-coral": Object.freeze({
+    deep: Object.freeze({ r: 58, g: 20, b: 40 }),
+    mid: Object.freeze({ r: 255, g: 107, b: 74 }),
+    light: Object.freeze({ r: 255, g: 228, b: 154 }),
+    foam: Object.freeze({ r: 255, g: 248, b: 230 }),
+  }),
+  // 翡翠潮:深绿底 + 翠绿中段 + 薄荷亮
+  "emerald-tide": Object.freeze({
+    deep: Object.freeze({ r: 6, g: 48, b: 42 }),
+    mid: Object.freeze({ r: 30, g: 196, b: 138 }),
+    light: Object.freeze({ r: 168, g: 245, b: 212 }),
+    foam: Object.freeze({ r: 232, g: 252, b: 244 }),
+  }),
+  // 动漫蓝白:中蓝底 + 天蓝中段 + 雪白亮
+  "anime-cyan": Object.freeze({
+    deep: Object.freeze({ r: 28, g: 74, b: 138 }),
+    mid: Object.freeze({ r: 94, g: 200, b: 255 }),
+    light: Object.freeze({ r: 240, g: 251, b: 255 }),
+    foam: Object.freeze({ r: 250, g: 254, b: 255 }),
+  }),
   "ocean-blue": Object.freeze({
     deep: Object.freeze({ r: 6, g: 28, b: 86 }),
     mid: Object.freeze({ r: 20, g: 90, b: 176 }),
@@ -82,7 +144,7 @@ const WATER_WORLD_COLOR_THEME_MAP = Object.freeze({
     foam: Object.freeze({ r: 230, g: 248, b: 255 }),
   }),
 });
-const DEFAULT_WATER_WORLD_COLOR_THEME_ID = "ocean-blue";
+const DEFAULT_WATER_WORLD_COLOR_THEME_ID = "aurora-violet";
 
 function clamp(value, minValue, maxValue) {
   if (value < minValue) {
@@ -913,10 +975,26 @@ function buildWaterWorldPreviewFrames(config, frameCount = 56, colorThemeId) {
   return frames;
 }
 
+// 把 themeId 转成传给板载的 colorTheme 对象（4 个静态主色）
+function buildWaterWorldColorThemePayload(themeId) {
+  const theme = WATER_WORLD_COLOR_THEME_MAP[themeId];
+  if (!theme) {
+    throw new Error(`Unsupported water world color theme: ${themeId}`);
+  }
+  return Object.freeze({
+    mode: "static",
+    deep: { r: theme.deep.r, g: theme.deep.g, b: theme.deep.b },
+    mid: { r: theme.mid.r, g: theme.mid.g, b: theme.mid.b },
+    light: { r: theme.light.r, g: theme.light.g, b: theme.light.b },
+    foam: { r: theme.foam.r, g: theme.foam.g, b: theme.foam.b },
+  });
+}
+
 export {
   DEFAULT_WATER_WORLD_COLOR_THEME_ID,
   WATER_WORLD_COLOR_THEME_OPTIONS,
   buildWaterWorldPreviewFrames,
+  buildWaterWorldColorThemePayload,
   createWaterWorldPreviewState,
   renderWaterWorldPreviewState,
   stepWaterWorldPreviewState,

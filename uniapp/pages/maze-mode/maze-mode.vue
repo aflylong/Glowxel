@@ -65,7 +65,8 @@
       :style="{ height: contentHeight }"
     >
       <view class="content-wrapper glx-scroll-stack">
-        <view class="maze-section">
+        <!-- 颜色调整 UI 已隐藏（默认配色已够用） -->
+        <view v-if="false" class="maze-section">
           <view class="maze-section-head">
             <text class="maze-section-title">信息框</text>
           </view>
@@ -107,7 +108,7 @@
           </view>
         </view>
 
-        <view class="maze-section">
+        <view v-if="false" class="maze-section">
           <view class="maze-section-head">
             <text class="maze-section-title">生成与寻路</text>
           </view>
@@ -140,7 +141,7 @@
           </view>
         </view>
 
-        <view class="maze-section">
+        <view v-if="false" class="maze-section">
           <view class="maze-section-head">
             <text class="maze-section-title">完成路径</text>
           </view>

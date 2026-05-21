@@ -7,10 +7,85 @@ import {
   getCurrentTimeText,
   getTinyTextWidth,
 } from "../clockCanvas.js";
-import { fillRect, normalizeSpeed } from "./common.js";
+import { normalizeSpeed } from "./common.js";
 import { createMazeModeConfig } from "../mazeModeConfig.js";
 
 const DISPLAY_SIZE = 64;
+
+// =========================================================================
+// 高性能 framebuffer 实现（按板载 maze_effect.cpp 同款思路）
+// 旧实现：每像素 Map.set("x,y", "#rrggbb") -> 字符串拼接 + 哈希表
+// 新实现：直接索引 Uint8Array(64*64*3) -> 单条数组写
+// 帧结束时把 Uint8Array 转成兼容的 Map<"x,y","#rrggbb"> 输出，对调用方零改动
+// 性能：每像素从 ~3 次字符串拼接 + Map.set 变成 3 条数组写，预期 10-20 倍加速
+// =========================================================================
+const FB_SIZE = DISPLAY_SIZE * DISPLAY_SIZE * 3;
+
+function fbCreate() {
+  // 三通道 RGB，初始全 0（黑）
+  return new Uint8ClampedArray(FB_SIZE);
+}
+
+function fbClear(fb, r, g, b) {
+  // 全屏填色（替代每帧 fillRect(map, 0, 0, 64, 64)）
+  for (let i = 0; i < FB_SIZE; i += 3) {
+    fb[i] = r;
+    fb[i + 1] = g;
+    fb[i + 2] = b;
+  }
+}
+
+function fbSetPixel(fb, x, y, r, g, b) {
+  if (x < 0 || x >= DISPLAY_SIZE || y < 0 || y >= DISPLAY_SIZE) {
+    return;
+  }
+  const idx = (y * DISPLAY_SIZE + x) * 3;
+  fb[idx] = r;
+  fb[idx + 1] = g;
+  fb[idx + 2] = b;
+}
+
+function fbFillRect(fb, x, y, width, height, r, g, b) {
+  // 行内连续写，用矩形裁剪到画布内
+  let x0 = x, y0 = y;
+  let x1 = x + width, y1 = y + height;
+  if (x0 < 0) x0 = 0;
+  if (y0 < 0) y0 = 0;
+  if (x1 > DISPLAY_SIZE) x1 = DISPLAY_SIZE;
+  if (y1 > DISPLAY_SIZE) y1 = DISPLAY_SIZE;
+  for (let py = y0; py < y1; py += 1) {
+    let idx = (py * DISPLAY_SIZE + x0) * 3;
+    for (let px = x0; px < x1; px += 1) {
+      fb[idx] = r;
+      fb[idx + 1] = g;
+      fb[idx + 2] = b;
+      idx += 3;
+    }
+  }
+}
+
+// 把 framebuffer 转成兼容的 Map<"x,y", "#rrggbb">
+// 仅当像素颜色非 (0,0,0) 时才写入（与旧实现一致：黑背景由 fillRect 显式填充进 map）
+// 但旧实现 fillRect 会把背景黑色也写进 map，所以这里也全量输出以保持一致
+const HEX_DIGITS = "0123456789abcdef";
+function byteToHex(byte) {
+  return HEX_DIGITS[(byte >> 4) & 0x0f] + HEX_DIGITS[byte & 0x0f];
+}
+
+function fbToMap(fb) {
+  const map = new Map();
+  for (let y = 0; y < DISPLAY_SIZE; y += 1) {
+    for (let x = 0; x < DISPLAY_SIZE; x += 1) {
+      const idx = (y * DISPLAY_SIZE + x) * 3;
+      const r = fb[idx];
+      const g = fb[idx + 1];
+      const b = fb[idx + 2];
+      map.set(`${x},${y}`, `#${byteToHex(r)}${byteToHex(g)}${byteToHex(b)}`);
+    }
+  }
+  return map;
+}
+
 const MAZE_INFO_PANEL_METRICS = {
   panelPaddingX: 3,
   panelPaddingTop: 2,
@@ -73,11 +148,11 @@ function rectanglesIntersect(left, right) {
   );
 }
 
-function drawRectOutline(map, x, y, width, height, r, g, b) {
-  fillRect(map, x, y, width, 1, r, g, b);
-  fillRect(map, x, y + height - 1, width, 1, r, g, b);
-  fillRect(map, x, y, 1, height, r, g, b);
-  fillRect(map, x + width - 1, y, 1, height, r, g, b);
+function drawRectOutline(fb, x, y, width, height, r, g, b) {
+  fbFillRect(fb, x, y, width, 1, r, g, b);
+  fbFillRect(fb, x, y + height - 1, width, 1, r, g, b);
+  fbFillRect(fb, x, y, 1, height, r, g, b);
+  fbFillRect(fb, x + width - 1, y, 1, height, r, g, b);
 }
 
 function normalizeHexColorText(value) {
@@ -188,15 +263,15 @@ function buildMazeInfoPanel(showClock) {
   };
 }
 
-function drawMazeInfoPanel(map, panel, colors) {
+function drawMazeInfoPanelToFb(fb, panel, colors) {
   if (!panel) {
     return;
   }
 
   const panelBgColor = hexToRgb(colors.panelBgColor);
   const borderColor = hexToRgb(colors.borderColor);
-  fillRect(
-    map,
+  fbFillRect(
+    fb,
     panel.panelX,
     panel.panelY,
     panel.panelWidth,
@@ -206,7 +281,7 @@ function drawMazeInfoPanel(map, panel, colors) {
     panelBgColor.b,
   );
   drawRectOutline(
-    map,
+    fb,
     panel.panelX,
     panel.panelY,
     panel.panelWidth,
@@ -215,6 +290,14 @@ function drawMazeInfoPanel(map, panel, colors) {
     borderColor.g,
     borderColor.b,
   );
+  // 文字部分仍然通过 Map 接口（drawClockTextToPixels 是全局通用工具，不动）
+  // 在 fb 转 Map 后再画文字
+}
+
+function drawMazeInfoPanelText(map, panel, colors) {
+  if (!panel) {
+    return;
+  }
   drawClockTextToPixels(
     panel.timeText,
     Math.floor(DISPLAY_SIZE / 2),
@@ -307,16 +390,16 @@ function findAvailableAnchor(layout, reservedMask, preferEnd = false) {
   return null;
 }
 
-function drawCell(layout, map, x, y, r, g, b) {
+function drawCell(layout, fb, x, y, r, g, b) {
   const origin = getCellOrigin(layout, x, y);
-  fillRect(map, origin.x, origin.y, layout.cellSize, layout.cellSize, r, g, b);
+  fbFillRect(fb, origin.x, origin.y, layout.cellSize, layout.cellSize, r, g, b);
 }
 
-function drawPassage(layout, map, x, y, direction, r, g, b) {
+function drawPassage(layout, fb, x, y, direction, r, g, b) {
   const origin = getCellOrigin(layout, x, y);
   if (direction === "right") {
-    fillRect(
-      map,
+    fbFillRect(
+      fb,
       origin.x + layout.cellSize,
       origin.y,
       layout.wallSize,
@@ -328,8 +411,8 @@ function drawPassage(layout, map, x, y, direction, r, g, b) {
     return;
   }
   if (direction === "bottom") {
-    fillRect(
-      map,
+    fbFillRect(
+      fb,
       origin.x,
       origin.y + layout.cellSize,
       layout.cellSize,
@@ -341,27 +424,27 @@ function drawPassage(layout, map, x, y, direction, r, g, b) {
   }
 }
 
-function drawConnection(layout, map, fromNode, toNode, r, g, b) {
+function drawConnection(layout, fb, fromNode, toNode, r, g, b) {
   if (!fromNode || !toNode) {
     return;
   }
-  drawCell(layout, map, fromNode.x, fromNode.y, r, g, b);
-  drawCell(layout, map, toNode.x, toNode.y, r, g, b);
+  drawCell(layout, fb, fromNode.x, fromNode.y, r, g, b);
+  drawCell(layout, fb, toNode.x, toNode.y, r, g, b);
 
   if (toNode.x === fromNode.x + 1 && toNode.y === fromNode.y) {
-    drawPassage(layout, map, fromNode.x, fromNode.y, "right", r, g, b);
+    drawPassage(layout, fb, fromNode.x, fromNode.y, "right", r, g, b);
     return;
   }
   if (toNode.x === fromNode.x - 1 && toNode.y === fromNode.y) {
-    drawPassage(layout, map, toNode.x, toNode.y, "right", r, g, b);
+    drawPassage(layout, fb, toNode.x, toNode.y, "right", r, g, b);
     return;
   }
   if (toNode.y === fromNode.y + 1 && toNode.x === fromNode.x) {
-    drawPassage(layout, map, fromNode.x, fromNode.y, "bottom", r, g, b);
+    drawPassage(layout, fb, fromNode.x, fromNode.y, "bottom", r, g, b);
     return;
   }
   if (toNode.y === fromNode.y - 1 && toNode.x === fromNode.x) {
-    drawPassage(layout, map, toNode.x, toNode.y, "bottom", r, g, b);
+    drawPassage(layout, fb, toNode.x, toNode.y, "bottom", r, g, b);
   }
 }
 
@@ -439,12 +522,12 @@ function buildPixelRoute(layout, path) {
   return route;
 }
 
-function drawWalker(layout, map, point, r, g, b) {
+function drawWalker(layout, fb, point, r, g, b) {
   if (!point) {
     return;
   }
-  fillRect(
-    map,
+  fbFillRect(
+    fb,
     point.x,
     point.y,
     layout.cellSize,
@@ -455,25 +538,25 @@ function drawWalker(layout, map, point, r, g, b) {
   );
 }
 
-function drawVisitedMaze(layout, map, cells, visited, showFullMaze, floorR, floorG, floorB) {
+function drawVisitedMaze(layout, fb, cells, visited, showFullMaze, floorR, floorG, floorB) {
   for (let y = 0; y < layout.cellCount; y += 1) {
     for (let x = 0; x < layout.cellCount; x += 1) {
       const index = cellIndex(layout, x, y);
       if (showFullMaze || visited[index]) {
-        drawCell(layout, map, x, y, floorR, floorG, floorB);
+        drawCell(layout, fb, x, y, floorR, floorG, floorB);
       }
 
       if (x < layout.cellCount - 1 && !cells[index].right) {
         const nextIndex = cellIndex(layout, x + 1, y);
         if (showFullMaze || (visited[index] && visited[nextIndex])) {
-          drawPassage(layout, map, x, y, "right", floorR, floorG, floorB);
+          drawPassage(layout, fb, x, y, "right", floorR, floorG, floorB);
         }
       }
 
       if (y < layout.cellCount - 1 && !cells[index].bottom) {
         const nextIndex = cellIndex(layout, x, y + 1);
         if (showFullMaze || (visited[index] && visited[nextIndex])) {
-          drawPassage(layout, map, x, y, "bottom", floorR, floorG, floorB);
+          drawPassage(layout, fb, x, y, "bottom", floorR, floorG, floorB);
         }
       }
     }
@@ -770,22 +853,18 @@ function buildMazeSequence(speed, intensity, options) {
       }
     }
 
-    const map = new Map();
+    const fb = fbCreate();
     const showFullMaze = phase !== "generation" && phase !== "generation_hold";
 
-    fillRect(
-      map,
-      0,
-      0,
-      DISPLAY_SIZE,
-      DISPLAY_SIZE,
+    fbClear(
+      fb,
       MAZE_RUNTIME_COLORS.wall.r,
       MAZE_RUNTIME_COLORS.wall.g,
       MAZE_RUNTIME_COLORS.wall.b,
     );
     drawVisitedMaze(
       layout,
-      map,
+      fb,
       cells,
       visited,
       showFullMaze,
@@ -797,7 +876,7 @@ function buildMazeSequence(speed, intensity, options) {
     if (phase === "generation" || phase === "generation_hold") {
       drawCell(
         layout,
-        map,
+        fb,
         generationHead.x,
         generationHead.y,
         MAZE_RUNTIME_COLORS.generationCursor.r,
@@ -811,7 +890,7 @@ function buildMazeSequence(speed, intensity, options) {
         const node = closedSet[index];
         drawCell(
           layout,
-          map,
+          fb,
           node.x,
           node.y,
           searchVisitedColor.r,
@@ -822,7 +901,7 @@ function buildMazeSequence(speed, intensity, options) {
         if (parentX[parentIndex] !== -1 && parentY[parentIndex] !== -1) {
           drawConnection(
             layout,
-            map,
+            fb,
             { x: parentX[parentIndex], y: parentY[parentIndex] },
             node,
             searchVisitedColor.r,
@@ -835,7 +914,7 @@ function buildMazeSequence(speed, intensity, options) {
         const node = openSet[index];
         drawCell(
           layout,
-          map,
+          fb,
           node.x,
           node.y,
           searchFrontierColor.r,
@@ -848,7 +927,7 @@ function buildMazeSequence(speed, intensity, options) {
         const solveCursor = closedSet[closedSet.length - 1];
         drawCell(
           layout,
-          map,
+          fb,
           solveCursor.x,
           solveCursor.y,
           MAZE_RUNTIME_COLORS.solveCursor.r,
@@ -870,7 +949,7 @@ function buildMazeSequence(speed, intensity, options) {
         );
         drawCell(
           layout,
-          map,
+          fb,
           node.x,
           node.y,
           pathColor.r,
@@ -880,7 +959,7 @@ function buildMazeSequence(speed, intensity, options) {
         if (index > 0) {
           drawConnection(
             layout,
-            map,
+            fb,
             path[index - 1],
             node,
             pathColor.r,
@@ -894,7 +973,7 @@ function buildMazeSequence(speed, intensity, options) {
     if (phase === "travel" || phase === "done_hold") {
       drawWalker(
         layout,
-        map,
+        fb,
         travelerRoute[Math.max(0, travelerIndex)],
         MAZE_RUNTIME_COLORS.revealCursor.r,
         MAZE_RUNTIME_COLORS.revealCursor.g,
@@ -905,7 +984,7 @@ function buildMazeSequence(speed, intensity, options) {
       if (currentNode) {
         drawCell(
           layout,
-          map,
+          fb,
           currentNode.x,
           currentNode.y,
           MAZE_RUNTIME_COLORS.revealCursor.r,
@@ -917,7 +996,7 @@ function buildMazeSequence(speed, intensity, options) {
 
     drawCell(
       layout,
-      map,
+      fb,
       startNode.x,
       startNode.y,
       MAZE_RUNTIME_COLORS.start.r,
@@ -926,14 +1005,18 @@ function buildMazeSequence(speed, intensity, options) {
     );
     drawCell(
       layout,
-      map,
+      fb,
       endNode.x,
       endNode.y,
       MAZE_RUNTIME_COLORS.end.r,
       MAZE_RUNTIME_COLORS.end.g,
       MAZE_RUNTIME_COLORS.end.b,
     );
-    drawMazeInfoPanel(map, mazeInfoPanel, mazeConfig);
+    drawMazeInfoPanelToFb(fb, mazeInfoPanel, mazeConfig);
+
+    // framebuffer 转 Map（兼容 PixelPreviewBoard）+ 画文字
+    const map = fbToMap(fb);
+    drawMazeInfoPanelText(map, mazeInfoPanel, mazeConfig);
     maps.push(map);
     phaseTags.push(phase);
   }

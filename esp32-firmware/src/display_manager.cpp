@@ -31,6 +31,16 @@ BreathEffectConfig DisplayManager::breathEffectConfig = {
 };
 RhythmEffectConfig DisplayManager::rhythmEffectConfig = {120, 5, true, RHYTHM_DIR_LEFT, 70, RHYTHM_MODE_PULSE, 100, 200, 255, 255, 100, 100};
 AmbientEffectConfig DisplayManager::ambientEffectConfig = {AMBIENT_PRESET_AURORA, 6, 72, 72, 100, 200, 255, true};
+// 默认水世界主题：与移除前的写死配色（ocean-blue 风格）保持一致，不传时行为不变
+AmbientWaterColorTheme DisplayManager::ambientWaterColorTheme = {
+  0,                          // mode = static
+  6, 28, 86,                  // deep
+  20, 90, 176,                // mid
+  104, 204, 244,              // light
+  228, 246, 255,              // foam
+  30000,                      // cycleMs（彩虹走马灯周期 30s）
+  {0, 0}                      // reserved
+};
 unsigned long DisplayManager::nativeEffectStartTime = 0;
 int DisplayManager::currentBrightness = 50;
 bool DisplayManager::clientConnected = false;
@@ -2273,6 +2283,118 @@ static NativeRgb scaleRgbColor(const NativeRgb& color, float scale) {
   };
   return out;
 }
+
+// =========================================================================
+// 水世界颜色主题：4 主色派生三套 palette（surface/current/caustics）
+// 派生公式与 uniapp/utils/waterWorldPreview.js 保持完全一致
+// =========================================================================
+struct AmbientWaterSurfacePalette {
+  NativeRgb background;
+  NativeRgb deep;
+  NativeRgb mid;
+  NativeRgb shallow;
+  NativeRgb bright;
+  NativeRgb foam;
+  NativeRgb trough;
+  NativeRgb edge;
+};
+struct AmbientWaterCurrentPalette {
+  NativeRgb background;
+  NativeRgb deep;
+  NativeRgb mid;
+  NativeRgb bright;
+  NativeRgb glow;
+  NativeRgb vein;
+};
+struct AmbientWaterCausticsPalette {
+  NativeRgb background;
+  NativeRgb abyss;
+  NativeRgb deep;
+  NativeRgb teal;
+  NativeRgb aqua;
+  NativeRgb glint;
+  NativeRgb shade;
+  NativeRgb vignette;
+};
+
+// 当前帧使用的 4 主色（每帧由 ensureAmbientWaterThemeForFrame 更新）
+static NativeRgb s_ambientWaterThemeDeep = {6, 28, 86};
+static NativeRgb s_ambientWaterThemeMid = {20, 90, 176};
+static NativeRgb s_ambientWaterThemeLight = {104, 204, 244};
+static NativeRgb s_ambientWaterThemeFoam = {228, 246, 255};
+static AmbientWaterSurfacePalette s_ambientWaterSurfacePalette;
+static AmbientWaterCurrentPalette s_ambientWaterCurrentPalette;
+static AmbientWaterCausticsPalette s_ambientWaterCausticsPalette;
+// palette 缓存键（4 主色的字节签名 + mode），变化时才重派生
+static uint64_t s_ambientWaterPaletteSignature = 0xFFFFFFFFFFFFFFFFULL;
+
+// 把 4 主色派生成三套 palette
+static void rebuildAmbientWaterPalettes() {
+  const NativeRgb& deep = s_ambientWaterThemeDeep;
+  const NativeRgb& mid = s_ambientWaterThemeMid;
+  const NativeRgb& light = s_ambientWaterThemeLight;
+  const NativeRgb& foam = s_ambientWaterThemeFoam;
+
+  // surface
+  s_ambientWaterSurfacePalette.background = scaleRgbColor(deep, 0.24f);
+  s_ambientWaterSurfacePalette.deep = blendRgbColor(deep, mid, 0.08f);
+  s_ambientWaterSurfacePalette.mid = mid;
+  s_ambientWaterSurfacePalette.shallow = blendRgbColor(mid, light, 0.34f);
+  s_ambientWaterSurfacePalette.bright = blendRgbColor(light, foam, 0.12f);
+  s_ambientWaterSurfacePalette.foam = foam;
+  s_ambientWaterSurfacePalette.trough = scaleRgbColor(deep, 0.56f);
+  s_ambientWaterSurfacePalette.edge = scaleRgbColor(deep, 0.38f);
+
+  // current
+  s_ambientWaterCurrentPalette.background = scaleRgbColor(deep, 0.24f);
+  s_ambientWaterCurrentPalette.deep = scaleRgbColor(deep, 0.68f);
+  s_ambientWaterCurrentPalette.mid = blendRgbColor(deep, mid, 0.52f);
+  s_ambientWaterCurrentPalette.bright = blendRgbColor(mid, light, 0.7f);
+  s_ambientWaterCurrentPalette.glow = blendRgbColor(light, foam, 0.26f);
+  s_ambientWaterCurrentPalette.vein = scaleRgbColor(deep, 0.42f);
+
+  // caustics
+  s_ambientWaterCausticsPalette.background = scaleRgbColor(deep, 0.28f);
+  s_ambientWaterCausticsPalette.abyss = scaleRgbColor(deep, 0.58f);
+  s_ambientWaterCausticsPalette.deep = blendRgbColor(deep, mid, 0.34f);
+  s_ambientWaterCausticsPalette.teal = mid;
+  s_ambientWaterCausticsPalette.aqua = light;
+  s_ambientWaterCausticsPalette.glint = foam;
+  s_ambientWaterCausticsPalette.shade = scaleRgbColor(deep, 0.38f);
+  s_ambientWaterCausticsPalette.vignette = scaleRgbColor(deep, 0.46f);
+}
+
+static inline uint64_t computeAmbientWaterPaletteSignature(uint8_t mode) {
+  uint64_t s = mode;
+  s = (s << 8) | s_ambientWaterThemeDeep.r;
+  s = (s << 8) | s_ambientWaterThemeDeep.g;
+  s = (s << 8) | s_ambientWaterThemeDeep.b;
+  s = (s << 8) | s_ambientWaterThemeMid.r;
+  s = (s << 8) | s_ambientWaterThemeMid.g;
+  s = (s << 8) | s_ambientWaterThemeMid.b;
+  s = (s << 8) | s_ambientWaterThemeLight.r;
+  return s ^ ((uint64_t)s_ambientWaterThemeFoam.r << 16) ^
+         ((uint64_t)s_ambientWaterThemeFoam.g << 8) ^
+         (uint64_t)s_ambientWaterThemeFoam.b;
+}
+
+// 每帧渲染前调用：根据 config 的 4 主色更新 palette（仅在 4 主色变化时重建）
+static void ensureAmbientWaterThemeForFrame(unsigned long elapsed) {
+  (void)elapsed;
+  const AmbientWaterColorTheme& theme = DisplayManager::ambientWaterColorTheme;
+  // 只支持静态主题（mode=0）。结构体的 mode 字段保留，给未来扩展用。
+  s_ambientWaterThemeDeep = makeRgb(theme.deepR, theme.deepG, theme.deepB);
+  s_ambientWaterThemeMid = makeRgb(theme.midR, theme.midG, theme.midB);
+  s_ambientWaterThemeLight = makeRgb(theme.lightR, theme.lightG, theme.lightB);
+  s_ambientWaterThemeFoam = makeRgb(theme.foamR, theme.foamG, theme.foamB);
+  // 仅在 4 主色或 mode 变化时重建 palette
+  uint64_t sig = computeAmbientWaterPaletteSignature(theme.mode);
+  if (sig != s_ambientWaterPaletteSignature) {
+    s_ambientWaterPaletteSignature = sig;
+    rebuildAmbientWaterPalettes();
+  }
+}
+
 
 static NativeRgb addHighlightColor(const NativeRgb& color, float amount) {
   NativeRgb out = color;
@@ -4538,13 +4660,13 @@ static void shadeAmbientWaterSurfaceFrame(
   float surfaceDensityUnit
 ) {
   const float sampleStep = 1.4f * kAmbientWaterUnitCoordStep;
-  const NativeRgb deep = makeRgb(7, 33, 93);
-  const NativeRgb mid = makeRgb(20, 90, 176);
-  const NativeRgb shallow = makeRgb(49, 129, 199);
-  const NativeRgb bright = makeRgb(119, 209, 245);
-  const NativeRgb foam = makeRgb(228, 246, 255);
-  const NativeRgb troughColor = makeRgb(3, 16, 48);
-  const NativeRgb edgeColor = makeRgb(2, 11, 33);
+  const NativeRgb& deep = s_ambientWaterSurfacePalette.deep;
+  const NativeRgb& mid = s_ambientWaterSurfacePalette.mid;
+  const NativeRgb& shallow = s_ambientWaterSurfacePalette.shallow;
+  const NativeRgb& bright = s_ambientWaterSurfacePalette.bright;
+  const NativeRgb& foam = s_ambientWaterSurfacePalette.foam;
+  const NativeRgb& troughColor = s_ambientWaterSurfacePalette.trough;
+  const NativeRgb& edgeColor = s_ambientWaterSurfacePalette.edge;
   const float lightDirX = -0.46f;
   const float lightDirY = 0.36f;
   const float lightDirZ = 0.82f;
@@ -4768,6 +4890,7 @@ static void renderAmbientWaterSurface(
   float speedUnit,
   float intensityUnit
 ) {
+  ensureAmbientWaterThemeForFrame(elapsed);
   const float waterLevelUnit = 0.72f;
   const float densityUnit = 0.58f;
   const float frequencyUnit = 0.56f;
@@ -4876,6 +4999,7 @@ static void renderAmbientWaterCurrent(
   float intensityUnit
 ) {
   ensureAmbientUnitCoordLut();
+  ensureAmbientWaterThemeForFrame(elapsed);
 
   const float timeBase = (float)elapsed * (0.00032f + speedUnit * 0.00108f);
   const float flowATime = timeBase * (2.2f + speedUnit * 1.4f);
@@ -4888,11 +5012,11 @@ static void renderAmbientWaterCurrent(
   float waveScratchA[64];
   float waveScratchB[64];
   float waveScratchC[64];
-  const NativeRgb abyss = makeRgb(1, 10, 26);
-  const NativeRgb deep = makeRgb(4, 38, 86);
-  const NativeRgb bright = makeRgb(18, 98, 176);
-  const NativeRgb glow = makeRgb(118, 198, 246);
-  const NativeRgb vein = makeRgb(1, 7, 20);
+  const NativeRgb& deep = s_ambientWaterCurrentPalette.deep;
+  const NativeRgb& mid = s_ambientWaterCurrentPalette.mid;
+  const NativeRgb& bright = s_ambientWaterCurrentPalette.bright;
+  const NativeRgb& glow = s_ambientWaterCurrentPalette.glow;
+  const NativeRgb& vein = s_ambientWaterCurrentPalette.vein;
   
   // 优化：预计算焦散采样的常量
   const float causticTimeBase = timeBase * 0.9f;
@@ -4926,7 +5050,7 @@ static void renderAmbientWaterCurrent(
       float caustic = sampleAmbientWaterCausticField(nx, ny, causticTimeBase, speedUnit, intensityUnit);
       
       float depthMix = clampUnit(nyDepthBase + currentField * 0.18f);
-      NativeRgb color = blendRgbColor(abyss, deep, depthMix);
+      NativeRgb color = blendRgbColor(deep, mid, depthMix);
       color =
         blendRgbColor(
           color,
@@ -4961,6 +5085,7 @@ static void renderAmbientWaterCaustics(
   float intensityUnit
 ) {
   ensureAmbientUnitCoordLut();
+  ensureAmbientWaterThemeForFrame(elapsed);
 
   const float waterLevelUnit = 0.72f;
   const float frequencyUnit = clampUnit(0.16f + speedUnit * 0.58f);
@@ -4988,13 +5113,13 @@ static void renderAmbientWaterCaustics(
   float waveScratchD[64];
   float waveScratchE[64];
 
-  const NativeRgb abyss = makeRgb(2, 14, 34);
-  const NativeRgb deep = makeRgb(4, 36, 78);
-  const NativeRgb teal = makeRgb(10, 82, 150);
-  const NativeRgb aqua = makeRgb(80, 172, 236);
-  const NativeRgb glint = makeRgb(208, 234, 250);
-  const NativeRgb shade = makeRgb(1, 10, 22);
-  const NativeRgb vignetteColor = makeRgb(2, 11, 24);
+  const NativeRgb& abyss = s_ambientWaterCausticsPalette.abyss;
+  const NativeRgb& deep = s_ambientWaterCausticsPalette.deep;
+  const NativeRgb& teal = s_ambientWaterCausticsPalette.teal;
+  const NativeRgb& aqua = s_ambientWaterCausticsPalette.aqua;
+  const NativeRgb& glint = s_ambientWaterCausticsPalette.glint;
+  const NativeRgb& shade = s_ambientWaterCausticsPalette.shade;
+  const NativeRgb& vignetteColor = s_ambientWaterCausticsPalette.vignette;
 
   for (int y = 0; y < 64; y++) {
     float ny = s_ambientUnitCoordLut[y];

@@ -1300,6 +1300,46 @@ bool prepareAmbientTransaction(const String& mode, JsonObject params, const char
     command.ambientEffectConfig.colorR = DisplayManager::ambientEffectConfig.colorR;
     command.ambientEffectConfig.colorG = DisplayManager::ambientEffectConfig.colorG;
     command.ambientEffectConfig.colorB = DisplayManager::ambientEffectConfig.colorB;
+
+    // 可选 colorTheme 字段（uniapp 选色板时带来）：4 主色派生 palette
+    // 不传则保持上次的主题（向后兼容）
+    if (params.containsKey("colorTheme")) {
+      JsonObject themeJson = params["colorTheme"].as<JsonObject>();
+      if (themeJson.isNull()) {
+        reason = "ambient colorTheme invalid";
+        return false;
+      }
+      AmbientWaterColorTheme nextTheme = DisplayManager::ambientWaterColorTheme;
+      nextTheme.mode = 0;
+      if (!themeJson.containsKey("deep") || !themeJson.containsKey("mid") ||
+          !themeJson.containsKey("light") || !themeJson.containsKey("foam")) {
+        reason = "ambient colorTheme color fields missing";
+        return false;
+      }
+      JsonObject deepJ = themeJson["deep"].as<JsonObject>();
+      JsonObject midJ = themeJson["mid"].as<JsonObject>();
+      JsonObject lightJ = themeJson["light"].as<JsonObject>();
+      JsonObject foamJ = themeJson["foam"].as<JsonObject>();
+      if (!wsEnsureColorObject(deepJ) || !wsEnsureColorObject(midJ) ||
+          !wsEnsureColorObject(lightJ) || !wsEnsureColorObject(foamJ)) {
+        reason = "ambient colorTheme rgb invalid";
+        return false;
+      }
+      nextTheme.deepR = deepJ["r"].as<uint8_t>();
+      nextTheme.deepG = deepJ["g"].as<uint8_t>();
+      nextTheme.deepB = deepJ["b"].as<uint8_t>();
+      nextTheme.midR = midJ["r"].as<uint8_t>();
+      nextTheme.midG = midJ["g"].as<uint8_t>();
+      nextTheme.midB = midJ["b"].as<uint8_t>();
+      nextTheme.lightR = lightJ["r"].as<uint8_t>();
+      nextTheme.lightG = lightJ["g"].as<uint8_t>();
+      nextTheme.lightB = lightJ["b"].as<uint8_t>();
+      nextTheme.foamR = foamJ["r"].as<uint8_t>();
+      nextTheme.foamG = foamJ["g"].as<uint8_t>();
+      nextTheme.foamB = foamJ["b"].as<uint8_t>();
+      DisplayManager::ambientWaterColorTheme = nextTheme;
+      ConfigManager::saveAmbientWaterColorTheme();
+    }
   } else {
     if (!params.containsKey("intensity")) {
       reason = "ambient intensity missing";

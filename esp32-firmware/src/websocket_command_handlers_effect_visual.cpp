@@ -247,6 +247,45 @@ bool handleVisualEffectCommand(
       config.colorR = DisplayManager::ambientEffectConfig.colorR;
       config.colorG = DisplayManager::ambientEffectConfig.colorG;
       config.colorB = DisplayManager::ambientEffectConfig.colorB;
+
+      // 可选 colorTheme 字段：4 个主色（不传则保持上次的主题）
+      if (doc.containsKey("colorTheme")) {
+        JsonObject themeJson = doc["colorTheme"].as<JsonObject>();
+        if (themeJson.isNull()) {
+          wsSetErrorResponse(response, "invalid colorTheme object");
+          return true;
+        }
+        AmbientWaterColorTheme nextTheme = DisplayManager::ambientWaterColorTheme;
+        nextTheme.mode = 0;
+        if (!themeJson.containsKey("deep") || !themeJson.containsKey("mid") ||
+            !themeJson.containsKey("light") || !themeJson.containsKey("foam")) {
+          wsSetErrorResponse(response, "missing colorTheme color fields");
+          return true;
+        }
+        JsonObject deepJ = themeJson["deep"].as<JsonObject>();
+        JsonObject midJ = themeJson["mid"].as<JsonObject>();
+        JsonObject lightJ = themeJson["light"].as<JsonObject>();
+        JsonObject foamJ = themeJson["foam"].as<JsonObject>();
+        if (!wsEnsureColorObject(deepJ) || !wsEnsureColorObject(midJ) ||
+            !wsEnsureColorObject(lightJ) || !wsEnsureColorObject(foamJ)) {
+          wsSetErrorResponse(response, "invalid colorTheme rgb fields");
+          return true;
+        }
+        nextTheme.deepR = deepJ["r"].as<uint8_t>();
+        nextTheme.deepG = deepJ["g"].as<uint8_t>();
+        nextTheme.deepB = deepJ["b"].as<uint8_t>();
+        nextTheme.midR = midJ["r"].as<uint8_t>();
+        nextTheme.midG = midJ["g"].as<uint8_t>();
+        nextTheme.midB = midJ["b"].as<uint8_t>();
+        nextTheme.lightR = lightJ["r"].as<uint8_t>();
+        nextTheme.lightG = lightJ["g"].as<uint8_t>();
+        nextTheme.lightB = lightJ["b"].as<uint8_t>();
+        nextTheme.foamR = foamJ["r"].as<uint8_t>();
+        nextTheme.foamG = foamJ["g"].as<uint8_t>();
+        nextTheme.foamB = foamJ["b"].as<uint8_t>();
+        DisplayManager::ambientWaterColorTheme = nextTheme;
+        ConfigManager::saveAmbientWaterColorTheme();
+      }
     } else {
       if (!doc.containsKey("intensity")) {
         wsSetErrorResponse(response, "missing ambient intensity field");

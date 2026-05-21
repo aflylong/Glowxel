@@ -61,7 +61,7 @@ MazeModeConfig s_config = {
   MAZE_SIZE_WIDE,
   true,
   "#05070f",
-  "#182c4c",
+  "#025ff5",
   "#ffd400",
   "#ff6464",
   "#4f4f55",

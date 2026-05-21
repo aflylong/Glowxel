@@ -161,6 +161,8 @@ public:
   static void saveEyesConfig();
   static void loadAmbientEffectConfig();
   static void saveAmbientEffectConfig();
+  static void loadAmbientWaterColorTheme();
+  static void saveAmbientWaterColorTheme();
   static void loadThemeConfig();
   static void saveThemeConfig();
   static void loadThemeClockConfig();

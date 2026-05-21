@@ -675,6 +675,22 @@ export default {
     }
   },
 
+  watch: {
+    // 任何配置变化都自动持久化（debounce 200ms 避免频繁写入）
+    config: {
+      handler() {
+        if (this._configSaveTimer) {
+          clearTimeout(this._configSaveTimer);
+        }
+        this._configSaveTimer = setTimeout(() => {
+          this._configSaveTimer = null;
+          this._saveTerrariaConfig();
+        }, 200);
+      },
+      deep: true,
+    },
+  },
+
   methods: {
     switchEquipTab(idx) {
       this.equipTab = idx;

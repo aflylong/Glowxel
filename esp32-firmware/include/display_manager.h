@@ -145,6 +145,27 @@ struct AmbientEffectConfig {
   bool loop;
 };
 
+// 水世界颜色主题
+// mode: 0 = 静态（直接使用 deep/mid/light/foam 4 个颜色派生 palette）
+//       1 = 彩虹流转（板载本地按 cycleMs 周期做 HSL 旋转）
+struct AmbientWaterColorTheme {
+  uint8_t mode;        // 0=static, 1=rainbow_flow
+  uint8_t deepR;
+  uint8_t deepG;
+  uint8_t deepB;
+  uint8_t midR;
+  uint8_t midG;
+  uint8_t midB;
+  uint8_t lightR;
+  uint8_t lightG;
+  uint8_t lightB;
+  uint8_t foamR;
+  uint8_t foamG;
+  uint8_t foamB;
+  uint16_t cycleMs;    // 彩虹流转周期（ms），mode=1 时使用
+  uint8_t reserved[2]; // 对齐保留
+};
+
 class DisplayManager {
 public:
   static void init();
@@ -234,6 +255,7 @@ public:
   static BreathEffectConfig breathEffectConfig;
   static RhythmEffectConfig rhythmEffectConfig;
   static AmbientEffectConfig ambientEffectConfig;
+  static AmbientWaterColorTheme ambientWaterColorTheme;
   static unsigned long nativeEffectStartTime;
   static int currentBrightness;
   static bool clientConnected;

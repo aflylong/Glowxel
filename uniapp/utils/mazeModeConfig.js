@@ -5,7 +5,7 @@ const DEFAULT_MAZE_MODE_CONFIG = Object.freeze({
   mazeSizeMode: "wide",
   showClock: true,
   panelBgColor: "#05070f",
-  borderColor: "#182c4c",
+  borderColor: "#025ff5",
   timeColor: "#ffd400",
   dateColor: "#ff6464",
   generationPathColor: "#4f4f55",

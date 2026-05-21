@@ -204,6 +204,7 @@ import {
 import {
   DEFAULT_WATER_WORLD_COLOR_THEME_ID,
   WATER_WORLD_COLOR_THEME_OPTIONS,
+  buildWaterWorldColorThemePayload,
   createWaterWorldPreviewState,
   renderWaterWorldPreviewState,
   stepWaterWorldPreviewState,
@@ -944,6 +945,8 @@ export default {
         const sendPlan = buildWaterWorldSendPlan(this.config.preset);
         expectedMode = sendPlan.deviceMode;
         const ws = this.deviceStore.getWebSocket();
+        // 把当前选中的色板（含 rainbow-flow 等动态主题）一并传给板载
+        sendPlan.command.colorTheme = buildWaterWorldColorThemePayload(this.colorThemeId);
         await ws.setAmbientEffect(sendPlan.command, {
           clockConfig: this.buildClockConfigPayload(),
         });

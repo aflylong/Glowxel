@@ -17,7 +17,7 @@ MazeModeConfig makeDefaultMazeModeConfig() {
   config.mazeSizeMode = MAZE_SIZE_WIDE;
   config.showClock = true;
   memcpy(config.panelBgColor, "#05070f", sizeof(config.panelBgColor));
-  memcpy(config.borderColor, "#182c4c", sizeof(config.borderColor));
+  memcpy(config.borderColor, "#025ff5", sizeof(config.borderColor));
   memcpy(config.timeColor, "#ffd400", sizeof(config.timeColor));
   memcpy(config.dateColor, "#ff6464", sizeof(config.dateColor));
   memcpy(config.generationPathColor, "#4f4f55", sizeof(config.generationPathColor));
@@ -434,50 +434,40 @@ uint8_t* ConfigManager::pacmanRouteData = nullptr;
 uint16_t ConfigManager::pacmanRouteLength = 0;
 
 void ConfigManager::init() {
-  // 检查配置版本，版本不匹配说明固件更新了默认配置，清除旧�?  preferences.begin("clock", true);
-  int savedVersion = preferences.getInt("cfgVer", 0);
+  // 注意：以前这里有"配置版本不匹配就 resetToDefault" 的逻辑，会导致
+  // 用户每次升级固件都丢失全部配置（WiFi / 亮度 / 闹钟 / 时钟样式等）。
+  // 现在改为无条件 load——每个 load 函数自身都用 size 自检 + 默认值兜底，
+  // 加字段 / 删字段都不会读错；用户配置在升级后保留。
+  // 仍然把当前 CONFIG_VERSION 写回 NVS，方便以后真正需要"破坏性升级"时
+  // 单独某个 load 函数自行判断（细粒度迁移）。
+  preferences.begin("clock", false);
+  preferences.putInt("cfgVer", CONFIG_VERSION);
   preferences.end();
 
-  if (savedVersion != CONFIG_VERSION) {
-    Serial.println("配置版本不匹配，清除旧配置");
-    resetToDefault();
-    // 保存新版本号
-    preferences.begin("clock", false);
-    preferences.putInt("cfgVer", CONFIG_VERSION);
-    preferences.end();
-  } else {
-    loadDeviceParamsConfig();
-    loadClockConfig();
-    loadAnimClockConfig();
-    loadLedMatrixShowcaseClockConfig();
-    loadTetrisOverlayClockConfig();
-    loadStaticImagePixels();
-    loadAnimImagePixels();
-    loadEyesConfig();
-    loadAmbientEffectConfig();
-    loadThemeConfig();
-    loadThemeClockConfig();
-    loadTetrisConfig();
-    loadTetrisClockConfig();
-    loadMazeConfig();
-    loadSnakeConfig();
-    loadTerrariaConfig();
-    loadPacmanRoute();
-    loadCanvasPixels();
-  }
+  loadDeviceParamsConfig();
+  loadClockConfig();
+  loadAnimClockConfig();
+  loadLedMatrixShowcaseClockConfig();
+  loadTetrisOverlayClockConfig();
+  loadStaticImagePixels();
+  loadAnimImagePixels();
+  loadEyesConfig();
+  loadAmbientEffectConfig();
+  loadAmbientWaterColorTheme();
+  loadThemeConfig();
+  loadThemeClockConfig();
+  loadTetrisConfig();
+  loadTetrisClockConfig();
+  loadMazeConfig();
+  loadSnakeConfig();
+  loadTerrariaConfig();
+  loadPacmanRoute();
+  loadCanvasPixels();
 }
 
 void ConfigManager::preloadDeviceParamsConfig() {
-  preferences.begin("clock", true);
-  int savedVersion = preferences.getInt("cfgVer", 0);
-  preferences.end();
-
-  if (savedVersion != CONFIG_VERSION) {
-    deviceParamsConfig = makeDefaultDeviceParamsConfig();
-    DisplayManager::currentBrightness = deviceParamsConfig.displayBright;
-    return;
-  }
-
+  // 同样去掉"版本不一致用默认值"，直接读，
+  // readDeviceParamsConfigFromPreferences 内部已带 size 自检和默认值兜底。
   readDeviceParamsConfigFromPreferences(deviceParamsConfig);
   DisplayManager::currentBrightness = deviceParamsConfig.displayBright;
 }
@@ -747,6 +737,22 @@ void ConfigManager::loadAmbientEffectConfig() {
 void ConfigManager::saveAmbientEffectConfig() {
   preferences.begin("ambient", false);
   preferences.putBytes("config", &DisplayManager::ambientEffectConfig, sizeof(AmbientEffectConfig));
+  preferences.end();
+}
+
+void ConfigManager::loadAmbientWaterColorTheme() {
+  preferences.begin("water_theme", true);
+  size_t configSize = preferences.getBytesLength("theme");
+  if (configSize == sizeof(AmbientWaterColorTheme)) {
+    preferences.getBytes("theme", &DisplayManager::ambientWaterColorTheme, sizeof(AmbientWaterColorTheme));
+  }
+  // size 不匹配则保留 .cpp 顶部的默认值（深蓝主题）
+  preferences.end();
+}
+
+void ConfigManager::saveAmbientWaterColorTheme() {
+  preferences.begin("water_theme", false);
+  preferences.putBytes("theme", &DisplayManager::ambientWaterColorTheme, sizeof(AmbientWaterColorTheme));
   preferences.end();
 }
 
