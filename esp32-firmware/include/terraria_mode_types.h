@@ -80,10 +80,10 @@ struct TerrariaModeConfig {
 
 // ============ 轮播引擎数据结构 ============
 
+// 轮播策略: 只支持随机和顺序, 不支持"固定"(想固定就关总开关)
 enum RotateStrategy : uint8_t {
-  ROTATE_FIXED      = 0,
-  ROTATE_RANDOM     = 1,
-  ROTATE_SEQUENTIAL = 2,
+  ROTATE_RANDOM     = 0,
+  ROTATE_SEQUENTIAL = 1,
 };
 
 enum RotateMode : uint8_t {
@@ -100,18 +100,19 @@ struct RotateCombo {
   uint8_t  reserved[2];
 };  // 8 bytes
 
+// 元素轮播只 2 个轴:
+//   - 角色轴: 角色变 -> 武器/翅膀自动用该角色固定搭配
+//   - Boss 轴: Boss 变 -> 地形自动跟随 boss 自带的 biome
+// 武器/翅膀/地形不再有独立策略, 由角色和 Boss 联动决定。
 struct RotateConfig {
   bool enabled;
   RotateMode mode;
   uint16_t interval;               // 秒
-  RotateStrategy armorStrategy;
-  RotateStrategy weaponStrategy;
-  RotateStrategy wingStrategy;
-  RotateStrategy biomeStrategy;
-  RotateStrategy bossStrategy;
-  RotateStrategy comboStrategy;
+  RotateStrategy characterStrategy; // 角色轴 (随机/顺序)
+  RotateStrategy bossStrategy;      // Boss 轴 (随机/顺序)
+  RotateStrategy comboStrategy;     // 组合轮播策略 (随机/顺序)
   uint8_t comboCount;              // 0~20
   RotateCombo combos[20];          // 160 bytes
-};  // ~172 bytes
+};
 
 #endif

@@ -415,6 +415,9 @@ function getSetModeSuccessMessage(mode) {
   if (mode === "planet_screensaver") {
     return "switched to planet screensaver mode";
   }
+  if (mode === "rick_morty_portal") {
+    return "switched to rick morty portal mode";
+  }
   if (mode === "eyes") {
     return "switched to eyes mode";
   }
@@ -1713,6 +1716,23 @@ class WebSocket {
         colorSeed: config.colorSeed,
         planetX: config.planetX,
         planetY: config.planetY,
+        font: config.font,
+        showSeconds: config.showSeconds,
+        time: config.time,
+      },
+      acceptedTimeout: options.acceptedTimeout,
+      finalTimeout: options.finalTimeout,
+    });
+  }
+
+  async setRickMortyPortal(config, options = {}) {
+    return this.runModeTransaction({
+      mode: "rick_morty_portal",
+      params: {
+        preset: config.preset,
+        size: config.size,
+        portalX: config.portalX,
+        portalY: config.portalY,
         font: config.font,
         showSeconds: config.showSeconds,
         time: config.time,

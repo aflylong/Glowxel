@@ -1,5 +1,5 @@
 <template>
-  <view class="planet-page glx-page-shell">
+  <view class="portal-page glx-page-shell">
     <!-- #ifdef MP-WEIXIN -->
     <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
     <!-- #endif -->
@@ -8,7 +8,7 @@
       <view class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </view>
-      <text class="nav-title glx-topbar__title">星球屏保</text>
+      <text class="nav-title glx-topbar__title">传送门</text>
       <view class="nav-right"></view>
     </view>
 
@@ -28,7 +28,7 @@
           :grid-visible="true"
           :is-dark-mode="true"
           :touch-enabled="false"
-          canvas-id="planetPreviewCanvas"
+          canvas-id="rickMortyPortalPreviewCanvas"
         />
         <PixelPreviewBoard
           v-else-if="previewCanvasReady && shouldShowSendingSnapshot"
@@ -69,36 +69,19 @@
         <view v-show="currentTab === 0" class="tab-panel glx-tab-panel">
           <view class="card glx-panel-card glx-editor-card">
             <view class="card-title-section glx-panel-head">
-              <text class="glx-panel-title">星球类型</text>
+              <text class="glx-panel-title">传送门颜色</text>
             </view>
-            <view class="preset-grid">
+            <view class="option-row option-row-triple">
               <view
-                v-for="preset in presetOptions"
-                :key="preset.id"
-                class="glx-feature-option glx-feature-option--scene"
-                :class="{ active: isPresetOptionActive(preset.id) }"
-                @click="handlePresetSelect(preset.id)"
+                v-for="option in colorOptions"
+                :key="option.id"
+                class="option-btn glx-feature-option"
+                :class="{ active: config.preset === option.id }"
+                @click="handleColorSelect(option.id)"
               >
                 <text class="glx-feature-option__label">{{
-                  preset.label
+                  option.label
                 }}</text>
-              </view>
-            </view>
-
-            <view v-if="isPortalPreset" class="option-stack portal-color-stack">
-              <text class="form-label">传送门颜色</text>
-              <view class="option-row option-row-triple">
-                <view
-                  v-for="option in portalColorOptions"
-                  :key="option.id"
-                  class="option-btn glx-feature-option"
-                  :class="{ active: config.preset === option.id }"
-                  @click="handlePortalColorSelect(option.id)"
-                >
-                  <text class="glx-feature-option__label">{{
-                    option.label
-                  }}</text>
-                </view>
               </view>
             </view>
           </view>
@@ -108,61 +91,33 @@
               <text class="glx-panel-title">参数</text>
             </view>
 
-            <view
-              v-if="showRandomColorAction || showRandomPlanetAction"
-              class="bottom-action-row"
-              :class="{
-                'bottom-action-row--single':
-                  !showRandomColorAction || !showRandomPlanetAction,
-              }"
-            >
-              <view
-                v-if="showRandomColorAction"
-                class="action-btn-sm glx-secondary-action"
-                :class="{ disabled: isSending }"
-                @click="handleRandomColor"
-              >
-                <Icon name="palette" :size="32" color="var(--nb-ink)" />
-                <text>随机颜色</text>
-              </view>
-              <view
-                v-if="showRandomPlanetAction"
-                class="action-btn-sm glx-secondary-action"
-                :class="{ disabled: isSending }"
-                @click="handleRandomPlanet"
-              >
-                <Icon name="refresh" :size="32" color="var(--nb-ink)" />
-                <text>{{ randomPlanetActionLabel }}</text>
-              </view>
-            </view>
-
             <view class="form-row">
-              <text class="form-label">水平位置 {{ config.planetX }}</text>
+              <text class="form-label">水平位置 {{ config.portalX }}</text>
               <GlxStepper
-                :value="config.planetX"
+                :value="config.portalX"
                 :min="0"
                 :max="63"
                 :step="1"
-                @change="handlePlanetXChange"
+                @change="handlePortalXChange"
               />
             </view>
 
             <view class="form-row">
-              <text class="form-label">垂直位置 {{ config.planetY }}</text>
+              <text class="form-label">垂直位置 {{ config.portalY }}</text>
               <GlxStepper
-                :value="config.planetY"
+                :value="config.portalY"
                 :min="0"
                 :max="63"
                 :step="1"
-                @change="handlePlanetYChange"
+                @change="handlePortalYChange"
               />
             </view>
 
-            <view class="bottom-action-row">
+            <view class="bottom-action-row bottom-action-row--single">
               <view
                 class="action-btn-sm glx-secondary-action"
                 :class="{ disabled: isSending }"
-                @click="handlePlanetCenter"
+                @click="handlePortalCenter"
               >
                 <Icon name="target" :size="32" color="var(--nb-ink)" />
                 <text>快速居中</text>
@@ -170,10 +125,10 @@
             </view>
 
             <view class="option-stack">
-              <text class="form-label">{{ sizeSectionLabel }}</text>
+              <text class="form-label">传送门大小</text>
               <view class="option-row option-row-triple">
                 <view
-                  v-for="option in displaySizeOptions"
+                  v-for="option in sizeOptions"
                   :key="option.id"
                   class="option-btn glx-feature-option"
                   :class="{ active: config.size === option.id }"
@@ -185,38 +140,94 @@
                 </view>
               </view>
             </view>
-
-            <view v-if="!isPortalPreset" class="option-stack">
-              <text class="form-label">自转方向</text>
-              <view class="option-row option-row-double">
-                <view
-                  v-for="option in directionOptions"
-                  :key="option.id"
-                  class="option-btn glx-feature-option"
-                  :class="{ active: config.direction === option.id }"
-                  @click="handleDirectionSelect(option.id)"
-                >
-                  <text class="glx-feature-option__label">{{
-                    option.label
-                  }}</text>
-                </view>
-              </view>
-            </view>
-
-            <view class="form-row">
-              <text class="form-label">转速 {{ config.speed }}</text>
-              <GlxStepper
-                :value="config.speed"
-                :min="PLANET_PREVIEW_MIN_SPEED"
-                :max="PLANET_PREVIEW_MAX_SPEED"
-                :step="1"
-                @change="handleSpeedChange"
-              />
-            </view>
           </view>
         </view>
 
         <view v-show="currentTab === 1" class="tab-panel glx-tab-panel">
+          <view class="card glx-panel-card glx-editor-card">
+            <view class="card-title-section glx-panel-head">
+              <text class="glx-panel-title">角色叠加(uniapp 调试)</text>
+            </view>
+
+            <view class="form-row">
+              <text class="form-label">显示角色</text>
+              <view class="setting-control-buttons" style="gap:8rpx">
+                <view
+                  class="option-btn glx-feature-option"
+                  :class="{ active: character.show }"
+                  style="padding:6rpx 16rpx"
+                  @click="toggleCharacterShow"
+                >
+                  <text class="glx-feature-option__label">显示</text>
+                </view>
+                <view
+                  class="option-btn glx-feature-option"
+                  :class="{ active: !character.show }"
+                  style="padding:6rpx 16rpx"
+                  @click="toggleCharacterShow"
+                >
+                  <text class="glx-feature-option__label">隐藏</text>
+                </view>
+              </view>
+            </view>
+
+            <view v-if="character.show" class="option-stack">
+              <text class="form-label">选择角色</text>
+              <view class="option-row option-row-quad">
+                <view
+                  v-for="opt in characterOptions"
+                  :key="opt.id"
+                  class="option-btn glx-feature-option"
+                  :class="{ active: character.id === opt.id }"
+                  @click="handleCharacterSelect(opt.id)"
+                >
+                  <text class="glx-feature-option__label">{{ opt.label }}</text>
+                </view>
+              </view>
+            </view>
+
+            <view v-if="character.show" class="form-row">
+              <text class="form-label">高度 {{ character.height }}px</text>
+              <GlxStepper
+                :value="characterHeightIndex"
+                :min="0"
+                :max="characterHeights.length - 1"
+                :step="1"
+                @change="handleCharacterHeightStepperChange"
+              />
+            </view>
+
+            <view v-if="character.show" class="form-row">
+              <text class="form-label">水平位置 {{ character.anchorX }}</text>
+              <GlxStepper
+                :value="character.anchorX"
+                :min="0"
+                :max="63"
+                :step="1"
+                @change="handleCharacterAnchorXChange"
+              />
+            </view>
+
+            <view v-if="character.show" class="form-row">
+              <text class="form-label">垂直位置 {{ character.anchorY }}</text>
+              <GlxStepper
+                :value="character.anchorY"
+                :min="0"
+                :max="63"
+                :step="1"
+                @change="handleCharacterAnchorYChange"
+              />
+            </view>
+
+            <view class="form-row" style="display:block;padding:8rpx 0 0">
+              <text style="font-size:24rpx;color:#888;line-height:1.4;display:block">
+                这是 uniapp 端的调试预览,板载传送门暂未接入角色。调好尺寸/位置之后再决定怎么板载化。
+              </text>
+            </view>
+          </view>
+        </view>
+
+        <view v-show="currentTab === 2" class="tab-panel glx-tab-panel">
           <ClockTextSettingsCard
             icon-name="time"
             title="时间显示"
@@ -235,7 +246,7 @@
           />
         </view>
 
-        <view v-show="currentTab === 2" class="tab-panel glx-tab-panel">
+        <view v-show="currentTab === 3" class="tab-panel glx-tab-panel">
           <ClockFontPanel
             :font-options="timeFontOptions"
             :selected-font="clockConfig.font"
@@ -306,193 +317,35 @@ import {
   getCurrentTimeText,
 } from "../../utils/clockCanvas.js";
 import {
-  PLANET_REFERENCE_DEFAULT_COLOR_SEED,
-  PLANET_SCREEN_PRESETS,
-  PLANET_PREVIEW_MIN_SPEED,
-  PLANET_PREVIEW_MAX_SPEED,
-  PLANET_PREVIEW_PLAYBACK_INTERVAL_MS,
-  PLANET_SIZE_OPTIONS,
-  PLANET_DIRECTION_OPTIONS,
-  createDefaultPlanetPreviewConfig,
-  createRandomPlanetPreviewSeed,
-  createRandomPlanetColorSeed,
-  getPlanetPreviewCycleDuration,
-  buildPlanetScreensaverPreviewFrame,
-  buildPlanetScreensaverPreviewSequence,
-} from "../../utils/planetScreensaverPreview.js";
+  PORTAL_PAGE_STORAGE_KEY,
+  PORTAL_COLOR_OPTIONS,
+  PORTAL_SIZE_OPTIONS,
+  PORTAL_TIME_COLOR_OPTIONS,
+  PORTAL_PREVIEW_PLAYBACK_INTERVAL_MS,
+  createDefaultPortalPreviewConfig,
+  createDefaultPortalClockConfig,
+  normalizePortalPageState,
+  buildPortalPreviewFrame,
+  buildPortalPreviewSequence,
+  getPortalCharacterOptions,
+  getPortalCharacterHeightLevels,
+} from "../../utils/rickMortyPortalPreview.js";
 
-const PLANET_TIME_FONT_OPTIONS = getClockFontOptions();
-const PLANET_TIME_FONT_IDS = new Set(
-  PLANET_TIME_FONT_OPTIONS.map((item) => item.id),
+const PORTAL_TIME_FONT_OPTIONS = getClockFontOptions();
+const PORTAL_TIME_FONT_IDS = new Set(
+  PORTAL_TIME_FONT_OPTIONS.map((item) => item.id),
 );
-const PLANET_PAGE_STORAGE_KEY = "planet_screensaver_page_state";
-const PLANET_FIXED_PALETTE_COLOR_SEED = PLANET_REFERENCE_DEFAULT_COLOR_SEED;
-const PLANET_PORTAL_COLOR_OPTIONS = Object.freeze([
-  { id: "portal_green", label: "绿色" },
-  { id: "portal_blue", label: "蓝色" },
-  { id: "portal_yellow", label: "黄色" },
-]);
-const PLANET_DISPLAY_PRESETS = Object.freeze(
-  // 传送门已升级为独立模式 (rick_morty_portal),星球屏保里不再展示这 3 个 preset。
-  PLANET_SCREEN_PRESETS.filter(
-    (preset) =>
-      preset.id !== "portal_green" &&
-      preset.id !== "portal_blue" &&
-      preset.id !== "portal_yellow",
-  ),
-);
-const PLANET_TIME_COLOR_OPTIONS = Object.freeze([
-  { name: "青色", hex: "#64c8ff" },
-  { name: "绿色", hex: "#00ff9d" },
-  { name: "黄色", hex: "#ffdc00" },
-  { name: "橙色", hex: "#ffa500" },
-  { name: "红色", hex: "#ff6464" },
-  { name: "紫色", hex: "#c864ff" },
-  { name: "白色", hex: "#ffffff" },
-]);
-
-function createDefaultPlanetClockConfig() {
-  return {
-    font: "classic_5x7",
-    showSeconds: false,
-    time: {
-      show: true,
-      fontSize: 1,
-      x: 32,
-      y: 5,
-      color: "#ffffff",
-      align: "center",
-    },
-  };
-}
-
-function normalizeHexColor(value, fallback = "#ffffff") {
-  if (typeof value !== "string") {
-    return fallback;
-  }
-  const body = value.trim().replace(/^#/, "");
-  if (!/^[0-9a-fA-F]{6}$/.test(body)) {
-    return fallback;
-  }
-  return `#${body.toLowerCase()}`;
-}
-
-function normalizePlanetPageState(saved) {
-  const config = createDefaultPlanetPreviewConfig();
-  const clockConfig = createDefaultPlanetClockConfig();
-  const state = saved && typeof saved === "object" ? saved : {};
-
-  if (typeof state.config === "object" && state.config !== null) {
-    if (PLANET_SCREEN_PRESETS.some((item) => item.id === state.config.preset)) {
-      config.preset = state.config.preset;
-    }
-    if (PLANET_SIZE_OPTIONS.some((item) => item.id === state.config.size)) {
-      config.size = state.config.size;
-    }
-    if (
-      PLANET_DIRECTION_OPTIONS.some(
-        (item) => item.id === state.config.direction,
-      )
-    ) {
-      config.direction = state.config.direction;
-    }
-    const planetX = Number(state.config.planetX);
-    if (Number.isFinite(planetX)) {
-      config.planetX = Math.max(0, Math.min(63, Math.round(planetX)));
-    }
-    const planetY = Number(state.config.planetY);
-    if (Number.isFinite(planetY)) {
-      config.planetY = Math.max(0, Math.min(63, Math.round(planetY)));
-    }
-
-    const speed = Number(state.config.speed);
-    if (Number.isFinite(speed)) {
-      config.speed = Math.max(
-        PLANET_PREVIEW_MIN_SPEED,
-        Math.min(PLANET_PREVIEW_MAX_SPEED, Math.round(speed)),
-      );
-    }
-
-    const seed = Number(state.config.seed);
-    if (Number.isFinite(seed) && seed >= 0) {
-      config.seed = Math.round(seed);
-    }
-
-    const colorSeed = Number(state.config.colorSeed);
-    if (Number.isFinite(colorSeed) && colorSeed >= 0) {
-      config.colorSeed = Math.round(colorSeed);
-    }
-  }
-
-  if (typeof state.clockConfig === "object" && state.clockConfig !== null) {
-    if (PLANET_TIME_FONT_IDS.has(state.clockConfig.font)) {
-      clockConfig.font = state.clockConfig.font;
-    }
-    if (
-      state.clockConfig.showSeconds === true ||
-      state.clockConfig.showSeconds === false
-    ) {
-      clockConfig.showSeconds = state.clockConfig.showSeconds;
-    }
-
-    if (
-      typeof state.clockConfig.time === "object" &&
-      state.clockConfig.time !== null
-    ) {
-      const time = state.clockConfig.time;
-      if (time.show === true || time.show === false) {
-        clockConfig.time.show = time.show;
-      }
-
-      const fontSize = Number(time.fontSize);
-      if (Number.isFinite(fontSize)) {
-        clockConfig.time.fontSize = Math.max(
-          1,
-          Math.min(3, Math.round(fontSize)),
-        );
-      }
-
-      const x = Number(time.x);
-      if (Number.isFinite(x)) {
-        clockConfig.time.x = Math.max(0, Math.min(63, Math.round(x)));
-      }
-
-      const y = Number(time.y);
-      if (Number.isFinite(y)) {
-        clockConfig.time.y = Math.max(0, Math.min(63, Math.round(y)));
-      }
-
-      clockConfig.time.color = normalizeHexColor(
-        time.color,
-        clockConfig.time.color,
-      );
-      if (
-        time.align === "left" ||
-        time.align === "center" ||
-        time.align === "right"
-      ) {
-        clockConfig.time.align = time.align;
-      }
-    }
-  }
-
-  return {
-    config,
-    clockConfig,
-  };
-}
-
-function isPortalPresetValue(preset) {
-  return (
-    preset === "portal_green" ||
-    preset === "portal_blue" ||
-    preset === "portal_yellow"
-  );
-}
-
-function isFixedPalettePresetValue(preset) {
-  return isPortalPresetValue(preset);
-}
+const PORTAL_PRESET_IDS = new Set(PORTAL_COLOR_OPTIONS.map((item) => item.id));
+const PORTAL_SIZE_IDS = new Set(PORTAL_SIZE_OPTIONS.map((item) => item.id));
+const PORTAL_CHARACTER_OPTIONS = getPortalCharacterOptions();
+const PORTAL_CHARACTER_IDS = new Set(PORTAL_CHARACTER_OPTIONS.map((item) => item.id));
+const PORTAL_CHARACTER_HEIGHTS = getPortalCharacterHeightLevels();
+const PORTAL_CHARACTER_DEFAULT_HEIGHT = PORTAL_CHARACTER_HEIGHTS.includes(24)
+  ? 24
+  : (PORTAL_CHARACTER_HEIGHTS[Math.floor(PORTAL_CHARACTER_HEIGHTS.length / 2)] || 24);
+// 传送门固定 60 秒生命周期(打开 → 旋涡 → 关闭),与板载渲染对齐
+const PORTAL_CYCLE_DURATION_MS = 60000;
+const PORTAL_PREVIEW_FRAME_COUNT = 48;
 
 export default {
   mixins: [statusBarMixin, deviceSendUxMixin],
@@ -507,12 +360,10 @@ export default {
     ClockTextSettingsCard,
   },
   data() {
-    const config = createDefaultPlanetPreviewConfig();
+    const config = createDefaultPortalPreviewConfig();
     return {
       deviceStore: null,
       toast: null,
-      PLANET_PREVIEW_MIN_SPEED,
-      PLANET_PREVIEW_MAX_SPEED,
       contentHeight: "calc(100vh - 88rpx - 520rpx - 112rpx)",
       previewCanvasReady: false,
       previewZoom: 4,
@@ -525,19 +376,27 @@ export default {
       previewPlaybackStartedAt: 0,
       previewTimer: null,
       previewRefreshTimer: null,
-      previewSequence: null,
-      presetOptions: PLANET_DISPLAY_PRESETS,
-      portalColorOptions: PLANET_PORTAL_COLOR_OPTIONS,
-      sizeOptions: PLANET_SIZE_OPTIONS,
-      directionOptions: PLANET_DIRECTION_OPTIONS,
-      clockConfig: createDefaultPlanetClockConfig(),
-      timeFontOptions: PLANET_TIME_FONT_OPTIONS,
-      timeColorOptions: PLANET_TIME_COLOR_OPTIONS,
+      colorOptions: PORTAL_COLOR_OPTIONS,
+      sizeOptions: PORTAL_SIZE_OPTIONS,
+      clockConfig: createDefaultPortalClockConfig(),
+      timeFontOptions: PORTAL_TIME_FONT_OPTIONS,
+      timeColorOptions: PORTAL_TIME_COLOR_OPTIONS,
+      // 角色调试 (uniapp 调试用, 板载未接入)
+      characterOptions: PORTAL_CHARACTER_OPTIONS,
+      characterHeights: PORTAL_CHARACTER_HEIGHTS,
+      character: {
+        show: PORTAL_CHARACTER_OPTIONS.length > 0,
+        id: PORTAL_CHARACTER_OPTIONS.length > 0 ? PORTAL_CHARACTER_OPTIONS[0].id : "",
+        height: PORTAL_CHARACTER_DEFAULT_HEIGHT,
+        anchorX: 32, // 脚底中心 X
+        anchorY: 60, // 脚底 Y (近底部)
+      },
       currentTab: 0,
       tabDefinitions: [
-        { index: 0, label: "星球", icon: "prompt" },
-        { index: 1, label: "时间", icon: "time" },
-        { index: 2, label: "字体", icon: "text" },
+        { index: 0, label: "传送门", icon: "refresh" },
+        { index: 1, label: "角色", icon: "user" },
+        { index: 2, label: "时间", icon: "time" },
+        { index: 3, label: "字体", icon: "text" },
       ],
       config,
     };
@@ -561,32 +420,9 @@ export default {
       }
       return this.deviceStore.isConnected;
     },
-    isFixedPalettePreset() {
-      return isFixedPalettePresetValue(this.config.preset);
-    },
-    isPortalPreset() {
-      return isPortalPresetValue(this.config.preset);
-    },
-    displaySizeOptions() {
-      return this.sizeOptions;
-    },
-    sizeSectionLabel() {
-      if (this.isPortalPreset) {
-        return "传送门大小";
-      }
-      return "星球大小";
-    },
-    showRandomColorAction() {
-      return !this.isFixedPalettePreset;
-    },
-    showRandomPlanetAction() {
-      return !isPortalPresetValue(this.config.preset);
-    },
-    randomPlanetActionLabel() {
-      if (isPortalPresetValue(this.config.preset)) {
-        return "随机纹理";
-      }
-      return "随机星球";
+    characterHeightIndex() {
+      const idx = this.characterHeights.indexOf(this.character.height);
+      return idx >= 0 ? idx : 0;
     },
   },
   watch: {
@@ -602,16 +438,45 @@ export default {
         this.persistLocalState();
       },
     },
+    character: {
+      deep: true,
+      handler() {
+        this.persistLocalState();
+        if (this.previewCanvasReady) {
+          this.refreshOverlayPreview();
+        }
+      },
+    },
   },
   onLoad() {
     this.deviceStore = useDeviceStore();
     this.deviceStore.init();
     this.toast = useToast();
-    const savedState = normalizePlanetPageState(
-      uni.getStorageSync(PLANET_PAGE_STORAGE_KEY),
+    const savedState = normalizePortalPageState(
+      uni.getStorageSync(PORTAL_PAGE_STORAGE_KEY),
     );
     this.config = savedState.config;
     this.clockConfig = savedState.clockConfig;
+    // 恢复角色调试值(仅 uniapp 用,板载不知道这个字段)
+    const rawSaved = uni.getStorageSync(PORTAL_PAGE_STORAGE_KEY);
+    if (rawSaved && typeof rawSaved === "object" && rawSaved.character && typeof rawSaved.character === "object") {
+      const c = rawSaved.character;
+      if (c.show === true || c.show === false) this.character.show = c.show;
+      if (typeof c.id === "string" && PORTAL_CHARACTER_IDS.has(c.id)) {
+        this.character.id = c.id;
+      }
+      if (typeof c.height === "number" && this.characterHeights.includes(c.height)) {
+        this.character.height = c.height;
+      }
+      const ax = Number(c.anchorX);
+      if (Number.isFinite(ax)) {
+        this.character.anchorX = Math.max(0, Math.min(63, Math.round(ax)));
+      }
+      const ay = Number(c.anchorY);
+      if (Number.isFinite(ay)) {
+        this.character.anchorY = Math.max(0, Math.min(63, Math.round(ay)));
+      }
+    }
   },
   onReady() {
     if (this.$refs.toastRef) {
@@ -651,16 +516,12 @@ export default {
       uni.navigateBack();
     },
     persistLocalState() {
-      uni.setStorageSync(PLANET_PAGE_STORAGE_KEY, {
+      uni.setStorageSync(PORTAL_PAGE_STORAGE_KEY, {
         config: {
           preset: this.config.preset,
           size: this.config.size,
-          direction: this.config.direction,
-          planetX: this.config.planetX,
-          planetY: this.config.planetY,
-          speed: this.config.speed,
-          seed: this.config.seed,
-          colorSeed: this.config.colorSeed,
+          portalX: this.config.portalX,
+          portalY: this.config.portalY,
         },
         clockConfig: {
           font: this.clockConfig.font,
@@ -674,12 +535,19 @@ export default {
             align: this.clockConfig.time.align,
           },
         },
+        character: {
+          show: this.character.show,
+          id: this.character.id,
+          height: this.character.height,
+          anchorX: this.character.anchorX,
+          anchorY: this.character.anchorY,
+        },
       });
     },
-    getPlanetTimeText() {
+    getPortalTimeText() {
       return getCurrentTimeText(this.clockConfig.showSeconds, 24);
     },
-    getPlanetTimeMetrics(text = this.getPlanetTimeText()) {
+    getPortalTimeMetrics(text = this.getPortalTimeText()) {
       const fontSize = Math.max(
         1,
         Math.min(3, Number(this.clockConfig.time.fontSize) || 1),
@@ -690,8 +558,8 @@ export default {
         height: getClockTextHeight(this.clockConfig.font, fontSize),
       };
     },
-    resolveAnchorTimeXFromBoardX(boardX, text = this.getPlanetTimeText()) {
-      const { width } = this.getPlanetTimeMetrics(text);
+    resolveAnchorTimeXFromBoardX(boardX, text = this.getPortalTimeText()) {
+      const { width } = this.getPortalTimeMetrics(text);
       let anchorX = Number(boardX);
       if (!Number.isFinite(anchorX)) {
         return this.clockConfig.time.x;
@@ -722,7 +590,7 @@ export default {
       });
       return `#${channels.join("")}`;
     },
-    applyPlanetStatus(status) {
+    applyPortalStatus(status) {
       if (!status || typeof status !== "object") {
         return;
       }
@@ -730,66 +598,41 @@ export default {
         businessMode,
         preset,
         size,
-        direction,
-        speed: rawSpeed,
-        seed: rawSeed,
-        colorSeed: rawColorSeed,
-        planetX: rawPlanetX,
-        planetY: rawPlanetY,
+        portalX: rawPortalX,
+        portalY: rawPortalY,
         font,
         showSeconds,
         time,
       } = status;
-      if (businessMode !== "planet_screensaver") {
+      if (businessMode !== "rick_morty_portal") {
         return;
       }
       if (typeof preset !== "string" || typeof size !== "string") {
         return;
       }
-      if (typeof direction !== "string" || !time || typeof time !== "object") {
+      if (!time || typeof time !== "object") {
         return;
       }
       if (!time.color || typeof time.color !== "object") {
         return;
       }
 
-      if (PLANET_SCREEN_PRESETS.some((item) => item.id === preset)) {
+      if (PORTAL_PRESET_IDS.has(preset)) {
         this.config.preset = preset;
       }
-      if (PLANET_SIZE_OPTIONS.some((item) => item.id === size)) {
+      if (PORTAL_SIZE_IDS.has(size)) {
         this.config.size = size;
       }
-      if (PLANET_DIRECTION_OPTIONS.some((item) => item.id === direction)) {
-        this.config.direction = direction;
+      const portalX = Number(rawPortalX);
+      if (Number.isFinite(portalX)) {
+        this.config.portalX = Math.max(0, Math.min(63, Math.round(portalX)));
+      }
+      const portalY = Number(rawPortalY);
+      if (Number.isFinite(portalY)) {
+        this.config.portalY = Math.max(0, Math.min(63, Math.round(portalY)));
       }
 
-      const speed = Number(rawSpeed);
-      if (Number.isFinite(speed)) {
-        this.config.speed = Math.max(
-          PLANET_PREVIEW_MIN_SPEED,
-          Math.min(PLANET_PREVIEW_MAX_SPEED, Math.round(speed)),
-        );
-      }
-
-      const seed = Number(rawSeed);
-      if (Number.isFinite(seed) && seed >= 0) {
-        this.config.seed = Math.round(seed);
-      }
-
-      const colorSeed = Number(rawColorSeed);
-      if (Number.isFinite(colorSeed) && colorSeed >= 0) {
-        this.config.colorSeed = Math.round(colorSeed);
-      }
-      const planetX = Number(rawPlanetX);
-      if (Number.isFinite(planetX)) {
-        this.config.planetX = Math.max(0, Math.min(63, Math.round(planetX)));
-      }
-      const planetY = Number(rawPlanetY);
-      if (Number.isFinite(planetY)) {
-        this.config.planetY = Math.max(0, Math.min(63, Math.round(planetY)));
-      }
-
-      if (PLANET_TIME_FONT_IDS.has(font)) {
+      if (PORTAL_TIME_FONT_IDS.has(font)) {
         this.clockConfig.font = font;
       }
       if (showSeconds === true || showSeconds === false) {
@@ -810,7 +653,7 @@ export default {
       if (Number.isFinite(boardX)) {
         this.clockConfig.time.x = this.resolveAnchorTimeXFromBoardX(
           boardX,
-          this.getPlanetTimeText(),
+          this.getPortalTimeText(),
         );
       }
       const y = Number(time.y);
@@ -828,7 +671,7 @@ export default {
         return;
       }
       const status = await this.deviceStore.syncDeviceStatus();
-      this.applyPlanetStatus(status);
+      this.applyPortalStatus(status);
     },
     async handleSend() {
       if (!this.guardBeforeSend(this.isDeviceConnected)) {
@@ -839,14 +682,14 @@ export default {
       this.beginSendUi();
       try {
         const ws = this.deviceStore.getWebSocket();
-        await ws.setPlanetScreensaver(this.buildPlanetSendPayload());
+        await ws.setRickMortyPortal(this.buildPortalSendPayload());
         await this.syncConfigFromDeviceStatus();
         this.showSendSuccess();
       } catch (error) {
         await this.deviceStore.rollbackBusinessMode(previousMode, {
-          expectedMode: "planet_screensaver",
+          expectedMode: "rick_morty_portal",
         });
-        console.error("发送星球屏保失败:", error);
+        console.error("发送传送门失败:", error);
         this.showSendFailure(error);
       } finally {
         this.endSendUi();
@@ -896,58 +739,37 @@ export default {
       });
     },
     renderPreviewFrame(progress) {
-      let frameMap;
-      if (this.previewSequence && this.previewSequence.maps && this.previewSequence.maps.length > 0) {
-        // 根据 progress 选择对应帧
-        const frameCount = this.previewSequence.maps.length;
-        const frameIndex = Math.min(frameCount - 1, Math.floor(progress * frameCount));
-        frameMap = this.previewSequence.maps[frameIndex];
-        
-        // 只有显示时钟时才复制frameMap，避免污染缓存
-        if (this.clockConfig.time.show) {
-          frameMap = new Map(frameMap);
-          const text = this.getPlanetTimeText();
-          const placement = this.resolveBoardTimePlacement(text);
-          drawClockTextToPixels(
-            text,
-            placement.x,
-            placement.y,
-            this.clockConfig.time.color,
-            frameMap,
-            this.clockConfig.font,
-            placement.fontSize,
-            "left",
-          );
-        }
-      } else {
-        // 回退：实时渲染当前进度帧
-        frameMap = buildPlanetScreensaverPreviewFrame(
-          {
-            ...this.config,
-          },
-          progress,
+      const characterOverlay = this.character && this.character.show
+        ? {
+            show: true,
+            character: this.character.id,
+            height: this.character.height,
+            anchorX: this.character.anchorX,
+            anchorY: this.character.anchorY,
+          }
+        : null;
+      const frameMap = buildPortalPreviewFrame(this.config, progress, characterOverlay);
+      if (frameMap && this.clockConfig.time.show) {
+        const text = this.getPortalTimeText();
+        const placement = this.resolveBoardTimePlacement(text);
+        drawClockTextToPixels(
+          text,
+          placement.x,
+          placement.y,
+          this.clockConfig.time.color,
+          frameMap,
+          this.clockConfig.font,
+          placement.fontSize,
+          "left",
         );
-        
-        if (this.clockConfig.time.show) {
-          const text = this.getPlanetTimeText();
-          const placement = this.resolveBoardTimePlacement(text);
-          drawClockTextToPixels(
-            text,
-            placement.x,
-            placement.y,
-            this.clockConfig.time.color,
-            frameMap,
-            this.clockConfig.font,
-            placement.fontSize,
-            "left",
-          );
-        }
       }
-      
-      this.previewDisplayPixels = frameMap;
+      if (frameMap) {
+        this.previewDisplayPixels = frameMap;
+        this.previewRefreshTick += 1;
+      }
     },
     resolveBoardTimePlacement(text) {
-      const { fontSize, width, height } = this.getPlanetTimeMetrics(text);
+      const { fontSize, width, height } = this.getPortalTimeMetrics(text);
       const maxX = Math.max(0, 64 - width);
       const maxY = Math.max(0, 64 - height);
       let x = Number(this.clockConfig.time.x);
@@ -982,12 +804,8 @@ export default {
       if (!this.previewPlaybackStartedAt) {
         return 0;
       }
-      const cycleDuration = getPlanetPreviewCycleDuration(this.config.speed);
-      if (cycleDuration <= 0) {
-        return 0;
-      }
       const elapsed = Date.now() - this.previewPlaybackStartedAt;
-      return (elapsed % cycleDuration) / cycleDuration;
+      return (elapsed % PORTAL_CYCLE_DURATION_MS) / PORTAL_CYCLE_DURATION_MS;
     },
     refreshOverlayPreview() {
       if (!this.previewCanvasReady) {
@@ -1008,28 +826,8 @@ export default {
         this.startPreviewPlayback(nextProgress);
       }, 40);
     },
-    isPresetOptionActive(presetId) {
-      if (presetId === "portal_green") {
-        return isPortalPresetValue(this.config.preset);
-      }
-      return this.config.preset === presetId;
-    },
-    handlePresetSelect(presetId) {
-      if (
-        presetId === "portal_green" &&
-        isPortalPresetValue(this.config.preset)
-      ) {
-        return;
-      }
-      if (this.config.preset === presetId) {
-        return;
-      }
-      const progress = this.getCurrentPreviewProgress();
-      this.config.preset = presetId;
-      this.schedulePreviewRefresh(progress);
-    },
-    handlePortalColorSelect(presetId) {
-      if (!isPortalPresetValue(presetId)) {
+    handleColorSelect(presetId) {
+      if (!PORTAL_PRESET_IDS.has(presetId)) {
         return;
       }
       if (this.config.preset === presetId) {
@@ -1040,6 +838,9 @@ export default {
       this.schedulePreviewRefresh(progress);
     },
     handleSizeSelect(sizeId) {
+      if (!PORTAL_SIZE_IDS.has(sizeId)) {
+        return;
+      }
       if (sizeId === this.config.size) {
         return;
       }
@@ -1047,77 +848,83 @@ export default {
       this.config.size = sizeId;
       this.schedulePreviewRefresh(progress);
     },
-    handleRandomColor() {
-      const progress = this.getCurrentPreviewProgress();
-      this.config.colorSeed = createRandomPlanetColorSeed();
-      this.schedulePreviewRefresh(progress);
-    },
-    handleRandomPlanet() {
-      if (isPortalPresetValue(this.config.preset)) {
-        return;
-      }
-      const progress = this.getCurrentPreviewProgress();
-      this.config.seed = createRandomPlanetPreviewSeed();
-      this.schedulePreviewRefresh(progress);
-    },
-    handleDirectionSelect(directionId) {
-      if (directionId === this.config.direction) {
-        return;
-      }
-      const progress = this.getCurrentPreviewProgress();
-      this.config.direction = directionId;
-      this.schedulePreviewRefresh(progress);
-    },
-    handleSpeedChange(event) {
-      const nextValue = Number(event?.detail?.value);
+    handlePortalXChange(event) {
+      const nextValue = Number(event && event.detail && event.detail.value);
       if (!Number.isFinite(nextValue)) {
         return;
       }
-      const speed = Math.min(
-        PLANET_PREVIEW_MAX_SPEED,
-        Math.max(PLANET_PREVIEW_MIN_SPEED, Math.round(nextValue)),
-      );
-      if (speed === this.config.speed) {
+      const portalX = Math.max(0, Math.min(63, Math.round(nextValue)));
+      if (portalX === this.config.portalX) {
         return;
       }
       const progress = this.getCurrentPreviewProgress();
-      this.config.speed = speed;
+      this.config.portalX = portalX;
       this.schedulePreviewRefresh(progress);
     },
-    handlePlanetXChange(event) {
-      const nextValue = Number(event?.detail?.value);
+    handlePortalYChange(event) {
+      const nextValue = Number(event && event.detail && event.detail.value);
       if (!Number.isFinite(nextValue)) {
         return;
       }
-      const planetX = Math.max(0, Math.min(63, Math.round(nextValue)));
-      if (planetX === this.config.planetX) {
+      const portalY = Math.max(0, Math.min(63, Math.round(nextValue)));
+      if (portalY === this.config.portalY) {
         return;
       }
       const progress = this.getCurrentPreviewProgress();
-      this.config.planetX = planetX;
+      this.config.portalY = portalY;
       this.schedulePreviewRefresh(progress);
     },
-    handlePlanetYChange(event) {
-      const nextValue = Number(event?.detail?.value);
-      if (!Number.isFinite(nextValue)) {
-        return;
-      }
-      const planetY = Math.max(0, Math.min(63, Math.round(nextValue)));
-      if (planetY === this.config.planetY) {
+    handlePortalCenter() {
+      if (this.config.portalX === 32 && this.config.portalY === 32) {
         return;
       }
       const progress = this.getCurrentPreviewProgress();
-      this.config.planetY = planetY;
+      this.config.portalX = 32;
+      this.config.portalY = 32;
       this.schedulePreviewRefresh(progress);
     },
-    handlePlanetCenter() {
-      if (this.config.planetX === 32 && this.config.planetY === 32) {
+    toggleCharacterShow() {
+      this.character.show = !this.character.show;
+    },
+    handleCharacterSelect(id) {
+      if (!PORTAL_CHARACTER_IDS.has(id)) {
         return;
       }
-      const progress = this.getCurrentPreviewProgress();
-      this.config.planetX = 32;
-      this.config.planetY = 32;
-      this.schedulePreviewRefresh(progress);
+      if (this.character.id === id) {
+        return;
+      }
+      this.character.id = id;
+    },
+    handleCharacterHeightStepperChange(event) {
+      const idx = Number(event && event.detail && event.detail.value);
+      if (!Number.isFinite(idx)) {
+        return;
+      }
+      const clamped = Math.max(0, Math.min(this.characterHeights.length - 1, Math.round(idx)));
+      const next = this.characterHeights[clamped];
+      if (typeof next === "number" && next !== this.character.height) {
+        this.character.height = next;
+      }
+    },
+    handleCharacterAnchorXChange(event) {
+      const value = Number(event && event.detail && event.detail.value);
+      if (!Number.isFinite(value)) {
+        return;
+      }
+      const next = Math.max(0, Math.min(63, Math.round(value)));
+      if (next !== this.character.anchorX) {
+        this.character.anchorX = next;
+      }
+    },
+    handleCharacterAnchorYChange(event) {
+      const value = Number(event && event.detail && event.detail.value);
+      if (!Number.isFinite(value)) {
+        return;
+      }
+      const next = Math.max(0, Math.min(63, Math.round(value)));
+      if (next !== this.character.anchorY) {
+        this.character.anchorY = next;
+      }
     },
     toggleTimeShow() {
       this.clockConfig.time.show = !this.clockConfig.time.show;
@@ -1158,7 +965,7 @@ export default {
       this.refreshOverlayPreview();
     },
     handleTimeFontChange(fontId) {
-      if (!PLANET_TIME_FONT_IDS.has(fontId)) {
+      if (!PORTAL_TIME_FONT_IDS.has(fontId)) {
         return;
       }
       this.clockConfig.font = fontId;
@@ -1170,11 +977,11 @@ export default {
     },
     hexToRgb(hex) {
       if (typeof hex !== "string") {
-        throw new Error("invalid planet time color");
+        throw new Error("invalid portal time color");
       }
       const normalized = hex.trim().replace(/^#/, "");
       if (!/^[0-9a-fA-F]{6}$/.test(normalized)) {
-        throw new Error("invalid planet time color");
+        throw new Error("invalid portal time color");
       }
       return {
         r: parseInt(normalized.slice(0, 2), 16),
@@ -1182,24 +989,17 @@ export default {
         b: parseInt(normalized.slice(4, 6), 16),
       };
     },
-    buildPlanetSendPayload() {
-      if (!PLANET_TIME_FONT_IDS.has(this.clockConfig.font)) {
-        throw new Error("invalid planet time font");
+    buildPortalSendPayload() {
+      if (!PORTAL_TIME_FONT_IDS.has(this.clockConfig.font)) {
+        throw new Error("invalid portal time font");
       }
-      const timeText = this.getPlanetTimeText();
+      const timeText = this.getPortalTimeText();
       const timePlacement = this.resolveBoardTimePlacement(timeText);
-      const colorSeed = this.isFixedPalettePreset
-        ? PLANET_FIXED_PALETTE_COLOR_SEED
-        : this.config.colorSeed;
       return {
         preset: this.config.preset,
         size: this.config.size,
-        direction: this.config.direction,
-        planetX: this.config.planetX,
-        planetY: this.config.planetY,
-        speed: this.config.speed,
-        seed: this.config.seed,
-        colorSeed,
+        portalX: this.config.portalX,
+        portalY: this.config.portalY,
         font: this.clockConfig.font,
         showSeconds: this.clockConfig.showSeconds,
         time: {
@@ -1216,37 +1016,14 @@ export default {
       if (!this.previewCanvasReady) {
         return;
       }
-      
-      const cycleDuration = getPlanetPreviewCycleDuration(this.config.speed);
-      this.previewPlaybackStartedAt = Date.now() - preservedProgress * cycleDuration;
-      
-      // 实时渲染动画循环 (跟板载一致，每帧实时计算)
+
+      this.previewPlaybackStartedAt =
+        Date.now() - preservedProgress * PORTAL_CYCLE_DURATION_MS;
+
       const tick = () => {
         const progress = this.getCurrentPreviewProgress();
-        const frameMap = buildPlanetScreensaverPreviewFrame(this.config, progress);
-        
-        if (frameMap && this.clockConfig.time.show) {
-          const text = this.getPlanetTimeText();
-          const placement = this.resolveBoardTimePlacement(text);
-          drawClockTextToPixels(
-            text,
-            placement.x,
-            placement.y,
-            this.clockConfig.time.color,
-            frameMap,
-            this.clockConfig.font,
-            placement.fontSize,
-            "left",
-          );
-        }
-        
-        if (frameMap) {
-          this.previewDisplayPixels = frameMap;
-          this.previewRefreshTick += 1;
-        }
-        
-        // 帧间隔跟板载一致: cycleDuration / 48帧
-        const frameInterval = getPlanetPreviewCycleDuration(this.config.speed) / 48;
+        this.renderPreviewFrame(progress);
+        const frameInterval = PORTAL_CYCLE_DURATION_MS / PORTAL_PREVIEW_FRAME_COUNT;
         this.previewTimer = setTimeout(tick, Math.max(60, frameInterval));
       };
       tick();
@@ -1269,7 +1046,7 @@ export default {
 </script>
 
 <style scoped>
-.planet-page {
+.portal-page {
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -1302,12 +1079,6 @@ export default {
   box-shadow: none !important;
 }
 
-.preset-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12rpx;
-}
-
 .tab-panel {
   padding-top: 0;
 }
@@ -1324,12 +1095,12 @@ export default {
   gap: 12rpx;
 }
 
-.option-row-double {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
 .option-row-triple {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.option-row-quad {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .option-btn.glx-feature-option {

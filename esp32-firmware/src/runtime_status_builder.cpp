@@ -162,6 +162,28 @@ void fillBoardNativeStatus(JsonDocument& doc) {
     color["r"] = config.time.r;
     color["g"] = config.time.g;
     color["b"] = config.time.b;
+    return;
+  }
+
+  if (DisplayManager::currentBusinessModeTag == ModeTags::RICK_MORTY_PORTAL) {
+    const RickMortyPortalNativeConfig& config =
+      BoardNativeEffect::getRickMortyPortalConfig();
+    doc["effectMode"] = ModeTags::RICK_MORTY_PORTAL;
+    doc["preset"] = config.preset;
+    doc["size"] = config.size;
+    doc["portalX"] = config.portalX;
+    doc["portalY"] = config.portalY;
+    doc["font"] = clockFontNameFromId(config.font);
+    doc["showSeconds"] = config.showSeconds;
+    JsonObject time = doc["time"].to<JsonObject>();
+    time["show"] = config.time.show;
+    time["fontSize"] = config.time.fontSize;
+    time["x"] = config.time.x;
+    time["y"] = config.time.y;
+    JsonObject color = time["color"].to<JsonObject>();
+    color["r"] = config.time.r;
+    color["g"] = config.time.g;
+    color["b"] = config.time.b;
   }
 }
 
@@ -177,6 +199,27 @@ void fillCompactPlanetScreensaverStatus(JsonDocument& doc) {
   doc["colorSeed"] = config.colorSeed;
   doc["planetX"] = config.planetX;
   doc["planetY"] = config.planetY;
+  doc["font"] = clockFontNameFromId(config.font);
+  doc["showSeconds"] = config.showSeconds;
+  JsonObject time = doc.createNestedObject("time");
+  time["show"] = config.time.show;
+  time["fontSize"] = config.time.fontSize;
+  time["x"] = config.time.x;
+  time["y"] = config.time.y;
+  JsonObject color = time.createNestedObject("color");
+  color["r"] = config.time.r;
+  color["g"] = config.time.g;
+  color["b"] = config.time.b;
+}
+
+void fillCompactRickMortyPortalStatus(JsonDocument& doc) {
+  const RickMortyPortalNativeConfig& config =
+    BoardNativeEffect::getRickMortyPortalConfig();
+  doc["effectMode"] = ModeTags::RICK_MORTY_PORTAL;
+  doc["preset"] = config.preset;
+  doc["size"] = config.size;
+  doc["portalX"] = config.portalX;
+  doc["portalY"] = config.portalY;
   doc["font"] = clockFontNameFromId(config.font);
   doc["showSeconds"] = config.showSeconds;
   JsonObject time = doc.createNestedObject("time");
@@ -213,10 +256,16 @@ void fillCompactEffectStatus(JsonDocument& doc) {
   }
 
   if ((ModeTags::isBoardNativeModeTag(DisplayManager::currentBusinessModeTag) ||
-       DisplayManager::currentBusinessModeTag == ModeTags::PLANET_SCREENSAVER) &&
+       DisplayManager::currentBusinessModeTag == ModeTags::PLANET_SCREENSAVER ||
+       DisplayManager::currentBusinessModeTag == ModeTags::RICK_MORTY_PORTAL) &&
       BoardNativeEffect::isActive()) {
     if (DisplayManager::currentBusinessModeTag == ModeTags::PLANET_SCREENSAVER) {
       fillCompactPlanetScreensaverStatus(doc);
+      return;
+    }
+
+    if (DisplayManager::currentBusinessModeTag == ModeTags::RICK_MORTY_PORTAL) {
+      fillCompactRickMortyPortalStatus(doc);
       return;
     }
 
@@ -299,7 +348,8 @@ void fillEffectStatus(JsonDocument& doc) {
   }
 
   if ((ModeTags::isBoardNativeModeTag(DisplayManager::currentBusinessModeTag) ||
-       DisplayManager::currentBusinessModeTag == ModeTags::PLANET_SCREENSAVER) &&
+       DisplayManager::currentBusinessModeTag == ModeTags::PLANET_SCREENSAVER ||
+       DisplayManager::currentBusinessModeTag == ModeTags::RICK_MORTY_PORTAL) &&
       BoardNativeEffect::isActive()) {
     fillBoardNativeStatus(doc);
     return;

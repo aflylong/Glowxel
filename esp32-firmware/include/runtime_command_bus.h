@@ -48,7 +48,8 @@ enum class RuntimeCommandType : uint8_t {
   ABORT_TRANSIENT_TRANSFER_AND_RESTORE = 28,
   HTTP_UPLOAD_IMAGE = 29,
   WEBSOCKET_TRANSACTION_COMMIT = 30,
-  WEBSOCKET_TRANSACTION_ABORT = 31
+  WEBSOCKET_TRANSACTION_ABORT = 31,
+  RICK_MORTY_PORTAL = 32
 };
 
 struct RuntimeCommand {
@@ -80,6 +81,7 @@ struct RuntimeCommand {
   AmbientEffectConfig ambientEffectConfig = {};
   TextDisplayNativeConfig textDisplayConfig = {};
   PlanetScreensaverNativeConfig planetConfig = {};
+  RickMortyPortalNativeConfig portalConfig = {};
   MazeModeConfig mazeConfig = {};
   SnakeModeConfig snakeConfig = {};
   TerrariaModeConfig terrariaConfig = {};

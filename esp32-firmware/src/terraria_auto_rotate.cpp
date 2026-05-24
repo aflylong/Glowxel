@@ -17,11 +17,8 @@ bool s_active = false;
 uint32_t s_lastRotateMinute = 0xFFFF;  // 上次切换的分钟标记 (防同一分钟重复)
 uint32_t s_lastRotateSecond = 0xFFFF;
 
-// 顺序模式索引
+// 顺序模式索引 (只角色和 Boss 两个轴)
 uint8_t s_armorSeqIdx = 0;
-uint8_t s_weaponSeqIdx = 0;
-uint8_t s_wingSeqIdx = 0;
-uint8_t s_biomeSeqIdx = 0;
 uint8_t s_bossSeqIdx = 0;
 uint8_t s_comboSeqIdx = 0;
 
@@ -31,21 +28,7 @@ uint8_t s_lastBossIdx = 0xFF;
 
 // 套装数量
 constexpr uint8_t NUM_CHARS = 15;
-constexpr uint8_t NUM_BIOMES = 10;
 constexpr uint8_t NUM_BOSSES = 33;
-
-// 武器 ID 表 (跟 kWeaponProps 一致)
-constexpr uint16_t kAllWeapons[20] = {
-  4956, 5005, 3531, 3475, 3540, 3541, 3542, 757, 1122, 1931,
-  1947, 3827, 4923, 4952, 24, 3507, 2880, 1121, 121, 3852,
-};
-constexpr uint8_t NUM_WEAPONS = 20;
-
-// 翅膀 ID 表
-constexpr uint8_t kAllWings[18] = {
-  29, 30, 31, 32, 24, 11, 21, 10, 26, 27, 49, 6, 14, 1, 37, 38, 23, 2,
-};
-constexpr uint8_t NUM_WINGS = 18;
 
 // 套装推荐武器 (每套 2 把, 跟 CHARACTERS 表一致)
 constexpr uint16_t kCharWeapons[15][2] = {
@@ -69,6 +52,46 @@ constexpr uint16_t kCharWeapons[15][2] = {
 // 套装推荐翅膀
 constexpr uint8_t kCharWings[15] = {
   29, 30, 31, 32, 24, 11, 21, 10, 26, 27, 49, 6, 14, 1, 0,
+};
+
+// Boss 索引 -> Biome 索引 (跟 uniapp build-boss-firmware.js 的 BOSS_BIOME 一致)
+//   Biome 编码: forest=0, corruption=1, crimson=2, jungle=3, snow=4,
+//               dungeon=5, underworld=6, hallow=7, ocean=8, temple=9
+//   Boss 顺序跟 uniapp 端 _bossSlugToIndex 列表一致 (33 项)
+constexpr uint8_t kBossBiomes[33] = {
+  /*  0 king_slime        */ 0, // forest
+  /*  1 eye_of_cthulhu    */ 1, // corruption
+  /*  2 eater_of_worlds   */ 1, // corruption
+  /*  3 brain_of_cthulhu  */ 2, // crimson
+  /*  4 queen_bee         */ 3, // jungle
+  /*  5 skeletron         */ 5, // dungeon
+  /*  6 deerclops         */ 4, // snow
+  /*  7 wall_of_flesh     */ 6, // underworld
+  /*  8 queen_slime       */ 7, // hallow
+  /*  9 the_twins         */ 0, // forest
+  /* 10 destroyer         */ 0, // forest
+  /* 11 skeletron_prime   */ 0, // forest
+  /* 12 plantera          */ 3, // jungle
+  /* 13 golem             */ 9, // temple
+  /* 14 duke_fishron      */ 8, // ocean
+  /* 15 empress_of_light  */ 7, // hallow
+  /* 16 lunatic_cultist   */ 5, // dungeon
+  /* 17 martian_saucer    */ 0, // forest
+  /* 18 moon_lord         */ 0, // forest
+  /* 19 pumpking          */ 0, // forest
+  /* 20 mourning_wood     */ 0, // forest
+  /* 21 ice_queen         */ 4, // snow
+  /* 22 santa_nk1         */ 4, // snow
+  /* 23 everscream        */ 4, // snow
+  /* 24 solar_pillar      */ 0, // forest
+  /* 25 nebula_pillar     */ 0, // forest
+  /* 26 stardust_pillar   */ 0, // forest
+  /* 27 vortex_pillar     */ 0, // forest
+  /* 28 flying_dutchman   */ 0, // forest
+  /* 29 mothron           */ 0, // forest
+  /* 30 betsy             */ 0, // forest
+  /* 31 dark_mage         */ 5, // dungeon
+  /* 32 ogre              */ 0, // forest
 };
 
 // 随机数 (避免连续重复)
@@ -108,63 +131,38 @@ bool shouldRotateNow() {
   }
 }
 
+// 元素轮播: 2 个轴 (角色轴 + Boss 轴), 武器/翅膀跟随角色, 地形跟随 Boss。
 void applyElementRotation() {
   TerrariaModeConfig& cfg = ConfigManager::terrariaConfig;
 
-  // 盔甲
+  // ===== 角色轴 =====
   uint8_t newChar = cfg.character;
-  if (s_cfg.armorStrategy == ROTATE_RANDOM) {
+  if (s_cfg.characterStrategy == ROTATE_RANDOM) {
     newChar = randExclude(NUM_CHARS, s_lastArmorIdx);
-    s_lastArmorIdx = newChar;
-  } else if (s_cfg.armorStrategy == ROTATE_SEQUENTIAL) {
+  } else {  // ROTATE_SEQUENTIAL
     s_armorSeqIdx = (s_armorSeqIdx + 1) % NUM_CHARS;
     newChar = s_armorSeqIdx;
   }
+  s_lastArmorIdx = newChar;
   cfg.character = newChar;
 
-  // 武器 (跟随盔甲推荐 or 全局随机)
-  if (s_cfg.weaponStrategy == ROTATE_RANDOM) {
-    if (s_cfg.armorStrategy != ROTATE_FIXED) {
-      // 盔甲在变 → 从推荐武器里选
-      cfg.weaponId = kCharWeapons[newChar][esp_random() % 2];
-    } else {
-      // 盔甲固定 → 全局随机
-      cfg.weaponId = kAllWeapons[esp_random() % NUM_WEAPONS];
-    }
-  } else if (s_cfg.weaponStrategy == ROTATE_SEQUENTIAL) {
-    s_weaponSeqIdx = (s_weaponSeqIdx + 1) % NUM_WEAPONS;
-    cfg.weaponId = kAllWeapons[s_weaponSeqIdx];
-  }
+  // 武器: 永远从该角色推荐的 2 把里随机抽一个 (固定搭配)
+  cfg.weaponId = kCharWeapons[newChar][esp_random() % 2];
+  // 翅膀: 永远用该角色固定搭配
+  cfg.wingId = kCharWings[newChar];
 
-  // 翅膀 (跟随盔甲推荐 or 全局随机)
-  if (s_cfg.wingStrategy == ROTATE_RANDOM) {
-    if (s_cfg.armorStrategy != ROTATE_FIXED) {
-      cfg.wingId = kCharWings[newChar];
-    } else {
-      cfg.wingId = kAllWings[esp_random() % NUM_WINGS];
-    }
-  } else if (s_cfg.wingStrategy == ROTATE_SEQUENTIAL) {
-    s_wingSeqIdx = (s_wingSeqIdx + 1) % NUM_WINGS;
-    cfg.wingId = kAllWings[s_wingSeqIdx];
-  }
-
-  // 地形
-  if (s_cfg.biomeStrategy == ROTATE_RANDOM) {
-    cfg.biome = esp_random() % NUM_BIOMES;
-  } else if (s_cfg.biomeStrategy == ROTATE_SEQUENTIAL) {
-    s_biomeSeqIdx = (s_biomeSeqIdx + 1) % NUM_BIOMES;
-    cfg.biome = s_biomeSeqIdx;
-  }
-
-  // Boss
+  // ===== Boss 轴 =====
+  uint8_t newBoss = cfg.bossId;
   if (s_cfg.bossStrategy == ROTATE_RANDOM) {
-    uint8_t newBoss = randExclude(NUM_BOSSES, s_lastBossIdx);
-    s_lastBossIdx = newBoss;
-    cfg.bossId = newBoss;
-  } else if (s_cfg.bossStrategy == ROTATE_SEQUENTIAL) {
+    newBoss = randExclude(NUM_BOSSES, s_lastBossIdx);
+  } else {  // ROTATE_SEQUENTIAL
     s_bossSeqIdx = (s_bossSeqIdx + 1) % NUM_BOSSES;
-    cfg.bossId = s_bossSeqIdx;
+    newBoss = s_bossSeqIdx;
   }
+  s_lastBossIdx = newBoss;
+  cfg.bossId = newBoss;
+  // 地形: 永远跟随 Boss 自带的 biome (固定关联)
+  cfg.biome = kBossBiomes[newBoss];
 }
 
 void applyComboRotation() {
@@ -201,11 +199,12 @@ void applyConfig(const RotateConfig& cfg) {
   s_active = cfg.enabled;
   s_lastRotateMinute = 0xFFFF;
   s_lastRotateSecond = 0xFFFF;
-  // 重置顺序索引
+  // 重置顺序索引: 从当前已发送的 character/bossId 接续, 避免轮播一开就跳变
   s_armorSeqIdx = ConfigManager::terrariaConfig.character;
-  s_biomeSeqIdx = ConfigManager::terrariaConfig.biome;
   s_bossSeqIdx = ConfigManager::terrariaConfig.bossId;
   s_comboSeqIdx = 0;
+  s_lastArmorIdx = 0xFF;
+  s_lastBossIdx = 0xFF;
 }
 
 void tick() {
@@ -231,15 +230,17 @@ void saveToFlash() {
 
 void loadFromFlash() {
   Preferences prefs;
-  prefs.begin("tr_rotate", true);
+  prefs.begin("tr_rotate", false);  // 写模式, 方便旧数据 size 不匹配时直接清掉
   size_t len = prefs.getBytes("cfg", &s_cfg, sizeof(s_cfg));
-  prefs.end();
   if (len == sizeof(s_cfg)) {
     s_active = s_cfg.enabled;
   } else {
+    // 旧 RotateConfig 字段已重构, 旧数据一律清空,不再做兼容
     memset(&s_cfg, 0, sizeof(s_cfg));
     s_active = false;
+    prefs.remove("cfg");
   }
+  prefs.end();
 }
 
 bool isEnabled() { return s_active; }

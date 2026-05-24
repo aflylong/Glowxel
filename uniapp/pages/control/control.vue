@@ -313,6 +313,14 @@ export default {
           bucket: "secondary",
         },
         {
+          key: "rick_morty_portal",
+          name: "传送门",
+          icon: "refresh",
+          variant: "mint",
+          type: "mode",
+          bucket: "secondary",
+        },
+        {
           key: "terraria_clock",
           name: "泰拉瑞亚时钟",
           icon: "layers",
@@ -389,6 +397,11 @@ export default {
     async switchMode(mode) {
       if (mode === "planet_screensaver") {
         this.openPlanetScreensaver();
+        return;
+      }
+
+      if (mode === "rick_morty_portal") {
+        this.openRickMortyPortal();
         return;
       }
 
@@ -503,6 +516,16 @@ export default {
         fail: (error) => {
           console.error("打开星球屏保页面失败:", error);
           this.toast.showError("星球屏保页面路由未刷新，请重新运行项目");
+        },
+      });
+    },
+
+    openRickMortyPortal() {
+      uni.navigateTo({
+        url: "/pages/rick-morty-portal/rick-morty-portal",
+        fail: (error) => {
+          console.error("打开传送门页面失败:", error);
+          this.toast.showError("传送门页面路由未刷新，请重新运行项目");
         },
       });
     },

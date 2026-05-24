@@ -15,6 +15,7 @@ const bannedDirectCommands = new Set([
   "eyes_interact",
   "set_ambient_effect",
   "set_planet_screensaver",
+  "set_rick_morty_portal",
   "set_gif_animation",
   "ota_check",
   "ota_update",

@@ -2448,6 +2448,7 @@ String buildControlHubPage() {
       { id: "led_matrix_showcase", name: "像素场景集", desc: "切到场景 preset 底座。", tone: "mint" },
       { id: "text_display", name: "文本看板", desc: "使用当前文本看板配置。", tone: "blue" },
       { id: "planet_screensaver", name: "星球屏保", desc: "使用当前星球屏保配置。", tone: "yellow" },
+      { id: "rick_morty_portal", name: "传送门", desc: "瑞克和莫迪传送门效果。", tone: "mint" },
       { id: "breath_effect", name: "呼吸效果", desc: "低频氛围呼吸。", tone: "yellow" },
       { id: "rhythm_effect", name: "节奏效果", desc: "进入节奏灯效。", tone: "blue" },
       { id: "gif_player", name: "GIF 播放器", desc: "继续当前 GIF 播放。", tone: "mint" }

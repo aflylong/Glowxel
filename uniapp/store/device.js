@@ -54,6 +54,7 @@ const VALID_BUSINESS_MODES = [
   'tetris',
   'tetris_clock',
   'planet_screensaver',
+  'rick_morty_portal',
   'eyes'
 ]
 
@@ -290,7 +291,8 @@ export const useDeviceStore = defineStore('device', {
           previousMode === 'gif_player' ||
           previousMode === 'theme' ||
           previousMode === 'led_matrix_showcase' ||
-          previousMode === 'planet_screensaver'
+          previousMode === 'planet_screensaver' ||
+          previousMode === 'rick_morty_portal'
         ) {
           await this.webSocket.runModeTransaction({
             mode: previousMode,

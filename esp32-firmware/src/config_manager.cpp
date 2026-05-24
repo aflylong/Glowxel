@@ -303,7 +303,8 @@ bool isStaticallyRecoverableBusinessModeTag(const String& businessModeTag) {
          businessModeTag == ModeTags::MAZE ||
          businessModeTag == ModeTags::SNAKE ||
          businessModeTag == ModeTags::TERRARIA_CLOCK ||
-         businessModeTag == ModeTags::PLANET_SCREENSAVER;
+         businessModeTag == ModeTags::PLANET_SCREENSAVER ||
+         businessModeTag == ModeTags::RICK_MORTY_PORTAL;
 }
 
 bool canPersistCurrentBusinessModeTag(const String& businessModeTag) {
@@ -912,6 +913,27 @@ void ConfigManager::savePlanetScreensaverConfig() {
     BoardNativeEffect::getPlanetScreensaverConfig();
   preferences.begin("planet_ss", false);
   preferences.putBytes("config", &config, sizeof(PlanetScreensaverNativeConfig));
+  preferences.end();
+}
+
+void ConfigManager::loadRickMortyPortalConfig() {
+  preferences.begin("rmp", true);
+  size_t configSize = preferences.getBytesLength("config");
+  if (configSize == sizeof(RickMortyPortalNativeConfig)) {
+    RickMortyPortalNativeConfig config = {};
+    preferences.getBytes("config", &config, sizeof(RickMortyPortalNativeConfig));
+    config.preset[sizeof(config.preset) - 1] = '\0';
+    config.size[sizeof(config.size) - 1] = '\0';
+    BoardNativeEffect::setRickMortyPortalConfig(config);
+  }
+  preferences.end();
+}
+
+void ConfigManager::saveRickMortyPortalConfig() {
+  const RickMortyPortalNativeConfig& config =
+    BoardNativeEffect::getRickMortyPortalConfig();
+  preferences.begin("rmp", false);
+  preferences.putBytes("config", &config, sizeof(RickMortyPortalNativeConfig));
   preferences.end();
 }
 

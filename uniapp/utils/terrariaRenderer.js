@@ -106,11 +106,15 @@ export function renderTerrariaScene(config, animTimeSec) {
   const bgSnapshot = new Map(pixels);
 
   // Boss (在角色后面)
-  // 板载用 base+delta(set+clear), uniapp 渲染同款算法; 位置/缩放已预渲染到屏幕坐标
+  // sprite 数据是按 dec.x/y/scale 预渲染的屏幕坐标; 用户在 UI 上调 bossX/Y 时
+  // 把 (bossX-dec.x, bossY-dec.y) 当作整体偏移叠加, 跟板载行为一致
   // bgPainter: clear 段擦回背景色 (查 bgSnapshot)
   if (config.bossEnabled && config.bossId) {
     const bgPainter = (x, y) => bgSnapshot.get(`${x},${y}`) || null;
-    drawBoss(pixels, config.bossId, animTimeSec, bgPainter);
+    drawBoss(pixels, config.bossId, animTimeSec, bgPainter, {
+      bossX: config.bossX,
+      bossY: config.bossY,
+    });
   }
 
   // 召唤物:

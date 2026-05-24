@@ -19,6 +19,7 @@ bool shouldClearScreenBeforeBusinessModeEntryInternal(const String& businessMode
          businessModeTag == ModeTags::MAZE ||
          businessModeTag == ModeTags::SNAKE ||
          businessModeTag == ModeTags::PLANET_SCREENSAVER ||
+         businessModeTag == ModeTags::RICK_MORTY_PORTAL ||
          businessModeTag == ModeTags::TERRARIA_CLOCK ||
          businessModeTag == ModeTags::TETRIS ||
          businessModeTag == ModeTags::TETRIS_CLOCK;
@@ -45,6 +46,12 @@ bool canRestoreBoardNativeMode(const String& businessModeTag) {
   if (businessModeTag == ModeTags::PLANET_SCREENSAVER) {
     BoardNativeEffect::applyPlanetScreensaverConfig(
       BoardNativeEffect::getPlanetScreensaverConfig()
+    );
+    return BoardNativeEffect::isActive();
+  }
+  if (businessModeTag == ModeTags::RICK_MORTY_PORTAL) {
+    BoardNativeEffect::applyRickMortyPortalConfig(
+      BoardNativeEffect::getRickMortyPortalConfig()
     );
     return BoardNativeEffect::isActive();
   }
@@ -156,7 +163,8 @@ bool renderAnimationBusinessFrame(const String& businessModeTag) {
   }
 
   if (ModeTags::isBoardNativeModeTag(businessModeTag) ||
-      businessModeTag == ModeTags::PLANET_SCREENSAVER) {
+      businessModeTag == ModeTags::PLANET_SCREENSAVER ||
+      businessModeTag == ModeTags::RICK_MORTY_PORTAL) {
     if (!canRestoreBoardNativeMode(businessModeTag)) {
       return false;
     }
@@ -209,7 +217,8 @@ bool isRecoverableBusinessModeTag(const String& businessModeTag) {
       businessModeTag == ModeTags::EYES ||
       businessModeTag == ModeTags::AMBIENT_EFFECT ||
       businessModeTag == ModeTags::LED_MATRIX_SHOWCASE ||
-      businessModeTag == ModeTags::PLANET_SCREENSAVER) {
+      businessModeTag == ModeTags::PLANET_SCREENSAVER ||
+      businessModeTag == ModeTags::RICK_MORTY_PORTAL) {
     return true;
   }
 

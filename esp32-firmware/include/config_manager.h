@@ -177,6 +177,8 @@ public:
   static void saveSnakeConfig();
   static void loadPlanetScreensaverConfig();
   static void savePlanetScreensaverConfig();
+  static void loadRickMortyPortalConfig();
+  static void saveRickMortyPortalConfig();
   static void loadTerrariaConfig();
   static void saveTerrariaConfig();
   static void loadDeviceParamsConfig();

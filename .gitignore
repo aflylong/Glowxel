@@ -54,3 +54,11 @@ uniapp/static/terraria/prescaled/
 
 # 备份文件
 *.backup_*
+
+# Rick & Morty asset 调研(本地研究目录,Pocket Mortys IP 资源,不入仓)
+tools/rick-morty-asset-explorer/raw/
+tools/rick-morty-asset-explorer/manifest.json
+tools/rick-morty-asset-explorer/download-log.json
+
+# Rick & Morty 角色像素数据 (Pocket Mortys IP 派生数据,uniapp 调试用,不入仓)
+uniapp/static/rick-morty-portal/

@@ -1029,6 +1029,12 @@ bool prepareSimpleModeSwitchCommand(
     reason = nullptr;
     return true;
   }
+  if (mode == ModeTags::RICK_MORTY_PORTAL) {
+    command.targetMode = MODE_ANIMATION;
+    command.businessModeTag = ModeTags::RICK_MORTY_PORTAL;
+    reason = nullptr;
+    return true;
+  }
   if (mode == ModeTags::EYES) {
     command.targetMode = MODE_ANIMATION;
     command.businessModeTag = ModeTags::EYES;
@@ -1490,6 +1496,87 @@ bool preparePlanetTransaction(JsonObject params, const char*& reason) {
   return true;
 }
 
+bool preparePortalTransaction(JsonObject params, const char*& reason) {
+  if (params.size() == 0) {
+    return prepareSimpleModeSwitchCommand(
+      ModeTags::RICK_MORTY_PORTAL,
+      gWebSocketTransactionSession.preparedCommand,
+      reason
+    );
+  }
+
+  if (!params.containsKey("preset") ||
+      !params.containsKey("size") ||
+      !params.containsKey("portalX") ||
+      !params.containsKey("portalY") ||
+      !params.containsKey("font") ||
+      !params.containsKey("showSeconds") ||
+      !params.containsKey("time")) {
+    reason = "portal fields missing";
+    return false;
+  }
+
+  const char* preset = params["preset"];
+  const char* size = params["size"];
+  const char* fontName = params["font"];
+  if (preset == nullptr || size == nullptr || fontName == nullptr) {
+    reason = "portal fields invalid";
+    return false;
+  }
+
+  if (strcmp(preset, "portal_green") != 0 &&
+      strcmp(preset, "portal_blue") != 0 &&
+      strcmp(preset, "portal_yellow") != 0) {
+    reason = "portal preset invalid";
+    return false;
+  }
+
+  if (strcmp(size, "small") != 0 &&
+      strcmp(size, "medium") != 0 &&
+      strcmp(size, "large") != 0) {
+    reason = "portal size invalid";
+    return false;
+  }
+
+  uint8_t fontId = 0;
+  if (!clockFontIdFromString(fontName, fontId)) {
+    reason = "portal font invalid";
+    return false;
+  }
+
+  JsonObject time = params["time"].as<JsonObject>();
+  JsonObject timeColor = time["color"].as<JsonObject>();
+  if (time.isNull() || !time.containsKey("show") || !time.containsKey("fontSize") ||
+      !time.containsKey("x") || !time.containsKey("y") || !wsEnsureColorObject(timeColor)) {
+    reason = "portal time invalid";
+    return false;
+  }
+
+  resetPreparedCommand(gWebSocketTransactionSession.preparedCommand);
+  RuntimeCommandBus::RuntimeCommand& command = gWebSocketTransactionSession.preparedCommand;
+  command.type = RuntimeCommandBus::RuntimeCommandType::RICK_MORTY_PORTAL;
+  snprintf(command.portalConfig.preset, sizeof(command.portalConfig.preset), "%s", preset);
+  snprintf(command.portalConfig.size, sizeof(command.portalConfig.size), "%s", size);
+  command.portalConfig.portalX =
+    static_cast<uint8_t>(wsClampInt(params["portalX"].as<int>(), 0, 63));
+  command.portalConfig.portalY =
+    static_cast<uint8_t>(wsClampInt(params["portalY"].as<int>(), 0, 63));
+  command.portalConfig.font = fontId;
+  command.portalConfig.showSeconds = params["showSeconds"].as<bool>();
+  command.portalConfig.time.show = time["show"].as<bool>();
+  command.portalConfig.time.fontSize =
+    static_cast<uint8_t>(wsClampInt(time["fontSize"].as<int>(), 1, 3));
+  command.portalConfig.time.x =
+    static_cast<uint8_t>(wsClampInt(time["x"].as<int>(), 0, 63));
+  command.portalConfig.time.y =
+    static_cast<uint8_t>(wsClampInt(time["y"].as<int>(), 0, 63));
+  command.portalConfig.time.r = timeColor["r"].as<uint8_t>();
+  command.portalConfig.time.g = timeColor["g"].as<uint8_t>();
+  command.portalConfig.time.b = timeColor["b"].as<uint8_t>();
+  reason = nullptr;
+  return true;
+}
+
 bool prepareMazeTransaction(JsonObject params, const char*& reason) {
   if (!params.containsKey("speed") ||
       !params.containsKey("mazeSizeMode") ||
@@ -1814,7 +1901,8 @@ bool prepareTerrariaTransaction(JsonObject params, const char*& reason) {
   memcpy(command.terrariaConfig.clockBgInner, bgInner, 3);
   memcpy(command.terrariaConfig.clockBgOuter, bgOuter, 3);
 
-  // 解析 autoRotate 轮播配置 (可选字段, 向后兼容)
+  // 解析 autoRotate 轮播配置 (可选字段)
+  // 元素轮播简化为 2 轴(角色/Boss);武器/翅膀跟随角色,地形跟随 Boss。
   if (params.containsKey("autoRotate")) {
     JsonObject ar = params["autoRotate"];
     RotateConfig rc = {};
@@ -1823,10 +1911,7 @@ bool prepareTerrariaTransaction(JsonObject params, const char*& reason) {
     rc.interval = ar["interval"] | 60;
     if (ar.containsKey("strategies")) {
       JsonObject st = ar["strategies"];
-      rc.armorStrategy = (RotateStrategy)(st["armor"].as<int>());
-      rc.weaponStrategy = (RotateStrategy)(st["weapon"].as<int>());
-      rc.wingStrategy = (RotateStrategy)(st["wing"].as<int>());
-      rc.biomeStrategy = (RotateStrategy)(st["biome"].as<int>());
+      rc.characterStrategy = (RotateStrategy)(st["character"].as<int>());
       rc.bossStrategy = (RotateStrategy)(st["boss"].as<int>());
     }
     rc.comboStrategy = (RotateStrategy)(ar["comboStrategy"].as<int>());
@@ -1892,6 +1977,8 @@ bool buildPreparedWebSocketTransaction(
     prepared = prepareTextDisplayTransaction(params, reason);
   } else if (mode == ModeTags::PLANET_SCREENSAVER) {
     prepared = preparePlanetTransaction(params, reason);
+  } else if (mode == ModeTags::RICK_MORTY_PORTAL) {
+    prepared = preparePortalTransaction(params, reason);
   } else if (mode == ModeTags::EYES) {
     prepared = prepareEyesTransaction(params, reason);
   } else if (mode == ModeTags::MAZE) {
@@ -2567,6 +2654,32 @@ bool executePlanetScreensaver(
   return true;
 }
 
+bool executeRickMortyPortal(
+  const RuntimeCommandBus::RuntimeCommand& command,
+  StaticJsonDocument<768>& response
+) {
+  const RickMortyPortalNativeConfig previousPortal = BoardNativeEffect::getRickMortyPortalConfig();
+  const PlanetScreensaverNativeConfig previousPlanet = BoardNativeEffect::getPlanetScreensaverConfig();
+  BoardNativeEffect::applyRickMortyPortalConfig(command.portalConfig);
+
+  DeviceMode fromMode = DisplayManager::currentMode;
+  if (!switchToTargetMode(
+        fromMode,
+        MODE_ANIMATION,
+        ModeTags::RICK_MORTY_PORTAL,
+        true,
+        true,
+        "rick morty portal applied",
+        response)) {
+    // 失败时回滚:portal 配置和 planet 渲染配置都恢复
+    BoardNativeEffect::setRickMortyPortalConfig(previousPortal);
+    BoardNativeEffect::setPlanetScreensaverConfig(previousPlanet);
+    return false;
+  }
+  ConfigManager::saveRickMortyPortalConfig();
+  return true;
+}
+
 bool executeEyesConfig(
   const RuntimeCommandBus::RuntimeCommand& command,
   StaticJsonDocument<768>& response
@@ -2806,6 +2919,8 @@ bool executeCommand(
       return executeTextDisplay(command, response);
     case RuntimeCommandBus::RuntimeCommandType::PLANET_SCREENSAVER:
       return executePlanetScreensaver(command, response);
+    case RuntimeCommandBus::RuntimeCommandType::RICK_MORTY_PORTAL:
+      return executeRickMortyPortal(command, response);
     case RuntimeCommandBus::RuntimeCommandType::EYES_CONFIG:
       return executeEyesConfig(command, response);
     case RuntimeCommandBus::RuntimeCommandType::EYES_ACTION:
@@ -3445,6 +3560,8 @@ const char* commandTypeLabel(RuntimeCommandType type) {
       return "TEXT_DISPLAY";
     case RuntimeCommandType::PLANET_SCREENSAVER:
       return "PLANET_SCREENSAVER";
+    case RuntimeCommandType::RICK_MORTY_PORTAL:
+      return "RICK_MORTY_PORTAL";
     case RuntimeCommandType::EYES_CONFIG:
       return "EYES_CONFIG";
     case RuntimeCommandType::EYES_ACTION:

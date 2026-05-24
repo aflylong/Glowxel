@@ -222,15 +222,19 @@
             <view class="equip-tab" :class="{ active: config.terraria.autoRotate.mode === 'combo' }" @click="setRotateMode('combo')"><text>组合轮播</text></view>
           </view>
 
-          <!-- 元素随机模式 -->
+          <!-- 元素随机模式: 只 2 个轴 (角色 / Boss) -->
           <view v-if="config.terraria.autoRotate.mode === 'element'">
             <view v-for="item in rotateElements" :key="item.key" class="setting-item-row">
               <text class="setting-label">{{ item.label }}</text>
               <view class="setting-control-buttons" style="gap:8rpx">
-                <view class="weapon-btn" :class="{ active: config.terraria.autoRotate.strategies[item.key] === 'fixed' }" style="padding:6rpx 16rpx" @click="setStrategy(item.key, 'fixed')"><text>固定</text></view>
                 <view class="weapon-btn" :class="{ active: config.terraria.autoRotate.strategies[item.key] === 'random' }" style="padding:6rpx 16rpx" @click="setStrategy(item.key, 'random')"><text>随机</text></view>
                 <view class="weapon-btn" :class="{ active: config.terraria.autoRotate.strategies[item.key] === 'sequential' }" style="padding:6rpx 16rpx" @click="setStrategy(item.key, 'sequential')"><text>顺序</text></view>
               </view>
+            </view>
+            <view class="setting-item-row" style="display:block;padding:8rpx 0 0">
+              <text style="font-size:24rpx;color:#888;line-height:1.4;display:block">
+                角色变 → 武器和翅膀自动用该角色的固定搭配。Boss 变 → 地形自动跟随该 Boss 出现的场景。
+              </text>
             </view>
           </view>
 
@@ -491,10 +495,10 @@ export default {
             ice_queen:         { x: 32, y: 28, scale: 27 },  // 22
             santa_nk1:         { x: 55, y: 35, scale: 30 },  // 23
             everscream:        { x: 32, y: 30, scale: 30 },  // 24
-            solar_pillar:      { x: 32, y: 23, scale: 17 },  // 25
-            nebula_pillar:     { x: 32, y: 23, scale: 17 },  // 26
-            stardust_pillar:   { x: 32, y: 23, scale: 17 },  // 27
-            vortex_pillar:     { x: 32, y: 23, scale: 17 },  // 28
+            solar_pillar:      { x: 32, y: 13, scale: 17 },  // 25
+            nebula_pillar:     { x: 32, y: 13, scale: 17 },  // 26
+            stardust_pillar:   { x: 32, y: 13, scale: 17 },  // 27
+            vortex_pillar:     { x: 32, y: 13, scale: 17 },  // 28
             flying_dutchman:   { x: 53, y: 7,  scale: 19 },  // 29
             mothron:           { x: 51, y: 32, scale: 28 },  // 30
             betsy:             { x: 54, y: 27, scale: 30 },  // 31
@@ -506,15 +510,15 @@ export default {
           clockBgOuter: "#8FD71D",
           // 轮播配置
           autoRotate: {
+            // 总开关 + 模式
             enabled: false,
             mode: 'element',
             interval: 60,
+            // 元素轮播只 2 个轴: 角色(随机/顺序), Boss(随机/顺序)
+            // 武器/翅膀跟随角色固定搭配, 地形跟随 Boss 关联场景
             strategies: {
-              armor: 'fixed',
-              weapon: 'fixed',
-              wing: 'fixed',
-              biome: 'fixed',
-              boss: 'fixed',
+              character: 'random',
+              boss: 'random',
             },
             combos: [],
             comboStrategy: 'random',
@@ -523,6 +527,9 @@ export default {
       },
 
       biomeList: BIOME_LIST,
+
+      // 用户手动改了角色/武器/Boss 等需要关轮播 — 标记 label, 在 sendToDevice 时消费
+      _pendingRotateDisableLabel: null,
 
       presetColors: [
         { name: "土色", hex: "#5a4a3a" },
@@ -588,11 +595,10 @@ export default {
       return getBossesForBiome(this.config.terraria.biome) || [];
     },
     rotateElements() {
+      // 元素轮播只 2 个轴: 角色和 Boss
+      // 武器/翅膀由角色决定, 地形由 Boss 决定 (固定关联)
       return [
-        { key: 'armor', label: '盔甲' },
-        { key: 'weapon', label: '武器' },
-        { key: 'wing', label: '翅膀' },
-        { key: 'biome', label: '地形' },
+        { key: 'character', label: '角色' },
         { key: 'boss', label: 'Boss' },
       ];
     },
@@ -676,19 +682,30 @@ export default {
       this.terrainTab = idx;
     },
     toggleAutoRotate() {
-      this.config.terraria.autoRotate.enabled = !this.config.terraria.autoRotate.enabled;
+      const newEnabled = !this.config.terraria.autoRotate.enabled;
+      this.config.terraria.autoRotate.enabled = newEnabled;
+      // 用户主动开启轮播 → 清空之前手动选择留下的"待关闭"标记
+      // 否则用户切了角色 → 再开启轮播 → 发送时会被该标记关掉
+      if (newEnabled) {
+        this._pendingRotateDisableLabel = null;
+      }
     },
     setRotateMode(mode) {
       this.config.terraria.autoRotate.mode = mode;
+      // 用户在调整轮播配置 → 清掉历史"待关闭"标记 (避免误关本次轮播)
+      this._pendingRotateDisableLabel = null;
     },
     setStrategy(key, strategy) {
       this.config.terraria.autoRotate.strategies[key] = strategy;
+      this._pendingRotateDisableLabel = null;
     },
     setComboStrategy(strategy) {
       this.config.terraria.autoRotate.comboStrategy = strategy;
+      this._pendingRotateDisableLabel = null;
     },
     setRotateInterval(val) {
       this.config.terraria.autoRotate.interval = val;
+      this._pendingRotateDisableLabel = null;
     },
     addCurrentAsCombo() {
       const t = this.config.terraria;
@@ -710,6 +727,7 @@ export default {
     selectCharacter(charId) {
       const ch = CHARACTERS[charId];
       if (!ch) return;
+      this._markRotateDisableOnSend('角色');
       this.config.terraria.characterId = charId;
       this.config.terraria.weaponId = ch.weapons[0].id;
       const ofs = getWeaponOfs(ch.weapons[0].id);
@@ -720,6 +738,7 @@ export default {
       this.scheduleRender();
     },
     selectWeapon(weaponId) {
+      this._markRotateDisableOnSend('武器');
       this.config.terraria.weaponId = weaponId;
       const ofs = getWeaponOfs(weaponId);
       this.config.terraria.weaponOfsX = ofs.x;
@@ -728,12 +747,23 @@ export default {
       this.scheduleRender();
     },
     selectWing(wingId) {
+      this._markRotateDisableOnSend('翅膀');
       this.config.terraria.wingId = wingId;
       this.scheduleRender();
     },
     selectMask(maskId) {
+      this._markRotateDisableOnSend('面具');
       this.config.terraria.maskId = maskId || 0;
       this.scheduleRender();
+    },
+    // 手动选角色/武器/翅膀/面具/Boss/地形时, 标记"待发送时关闭轮播"
+    //   不立刻关 ar.enabled — 用户可能选完反悔, 也可能不发送; 只在点发送时才生效
+    //   pendingRotateDisableLabel 在 sendToDevice() 提交时被消费 + Toast 提示
+    _markRotateDisableOnSend(label) {
+      const ar = this.config.terraria.autoRotate;
+      if (ar && ar.enabled) {
+        this._pendingRotateDisableLabel = label;
+      }
     },
     adjustTerraria(key, delta) {
       const r = TERRARIA_RANGE[key];
@@ -776,7 +806,35 @@ export default {
         if (saved.hourFormat) this.config.hourFormat = saved.hourFormat;
         if (saved.showSeconds !== undefined) this.config.showSeconds = saved.showSeconds;
         if (saved.time) Object.assign(this.config.time, saved.time);
-        if (saved.terraria) Object.assign(this.config.terraria, saved.terraria);
+        if (saved.terraria) {
+          Object.assign(this.config.terraria, saved.terraria);
+          // 4 柱默认 y 已从 23 调到 13(往上移 10), 强制刷掉老缓存里的旧值
+          const t = this.config.terraria;
+          if (t.bossOverrides) {
+            for (const slug of ['solar_pillar', 'nebula_pillar', 'stardust_pillar', 'vortex_pillar']) {
+              if (t.bossOverrides[slug]) t.bossOverrides[slug].y = 13;
+            }
+          }
+          // 旧 autoRotate.strategies 字段已废弃 (armor/weapon/wing/biome/boss + 'fixed' 选项)
+          // 一律重置为新结构 (character/boss + 只随机/顺序), 避免旧数据污染
+          const ar = this.config.terraria.autoRotate;
+          if (ar) {
+            const newStrategies = { character: 'random', boss: 'random' };
+            const oldChar = ar.strategies && ar.strategies.character;
+            const oldBoss = ar.strategies && ar.strategies.boss;
+            if (oldChar === 'random' || oldChar === 'sequential') {
+              newStrategies.character = oldChar;
+            }
+            if (oldBoss === 'random' || oldBoss === 'sequential') {
+              newStrategies.boss = oldBoss;
+            }
+            ar.strategies = newStrategies;
+            // 旧 comboStrategy 'fixed' 不再支持
+            if (ar.comboStrategy !== 'random' && ar.comboStrategy !== 'sequential') {
+              ar.comboStrategy = 'random';
+            }
+          }
+        }
       }
     },
     // 从 bossOverrides[slug] 加载到 bossX/Y/Scale, 如果没有就用默认 48/32/25
@@ -808,6 +866,7 @@ export default {
     },
     selectBiome(biomeId) {
       if (this.config.terraria.biome === biomeId) return;
+      this._markRotateDisableOnSend('地形');
       this.config.terraria.biome = biomeId;
       // 切地形时 boss 列表会变, 自动选第一个
       const list = getBossesForBiome(biomeId);
@@ -818,11 +877,13 @@ export default {
       this.scheduleRender();
     },
     selectBoss(slug) {
+      this._markRotateDisableOnSend('Boss');
       this.config.terraria.bossId = slug;
       this._loadBossOverride(slug);
       this.scheduleRender();
     },
     toggleBoss() {
+      this._markRotateDisableOnSend('Boss 开关');
       this.config.terraria.bossEnabled = !this.config.terraria.bossEnabled;
       this.scheduleRender();
     },
@@ -830,6 +891,15 @@ export default {
     // ===== 直接覆盖 mixin 的 sendToDevice (terraria 走独立 ws.startTerrariaClock) =====
     async sendToDevice() {
       if (!this.guardBeforeSend(this.deviceStore.connected)) return;
+
+      // 消费 _pendingRotateDisableLabel: 用户在轮播开启状态下手动选过角色/武器/Boss/地形/翅膀/面具
+      // 这一刻才真正把轮播关掉, 并 Toast 告知用户
+      let rotateDisabledLabel = null;
+      if (this._pendingRotateDisableLabel && this.config.terraria.autoRotate.enabled) {
+        rotateDisabledLabel = this._pendingRotateDisableLabel;
+        this.config.terraria.autoRotate.enabled = false;
+      }
+      this._pendingRotateDisableLabel = null;
 
       this.beginSendUi();
       const previousMode = this.deviceStore.deviceMode;
@@ -869,16 +939,17 @@ export default {
           clockTextColor: this.config.time.color,
           clockBgInner: t.clockBgInner,
           clockBgOuter: t.clockBgOuter,
-          autoRotate: t.autoRotate.enabled ? {
-            enabled: true,
+          // 轮播配置: 无论开/关都发完整对象,关闭时板载也能立刻停止轮播
+          // (之前 enabled=false 时发 undefined → 板载 if (containsKey "autoRotate")
+          //  跳过 → 旧轮播状态残留继续转)
+          autoRotate: {
+            enabled: !!t.autoRotate.enabled,
             mode: t.autoRotate.mode === 'combo' ? 1 : 0,
             interval: t.autoRotate.interval,
+            // 板载 RotateStrategy: random=0, sequential=1 (固定选项已去掉)
             strategies: {
-              armor: ['fixed','random','sequential'].indexOf(t.autoRotate.strategies.armor),
-              weapon: ['fixed','random','sequential'].indexOf(t.autoRotate.strategies.weapon),
-              wing: ['fixed','random','sequential'].indexOf(t.autoRotate.strategies.wing),
-              biome: ['fixed','random','sequential'].indexOf(t.autoRotate.strategies.biome),
-              boss: ['fixed','random','sequential'].indexOf(t.autoRotate.strategies.boss),
+              character: t.autoRotate.strategies.character === 'sequential' ? 1 : 0,
+              boss: t.autoRotate.strategies.boss === 'sequential' ? 1 : 0,
             },
             combos: t.autoRotate.combos.map(c => ({
               char: Object.keys(CHARACTERS).indexOf(c.characterId),
@@ -887,10 +958,13 @@ export default {
               biome: this._biomeToIndex(c.biome),
               boss: this._bossSlugToIndex(c.bossId),
             })),
-            comboStrategy: t.autoRotate.comboStrategy === 'sequential' ? 2 : 1,
-          } : undefined,
+            comboStrategy: t.autoRotate.comboStrategy === 'sequential' ? 1 : 0,
+          },
         });
         this.showSendSuccess("已应用");
+        if (rotateDisabledLabel && this.toast) {
+          this.toast.showInfo('已关闭轮播 (手动选择' + rotateDisabledLabel + ')');
+        }
         this._saveTerrariaConfig();
       } catch (err) {
         await this.deviceStore.rollbackBusinessMode(previousMode, {

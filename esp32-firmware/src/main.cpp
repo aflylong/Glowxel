@@ -98,6 +98,7 @@ void initDeferredRuntimeModulesIfNeeded() {
   SnakeEffect::init();
   BoardNativeEffect::init();
   ConfigManager::loadPlanetScreensaverConfig();
+  ConfigManager::loadRickMortyPortalConfig();
   OTAManager::init();
   OTAManager::checkUpdate();
   gDeferredRuntimeModulesInitialized = true;
@@ -346,7 +347,8 @@ void loop() {
       TerrariaClockEffect::update();
       TerrariaClockEffect::render();
     } else if ((DisplayManager::currentBusinessModeTag == ModeTags::TEXT_DISPLAY ||
-                DisplayManager::currentBusinessModeTag == ModeTags::PLANET_SCREENSAVER) &&
+                DisplayManager::currentBusinessModeTag == ModeTags::PLANET_SCREENSAVER ||
+                DisplayManager::currentBusinessModeTag == ModeTags::RICK_MORTY_PORTAL) &&
                BoardNativeEffect::isActive()) {
       BoardNativeEffect::update();
       BoardNativeEffect::render();

@@ -47,6 +47,26 @@ struct PlanetScreensaverNativeConfig {
   } time;
 };
 
+// 传送门(瑞克和莫迪主题)模式的运行时配置:固定 60s 周期、固定方向、固定调色板,
+// 因此不带 direction/speed/seed/colorSeed,仅保留用户实际可控字段。
+struct RickMortyPortalNativeConfig {
+  char preset[20];   // portal_green / portal_blue / portal_yellow
+  char size[12];     // small / medium / large
+  uint8_t portalX;
+  uint8_t portalY;
+  uint8_t font;
+  bool showSeconds;
+  struct {
+    bool show;
+    uint8_t fontSize;
+    uint8_t x;
+    uint8_t y;
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+  } time;
+};
+
 namespace BoardNativeEffect {
   void init();
   void deactivate();
@@ -57,11 +77,16 @@ namespace BoardNativeEffect {
   void setPlanetScreensaverConfig(const PlanetScreensaverNativeConfig& config);
   void applyPlanetScreensaverConfig(const PlanetScreensaverNativeConfig& config);
 
+  // 传送门(rick_morty_portal)模式:复用 portal 渲染分支,但维护独立配置。
+  void setRickMortyPortalConfig(const RickMortyPortalNativeConfig& config);
+  void applyRickMortyPortalConfig(const RickMortyPortalNativeConfig& config);
+
   void update();
   void render();
 
   const TextDisplayNativeConfig& getTextDisplayConfig();
   const PlanetScreensaverNativeConfig& getPlanetScreensaverConfig();
+  const RickMortyPortalNativeConfig& getRickMortyPortalConfig();
 }
 
 #endif

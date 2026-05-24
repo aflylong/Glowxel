@@ -264,35 +264,40 @@ const PRESET_DEFINITIONS = {
     id: "galaxy",
     sourceLabel: "Galaxy",
     label: "星系",
-    hint: "对应原始生成器里的 Galaxy，主要验证旋臂层叠、倾斜和旋转是否还能读出来。",
+    hint: "对应原始生成器里的 Galaxy,主要验证旋臂层叠、倾斜和旋转是否还能读出来。",
     relativeScale: 1,
   },
+  // 传送门 3 个固定颜色变体: 仅供 rick_morty_portal 模式复用渲染。
+  // 星球屏保 UI 已经把这 3 项过滤掉(见 pages/planet-screensaver/planet-screensaver.vue
+  // 的 PLANET_DISPLAY_PRESETS),用户在星球屏保里看不到它们;但 PRESET_DEFINITIONS
+  // 必须保留,让传送门预览的 normalizeConfig 能识别 preset.id,
+  // 否则 normalizeConfig 会把 preset 静默 fallback 到 terran_wet(灰球)。
   portal_green: {
     id: "portal_green",
     sourceLabel: "Portal Green",
     label: "绿色传送门",
-    hint: "正面圆形液态旋涡门，固定酸性绿色系，不走随机颜色。",
+    hint: "正面圆形液态旋涡门,固定酸性绿色系,不走随机颜色。",
     relativeScale: 1,
   },
   portal_blue: {
     id: "portal_blue",
     sourceLabel: "Portal Blue",
     label: "蓝色传送门",
-    hint: "正面圆形液态旋涡门，固定蓝色系，不走随机颜色。",
+    hint: "正面圆形液态旋涡门,固定蓝色系,不走随机颜色。",
     relativeScale: 1,
   },
   portal_yellow: {
     id: "portal_yellow",
     sourceLabel: "Portal Yellow",
     label: "金色传送门",
-    hint: "正面圆形液态旋涡门，固定黄色/金色系，不走随机颜色。",
+    hint: "正面圆形液态旋涡门,固定黄色/金色系,不走随机颜色。",
     relativeScale: 1,
   },
   star: {
     id: "star",
     sourceLabel: "Star",
     label: "恒星",
-    hint: "对应原始生成器里的 Star，核心、耀斑和外部 blob 的明暗关系是这一类的重点。",
+    hint: "对应原始生成器里的 Star,核心、耀斑和外部 blob 的明暗关系是这一类的重点。",
     relativeScale: 2,
   },
 };

@@ -441,6 +441,10 @@ bool handleModeSwitchCommand(
     command->targetMode = MODE_ANIMATION;
     command->businessModeTag = ModeTags::PLANET_SCREENSAVER;
     command->successMessage = "switched to planet screensaver mode";
+  } else if (mode == ModeTags::RICK_MORTY_PORTAL) {
+    command->targetMode = MODE_ANIMATION;
+    command->businessModeTag = ModeTags::RICK_MORTY_PORTAL;
+    command->successMessage = "switched to rick morty portal mode";
   } else if (mode == ModeTags::EYES) {
     command->targetMode = MODE_ANIMATION;
     command->businessModeTag = ModeTags::EYES;

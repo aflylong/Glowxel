@@ -1,0 +1,319 @@
+/**
+ * Minecraft 时钟资源构建脚本：
+ *   1. 解码 Mojang 默认皮肤 -> Steve 正/背/侧 sprite
+ *   2. 解码 InventivetalentDev 的方块/镐子纹理 -> 4×4/16×16 像素数组
+ *   3. 输出到 uniapp/utils/minecraftAssets.js
+ */
+const fs = require('fs');
+const zlib = require('zlib');
+const path = require('path');
+
+// ========== PNG 解码（自写，避免外部依赖） ==========
+function decodePng(buffer) {
+  if (buffer[0] !== 0x89 || buffer.toString('ascii', 1, 4) !== 'PNG') throw new Error('Not PNG');
+  let off = 8, ihdr = null;
+  const idat = [];
+  let plte = null, trns = null;
+  while (off < buffer.length) {
+    const len = buffer.readUInt32BE(off);
+    const type = buffer.toString('ascii', off + 4, off + 8);
+    const data = buffer.slice(off + 8, off + 8 + len);
+    if (type === 'IHDR') {
+      ihdr = {
+        width: data.readUInt32BE(0), height: data.readUInt32BE(4),
+        bitDepth: data[8], colorType: data[9],
+      };
+    } else if (type === 'IDAT') idat.push(data);
+    else if (type === 'PLTE') plte = data;
+    else if (type === 'tRNS') trns = data;
+    else if (type === 'IEND') break;
+    off += 8 + len + 4;
+  }
+  const raw = zlib.inflateSync(Buffer.concat(idat));
+  const { width, height, bitDepth, colorType } = ihdr;
+  const channelMap = { 0: 1, 2: 3, 3: 1, 4: 2, 6: 4 };
+  const channels = channelMap[colorType];
+  const isPalette = colorType === 3;
+  const channelsPerPixel = isPalette ? 1 : channels;
+  const bitsPerPixel = bitDepth * channelsPerPixel;
+  const stride = Math.ceil(width * bitsPerPixel / 8);
+  const bytesPerPixel = Math.max(1, Math.ceil(bitsPerPixel / 8));
+
+  const out = Buffer.alloc(height * stride);
+  let inOff = 0;
+  for (let y = 0; y < height; y++) {
+    const ft = raw[inOff++];
+    const rs = y * stride;
+    for (let x = 0; x < stride; x++) {
+      const left = x >= bytesPerPixel ? out[rs + x - bytesPerPixel] : 0;
+      const up = y > 0 ? out[rs - stride + x] : 0;
+      const ul = (y > 0 && x >= bytesPerPixel) ? out[rs - stride + x - bytesPerPixel] : 0;
+      let recon = 0;
+      const cur = raw[inOff++];
+      switch (ft) {
+        case 0: recon = cur; break;
+        case 1: recon = (cur + left) & 0xff; break;
+        case 2: recon = (cur + up) & 0xff; break;
+        case 3: recon = (cur + ((left + up) >> 1)) & 0xff; break;
+        case 4: {
+          const p = left + up - ul;
+          const pa = Math.abs(p - left), pb = Math.abs(p - up), pc = Math.abs(p - ul);
+          let pr = pa <= pb && pa <= pc ? left : (pb <= pc ? up : ul);
+          recon = (cur + pr) & 0xff; break;
+        }
+        default: throw new Error('Bad filter ' + ft);
+      }
+      out[rs + x] = recon;
+    }
+  }
+
+  function getPackedPixel(line, i) {
+    if (bitDepth >= 8) return null;
+    const ppb = 8 / bitDepth;
+    const byteIdx = Math.floor(i / ppb);
+    const inByteIdx = i % ppb;
+    const shift = (ppb - 1 - inByteIdx) * bitDepth;
+    const mask = (1 << bitDepth) - 1;
+    return (line[byteIdx] >> shift) & mask;
+  }
+
+  const rgba = new Uint8Array(width * height * 4);
+  for (let y = 0; y < height; y++) {
+    const rs = y * stride;
+    for (let x = 0; x < width; x++) {
+      let r, g, b, a;
+      if (isPalette) {
+        let idx;
+        if (bitDepth >= 8) idx = out[rs + x];
+        else idx = getPackedPixel(out.subarray(rs, rs + stride), x);
+        r = plte[idx * 3]; g = plte[idx * 3 + 1]; b = plte[idx * 3 + 2];
+        a = trns && idx < trns.length ? trns[idx] : 255;
+      } else if (colorType === 6) {
+        const so = rs + x * bytesPerPixel;
+        if (bitDepth === 16) { r = out[so]; g = out[so+2]; b = out[so+4]; a = out[so+6]; }
+        else { r = out[so]; g = out[so+1]; b = out[so+2]; a = out[so+3]; }
+      } else if (colorType === 2) {
+        const so = rs + x * bytesPerPixel;
+        if (bitDepth === 16) { r = out[so]; g = out[so+2]; b = out[so+4]; }
+        else { r = out[so]; g = out[so+1]; b = out[so+2]; }
+        a = 255;
+      } else if (colorType === 4) {
+        const so = rs + x * bytesPerPixel;
+        const gr = bitDepth === 16 ? out[so] : out[so];
+        a = bitDepth === 16 ? out[so+2] : out[so+1];
+        r = g = b = gr;
+      } else if (colorType === 0) {
+        let gr;
+        if (bitDepth >= 8) gr = out[rs + x * bytesPerPixel];
+        else { const idx = getPackedPixel(out.subarray(rs, rs + stride), x); gr = Math.round(idx * 255 / ((1 << bitDepth) - 1)); }
+        r = g = b = gr; a = 255;
+      } else throw new Error('colorType ' + colorType);
+      const dst = (y * width + x) * 4;
+      rgba[dst] = r; rgba[dst+1] = g; rgba[dst+2] = b; rgba[dst+3] = a;
+    }
+  }
+  return { width, height, rgba };
+}
+
+// ========== 工具 ==========
+function resizeAreaAvg(src, srcW, srcH, dstW, dstH) {
+  const out = new Uint8Array(dstW * dstH * 4);
+  for (let dy = 0; dy < dstH; dy++) {
+    const sy0 = (dy * srcH) / dstH;
+    const sy1 = ((dy + 1) * srcH) / dstH;
+    const iy0 = Math.floor(sy0);
+    const iy1 = Math.min(srcH, Math.ceil(sy1));
+    for (let dx = 0; dx < dstW; dx++) {
+      const sx0 = (dx * srcW) / dstW;
+      const sx1 = ((dx + 1) * srcW) / dstW;
+      const ix0 = Math.floor(sx0);
+      const ix1 = Math.min(srcW, Math.ceil(sx1));
+      let r=0, g=0, b=0, a=0, w=0;
+      for (let yy = iy0; yy < iy1; yy++) {
+        for (let xx = ix0; xx < ix1; xx++) {
+          const o = (yy * srcW + xx) * 4;
+          const aa = src[o+3] / 255;
+          r += src[o]*aa; g += src[o+1]*aa; b += src[o+2]*aa;
+          a += src[o+3]; w += aa;
+        }
+      }
+      const dst = (dy*dstW + dx) * 4;
+      if (w > 0.01) {
+        out[dst] = Math.round(r/w); out[dst+1] = Math.round(g/w);
+        out[dst+2] = Math.round(b/w); out[dst+3] = Math.round(a / ((iy1-iy0)*(ix1-ix0)));
+      }
+    }
+  }
+  return out;
+}
+
+function copyRegion(srcRgba, srcW, sx, sy, w, h) {
+  const out = new Uint8Array(w * h * 4);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const so = ((sy + y) * srcW + (sx + x)) * 4;
+      const dst = (y * w + x) * 4;
+      out[dst] = srcRgba[so]; out[dst+1] = srcRgba[so+1];
+      out[dst+2] = srcRgba[so+2]; out[dst+3] = srcRgba[so+3];
+    }
+  }
+  return out;
+}
+
+function blitInto(canvas, canvasW, dst, srcRgba, srcW, srcH, mirrorX = false) {
+  for (let y = 0; y < srcH; y++) {
+    for (let x = 0; x < srcW; x++) {
+      const sx = mirrorX ? (srcW - 1 - x) : x;
+      const so = (y * srcW + sx) * 4;
+      const a = srcRgba[so + 3];
+      if (a < 16) continue;
+      const px = dst.x + x, py = dst.y + y;
+      if (px < 0 || px >= canvasW) continue;
+      const dstOff = (py * canvasW + px) * 4;
+      canvas[dstOff] = srcRgba[so];
+      canvas[dstOff+1] = srcRgba[so+1];
+      canvas[dstOff+2] = srcRgba[so+2];
+      canvas[dstOff+3] = 255;
+    }
+  }
+}
+
+function rgbaToPixelArray(rgba, w, h, alphaThreshold = 64) {
+  const rows = [];
+  for (let y = 0; y < h; y++) {
+    const row = [];
+    for (let x = 0; x < w; x++) {
+      const o = (y * w + x) * 4;
+      if (rgba[o+3] < alphaThreshold) row.push(null);
+      else {
+        const r = rgba[o], g = rgba[o+1], b = rgba[o+2];
+        row.push(`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`);
+      }
+    }
+    rows.push(row);
+  }
+  return rows;
+}
+
+// ========== 主流程 ==========
+const STATIC_DIR = path.join(__dirname, '..', 'uniapp', 'static', 'minecraft');
+const TEX_DIR = path.join(STATIC_DIR, 'textures');
+const OUT_FILE = path.join(__dirname, '..', 'uniapp', 'utils', 'minecraftAssets.js');
+
+// 1. Steve 正/背/侧
+const skinBuf = fs.readFileSync(path.join(STATIC_DIR, '_steve_skin_64x64.png'));
+const skinPng = decodePng(skinBuf);
+
+// 正面部件
+const headFront     = copyRegion(skinPng.rgba, skinPng.width, 8, 8, 8, 8);
+const headFrontL2   = copyRegion(skinPng.rgba, skinPng.width, 40, 8, 8, 8);
+const bodyFront     = copyRegion(skinPng.rgba, skinPng.width, 20, 20, 8, 12);
+const armRFront     = copyRegion(skinPng.rgba, skinPng.width, 44, 20, 4, 12);
+const legRFront     = copyRegion(skinPng.rgba, skinPng.width, 4, 20, 4, 12);
+// 背面部件
+const headBack      = copyRegion(skinPng.rgba, skinPng.width, 24, 8, 8, 8);
+const headBackL2    = copyRegion(skinPng.rgba, skinPng.width, 56, 8, 8, 8);
+const bodyBack      = copyRegion(skinPng.rgba, skinPng.width, 32, 20, 8, 12);
+const armRBack      = copyRegion(skinPng.rgba, skinPng.width, 52, 20, 4, 12);
+const legRBack      = copyRegion(skinPng.rgba, skinPng.width, 12, 20, 4, 12);
+// 侧面部件
+const headRight   = copyRegion(skinPng.rgba, skinPng.width, 2, 8, 4, 8);
+const headRight2  = copyRegion(skinPng.rgba, skinPng.width, 34, 8, 4, 8);
+const bodyRight   = copyRegion(skinPng.rgba, skinPng.width, 16, 20, 4, 12);
+const armRSide    = copyRegion(skinPng.rgba, skinPng.width, 40, 20, 4, 12);
+const legRSide    = copyRegion(skinPng.rgba, skinPng.width, 0, 20, 4, 12);
+
+const FULL_W = 16, FULL_H = 32;
+function buildFullSprite(headA, headB, bodyP, armRPart, legRPart, includeRightArm) {
+  const cv = new Uint8Array(FULL_W * FULL_H * 4);
+  blitInto(cv, FULL_W, { x: 4, y: 0 }, headA, 8, 8);
+  blitInto(cv, FULL_W, { x: 4, y: 0 }, headB, 8, 8);
+  blitInto(cv, FULL_W, { x: 4, y: 8 }, bodyP, 8, 12);
+  blitInto(cv, FULL_W, { x: 0, y: 8 }, armRPart, 4, 12, true);
+  if (includeRightArm) blitInto(cv, FULL_W, { x: 12, y: 8 }, armRPart, 4, 12, false);
+  blitInto(cv, FULL_W, { x: 8, y: 20 }, legRPart, 4, 12);
+  blitInto(cv, FULL_W, { x: 4, y: 20 }, legRPart, 4, 12, true);
+  return cv;
+}
+
+const backCanvas  = buildFullSprite(headBack, headBackL2, bodyBack, armRBack, legRBack, false);
+const frontCanvas = buildFullSprite(headFront, headFrontL2, bodyFront, armRFront, legRFront, true);
+const stevePixels = rgbaToPixelArray(backCanvas, FULL_W, FULL_H, 96);
+const armPixels = rgbaToPixelArray(armRBack, 4, 12, 96);
+const steveFrontPixels = rgbaToPixelArray(frontCanvas, FULL_W, FULL_H, 96);
+const armFrontPixels = rgbaToPixelArray(armRFront, 4, 12, 96);
+
+// 侧面 4×32
+const SIDE_W = 4, SIDE_H = 32;
+const sideCanvas = new Uint8Array(SIDE_W * SIDE_H * 4);
+blitInto(sideCanvas, SIDE_W, { x: 0, y: 0 }, headRight, 4, 8);
+blitInto(sideCanvas, SIDE_W, { x: 0, y: 0 }, headRight2, 4, 8);
+blitInto(sideCanvas, SIDE_W, { x: 0, y: 8 }, bodyRight, 4, 12);
+blitInto(sideCanvas, SIDE_W, { x: 0, y: 8 }, armRSide, 4, 12);
+blitInto(sideCanvas, SIDE_W, { x: 0, y: 20 }, legRSide, 4, 12);
+const steveSidePixels = rgbaToPixelArray(sideCanvas, SIDE_W, SIDE_H, 96);
+
+// 2. 方块 4×4 / 镐子 16×16
+const BLOCK_NAMES = [
+  'oak_planks', 'oak_log', 'stone', 'cobblestone',
+  'diamond_block', 'gold_block', 'iron_block', 'emerald_block', 'lapis_block', 'redstone_block',
+  'diamond_ore', 'gold_ore', 'iron_ore', 'redstone_ore', 'emerald_ore', 'lapis_ore',
+  'obsidian', 'glowstone', 'netherite_block', 'quartz_block', 'tnt_side',
+];
+const PICKAXE_NAMES = ['wooden_pickaxe', 'stone_pickaxe', 'iron_pickaxe', 'diamond_pickaxe', 'netherite_pickaxe'];
+
+const BLOCK_SIZE_OUT = 4;
+const PICK_SIZE_OUT = 16;
+
+function loadAndScale(filename, dstSize) {
+  const buf = fs.readFileSync(path.join(TEX_DIR, filename));
+  const png = decodePng(buf);
+  if (png.width === dstSize && png.height === dstSize) {
+    return rgbaToPixelArray(png.rgba, dstSize, dstSize, 32);
+  }
+  const small = resizeAreaAvg(png.rgba, png.width, png.height, dstSize, dstSize);
+  return rgbaToPixelArray(small, dstSize, dstSize, 32);
+}
+
+const blockTextures = {};
+for (const name of BLOCK_NAMES) blockTextures[name] = loadAndScale(`${name}.png`, BLOCK_SIZE_OUT);
+const pickaxeTextures = {};
+for (const name of PICKAXE_NAMES) pickaxeTextures[name] = loadAndScale(`${name}.png`, PICK_SIZE_OUT);
+
+// 3. 输出
+const stringify = (rows) =>
+  '[\n' +
+  rows.map((row) => '  [' + row.map((c) => (c === null ? 'null' : `"${c}"`)).join(', ') + ']').join(',\n') +
+  '\n]';
+
+const formatTextureMap = (m) =>
+  '{\n' + Object.entries(m).map(([k, v]) => `  ${k}: ${stringify(v).replace(/\n/g, '\n  ')}`).join(',\n') + '\n}';
+
+const fileContent = `/**
+ * Minecraft 时钟资源 (自动生成，请勿手改)
+ * 由 scripts/build-minecraft-assets.js 生成
+ */
+
+export const STEVE_W = ${FULL_W};
+export const STEVE_H = ${FULL_H};
+export const STEVE_BODY_PIXELS = ${stringify(stevePixels)};
+export const STEVE_ARM_W = 4;
+export const STEVE_ARM_H = 12;
+export const STEVE_ARM_PIXELS = ${stringify(armPixels)};
+export const STEVE_FRONT_PIXELS = ${stringify(steveFrontPixels)};
+export const STEVE_FRONT_ARM_PIXELS = ${stringify(armFrontPixels)};
+export const STEVE_ARM_ANCHOR_X = 12;
+export const STEVE_ARM_ANCHOR_Y = 8;
+export const STEVE_SIDE_W = ${SIDE_W};
+export const STEVE_SIDE_H = ${SIDE_H};
+export const STEVE_SIDE_PIXELS = ${stringify(steveSidePixels)};
+
+export const BLOCK_SIZE = ${BLOCK_SIZE_OUT};
+export const BLOCK_TEXTURES = ${formatTextureMap(blockTextures)};
+
+export const PICKAXE_SIZE = ${PICK_SIZE_OUT};
+export const PICKAXE_TEXTURES = ${formatTextureMap(pickaxeTextures)};
+`;
+
+fs.writeFileSync(OUT_FILE, fileContent, 'utf8');
+console.log(`wrote ${OUT_FILE} (${fileContent.length} bytes)`);

@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>Rick & Morty Sprite 预览(Pocket Mortys 来源)</title>
+  <style>
+    body { font: 14px/1.5 system-ui; background: #1a1a1a; color: #eee; padding: 24px; }
+    h1 { margin: 0 0 8px; }
+    .lead { color: #aaa; margin-bottom: 32px; }
+    .warn { background: #4a2a2a; color: #ffaaaa; padding: 12px 16px; border-left: 4px solid #ff5555; margin: 16px 0 24px; }
+    .character {
+      display: flex; gap: 32px; padding: 24px;
+      background: #2a2a2a; border-radius: 8px; margin-bottom: 24px;
+      align-items: flex-start;
+    }
+    .character h2 { margin: 0 0 4px; font-size: 18px; }
+    .character .meta { color: #888; font-size: 12px; margin-bottom: 16px; }
+    .col { flex: 0 0 auto; }
+    .col h3 { font-size: 13px; margin: 0 0 8px; color: #aaa; font-weight: 500; }
+    .scale-row { display: flex; gap: 16px; align-items: center; margin-bottom: 12px; }
+    .scale-row label { font-size: 12px; color: #888; min-width: 100px; }
+    .frame-strip { display: flex; gap: 8px; }
+    .frame-cell {
+      background: #000;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      border: 1px solid #444;
+    }
+    .anim-row { display: flex; gap: 24px; align-items: center; }
+    .anim-cell {
+      background: #000;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      border: 1px solid #555;
+    }
+    .anim-label { color: #888; font-size: 12px; margin-top: 6px; text-align: center; }
+    .scale-100 .frame-cell, .scale-100 .anim-cell { width: 125px; height: 162px; }
+    .scale-50  .frame-cell, .scale-50  .anim-cell { width: 62px;  height: 81px;  }
+    .scale-25  .frame-cell, .scale-25  .anim-cell { width: 32px;  height: 40px;  }
+    .scale-led .frame-cell, .scale-led .anim-cell { width: 16px;  height: 20px;  }
+    .scale-led-3x .frame-cell, .scale-led-3x .anim-cell { width: 48px; height: 60px; }
+    .led-frame {
+      background: #000;
+      width: 64px; height: 64px;
+      position: relative;
+      display: inline-block;
+      border: 2px solid #444;
+      image-rendering: pixelated;
+    }
+    .led-frame img {
+      position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+      width: 16px; height: 20px;
+      image-rendering: pixelated;
+    }
+    .led-frame.medium img { width: 18px; height: 23px; }
+    .led-frame.large  img { width: 22px; height: 28px; }
+    .led-frame .grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: calc(100%/8) calc(100%/8);
+      pointer-events: none;
+    }
+    .led-frame .portal {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #2ed573, #155f37);
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <h1>Rick &amp; Morty Sprite 预览</h1>
+  <p class="lead">来源:Pocket Mortys 官方手游(2016-2026,Adult Swim Games),原始 sprite 像素 125×162。</p>
+
+  <div class="warn">
+    <strong>关键问题</strong>:原 sprite 是 125×162,LED 屏只有 64×64,角色得缩到 ~16×20px。
+    缩 8 倍后细节会糊。下面"模拟 LED 显示"那一行是 64×64 屏上角色站在传送门旁的真实观感。
+  </div>
+
+  <div id="characters"></div>
+
+  <script>
+    const characters = [
+      { key: 'rick',       label: 'Rick (C-137)',         portalColor: '#2ed573' },
+      { key: 'morty',      label: 'Morty',                portalColor: '#2ed573' },
+      { key: 'weird_rick', label: 'Weird Rick (Rick Prime)', portalColor: '#3498db' },
+      { key: 'evil_morty', label: 'Evil Morty',           portalColor: '#f1c40f' }
+    ];
+
+    const root = document.getElementById('characters');
+
+    function buildFrameStrip(charKey, dir) {
+      const wrap = document.createElement('div');
+      wrap.className = 'frame-strip';
+      for (let i = 1; i <= 4; i++) {
+        const img = document.createElement('img');
+        img.className = 'frame-cell';
+        img.src = `raw/${charKey}_${dir}_${i}.png`;
+        img.alt = `${charKey} ${dir} ${i}`;
+        wrap.appendChild(img);
+      }
+      return wrap;
+    }
+
+    function buildAnim(charKey, dir, intervalMs = 200) {
+      const cell = document.createElement('img');
+      cell.className = 'anim-cell';
+      cell.src = `raw/${charKey}_${dir}_1.png`;
+      cell.alt = `${charKey} ${dir} anim`;
+      let i = 1;
+      setInterval(() => {
+        i = i % 4 + 1;
+        cell.src = `raw/${charKey}_${dir}_${i}.png`;
+      }, intervalMs);
+      return cell;
+    }
+
+    function buildLedSim(charKey, sizeClass, portalColor) {
+      const wrap = document.createElement('div');
+      wrap.style.display = 'flex';
+      wrap.style.flexDirection = 'column';
+      wrap.style.alignItems = 'center';
+
+      const sim = document.createElement('div');
+      sim.className = `led-frame ${sizeClass}`;
+
+      const portal = document.createElement('div');
+      portal.className = 'portal';
+      portal.style.background = `radial-gradient(circle, ${portalColor}, #000)`;
+      sim.appendChild(portal);
+
+      const ch = document.createElement('img');
+      ch.src = `raw/${charKey}_Down_1.png`;
+      sim.appendChild(ch);
+
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      sim.appendChild(grid);
+
+      wrap.appendChild(sim);
+      const lab = document.createElement('div');
+      lab.className = 'anim-label';
+      lab.textContent = sizeClass.replace('large','大').replace('medium','中').replace('led','小');
+      wrap.appendChild(lab);
+      return wrap;
+    }
+
+    for (const c of characters) {
+      const card = document.createElement('div');
+      card.className = 'character';
+
+      const head = document.createElement('div');
+      head.style.flex = '0 0 200px';
+      head.innerHTML = `<h2>${c.label}</h2>
+        <div class="meta">key: <code>${c.key}</code><br>原始 sprite: 125×162px</div>
+        <div class="meta" style="margin-top:8px">8 帧:Down 1-4(走出)+ Up 1-4(走回)</div>`;
+      card.appendChild(head);
+
+      // 原尺寸单帧条
+      const colDown = document.createElement('div');
+      colDown.className = 'col scale-25';
+      colDown.innerHTML = '<h3>Down 1-4 (走出来,正面)25%</h3>';
+      colDown.appendChild(buildFrameStrip(c.key, 'Down'));
+      card.appendChild(colDown);
+
+      const colUp = document.createElement('div');
+      colUp.className = 'col scale-25';
+      colUp.innerHTML = '<h3>Up 1-4 (走回去,背面)25%</h3>';
+      colUp.appendChild(buildFrameStrip(c.key, 'Up'));
+      card.appendChild(colUp);
+
+      // 动画对比:原尺寸 vs 50% vs 25% vs LED 尺寸
+      const colAnim = document.createElement('div');
+      colAnim.className = 'col';
+      colAnim.innerHTML = '<h3>动画(走出)按比例缩</h3>';
+
+      const animRow = document.createElement('div');
+      animRow.className = 'anim-row';
+
+      [['scale-50','50%'], ['scale-25','25%'], ['scale-led','16×20 (LED 真实尺寸)'], ['scale-led-3x','LED 尺寸 ×3 看清']].forEach(([cls, lab]) => {
+        const wrap = document.createElement('div');
+        wrap.className = cls;
+        const a = buildAnim(c.key, 'Down', 200);
+        wrap.appendChild(a);
+        const labEl = document.createElement('div');
+        labEl.className = 'anim-label';
+        labEl.textContent = lab;
+        wrap.appendChild(labEl);
+        animRow.appendChild(wrap);
+      });
+      colAnim.appendChild(animRow);
+      card.appendChild(colAnim);
+
+      // 模拟 LED 64×64 屏
+      const colLed = document.createElement('div');
+      colLed.className = 'col';
+      colLed.innerHTML = '<h3>模拟 64×64 LED 屏(角色站在传送门旁)</h3>';
+
+      const ledRow = document.createElement('div');
+      ledRow.className = 'anim-row';
+      ['', 'medium', 'large'].forEach(sizeName => {
+        ledRow.appendChild(buildLedSim(c.key, sizeName ? sizeName : 'led', c.portalColor));
+      });
+      colLed.appendChild(ledRow);
+      card.appendChild(colLed);
+
+      root.appendChild(card);
+    }
+  </script>
+</body>
+</html>

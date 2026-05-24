@@ -329,9 +329,15 @@ void drawSkinLayer(
 ) {
   const TerrariaSprite* sprite = TerrariaSprites::getPlayerLayer(layer);
   if (sprite == nullptr) return;
-  if (useGrid && isPlayerGridLayer(layer)) {
-    drawSpriteGrid(sprite, gridIndex, cx, cy, scale, tintColor, true);  // player_layer 5 段
+  if (isPlayerGridLayer(layer)) {
+    // 网格层 (layer 3/4/5/6/7/8/9/13): 永远走切段
+    //   useGrid=true  → 用调用方指定的 gridIndex
+    //   useGrid=false → fallback 取 GRID_TORSO 段 (跟 uniapp getSkinLayer 一致)
+    //   关键: 不持械(5005)时若直接画整张 11x75, torso 段会错位画到头顶上方 ≈30px 处
+    uint8_t segIdx = useGrid ? gridIndex : GRID_TORSO;
+    drawSpriteGrid(sprite, segIdx, cx, cy, scale, tintColor, true);
   } else {
+    // 整张层 (layer 0/1/2/10/11/12/15): 11x15 单段, 直接画
     drawSpriteWhole(sprite, cx, cy, scale, tintColor);
   }
 }
@@ -708,6 +714,8 @@ struct DynamicState {
   uint8_t guardianFrame;
   int8_t  guardianBobYx10;  // *10 防 float 比对误差
   uint8_t orbDy;
+  uint8_t bossFrame;        // boss sprite 自身帧 (多帧 boss)
+  uint8_t bossFxTickX10;    // boss 后处理脉冲相位 *10 (静态 boss 也要持续重绘)
   char    timeText[12];
 };
 
@@ -736,6 +744,27 @@ DynamicState computeDynamicState() {
 
   // 光团
   st.orbDy = ((tick % 5) < 3) ? 0 : 1;
+
+  // boss 自身帧 + 后处理 fx 脉冲相位
+  //   多帧 boss 用 sprite 帧驱动重绘
+  //   静态 boss 用 fx 脉冲相位 (fxTickX10) 驱动重绘 (destroyer/golem/4 柱)
+  if (s_config.bossEnabled && s_config.bossId < ::kBossCount) {
+    const TerrariaSpriteAnim* ba = ::getBossAnim(s_config.bossId);
+    st.bossFrame = ba ? (uint8_t)((tick / 9) % ba->frameCount) : 0;
+    // fx 相位: 取最快脉冲(0.8s 周期)的相位粗值, 每 1/10 秒变一次
+    //   destroyer 0.8s, golem 1.2s, 4 柱 2.0s — 用一个粗值 (10 个相位) 覆盖所有
+    uint8_t bid = s_config.bossId;
+    bool hasFx = (bid == 10 || bid == 13 || bid == 24 || bid == 25 || bid == 26 || bid == 27);
+    if (hasFx) {
+      // 每 100ms 一帧 → 0~9 粗相位
+      st.bossFxTickX10 = (uint8_t)(((uint32_t)(s_animTimeSec * 10.0f)) % 10);
+    } else {
+      st.bossFxTickX10 = 0;
+    }
+  } else {
+    st.bossFrame = 0;
+    st.bossFxTickX10 = 0;
+  }
 
   // 时钟文本
   time_t now = time(nullptr);
@@ -769,6 +798,8 @@ bool dynamicStateChanged(const DynamicState& a, const DynamicState& b) {
          a.guardianFrame != b.guardianFrame ||
          a.guardianBobYx10 != b.guardianBobYx10 ||
          a.orbDy != b.orbDy ||
+         a.bossFrame != b.bossFrame ||
+         a.bossFxTickX10 != b.bossFxTickX10 ||
          strcmp(a.timeText, b.timeText) != 0;
 }
 
@@ -816,6 +847,140 @@ inline void paintBossBackground(int x, int y) {
   putPixel(x, y, r, g, b);
 }
 
+// ============ Boss 专用渲染 (跟 uniapp drawBoss 严格对齐) ============
+//   - fx 后处理: destroyer 红闪 / golem 眼脉冲 / 4 柱呼吸
+//   - 颜色丢弃: queen_slime 的 #5A5A5E + #69696D 灰色描边伪影
+//   - 位置: sprite 像素已按各 boss 烘焙时的 x/y/scale 渲染到屏幕绝对坐标 (0~63),
+//           直接画即可, 不要再加偏移 (烘焙坐标是项目调好的, 不能动)
+
+// boss 后处理 fx (跟 uniapp getBossDynamicFx 对齐)
+struct BossFx {
+  float brightness;       // 整体亮度倍数
+  float eyePulse;         // 0..1 发光像素脉冲强度
+  bool  hasEyeMatch;      // 是否启用眼部色匹配
+  uint8_t eyeMatchType;   // 0=none, 1=destroyer 红, 2=golem 红橙
+};
+
+inline BossFx getBossFx(uint8_t bossId) {
+  BossFx fx = {1.0f, 0.0f, false, 0};
+  const float t = s_animTimeSec;
+  switch (bossId) {
+    case 10: { // destroyer 红闪 (0.8s)
+      fx.eyePulse = 0.5f + 0.5f * sinf(t * (float)M_PI * 2.0f / 0.8f);
+      fx.hasEyeMatch = true; fx.eyeMatchType = 1;
+      break;
+    }
+    case 13: { // golem 眼脉冲 (1.2s)
+      fx.eyePulse = 0.5f + 0.5f * sinf(t * (float)M_PI * 2.0f / 1.2f);
+      fx.hasEyeMatch = true; fx.eyeMatchType = 2;
+      break;
+    }
+    case 24: case 25: case 26: case 27: { // 4 柱整体呼吸 (2.0s)
+      float breath = 0.5f + 0.5f * sinf(t * (float)M_PI * 2.0f / 2.0f);
+      fx.brightness = 0.85f + 0.20f * breath;
+      break;
+    }
+    default: break;
+  }
+  return fx;
+}
+
+inline bool bossEyeMatch(uint8_t type, uint8_t r, uint8_t g, uint8_t b) {
+  if (type == 1) return r > 180 && g < 100 && b < 100;                  // destroyer 红
+  if (type == 2) return r > 200 && g > 60 && g < 200 && b < 80;         // golem 红橙
+  return false;
+}
+
+// queen_slime 灰色描边伪影丢弃
+inline bool bossDropPixel(uint8_t bossId, uint8_t r, uint8_t g, uint8_t b) {
+  if (bossId == 8) {  // queen_slime
+    if (r >= 85 && r <= 95 && g >= 85 && g <= 95 && b >= 88 && b <= 98) return true;       // #5A5A5E
+    if (r >= 100 && r <= 110 && g >= 100 && g <= 110 && b >= 104 && b <= 114) return true; // #69696D
+  }
+  return false;
+}
+
+// 写一个 boss 像素 (应用 fx + 丢弃)
+inline void bossPutPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b,
+                          uint8_t bossId, const BossFx& fx) {
+  if (bossDropPixel(bossId, r, g, b)) return;
+  // 1) 整体亮度
+  if (fx.brightness != 1.0f) {
+    int nr = (int)((float)r * fx.brightness + 0.5f);
+    int ng = (int)((float)g * fx.brightness + 0.5f);
+    int nb = (int)((float)b * fx.brightness + 0.5f);
+    if (nr < 0) nr = 0; if (nr > 255) nr = 255;
+    if (ng < 0) ng = 0; if (ng > 255) ng = 255;
+    if (nb < 0) nb = 0; if (nb > 255) nb = 255;
+    r = (uint8_t)nr; g = (uint8_t)ng; b = (uint8_t)nb;
+  }
+  // 2) 发光像素脉冲
+  if (fx.hasEyeMatch && fx.eyePulse > 0.0f && bossEyeMatch(fx.eyeMatchType, r, g, b)) {
+    float k = 1.0f + 0.3f * fx.eyePulse;
+    int nr = (int)((float)r * k + 0.5f);
+    int ng = (int)((float)g * k + 0.5f);
+    int nb = (int)((float)b * k + 0.5f);
+    if (nr > 255) nr = 255; if (ng > 255) ng = 255; if (nb > 255) nb = 255;
+    r = (uint8_t)nr; g = (uint8_t)ng; b = (uint8_t)nb;
+  }
+  putPixel(x, y, r, g, b);
+}
+
+// 画 boss 帧 (跟 uniapp drawBoss 完全对齐: base + delta(set+clear), 应用 fx + 丢弃)
+//   像素已是屏幕绝对坐标 (0~63), 烘焙时按各 boss 默认 x/y/scale 渲染好, 直接画
+//   dy: 仅用于 4 柱 = -10 整体上移 (其他 boss 永远 dy=0, 不动烘焙位置)
+void drawBossFrame(const TerrariaSpriteAnim* anim, uint8_t bossId, uint8_t frameIndex, int dy) {
+  if (anim == nullptr) return;
+  const BossFx fx = getBossFx(bossId);
+  const uint8_t stride = (anim->fmt == 7) ? 7 : 5;
+
+  // 1) 画 base (set 段)
+  for (uint16_t i = 0; i < anim->base.setCount; i++) {
+    const uint8_t* p = anim->base.setPixels + (size_t)i * stride;
+    uint16_t x, y;
+    uint8_t r, g, b;
+    if (anim->fmt == 7) {
+      x = pgm_read_byte(p)     | (pgm_read_byte(p+1) << 8);
+      y = pgm_read_byte(p+2) | (pgm_read_byte(p+3) << 8);
+      r = pgm_read_byte(p+4); g = pgm_read_byte(p+5); b = pgm_read_byte(p+6);
+    } else {
+      x = pgm_read_byte(p); y = pgm_read_byte(p+1);
+      r = pgm_read_byte(p+2); g = pgm_read_byte(p+3); b = pgm_read_byte(p+4);
+    }
+    bossPutPixel((int)x, (int)y + dy, r, g, b, bossId, fx);
+  }
+
+  // 2) 画 delta (frame > 0)
+  if (frameIndex == 0) return;
+  if (frameIndex - 1 >= anim->frameCount - 1) return;
+  TerrariaFrameBlock delta;
+  memcpy_P(&delta, &anim->deltas[frameIndex - 1], sizeof(delta));
+
+  // 2a) clear 段: 擦回背景色
+  if (delta.clearCount > 0 && delta.clearPixels != nullptr) {
+    for (uint16_t i = 0; i < delta.clearCount; i++) {
+      uint8_t cx = pgm_read_byte(delta.clearPixels + i * 2);
+      uint8_t cy = pgm_read_byte(delta.clearPixels + i * 2 + 1);
+      paintBossBackground((int)cx, (int)cy + dy);
+    }
+  }
+  // 2b) set 段: 画新像素
+  for (uint16_t i = 0; i < delta.setCount; i++) {
+    const uint8_t* p = delta.setPixels + (size_t)i * stride;
+    uint16_t x, y;
+    uint8_t r, g, b;
+    if (anim->fmt == 7) {
+      x = pgm_read_byte(p)     | (pgm_read_byte(p+1) << 8);
+      y = pgm_read_byte(p+2) | (pgm_read_byte(p+3) << 8);
+      r = pgm_read_byte(p+4); g = pgm_read_byte(p+5); b = pgm_read_byte(p+6);
+    } else {
+      x = pgm_read_byte(p); y = pgm_read_byte(p+1);
+      r = pgm_read_byte(p+2); g = pgm_read_byte(p+3); b = pgm_read_byte(p+4);
+    }
+    bossPutPixel((int)x, (int)y + dy, r, g, b, bossId, fx);
+  }
+}
+
 void buildFrame() {
   // ===== 1. 背景: biome 天空渐变 =====
   const BiomeSkyGradient& sky = kBiomeSkies[s_config.biome < 10 ? s_config.biome : 0];
@@ -829,18 +994,14 @@ void buildFrame() {
     }
   }
 
-  // ===== 1.5 3 朵手画云 (做 2 圈切比雪夫膨胀 → 视觉上每朵云外扩 2 px) =====
+  // ===== 1.5 3 朵手画云 (跟 uniapp drawClouds 严格一致 — 不做膨胀, 保留原始云形状) =====
   static const char* kCloudShapes[3][4] = {
     {"..####....", ".######...", "##########", ".########."},
     {".####.",     "######",     ".####.",     nullptr},
     {"...####...", ".########.", "##########", "..######.."},
   };
   static const uint8_t kCloudPos[3][2] = {{4, 6}, {26, 14}, {44, 4}};
-  constexpr int CLOUD_PAD = 2;
 
-  // 1) 把云像素标到 mask
-  static uint8_t s_cloudMask[SCREEN_H][SCREEN_W];
-  memset(s_cloudMask, 0, sizeof(s_cloudMask));
   for (int i = 0; i < 3; i++) {
     int ox = kCloudPos[i][0], oy = kCloudPos[i][1];
     for (int row = 0; row < 4; row++) {
@@ -850,36 +1011,12 @@ void buildFrame() {
         if (line[col] == '#') {
           int px = ox + col, py = oy + row;
           if (px >= 0 && px < SCREEN_W && py >= 0 && py < SCREEN_H) {
-            s_cloudMask[py][px] = 1;
+            putPixel(px, py, 0xE8, 0xF0, 0xFF);
           }
         }
       }
     }
   }
-
-  // 2) 切比雪夫膨胀 2 圈: 对每个非云像素, 看 PAD 邻域内有没有云像素 → 标 2
-  for (int y = 0; y < SCREEN_H; y++) {
-    for (int x = 0; x < SCREEN_W; x++) {
-      if (s_cloudMask[y][x] == 1) continue;
-      bool nearCloud = false;
-      for (int dy = -CLOUD_PAD; dy <= CLOUD_PAD && !nearCloud; dy++) {
-        for (int dx = -CLOUD_PAD; dx <= CLOUD_PAD && !nearCloud; dx++) {
-          if (dx == 0 && dy == 0) continue;
-          int nx = x + dx, ny = y + dy;
-          if (nx < 0 || nx >= SCREEN_W || ny < 0 || ny >= SCREEN_H) continue;
-          if (s_cloudMask[ny][nx] == 1) nearCloud = true;
-        }
-      }
-      if (nearCloud) s_cloudMask[y][x] = 2;
-    }
-  }
-
-  // 3) 把云画到 render buffer (原始 + 膨胀都用同一个云白色)
-  for (int y = 0; y < SCREEN_H; y++) {
-    for (int x = 0; x < SCREEN_W; x++) {
-      if (s_cloudMask[y][x]) {
-        putPixel(x, y, 0xE8, 0xF0, 0xFF);
-      }
     }
   }
 
@@ -932,11 +1069,14 @@ void buildFrame() {
   if (s_config.bossEnabled && s_config.bossId < ::kBossCount) {
     const TerrariaSpriteAnim* bossAnim = ::getBossAnim(s_config.bossId);
     if (bossAnim != nullptr) {
-      // 像素已是屏幕绝对坐标 (0~63), 用中心 (32,32) scale=1.0 直接画
-      // boss 多 part 移动会有"旧位置残留" → 传 paintBossBackground 用来擦回背景色
       uint32_t tick = (uint32_t)(s_animTimeSec * 60.0f);
       uint8_t bossFrame = (tick / 9) % bossAnim->frameCount;
-      drawSpriteAnimFrame(bossAnim, bossFrame, 32.0f, 32.0f, 1.0f, nullptr, paintBossBackground);
+      // boss 像素是屏幕绝对坐标 (烘焙时按各 boss 已调好的 x/y/scale 渲染),
+      // 直接画即可 — 烘焙坐标是项目调好的, 不能动
+      // 例外: 4 柱 (bossId 24~27) 整体上移 10 像素, 跟 uniapp bossOverrides 默认 y=13 对齐
+      int dy = 0;
+      if (s_config.bossId >= 24 && s_config.bossId <= 27) dy = -10;
+      drawBossFrame(bossAnim, s_config.bossId, bossFrame, dy);
     }
   }
 

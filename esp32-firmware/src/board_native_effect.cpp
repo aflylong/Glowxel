@@ -54,6 +54,27 @@ PlanetScreensaverNativeConfig s_planetConfig = {
   }
 };
 
+// 传送门(瑞克和莫迪主题)模式独立持有自己的配置。
+// 渲染时复用 PLANET 分支(共享 portal 像素管线和 60s 生命周期),
+// 但业务字段、storage、WS 命令、status 都和星球屏保完全分开。
+RickMortyPortalNativeConfig s_portalConfig = {
+  "portal_green",
+  "medium",
+  32,
+  32,
+  CLOCK_FONT_CLASSIC_5X7,
+  false,
+  {
+    true,
+    1,
+    32,
+    5,
+    255,
+    255,
+    255
+  }
+};
+
 float s_planetPhase = 0.0f;
 unsigned long s_planetPhaseBaseAt = 0;
 bool s_planetDirty = false;
@@ -9745,5 +9766,48 @@ const TextDisplayNativeConfig& getTextDisplayConfig() {
 
 const PlanetScreensaverNativeConfig& getPlanetScreensaverConfig() {
   return s_planetConfig;
+}
+
+// 传送门模式 ↔ 星球屏保 portal preset 共用同一条渲染管线。
+// 这里把 RickMortyPortalNativeConfig 翻译成 PlanetScreensaverNativeConfig:
+//   direction/speed/seed/colorSeed 都用固定值锁住,
+//   colorSeed = kPlanetReferenceDefaultColorSeed 是 portal 固定调色板的开关
+//   (见 isReferenceDefaultPlanetColorSeed,在该 seed 下 colorSeed 不会污染调色板)。
+PlanetScreensaverNativeConfig translatePortalToPlanetConfig(
+  const RickMortyPortalNativeConfig& portal
+) {
+  PlanetScreensaverNativeConfig planet = {};
+  snprintf(planet.preset, sizeof(planet.preset), "%s", portal.preset);
+  snprintf(planet.size, sizeof(planet.size), "%s", portal.size);
+  snprintf(planet.direction, sizeof(planet.direction), "%s", "right");
+  planet.speed = 3;
+  planet.seed = 0UL;
+  planet.colorSeed = kPlanetReferenceDefaultColorSeed;
+  planet.planetX = portal.portalX;
+  planet.planetY = portal.portalY;
+  planet.font = portal.font;
+  planet.showSeconds = portal.showSeconds;
+  planet.time.show = portal.time.show;
+  planet.time.fontSize = portal.time.fontSize;
+  planet.time.x = portal.time.x;
+  planet.time.y = portal.time.y;
+  planet.time.r = portal.time.r;
+  planet.time.g = portal.time.g;
+  planet.time.b = portal.time.b;
+  return planet;
+}
+
+void setRickMortyPortalConfig(const RickMortyPortalNativeConfig& config) {
+  s_portalConfig = config;
+  setPlanetScreensaverConfig(translatePortalToPlanetConfig(config));
+}
+
+void applyRickMortyPortalConfig(const RickMortyPortalNativeConfig& config) {
+  s_portalConfig = config;
+  applyPlanetScreensaverConfig(translatePortalToPlanetConfig(config));
+}
+
+const RickMortyPortalNativeConfig& getRickMortyPortalConfig() {
+  return s_portalConfig;
 }
 }

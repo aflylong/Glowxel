@@ -123,9 +123,6 @@ bool handlePlanetScreensaverCommand(
        strcmp(preset, "asteroid") != 0 &&
        strcmp(preset, "black_hole") != 0 &&
        strcmp(preset, "galaxy") != 0 &&
-       strcmp(preset, "portal_green") != 0 &&
-       strcmp(preset, "portal_blue") != 0 &&
-       strcmp(preset, "portal_yellow") != 0 &&
        strcmp(preset, "star") != 0)) {
     wsSetErrorResponse(response, "invalid planet preset");
     return true;
@@ -202,6 +199,92 @@ bool handlePlanetScreensaverCommand(
   command->planetConfig.time.b = timeColor["b"].as<uint8_t>();
   return enqueueWsCommand(client, command, response, responseSent);
 }
+
+bool handleRickMortyPortalCommand(
+  AsyncWebSocketClient* client,
+  JsonDocument& doc,
+  StaticJsonDocument<768>& response,
+  bool& responseSent
+) {
+  if (!doc.containsKey("preset") ||
+      !doc.containsKey("size") ||
+      !doc.containsKey("portalX") ||
+      !doc.containsKey("portalY") ||
+      !doc.containsKey("font") ||
+      !doc.containsKey("showSeconds") ||
+      !doc.containsKey("time")) {
+    wsSetErrorResponse(response, "missing rick morty portal fields");
+    return true;
+  }
+
+  const char* preset = doc["preset"];
+  if (preset == nullptr ||
+      (strcmp(preset, "portal_green") != 0 &&
+       strcmp(preset, "portal_blue") != 0 &&
+       strcmp(preset, "portal_yellow") != 0)) {
+    wsSetErrorResponse(response, "invalid rick morty portal preset");
+    return true;
+  }
+
+  const char* size = doc["size"];
+  if (size == nullptr ||
+      (strcmp(size, "small") != 0 &&
+       strcmp(size, "medium") != 0 &&
+       strcmp(size, "large") != 0)) {
+    wsSetErrorResponse(response, "invalid rick morty portal size");
+    return true;
+  }
+
+  const char* fontName = doc["font"];
+  uint8_t fontId = 0;
+  if (fontName == nullptr || !clockFontIdFromString(fontName, fontId)) {
+    wsSetErrorResponse(response, "invalid rick morty portal font");
+    return true;
+  }
+
+  JsonObject time = doc["time"].as<JsonObject>();
+  if (time.isNull() ||
+      !time.containsKey("show") ||
+      !time.containsKey("fontSize") ||
+      !time.containsKey("x") ||
+      !time.containsKey("y") ||
+      !time.containsKey("color")) {
+    wsSetErrorResponse(response, "missing rick morty portal time fields");
+    return true;
+  }
+
+  JsonObject timeColor = time["color"].as<JsonObject>();
+  if (timeColor.isNull() || !wsEnsureColorObject(timeColor)) {
+    wsSetErrorResponse(response, "invalid rick morty portal time color");
+    return true;
+  }
+
+  RuntimeCommandBus::RuntimeCommand* command = createWsCommand(client, response);
+  if (command == nullptr) {
+    return true;
+  }
+
+  command->type = RuntimeCommandBus::RuntimeCommandType::RICK_MORTY_PORTAL;
+  snprintf(command->portalConfig.preset, sizeof(command->portalConfig.preset), "%s", preset);
+  snprintf(command->portalConfig.size, sizeof(command->portalConfig.size), "%s", size);
+  command->portalConfig.portalX =
+    (uint8_t)wsClampInt(doc["portalX"].as<int>(), 0, 63);
+  command->portalConfig.portalY =
+    (uint8_t)wsClampInt(doc["portalY"].as<int>(), 0, 63);
+  command->portalConfig.font = fontId;
+  command->portalConfig.showSeconds = doc["showSeconds"].as<bool>();
+  command->portalConfig.time.show = time["show"].as<bool>();
+  command->portalConfig.time.fontSize =
+    (uint8_t)wsClampInt(time["fontSize"].as<int>(), 1, 3);
+  command->portalConfig.time.x =
+    (uint8_t)wsClampInt(time["x"].as<int>(), 0, 63);
+  command->portalConfig.time.y =
+    (uint8_t)wsClampInt(time["y"].as<int>(), 0, 63);
+  command->portalConfig.time.r = timeColor["r"].as<uint8_t>();
+  command->portalConfig.time.g = timeColor["g"].as<uint8_t>();
+  command->portalConfig.time.b = timeColor["b"].as<uint8_t>();
+  return enqueueWsCommand(client, command, response, responseSent);
+}
 }
 
 namespace WebSocketEffectCommandDispatch {
@@ -219,6 +302,10 @@ bool handleBoardEffectCommand(
 
   if (cmd == "set_planet_screensaver") {
     return handlePlanetScreensaverCommand(client, doc, response, responseSent);
+  }
+
+  if (cmd == "set_rick_morty_portal") {
+    return handleRickMortyPortalCommand(client, doc, response, responseSent);
   }
 
   return false;
