@@ -9,6 +9,7 @@ import App from './App.vue'
 import './assets/styles/main.css'
 import './assets/styles/glx-app.css'
 import './assets/styles/editor.css'
+import './assets/styles/mobile-shell.css'
 
 // 把 router 实例注入 uni-shim, 让 uni.navigateTo 等映射到 vue-router
 uni._setRouter(router)

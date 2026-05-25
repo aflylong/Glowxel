@@ -80,4 +80,32 @@ router.beforeEach((to) => {
   }
 })
 
+// 设备页给 body 加 .is-device-page (mobile-shell.css 会展示桌面端手机壳)
+router.afterEach((to) => {
+  const isDevicePage = to.meta.shell === 'app' && (
+    to.path.startsWith('/device-') ||
+    to.path.startsWith('/maze-') ||
+    to.path.startsWith('/snake-') ||
+    to.path.startsWith('/tetris-') ||
+    to.path.startsWith('/planet-') ||
+    to.path.startsWith('/water-') ||
+    to.path.startsWith('/spirit-') ||
+    to.path.startsWith('/canvas-') ||
+    to.path.startsWith('/gif-') ||
+    to.path.startsWith('/led-') ||
+    to.path.startsWith('/ble-') ||
+    to.path.startsWith('/ambient-') ||
+    to.path.startsWith('/rick-morty-') ||
+    to.path.startsWith('/terraria-') ||
+    to.path.startsWith('/minecraft-') ||
+    to.path === '/clock' ||
+    to.path === '/animation-clock' ||
+    to.path === '/theme-clock'
+  )
+  if (typeof document !== 'undefined') {
+    document.body.classList.toggle('is-device-page', isDevicePage)
+    document.body.classList.toggle('has-mobile-shell', isDevicePage)
+  }
+})
+
 export default router

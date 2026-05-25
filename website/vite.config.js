@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
+import rpxToVw from './postcss-rpx-to-vw.cjs'
 
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
@@ -27,6 +28,13 @@ export default defineConfig(({ command, mode }) => {
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url))
+      }
+    },
+    css: {
+      postcss: {
+        plugins: [
+          rpxToVw({ designWidth: 750 })
+        ]
       }
     },
     server
