@@ -1,7 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { getStoredAuthToken } from '@/utils/session.js'
 
+// 设备控制类页面正在按 uniapp 架构全量重构, 暂用迁移占位页
+// (重构完成后逐个替换为实现)
+const Migrating = () => import('@/views/DeviceMigrating.vue')
+
 const routes = [
+  // ===== 公共/社区类 (不动) =====
   { path: '/', name: 'Home', component: () => import('@/views/Home.vue'), meta: { shell: 'public' } },
   { path: '/community', name: 'Community', component: () => import('@/views/Community.vue'), meta: { shell: 'public' } },
   { path: '/templates', name: 'Templates', component: () => import('@/views/Templates.vue'), meta: { shell: 'public' } },
@@ -14,6 +19,7 @@ const routes = [
   { path: '/design-system', name: 'DesignSystem', component: () => import('@/views/DesignSystem.vue'), meta: { shell: 'public' } },
   { path: '/login', name: 'Login', component: () => import('@/views/Login.vue'), meta: { shell: 'public' } },
 
+  // ===== App 框架 (不动) =====
   { path: '/workspace', name: 'Workspace', component: () => import('@/views/Workspace.vue'), meta: { shell: 'app' } },
   { path: '/create', name: 'Create', component: () => import('@/views/Create.vue'), meta: { shell: 'app' } },
   { path: '/pattern-workbench', name: 'PatternWorkbench', component: () => import('@/views/PatternWorkbench.vue'), meta: { shell: 'app' } },
@@ -33,23 +39,24 @@ const routes = [
   { path: '/following', name: 'MyFollowing', component: () => import('@/views/FollowList.vue'), meta: { shell: 'app', auth: true } },
   { path: '/design-compare', name: 'DesignCompare', component: () => import('@/views/DesignCompare.vue'), meta: { shell: 'app' } },
 
-  { path: '/device-control', name: 'DeviceControl', component: () => import('@/views/DeviceControl.vue'), meta: { shell: 'app' } },
-  { path: '/ble-config', name: 'BleConfig', component: () => import('@/views/BleConfig.vue'), meta: { shell: 'app' } },
-  { path: '/device-params', name: 'DeviceParams', component: () => import('@/views/DeviceParams.vue'), meta: { shell: 'app' } },
-  { path: '/clock', name: 'Clock', component: () => import('@/views/Clock.vue'), meta: { shell: 'app' } },
-  { path: '/animation-clock', name: 'AnimationClock', component: () => import('@/views/AnimationClock.vue'), meta: { shell: 'app' } },
-  { path: '/theme-clock', name: 'ThemeClock', component: () => import('@/views/ThemeClock.vue'), meta: { shell: 'app' } },
-  { path: '/spirit-screen', name: 'SpiritScreen', component: () => import('@/views/SpiritScreen.vue'), meta: { shell: 'app' } },
-  { path: '/canvas-editor', name: 'CanvasEditor', component: () => import('@/views/CanvasEditor.vue'), meta: { shell: 'app' } },
-  { path: '/gif-player', name: 'GifPlayer', component: () => import('@/views/GifPlayer.vue'), meta: { shell: 'app' } },
-  { path: '/led-matrix', name: 'LedMatrix', component: () => import('@/views/LedMatrix.vue'), meta: { shell: 'app' } },
+  // ===== 设备控制类 (全量重构中, 临时跳占位页) =====
+  // 这些路由稍后会被实际页面替换
+  { path: '/device-control', name: 'DeviceControl', component: Migrating, meta: { shell: 'app' } },
+  { path: '/ble-config', name: 'BleConfig', component: Migrating, meta: { shell: 'app' } },
+  { path: '/device-params', name: 'DeviceParams', component: Migrating, meta: { shell: 'app' } },
+  { path: '/clock', name: 'Clock', component: Migrating, meta: { shell: 'app' } },
+  { path: '/animation-clock', name: 'AnimationClock', component: Migrating, meta: { shell: 'app' } },
+  { path: '/theme-clock', name: 'ThemeClock', component: Migrating, meta: { shell: 'app' } },
+  { path: '/spirit-screen', name: 'SpiritScreen', component: Migrating, meta: { shell: 'app' } },
+  { path: '/canvas-editor', name: 'CanvasEditor', component: Migrating, meta: { shell: 'app' } },
+  { path: '/gif-player', name: 'GifPlayer', component: Migrating, meta: { shell: 'app' } },
+  { path: '/led-matrix', name: 'LedMatrix', component: Migrating, meta: { shell: 'app' } },
   { path: '/maze-mode', name: 'MazeMode', component: () => import('@/views/MazeMode.vue'), meta: { shell: 'app' } },
-  { path: '/snake-mode', name: 'SnakeMode', component: () => import('@/views/SnakeMode.vue'), meta: { shell: 'app' } },
-  { path: '/planet-screensaver', name: 'PlanetScreensaver', component: () => import('@/views/PlanetScreensaver.vue'), meta: { shell: 'app' } },
-  { path: '/tetris-settings', name: 'TetrisSettings', component: () => import('@/views/TetrisSettings.vue'), meta: { shell: 'app' } },
-  { path: '/tetris-clock-settings', name: 'TetrisClockSettings', component: () => import('@/views/TetrisClockSettings.vue'), meta: { shell: 'app' } },
-  { path: '/water-world', name: 'WaterWorld', component: () => import('@/views/WaterWorld.vue'), meta: { shell: 'app' } },
-
+  { path: '/snake-mode', name: 'SnakeMode', component: Migrating, meta: { shell: 'app' } },
+  { path: '/planet-screensaver', name: 'PlanetScreensaver', component: Migrating, meta: { shell: 'app' } },
+  { path: '/tetris-settings', name: 'TetrisSettings', component: Migrating, meta: { shell: 'app' } },
+  { path: '/tetris-clock-settings', name: 'TetrisClockSettings', component: Migrating, meta: { shell: 'app' } },
+  { path: '/water-world', name: 'WaterWorld', component: Migrating, meta: { shell: 'app' } },
 ]
 
 const router = createRouter({
