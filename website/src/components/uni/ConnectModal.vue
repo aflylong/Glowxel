@@ -1,9 +1,9 @@
 <template>
-  <div v-if="visible" class="modal-overlay" @tap="handleCancel">
-    <div class="modal-content" @tap.stop>
+  <div v-if="visible" class="modal-overlay" @click="handleCancel">
+    <div class="modal-content" @click.stop>
       <div class="modal-header">
         <span class="modal-title">{{ title }}</span>
-        <div class="close-btn" @tap="handleCancel">
+        <div class="close-btn" @click="handleCancel">
           <Icon name="close" :size="32" />
         </div>
       </div>
@@ -43,13 +43,13 @@
       </div>
 
       <div class="modal-footer">
-        <div class="modal-btn cancel-btn" @tap="handleCancel">
+        <div class="modal-btn cancel-btn" @click="handleCancel">
           <span class="btn-text">取消</span>
         </div>
         <div
           class="modal-btn confirm-btn"
           :class="{ disabled: !inputValue || connecting }"
-          @tap="handleConfirm"
+          @click="handleConfirm"
         >
           <span class="btn-text">{{ connecting ? "连接中" : "连接" }}</span>
         </div>

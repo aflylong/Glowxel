@@ -455,7 +455,14 @@ class WebSocket {
   }
 
   _debugLog(socketId, label, detail = null) {
-    return;
+    if (typeof window === 'undefined' || !window.__glx_ws_debug__) {
+      return;
+    }
+    try {
+      console.log('[ws]', `#${socketId}`, label, detail || '');
+    } catch (e) {
+      /* ignore */
+    }
   }
 
   _summarizeSocketEventPayload(payload) {
@@ -1009,6 +1016,7 @@ class WebSocket {
       };
 
       const url = `ws://${normalizedHost}/ws`;
+      console.log('[ws] connect →', url);
       this._debugLog(socketId, "connect start", {
         url,
         host: normalizedHost,
@@ -1101,6 +1109,7 @@ class WebSocket {
         if (socketId !== this._currentSocketId) {
           return;
         }
+        console.log('[ws] open');
         this._debugLog(socketId, "task onOpen");
         hasOpened = true;
         this.connected = true;
@@ -1139,6 +1148,7 @@ class WebSocket {
         if (socketId !== this._currentSocketId) {
           return;
         }
+        console.log('[ws] close', { code: event?.code, reason: event?.reason, hasOpened });
         this._debugLog(
           socketId,
           "task onClose",
@@ -1182,6 +1192,7 @@ class WebSocket {
         if (socketId !== this._currentSocketId) {
           return;
         }
+        console.error('[ws] error', err);
         this._debugLog(
           socketId,
           "task onError",

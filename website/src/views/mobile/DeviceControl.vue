@@ -342,22 +342,35 @@ export default {
     },
 
     async handleConnect() {
+      if (!this.deviceStore) {
+        this.deviceStore = useDeviceStore();
+        this.deviceStore.init();
+      }
       this.showConnectModal = true;
     },
 
     async handleDisconnect() {
+      if (!this.deviceStore) {
+        this.deviceStore = useDeviceStore();
+        this.deviceStore.init();
+      }
       await this.deviceStore.disconnect();
-      this.toast.showInfo("设备已断开");
+      this.toast?.showInfo("设备已断开");
     },
 
     async handleConnectConfirm(ip) {
       this.deviceIp = ip;
 
+      if (!this.deviceStore) {
+        this.deviceStore = useDeviceStore();
+        this.deviceStore.init();
+      }
+
       try {
         const result = await this.deviceStore.connect(ip);
         if (result.success) {
           this.$refs.connectModal.onSuccess();
-          this.toast.showSuccess("已连接到 Glowxel PixelBoard");
+          this.toast?.showSuccess("已连接到 Glowxel PixelBoard");
         } else {
           let errorMessage = "连接失败，请检查 IP 地址";
           if (result.error && result.error.errMsg) {

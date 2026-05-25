@@ -70,6 +70,68 @@ const uni = {
     return btoa(bin);
   },
 
+  // ===== HTTP 请求 (uni.request → fetch) =====
+  // uniapp: uni.request({url, method, success, fail, complete, dataType, timeout, header, data})
+  // 我们包装成浏览器 fetch
+  request(opts) {
+    if (!opts || !opts.url) {
+      const err = { errMsg: 'request:fail url required' };
+      if (opts?.fail) opts.fail(err);
+      if (opts?.complete) opts.complete(err);
+      return Promise.reject(err);
+    }
+    const method = (opts.method || 'GET').toUpperCase();
+    const headers = { ...(opts.header || {}) };
+    let body = undefined;
+    if (method !== 'GET' && method !== 'HEAD' && opts.data != null) {
+      if (typeof opts.data === 'string' || opts.data instanceof FormData || opts.data instanceof ArrayBuffer || opts.data instanceof Blob) {
+        body = opts.data;
+      } else {
+        body = JSON.stringify(opts.data);
+        if (!headers['Content-Type'] && !headers['content-type']) {
+          headers['Content-Type'] = 'application/json';
+        }
+      }
+    }
+    const controller = new AbortController();
+    const timeoutMs = opts.timeout || 60000;
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    return fetch(opts.url, {
+      method,
+      headers,
+      body,
+      signal: controller.signal,
+      mode: 'cors',
+      credentials: 'omit',
+    }).then(async (resp) => {
+      clearTimeout(timer);
+      const statusCode = resp.status;
+      const respHeader = {};
+      resp.headers.forEach((v, k) => { respHeader[k] = v; });
+      let data;
+      const dataType = (opts.dataType || 'json').toLowerCase();
+      if (dataType === 'json') {
+        try { data = await resp.json(); }
+        catch { data = await resp.text().catch(() => ''); }
+      } else if (opts.responseType === 'arraybuffer') {
+        data = await resp.arrayBuffer();
+      } else {
+        data = await resp.text();
+      }
+      const result = { data, statusCode, header: respHeader, errMsg: 'request:ok' };
+      if (opts.success) opts.success(result);
+      if (opts.complete) opts.complete(result);
+      return result;
+    }).catch((err) => {
+      clearTimeout(timer);
+      const errResult = { errMsg: 'request:fail ' + (err.message || err.name || 'unknown') };
+      if (opts.fail) opts.fail(errResult);
+      if (opts.complete) opts.complete(errResult);
+      throw errResult;
+    });
+  },
+
   // ===== 路由 (映射到 vue-router, 由 main.js 注入 router 实例) =====
   // uni.navigateTo({ url: '/pages/xxx/xxx?id=1' })
   // 我们解析路径 + query 后用 vue-router 跳
@@ -80,17 +142,31 @@ const uni = {
     this._routerPathMap = pathMap;
   },
   _resolveUniPath(uniPath) {
-    // 默认: 去掉 /pages 前缀, 取 /xxx-name 段, 再加查询
-    // uniapp: /pages/maze-mode/maze-mode?ip=xxx
-    // website: /maze-mode?ip=xxx
+    // uniapp 路径 → web 路由
+    // 规则:
+    //   1. 显式 pathMap 优先
+    //   2. /pages/<dir>/<name> → /<name>  (取最后一段, 因为同名页 dir==name, 不同名页一般 name 是真正的页面 ID)
+    //   3. 内置特殊映射: clock-editor → /clock, control → /device-control
     const [pathPart, queryPart] = uniPath.split('?');
     if (this._routerPathMap && this._routerPathMap[pathPart]) {
       const mapped = this._routerPathMap[pathPart];
       return queryPart ? `${mapped}?${queryPart}` : mapped;
     }
-    // 通用规则: /pages/<name>/<name> → /<name>
-    const m = pathPart.match(/^\/pages\/([^/]+)\/[^/]+$/);
-    if (m) return queryPart ? `/${m[1]}?${queryPart}` : `/${m[1]}`;
+    const m = pathPart.match(/^\/pages\/([^/]+)\/([^/]+)$/);
+    if (m) {
+      const [, dir, name] = m;
+      // 已知特殊映射
+      const specialByName = {
+        'clock-editor': '/clock',          // /pages/clock-editor/clock-editor → /clock
+        'control': '/device-control',      // /pages/control/control → /device-control
+      };
+      let target = specialByName[name];
+      if (!target) {
+        // 默认: 取最后一段作为路由
+        target = `/${name}`;
+      }
+      return queryPart ? `${target}?${queryPart}` : target;
+    }
     // fallback 原样返回
     return uniPath;
   },
@@ -175,15 +251,18 @@ const uni = {
   connectSocket(opts) {
     if (!opts || !opts.url) {
       if (opts?.fail) opts.fail({ errMsg: 'connectSocket url required' });
-      return null;
+      return makeDeadSocketTask({ errMsg: 'connectSocket url required' });
     }
     let ws;
     try {
       ws = new WebSocket(opts.url);
     } catch (e) {
-      if (opts.fail) opts.fail({ errMsg: e.message || 'connectSocket failed' });
+      const msg = e && e.message ? e.message : String(e || 'connectSocket failed');
+      console.error('[uni-shim] connectSocket throw:', opts.url, msg);
+      if (opts.fail) opts.fail({ errMsg: msg });
       if (opts.complete) opts.complete();
-      return null;
+      // 返回一个 dummy task, 立即触发 onClose, 让上层 webSocket.js 能走"连接已关闭"分支 reject
+      return makeDeadSocketTask({ errMsg: msg });
     }
     if (opts.success) opts.success();
     if (opts.complete) opts.complete();
@@ -315,9 +394,44 @@ SelectorQueryShim.prototype.exec = function (cb) {
 // 关键: uniapp 风格里 connectSocket() 同步返回 task, 然后异步 onOpen() 注册回调.
 // 但浏览器 WebSocket 的 open 事件可能在 onOpen 注册之前已经触发.
 // 我们记录 _readyState 和 _firstError, 注册时如果已 OPEN 立即派发, 避免错过.
+
+// 同步失败 (new WebSocket() 抛异常) 时返回的占位 task: 立即派发 onError + onClose,
+// 让 webSocket.js 的 socketTask.onClose 能 reject finishReject, 不会卡 30s 超时.
+function makeDeadSocketTask(payload) {
+  const task = {
+    _handlers: { open: [], message: [], error: [], close: [] },
+    _fired: { open: false, error: payload, close: { code: 1006, reason: payload?.errMsg || '' } },
+    onOpen(_) {},
+    onMessage(_) {},
+    onError(cb) {
+      this._handlers.error.push(cb);
+      try { cb(payload); } catch (e) { /* ignore */ }
+    },
+    onClose(cb) {
+      this._handlers.close.push(cb);
+      // 微任务后派发, 让上层把 onClose 注册完
+      Promise.resolve().then(() => {
+        try { cb({ code: 1006, reason: payload?.errMsg || '' }); }
+        catch (e) { /* ignore */ }
+      });
+    },
+    send(opts) {
+      if (opts?.fail) opts.fail({ errMsg: 'socket not connected' });
+      if (opts?.complete) opts.complete();
+    },
+    close(opts) {
+      if (opts?.success) opts.success();
+      if (opts?.complete) opts.complete();
+    },
+  };
+  return task;
+}
+
 class SocketTaskShim {
   constructor(ws) {
     this.ws = ws;
+    // 默认让二进制接收为 ArrayBuffer，跟 uniapp 行为一致 (Blob 会让 JSON.parse 失败)
+    try { ws.binaryType = 'arraybuffer'; } catch (e) { /* ignore */ }
     this._handlers = { open: [], message: [], error: [], close: [] };
     this._fired = { open: false, error: null, close: null };
 

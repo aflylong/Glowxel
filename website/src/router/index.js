@@ -67,10 +67,10 @@ const routes = [
   { path: '/terraria-clock', name: 'TerrariaClock', component: () => import('@/views/mobile/TerrariaClock.vue'), meta: { shell: 'app' } },
   { path: '/minecraft-clock', name: 'MinecraftClock', component: () => import('@/views/mobile/MinecraftClock.vue'), meta: { shell: 'app' } },
 
-  // 仅 PC 端有 (移动端未实现)
-  { path: '/clock', name: 'Clock', component: () => import('@/views/Clock.vue'), meta: { shell: 'app' } },
-  { path: '/animation-clock', name: 'AnimationClock', component: () => import('@/views/AnimationClock.vue'), meta: { shell: 'app' } },
-  { path: '/theme-clock', name: 'ThemeClock', component: () => import('@/views/ThemeClock.vue'), meta: { shell: 'app' } },
+  // Clock 三件套: PC = views/Clock.vue 等, mobile = views/mobile/Clock.vue 等
+  { path: '/clock', name: 'Clock', component: deviceDual('Clock'), meta: { shell: 'app' } },
+  { path: '/animation-clock', name: 'AnimationClock', component: deviceDual('AnimationClock'), meta: { shell: 'app' } },
+  { path: '/theme-clock', name: 'ThemeClock', component: deviceDual('ThemeClock'), meta: { shell: 'app' } },
   { path: '/device-mode', name: 'DeviceModePage', component: () => import('@/views/DeviceModePage.vue'), meta: { shell: 'app' } },
 ]
 

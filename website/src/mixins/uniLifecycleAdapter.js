@@ -2,56 +2,44 @@
 // uniapp 页面有 onLoad / onShow / onReady / onHide / onUnload, vue 没有.
 // 这个 mixin 把它们挂到 vue 的 created / mounted / activated / deactivated / unmounted.
 //
+// 关键: 多个 mixin 同名 onLoad/onShow 默认会被 child 覆盖. main.js 里通过
+// app.config.optionMergeStrategies 把它们合成数组, 这里读 $options.<hook>
+// 拿到全部回调依次调用 (匹配 uniapp 行为).
+//
 // 用法: views/mobile/X.vue 里 mixins: [uniLifecycleAdapter, ...其他]
-// 由于 uniapp 复刻页面都用 mixins, 这个适配器统一加入
+
+function callHookList(vm, name, ...args) {
+  const opts = vm.$options[name];
+  if (!opts) return;
+  const list = Array.isArray(opts) ? opts : [opts];
+  for (const fn of list) {
+    if (typeof fn === 'function') {
+      fn.call(vm, ...args);
+    }
+  }
+}
 
 export default {
-  // onLoad: uniapp 页面"创建时"触发, 类似 vue created
-  // 不要放 mounted (DOM 准备好后), 因为 onLoad 里访问 this.$refs 会拿不到, 但 uniapp 自己也是这样
-  // onLoad 在 uniapp 里晚于 created 但早于 mounted, web 用 created 时机最接近
   created() {
-    if (typeof this.onLoad === 'function') {
-      try {
-        // uniapp onLoad 接收启动参数 (路由 query), 我们传当前 route.query
-        const query = (this.$route && this.$route.query) ? { ...this.$route.query } : {};
-        this.onLoad(query);
-      } catch (e) {
-        console.error('[uni-lifecycle] onLoad error', e);
-      }
-    }
+    const query = (this.$route && this.$route.query) ? { ...this.$route.query } : {};
+    callHookList(this, 'onLoad', query);
   },
   mounted() {
-    if (typeof this.onReady === 'function') {
-      try { this.onReady(); }
-      catch (e) { console.error('[uni-lifecycle] onReady error', e); }
-    }
-    if (typeof this.onShow === 'function') {
-      try { this.onShow(); }
-      catch (e) { console.error('[uni-lifecycle] onShow error', e); }
-    }
+    callHookList(this, 'onReady');
+    callHookList(this, 'onShow');
+    this._uniShownByMounted = true;
   },
   activated() {
-    // 路由 keep-alive 重新激活时
-    if (typeof this.onShow === 'function' && !this._uniShownByMounted) {
-      try { this.onShow(); }
-      catch (e) { console.error('[uni-lifecycle] onShow (activated) error', e); }
+    if (!this._uniShownByMounted) {
+      callHookList(this, 'onShow');
     }
     this._uniShownByMounted = false;
   },
   deactivated() {
-    if (typeof this.onHide === 'function') {
-      try { this.onHide(); }
-      catch (e) { console.error('[uni-lifecycle] onHide error', e); }
-    }
+    callHookList(this, 'onHide');
   },
   beforeUnmount() {
-    if (typeof this.onHide === 'function') {
-      try { this.onHide(); }
-      catch (e) { console.error('[uni-lifecycle] onHide error', e); }
-    }
-    if (typeof this.onUnload === 'function') {
-      try { this.onUnload(); }
-      catch (e) { console.error('[uni-lifecycle] onUnload error', e); }
-    }
+    callHookList(this, 'onHide');
+    callHookList(this, 'onUnload');
   },
 };

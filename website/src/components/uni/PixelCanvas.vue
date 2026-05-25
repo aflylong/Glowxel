@@ -146,6 +146,9 @@ export default {
       query.select(`#${this.canvasId}`)
         .fields({ node: true, size: true })
         .exec((res) => {
+          if (typeof window !== 'undefined' && window.__GLX_DEBUG__) {
+            console.log('[PixelCanvas] initCanvas selector result', this.canvasId, res);
+          }
           if (!res || !res[0] || !res[0].node) {
             if (this.initRetryCount >= 6) return
             this.initRetryCount += 1

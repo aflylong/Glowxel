@@ -1,6 +1,6 @@
 <template>
-  <div v-if="visible" class="modal-overlay" @tap="handleMaskTap">
-    <div class="modal-content" @tap.stop>
+  <div v-if="visible" class="modal-overlay" @click="handleMaskTap">
+    <div class="modal-content" @click.stop>
       <div class="modal-header">
         <span class="modal-title">{{ title }}</span>
       </div>
@@ -10,10 +10,10 @@
       </div>
       
       <div class="modal-footer" :class="{ 'modal-footer--single': !showCancel }">
-        <div v-if="showCancel" class="modal-btn cancel-btn" @tap="handleCancel">
+        <div v-if="showCancel" class="modal-btn cancel-btn" @click="handleCancel">
           <span class="btn-text">{{ cancelText }}</span>
         </div>
-        <div class="modal-btn confirm-btn" :class="{ 'danger': danger }" @tap="handleConfirm">
+        <div class="modal-btn confirm-btn" :class="{ 'danger': danger }" @click="handleConfirm">
           <span class="btn-text">{{ confirmText }}</span>
         </div>
       </div>
