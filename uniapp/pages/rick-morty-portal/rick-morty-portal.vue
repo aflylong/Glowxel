@@ -144,90 +144,6 @@
         </view>
 
         <view v-show="currentTab === 1" class="tab-panel glx-tab-panel">
-          <view class="card glx-panel-card glx-editor-card">
-            <view class="card-title-section glx-panel-head">
-              <text class="glx-panel-title">角色叠加(uniapp 调试)</text>
-            </view>
-
-            <view class="form-row">
-              <text class="form-label">显示角色</text>
-              <view class="setting-control-buttons" style="gap:8rpx">
-                <view
-                  class="option-btn glx-feature-option"
-                  :class="{ active: character.show }"
-                  style="padding:6rpx 16rpx"
-                  @click="toggleCharacterShow"
-                >
-                  <text class="glx-feature-option__label">显示</text>
-                </view>
-                <view
-                  class="option-btn glx-feature-option"
-                  :class="{ active: !character.show }"
-                  style="padding:6rpx 16rpx"
-                  @click="toggleCharacterShow"
-                >
-                  <text class="glx-feature-option__label">隐藏</text>
-                </view>
-              </view>
-            </view>
-
-            <view v-if="character.show" class="option-stack">
-              <text class="form-label">选择角色</text>
-              <view class="option-row option-row-quad">
-                <view
-                  v-for="opt in characterOptions"
-                  :key="opt.id"
-                  class="option-btn glx-feature-option"
-                  :class="{ active: character.id === opt.id }"
-                  @click="handleCharacterSelect(opt.id)"
-                >
-                  <text class="glx-feature-option__label">{{ opt.label }}</text>
-                </view>
-              </view>
-            </view>
-
-            <view v-if="character.show" class="form-row">
-              <text class="form-label">高度 {{ character.height }}px</text>
-              <GlxStepper
-                :value="characterHeightIndex"
-                :min="0"
-                :max="characterHeights.length - 1"
-                :step="1"
-                @change="handleCharacterHeightStepperChange"
-              />
-            </view>
-
-            <view v-if="character.show" class="form-row">
-              <text class="form-label">水平位置 {{ character.anchorX }}</text>
-              <GlxStepper
-                :value="character.anchorX"
-                :min="0"
-                :max="63"
-                :step="1"
-                @change="handleCharacterAnchorXChange"
-              />
-            </view>
-
-            <view v-if="character.show" class="form-row">
-              <text class="form-label">垂直位置 {{ character.anchorY }}</text>
-              <GlxStepper
-                :value="character.anchorY"
-                :min="0"
-                :max="63"
-                :step="1"
-                @change="handleCharacterAnchorYChange"
-              />
-            </view>
-
-            <view class="form-row" style="display:block;padding:8rpx 0 0">
-              <text style="font-size:24rpx;color:#888;line-height:1.4;display:block">
-                这是 uniapp 端的调试预览,板载传送门暂未接入角色。调好尺寸/位置之后再决定怎么板载化。
-              </text>
-            </view>
-          </view>
-        </view>
-
-        <view v-show="currentTab === 2" class="tab-panel glx-tab-panel">
           <ClockTextSettingsCard
             icon-name="time"
             title="时间显示"
@@ -246,7 +162,7 @@
           />
         </view>
 
-        <view v-show="currentTab === 3" class="tab-panel glx-tab-panel">
+        <view v-show="currentTab === 2" class="tab-panel glx-tab-panel">
           <ClockFontPanel
             :font-options="timeFontOptions"
             :selected-font="clockConfig.font"
@@ -327,8 +243,6 @@ import {
   normalizePortalPageState,
   buildPortalPreviewFrame,
   buildPortalPreviewSequence,
-  getPortalCharacterOptions,
-  getPortalCharacterHeightLevels,
 } from "../../utils/rickMortyPortalPreview.js";
 
 const PORTAL_TIME_FONT_OPTIONS = getClockFontOptions();
@@ -337,12 +251,6 @@ const PORTAL_TIME_FONT_IDS = new Set(
 );
 const PORTAL_PRESET_IDS = new Set(PORTAL_COLOR_OPTIONS.map((item) => item.id));
 const PORTAL_SIZE_IDS = new Set(PORTAL_SIZE_OPTIONS.map((item) => item.id));
-const PORTAL_CHARACTER_OPTIONS = getPortalCharacterOptions();
-const PORTAL_CHARACTER_IDS = new Set(PORTAL_CHARACTER_OPTIONS.map((item) => item.id));
-const PORTAL_CHARACTER_HEIGHTS = getPortalCharacterHeightLevels();
-const PORTAL_CHARACTER_DEFAULT_HEIGHT = PORTAL_CHARACTER_HEIGHTS.includes(24)
-  ? 24
-  : (PORTAL_CHARACTER_HEIGHTS[Math.floor(PORTAL_CHARACTER_HEIGHTS.length / 2)] || 24);
 // 传送门固定 60 秒生命周期(打开 → 旋涡 → 关闭),与板载渲染对齐
 const PORTAL_CYCLE_DURATION_MS = 60000;
 const PORTAL_PREVIEW_FRAME_COUNT = 48;
@@ -381,22 +289,11 @@ export default {
       clockConfig: createDefaultPortalClockConfig(),
       timeFontOptions: PORTAL_TIME_FONT_OPTIONS,
       timeColorOptions: PORTAL_TIME_COLOR_OPTIONS,
-      // 角色调试 (uniapp 调试用, 板载未接入)
-      characterOptions: PORTAL_CHARACTER_OPTIONS,
-      characterHeights: PORTAL_CHARACTER_HEIGHTS,
-      character: {
-        show: PORTAL_CHARACTER_OPTIONS.length > 0,
-        id: PORTAL_CHARACTER_OPTIONS.length > 0 ? PORTAL_CHARACTER_OPTIONS[0].id : "",
-        height: PORTAL_CHARACTER_DEFAULT_HEIGHT,
-        anchorX: 32, // 脚底中心 X
-        anchorY: 60, // 脚底 Y (近底部)
-      },
       currentTab: 0,
       tabDefinitions: [
         { index: 0, label: "传送门", icon: "refresh" },
-        { index: 1, label: "角色", icon: "user" },
-        { index: 2, label: "时间", icon: "time" },
-        { index: 3, label: "字体", icon: "text" },
+        { index: 1, label: "时间", icon: "time" },
+        { index: 2, label: "字体", icon: "text" },
       ],
       config,
     };
@@ -420,10 +317,6 @@ export default {
       }
       return this.deviceStore.isConnected;
     },
-    characterHeightIndex() {
-      const idx = this.characterHeights.indexOf(this.character.height);
-      return idx >= 0 ? idx : 0;
-    },
   },
   watch: {
     config: {
@@ -438,15 +331,6 @@ export default {
         this.persistLocalState();
       },
     },
-    character: {
-      deep: true,
-      handler() {
-        this.persistLocalState();
-        if (this.previewCanvasReady) {
-          this.refreshOverlayPreview();
-        }
-      },
-    },
   },
   onLoad() {
     this.deviceStore = useDeviceStore();
@@ -457,26 +341,6 @@ export default {
     );
     this.config = savedState.config;
     this.clockConfig = savedState.clockConfig;
-    // 恢复角色调试值(仅 uniapp 用,板载不知道这个字段)
-    const rawSaved = uni.getStorageSync(PORTAL_PAGE_STORAGE_KEY);
-    if (rawSaved && typeof rawSaved === "object" && rawSaved.character && typeof rawSaved.character === "object") {
-      const c = rawSaved.character;
-      if (c.show === true || c.show === false) this.character.show = c.show;
-      if (typeof c.id === "string" && PORTAL_CHARACTER_IDS.has(c.id)) {
-        this.character.id = c.id;
-      }
-      if (typeof c.height === "number" && this.characterHeights.includes(c.height)) {
-        this.character.height = c.height;
-      }
-      const ax = Number(c.anchorX);
-      if (Number.isFinite(ax)) {
-        this.character.anchorX = Math.max(0, Math.min(63, Math.round(ax)));
-      }
-      const ay = Number(c.anchorY);
-      if (Number.isFinite(ay)) {
-        this.character.anchorY = Math.max(0, Math.min(63, Math.round(ay)));
-      }
-    }
   },
   onReady() {
     if (this.$refs.toastRef) {
@@ -534,13 +398,6 @@ export default {
             color: this.clockConfig.time.color,
             align: this.clockConfig.time.align,
           },
-        },
-        character: {
-          show: this.character.show,
-          id: this.character.id,
-          height: this.character.height,
-          anchorX: this.character.anchorX,
-          anchorY: this.character.anchorY,
         },
       });
     },
@@ -739,16 +596,7 @@ export default {
       });
     },
     renderPreviewFrame(progress) {
-      const characterOverlay = this.character && this.character.show
-        ? {
-            show: true,
-            character: this.character.id,
-            height: this.character.height,
-            anchorX: this.character.anchorX,
-            anchorY: this.character.anchorY,
-          }
-        : null;
-      const frameMap = buildPortalPreviewFrame(this.config, progress, characterOverlay);
+      const frameMap = buildPortalPreviewFrame(this.config, progress);
       if (frameMap && this.clockConfig.time.show) {
         const text = this.getPortalTimeText();
         const placement = this.resolveBoardTimePlacement(text);
@@ -882,49 +730,6 @@ export default {
       this.config.portalX = 32;
       this.config.portalY = 32;
       this.schedulePreviewRefresh(progress);
-    },
-    toggleCharacterShow() {
-      this.character.show = !this.character.show;
-    },
-    handleCharacterSelect(id) {
-      if (!PORTAL_CHARACTER_IDS.has(id)) {
-        return;
-      }
-      if (this.character.id === id) {
-        return;
-      }
-      this.character.id = id;
-    },
-    handleCharacterHeightStepperChange(event) {
-      const idx = Number(event && event.detail && event.detail.value);
-      if (!Number.isFinite(idx)) {
-        return;
-      }
-      const clamped = Math.max(0, Math.min(this.characterHeights.length - 1, Math.round(idx)));
-      const next = this.characterHeights[clamped];
-      if (typeof next === "number" && next !== this.character.height) {
-        this.character.height = next;
-      }
-    },
-    handleCharacterAnchorXChange(event) {
-      const value = Number(event && event.detail && event.detail.value);
-      if (!Number.isFinite(value)) {
-        return;
-      }
-      const next = Math.max(0, Math.min(63, Math.round(value)));
-      if (next !== this.character.anchorX) {
-        this.character.anchorX = next;
-      }
-    },
-    handleCharacterAnchorYChange(event) {
-      const value = Number(event && event.detail && event.detail.value);
-      if (!Number.isFinite(value)) {
-        return;
-      }
-      const next = Math.max(0, Math.min(63, Math.round(value)));
-      if (next !== this.character.anchorY) {
-        this.character.anchorY = next;
-      }
     },
     toggleTimeShow() {
       this.clockConfig.time.show = !this.clockConfig.time.show;

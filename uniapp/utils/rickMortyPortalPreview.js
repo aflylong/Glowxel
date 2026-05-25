@@ -11,11 +11,7 @@
 //   buildPlanetScreensaverPreviewFrame    — 复用同一帧渲染函数
 //   PLANET_REFERENCE_DEFAULT_COLOR_SEED  — portal 走固定调色板的 seed 锁
 //
-// 这样做的边界保证:
-// - 即使 planetScreensaverPreview 里把 portal_* 从 PRESET_DEFINITIONS 剔除了,
-//   PRESET_DEFINITIONS 里的 portal_green / portal_blue / portal_yellow 在
-//   buildFrameState 拿不到 preset 元数据时仍能 fallback —— 我们传 normalized
-//   出去的时候直接构造一份带 relativeScale=1 的 preset 元数据手动塞回去。
+// 角色叠加已移除 (Pocket Mortys 像素角色实际效果不佳, 暂时只做纯传送门)
 
 import {
   PLANET_REFERENCE_DEFAULT_COLOR_SEED,
@@ -23,63 +19,6 @@ import {
   buildPlanetScreensaverPreviewFrame,
   buildPlanetScreensaverPreviewSequence,
 } from "./planetScreensaverPreview.js";
-
-// 角色像素数据(Pocket Mortys IP, 仅 uniapp 调试预览用, 板载未接入)
-// 数据格式: { _meta, characters: { [key]: { label, variants: { [height]: {width, height, pixels} } } } }
-let _characterDataCache = null;
-function getCharacterData() {
-  if (_characterDataCache !== null) return _characterDataCache;
-  try {
-    _characterDataCache = require("../static/rick-morty-portal/character-pixels.js");
-  } catch (e) {
-    console.warn("[rick-morty-portal] character-pixels.js 加载失败,角色预览不可用", e);
-    _characterDataCache = { characters: {}, _meta: { heights: [] } };
-  }
-  return _characterDataCache;
-}
-
-export function getPortalCharacterOptions() {
-  const data = getCharacterData();
-  const list = [];
-  for (const key of Object.keys(data.characters || {})) {
-    list.push({ id: key, label: data.characters[key].label || key });
-  }
-  return list;
-}
-
-export function getPortalCharacterHeightLevels() {
-  const data = getCharacterData();
-  return (data._meta && Array.isArray(data._meta.heights))
-    ? data._meta.heights.slice()
-    : [];
-}
-
-// 在 64×64 预览 map 上,把角色 sprite 像素叠加到目标位置。
-// 角色锚点: 底边中心(脚底中心)= (anchorX, anchorY)
-//   - anchorY 表示角色脚踩在哪一行(像素 Y)
-//   - anchorX 表示角色水平中心
-function paintCharacterToMap(map, characterKey, height, anchorX, anchorY) {
-  const data = getCharacterData();
-  const ch = data.characters && data.characters[characterKey];
-  if (!ch) return;
-  const variant = ch.variants && ch.variants[height];
-  if (!variant || !Array.isArray(variant.pixels)) return;
-
-  const halfW = Math.floor(variant.width / 2);
-  const baseX = anchorX - halfW;
-  // anchorY = 脚底,角色顶 = anchorY - height + 1
-  const topY = anchorY - variant.height + 1;
-
-  for (const px of variant.pixels) {
-    const screenX = baseX + px.x;
-    const screenY = topY + px.y;
-    if (screenX < 0 || screenX >= 64 || screenY < 0 || screenY >= 64) continue;
-    const hex = "#" + (
-      (px.r << 16) | (px.g << 8) | px.b
-    ).toString(16).padStart(6, "0");
-    map.set(`${screenX},${screenY}`, hex);
-  }
-}
 
 export const PORTAL_PAGE_STORAGE_KEY = "rick_morty_portal_page_state";
 
@@ -224,24 +163,11 @@ function toPortalPlanetConfig(config) {
   };
 }
 
-export function buildPortalPreviewFrame(config, progressValue, characterOverlay) {
-  const baseMap = buildPlanetScreensaverPreviewFrame(
+export function buildPortalPreviewFrame(config, progressValue) {
+  return buildPlanetScreensaverPreviewFrame(
     toPortalPlanetConfig(config),
     progressValue,
   );
-  // 角色叠加(可选, 只用于 uniapp 调试预览, 板载不知道这事)
-  if (characterOverlay && characterOverlay.show && characterOverlay.character) {
-    // baseMap 是 buildPlanetScreensaverPreviewFrame 返回的 Map<"x,y", "#hex">,
-    // 直接在它上面 mutate 即可(角色像素覆盖到传送门像素之上,符合"角色站门口"语义)
-    paintCharacterToMap(
-      baseMap,
-      characterOverlay.character,
-      characterOverlay.height,
-      Number.isFinite(characterOverlay.anchorX) ? characterOverlay.anchorX : 32,
-      Number.isFinite(characterOverlay.anchorY) ? characterOverlay.anchorY : 60,
-    );
-  }
-  return baseMap;
 }
 
 export function buildPortalPreviewSequence(config) {

@@ -978,11 +978,9 @@ export default {
     },
 
     captureSendingPreview() {
-      let frozen = this.previewPixels;
-      if (!(frozen instanceof Map) || frozen.size === 0) {
-        const rebuilt = this.buildPreviewPixels();
-        if (rebuilt instanceof Map) frozen = rebuilt;
-      }
+      // 快照只复制当前 previewPixels, 不重新渲染 (避免发送瞬间卡顿)
+      // 如果还没有有效像素就用空 Map (loading 占位会盖住)
+      const frozen = this.previewPixels instanceof Map ? this.previewPixels : new Map();
       this.sendingPreviewPixels = new Map(frozen);
       this.sendingPreviewTick += 1;
     },
@@ -992,10 +990,19 @@ export default {
     },
     beginSendUi() {
       this.captureSendingPreview();
+      // 发送期间暂停动画循环, 避免 await 卡顿期间 setTimeout 任务堆积
+      // 等事务返回后一次性补跑导致动画"二倍速跳跃"
+      this.stopAnimLoop();
       deviceSendUxMixin.methods.beginSendUi.call(this);
     },
     endSendUi() {
       deviceSendUxMixin.methods.endSendUi.call(this);
+      // 恢复动画循环 — 重置 animStartTs 避免时间戳跳跃造成二倍速感
+      if (this.previewCanvasReady && !this.animLoopHandle) {
+        this.animStartTs = Date.now();
+        this.animTimeSec = 0;
+        this.startAnimLoop();
+      }
     },
 
     buildPreviewPixels() {
@@ -1055,14 +1062,16 @@ export default {
     startAnimLoop() {
       if (this.animLoopHandle) return;
       this.animStartTs = Date.now();
+      // 200ms 一帧 (5fps) — 小程序 Map 大量 set 性能差, 不需要 60fps
+      const FRAME_INTERVAL_MS = 200;
       const tick = () => {
         if (!this.previewCanvasReady) {
-          this.animLoopHandle = setTimeout(tick, 100);
+          this.animLoopHandle = setTimeout(tick, FRAME_INTERVAL_MS);
           return;
         }
         this.animTimeSec = (Date.now() - this.animStartTs) / 1000;
         this.drawCanvas();
-        this.animLoopHandle = setTimeout(tick, 100);
+        this.animLoopHandle = setTimeout(tick, FRAME_INTERVAL_MS);
       };
       tick();
     },
