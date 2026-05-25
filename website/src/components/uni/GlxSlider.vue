@@ -1,8 +1,8 @@
 <template>
-  <view class="glx-slider">
-    <view class="glx-slider__track"></view>
-    <view class="glx-slider__fill" :style="{ width: `${percent}%` }"></view>
-    <view class="glx-slider__thumb" :style="{ left: `calc(${percent}% - 18rpx)` }"></view>
+  <div class="glx-slider">
+    <div class="glx-slider__track"></div>
+    <div class="glx-slider__fill" :style="{ width: `${percent}%` }"></div>
+    <div class="glx-slider__thumb" :style="{ left: `calc(${percent}% - 18rpx)` }"></div>
     <slider
       class="glx-slider__native"
       :value="value"
@@ -15,7 +15,7 @@
       @change="handleChange"
       @changing="handleChanging"
     />
-  </view>
+  </div>
 </template>
 
 <script>

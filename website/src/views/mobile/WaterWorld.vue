@@ -182,6 +182,7 @@
 </template>
 
 <script>
+import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
 import { useDeviceStore } from "@/stores/device.js";
 import statusBarMixin from "@/mixins/statusBar.js";
@@ -521,7 +522,7 @@ function pickRandomWaterWorldColorThemeId(currentThemeId) {
 }
 
 export default {
-  mixins: [statusBarMixin, deviceSendUxMixin],
+  mixins: [uniLifecycleAdapter, statusBarMixin, deviceSendUxMixin],
   components: {
     Icon,
     Toast,

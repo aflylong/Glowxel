@@ -1,23 +1,23 @@
 <template>
-  <view class="glx-stepper">
-    <view
+  <div class="glx-stepper">
+    <div
       class="glx-stepper__button"
       :class="{ 'glx-stepper__button--disabled': isDecreaseDisabled }"
       @click="handleAdjust(-step)"
     >
-      <text class="glx-stepper__button-text">{{ decreaseLabel }}</text>
-    </view>
-    <view class="glx-stepper__value">
-      <text class="glx-stepper__value-text">{{ value }}</text>
-    </view>
-    <view
+      <span class="glx-stepper__button-text">{{ decreaseLabel }}</span>
+    </div>
+    <div class="glx-stepper__value">
+      <span class="glx-stepper__value-text">{{ value }}</span>
+    </div>
+    <div
       class="glx-stepper__button"
       :class="{ 'glx-stepper__button--disabled': isIncreaseDisabled }"
       @click="handleAdjust(step)"
     >
-      <text class="glx-stepper__button-text">{{ increaseLabel }}</text>
-    </view>
-  </view>
+      <span class="glx-stepper__button-text">{{ increaseLabel }}</span>
+    </div>
+  </div>
 </template>
 
 <script>

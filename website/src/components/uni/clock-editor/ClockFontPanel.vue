@@ -1,37 +1,37 @@
 <template>
-  <view class="settings-card glx-panel-card">
-    <view class="card-title-section glx-panel-head">
-      <view class="font-title-main">
+  <div class="settings-card glx-panel-card">
+    <div class="card-title-section glx-panel-head">
+      <div class="font-title-main">
         <Icon name="text" :size="32" />
-        <text class="card-title glx-panel-title">字体样式</text>
-      </view>
-    </view>
+        <span class="card-title glx-panel-title">字体样式</span>
+      </div>
+    </div>
 
-    <view class="setting-group">
-      <view class="settings-block">
-        <text class="setting-label">统一字体</text>
-        <view class="font-list">
-          <view
+    <div class="setting-group">
+      <div class="settings-block">
+        <span class="setting-label">统一字体</span>
+        <div class="font-list">
+          <div
             v-for="font in fontOptions"
             :key="font.id"
             class="font-card glx-feature-card-option"
             :class="{ active: selectedFont === font.id }"
             @click="$emit('select-font', font.id)"
           >
-            <view
+            <div
               class="font-preview-board"
               :style="{ backgroundColor: font.previewBg }"
             >
-              <view class="font-preview-viewport">
-                <view
+              <div class="font-preview-viewport">
+                <div
                   class="font-preview-grid-wrap"
                   :style="getFontPreviewWrapStyle(font.id)"
                 >
-                  <view
+                  <div
                     class="font-preview-grid"
                     :style="getFontPreviewGridStyle(font.id)"
                   >
-                    <view
+                    <div
                       v-for="cell in getFontPreviewCells(font.id)"
                       :key="cell.key"
                       class="font-preview-pixel"
@@ -40,68 +40,67 @@
                           ? font.previewColor
                           : 'transparent',
                       }"
-                    ></view>
-                  </view>
-                </view>
-              </view>
-            </view>
-            <text
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <span
               class="glx-feature-card-option__label glx-feature-card-option__label--single-line"
-              >{{ font.name }}</text
-            >
-          </view>
-        </view>
-      </view>
+              >{{ font.name }}</span>
+          </div>
+        </div>
+      </div>
 
-      <view v-if="showSecondsControl" class="settings-block">
-        <text class="setting-label">秒钟</text>
-        <view v-if="showSecondsStyle === 'tabs'" class="seconds-tabs">
-          <view
+      <div v-if="showSecondsControl" class="settings-block">
+        <span class="setting-label">秒钟</span>
+        <div v-if="showSecondsStyle === 'tabs'" class="seconds-tabs">
+          <div
             class="seconds-tab glx-feature-option"
             :class="{ active: showSeconds === false }"
             @click="$emit('set-show-seconds', false)"
           >
-            <text class="glx-feature-option__label">关闭</text>
-          </view>
-          <view
+            <span class="glx-feature-option__label">关闭</span>
+          </div>
+          <div
             class="seconds-tab glx-feature-option"
             :class="{ active: showSeconds === true }"
             @click="$emit('set-show-seconds', true)"
           >
-            <text class="glx-feature-option__label">显示</text>
-          </view>
-        </view>
-        <view v-else class="setting-header-row">
-          <text class="setting-label">显示秒钟</text>
+            <span class="glx-feature-option__label">显示</span>
+          </div>
+        </div>
+        <div v-else class="setting-header-row">
+          <span class="setting-label">显示秒钟</span>
           <GlxSwitch
             class="glx-row-switch"
             :checked="showSeconds"
             @change="$emit('toggle-seconds')"
           />
-        </view>
-      </view>
+        </div>
+      </div>
 
-      <view v-if="showHourFormat" class="settings-block">
-        <text class="setting-label">小时制式</text>
-        <view class="align-buttons">
-          <view
+      <div v-if="showHourFormat" class="settings-block">
+        <span class="setting-label">小时制式</span>
+        <div class="align-buttons">
+          <div
             class="align-btn glx-feature-option"
             :class="{ active: hourFormat === 24 }"
             @click="$emit('set-hour-format', 24)"
           >
-            <text class="glx-feature-option__label">24 小时</text>
-          </view>
-          <view
+            <span class="glx-feature-option__label">24 小时</span>
+          </div>
+          <div
             class="align-btn glx-feature-option"
             :class="{ active: hourFormat === 12 }"
             @click="$emit('set-hour-format', 12)"
           >
-            <text class="glx-feature-option__label">12 小时</text>
-          </view>
-        </view>
-      </view>
-    </view>
-  </view>
+            <span class="glx-feature-option__label">12 小时</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

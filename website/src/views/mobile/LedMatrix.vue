@@ -142,6 +142,7 @@
 </template>
 
 <script>
+import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
 import Icon from "@/components/uni/Icon.vue";
@@ -163,7 +164,7 @@ import {
 const LED_MATRIX_CONFIG_KEY = "led_matrix_showcase_config";
 
 export default {
-  mixins: [statusBarMixin, deviceSendUxMixin],
+  mixins: [uniLifecycleAdapter, statusBarMixin, deviceSendUxMixin],
   components: {
     Icon,
     Toast,

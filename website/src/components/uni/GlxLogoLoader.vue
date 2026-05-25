@@ -1,5 +1,5 @@
 <template>
-  <view
+  <div
     class="glx-logo-loader"
     :class="[
       `glx-logo-loader--${resolvedVariant}`,
@@ -7,12 +7,12 @@
     ]"
     :style="loaderStyle"
   >
-    <view
+    <div
       v-for="index in 9"
       :key="index"
       class="glx-logo-loader__cell"
-    ></view>
-  </view>
+    ></div>
+  </div>
 </template>
 
 <script>

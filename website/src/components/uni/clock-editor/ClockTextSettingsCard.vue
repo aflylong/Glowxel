@@ -1,109 +1,109 @@
 <template>
-  <view class="settings-card glx-panel-card">
-    <view class="card-title-section glx-panel-head">
+  <div class="settings-card glx-panel-card">
+    <div class="card-title-section glx-panel-head">
       <Icon :name="iconName" :size="32" />
-      <text class="card-title glx-panel-title">{{ title }}</text>
+      <span class="card-title glx-panel-title">{{ title }}</span>
       <GlxSwitch
         v-if="showToggle"
         class="glx-row-switch"
         :checked="section.show"
         @change="$emit('toggle')"
       />
-    </view>
+    </div>
 
-    <view v-if="section.show" class="setting-group">
-      <view v-if="showFontSize" class="setting-item-row">
-        <text class="setting-label">{{ fontSizeLabel }}</text>
-        <view class="setting-control-buttons">
-          <view
+    <div v-if="section.show" class="setting-group">
+      <div v-if="showFontSize" class="setting-item-row">
+        <span class="setting-label">{{ fontSizeLabel }}</span>
+        <div class="setting-control-buttons">
+          <div
             class="control-btn"
             @click="$emit('adjust', 'fontSize', -1, minFontSize, maxFontSize)"
           >
-            <text class="control-icon">-</text>
-          </view>
-          <text class="setting-value-large">{{ section.fontSize }}</text>
-          <view
+            <span class="control-icon">-</span>
+          </div>
+          <span class="setting-value-large">{{ section.fontSize }}</span>
+          <div
             class="control-btn"
             @click="$emit('adjust', 'fontSize', 1, minFontSize, maxFontSize)"
           >
-            <text class="control-icon">+</text>
-          </view>
-        </view>
-      </view>
+            <span class="control-icon">+</span>
+          </div>
+        </div>
+      </div>
 
-      <view v-if="showSecondsControl" class="setting-item-row">
-        <text class="setting-label">显示秒钟</text>
+      <div v-if="showSecondsControl" class="setting-item-row">
+        <span class="setting-label">显示秒钟</span>
         <GlxSwitch
           class="glx-row-switch"
           :checked="showSeconds"
           @change="$emit('toggle-seconds')"
         />
-      </view>
+      </div>
 
-      <view class="setting-item-row">
-        <text class="setting-label">{{ xLabel }}</text>
-        <view class="setting-control-buttons">
-          <view class="control-btn" @click="$emit('adjust', 'x', -1, 0, 64)">
-            <text class="control-icon">-</text>
-          </view>
-          <text class="setting-value-large">{{ section.x }}</text>
-          <view class="control-btn" @click="$emit('adjust', 'x', 1, 0, 64)">
-            <text class="control-icon">+</text>
-          </view>
-        </view>
-      </view>
+      <div class="setting-item-row">
+        <span class="setting-label">{{ xLabel }}</span>
+        <div class="setting-control-buttons">
+          <div class="control-btn" @click="$emit('adjust', 'x', -1, 0, 64)">
+            <span class="control-icon">-</span>
+          </div>
+          <span class="setting-value-large">{{ section.x }}</span>
+          <div class="control-btn" @click="$emit('adjust', 'x', 1, 0, 64)">
+            <span class="control-icon">+</span>
+          </div>
+        </div>
+      </div>
 
-      <view class="setting-item-row">
-        <text class="setting-label">{{ yLabel }}</text>
-        <view class="setting-control-buttons">
-          <view class="control-btn" @click="$emit('adjust', 'y', -1, 0, 64)">
-            <text class="control-icon">-</text>
-          </view>
-          <text class="setting-value-large">{{ section.y }}</text>
-          <view class="control-btn" @click="$emit('adjust', 'y', 1, 0, 64)">
-            <text class="control-icon">+</text>
-          </view>
-        </view>
-      </view>
+      <div class="setting-item-row">
+        <span class="setting-label">{{ yLabel }}</span>
+        <div class="setting-control-buttons">
+          <div class="control-btn" @click="$emit('adjust', 'y', -1, 0, 64)">
+            <span class="control-icon">-</span>
+          </div>
+          <span class="setting-value-large">{{ section.y }}</span>
+          <div class="control-btn" @click="$emit('adjust', 'y', 1, 0, 64)">
+            <span class="control-icon">+</span>
+          </div>
+        </div>
+      </div>
 
-      <view v-if="showAlign" class="settings-block">
-        <text class="setting-label">对齐方式</text>
-        <view class="align-buttons">
-          <view
+      <div v-if="showAlign" class="settings-block">
+        <span class="setting-label">对齐方式</span>
+        <div class="align-buttons">
+          <div
             class="align-btn glx-feature-option"
             :class="{ active: section.align === 'left' }"
             @click="$emit('set-align', 'left')"
           >
-            <text class="glx-feature-option__label">左对齐</text>
-          </view>
-          <view
+            <span class="glx-feature-option__label">左对齐</span>
+          </div>
+          <div
             class="align-btn glx-feature-option"
             :class="{ active: section.align === 'center' }"
             @click="$emit('set-align', 'center')"
           >
-            <text class="glx-feature-option__label">居中</text>
-          </view>
-          <view
+            <span class="glx-feature-option__label">居中</span>
+          </div>
+          <div
             class="align-btn glx-feature-option"
             :class="{ active: section.align === 'right' }"
             @click="$emit('set-align', 'right')"
           >
-            <text class="glx-feature-option__label">右对齐</text>
-          </view>
-        </view>
-      </view>
+            <span class="glx-feature-option__label">右对齐</span>
+          </div>
+        </div>
+      </div>
 
-      <view class="settings-block">
-        <text class="setting-label">颜色</text>
+      <div class="settings-block">
+        <span class="setting-label">颜色</span>
         <ColorPanelPicker
           :value="section.color"
           :label="`${title}颜色`"
           :preset-colors="presetColors"
           @input="$emit('update-color', $event)"
         />
-      </view>
-    </view>
-  </view>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

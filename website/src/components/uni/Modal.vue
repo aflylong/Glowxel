@@ -1,27 +1,27 @@
 <template>
-  <view v-if="visible" class="modal-overlay" @click="handleOverlayClick">
-    <view class="modal-container" :class="modalClasses" @click.stop>
+  <div v-if="visible" class="modal-overlay" @click="handleOverlayClick">
+    <div class="modal-container" :class="modalClasses" @click.stop>
       <!-- 头部 -->
-      <view v-if="title || $slots.header" class="modal-header">
+      <div v-if="title || $slots.header" class="modal-header">
         <slot name="header">
-          <text class="modal-title">{{ title }}</text>
-          <view v-if="closable" class="close-btn" @click="handleClose">
+          <span class="modal-title">{{ title }}</span>
+          <div v-if="closable" class="close-btn" @click="handleClose">
             <Icon name="close" :size="32" color="var(--nb-ink)" />
-          </view>
+          </div>
         </slot>
-      </view>
+      </div>
       
       <!-- 内容 -->
-      <view class="modal-body">
+      <div class="modal-body">
         <slot></slot>
-      </view>
+      </div>
       
       <!-- 底部 -->
-      <view v-if="$slots.footer" class="modal-footer">
+      <div v-if="$slots.footer" class="modal-footer">
         <slot name="footer"></slot>
-      </view>
-    </view>
-  </view>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

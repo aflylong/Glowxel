@@ -312,6 +312,7 @@
 </template>
 
 <script>
+import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import { useDeviceStore } from "@/stores/device.js";
 import { useToast } from "@/composables/useToast.js";
 import statusBarMixin from "@/mixins/statusBar.js";
@@ -356,7 +357,7 @@ const TERRARIA_RANGE = {
 };
 
 export default {
-  mixins: [
+  mixins: [uniLifecycleAdapter, 
     statusBarMixin,
     clockPreviewMixin,
     deviceSyncMixin,

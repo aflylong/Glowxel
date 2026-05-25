@@ -1,5 +1,5 @@
 <template>
-  <view class="glx-inline-loader">
+  <div class="glx-inline-loader">
     <GlxLogoLoader
       :variant="resolvedVariant"
       :cell-size="loaderConfig.cellSize"
@@ -9,7 +9,7 @@
       :shadow-offset="loaderConfig.shadowOffset"
       :surface="surface"
     />
-  </view>
+  </div>
 </template>
 
 <script>

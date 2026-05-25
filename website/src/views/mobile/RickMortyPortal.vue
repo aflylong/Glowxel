@@ -212,6 +212,7 @@
 </template>
 
 <script>
+import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
 import Icon from "@/components/uni/Icon.vue";
@@ -255,7 +256,7 @@ const PORTAL_CYCLE_DURATION_MS = 60000;
 const PORTAL_PREVIEW_FRAME_COUNT = 48;
 
 export default {
-  mixins: [statusBarMixin, deviceSendUxMixin],
+  mixins: [uniLifecycleAdapter, statusBarMixin, deviceSendUxMixin],
   components: {
     Icon,
     Toast,

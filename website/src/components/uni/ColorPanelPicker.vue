@@ -1,70 +1,70 @@
 <template>
-  <view class="color-panel-picker">
-    <view class="picker-header">
-      <view class="picker-preview">
-        <view
+  <div class="color-panel-picker">
+    <div class="picker-header">
+      <div class="picker-preview">
+        <div
           class="preview-swatch"
           :style="{ backgroundColor: currentHex }"
-        ></view>
-        <view class="preview-meta">
-          <text class="picker-label">{{ label }}</text>
-          <text class="picker-value">{{ displayHex }}</text>
-        </view>
-      </view>
+        ></div>
+        <div class="preview-meta">
+          <span class="picker-label">{{ label }}</span>
+          <span class="picker-value">{{ displayHex }}</span>
+        </div>
+      </div>
 
-      <view v-if="presetColors.length > 0" class="preset-row">
-        <view
+      <div v-if="presetColors.length > 0" class="preset-row">
+        <div
           v-for="item in presetColors"
           :key="item.hex"
           class="preset-swatch"
           :class="{ active: currentHex === normalizeHex(item.hex) }"
           :style="{ backgroundColor: item.hex }"
           @click="selectPreset(item.hex)"
-        ></view>
-      </view>
-    </view>
+        ></div>
+      </div>
+    </div>
 
-    <view
+    <div
       :id="panelId"
       class="sv-panel"
       :style="{ backgroundColor: hueColor }"
       @touchstart.stop.prevent="handlePanelTouch"
       @touchmove.stop.prevent="handlePanelTouch"
     >
-      <view class="sv-panel-white"></view>
-      <view class="sv-panel-black"></view>
-      <view
+      <div class="sv-panel-white"></div>
+      <div class="sv-panel-black"></div>
+      <div
         class="sv-thumb"
         :style="{
           left: `${saturation}%`,
           top: `${100 - brightness}%`,
           backgroundColor: currentHex,
         }"
-      ></view>
-    </view>
+      ></div>
+    </div>
 
-    <view class="channel-row">
-      <text class="channel-label">色相</text>
-      <view
+    <div class="channel-row">
+      <span class="channel-label">色相</span>
+      <div
         :id="hueTrackId"
         class="hue-track"
         @touchstart.stop.prevent="handleHueTouch"
         @touchmove.stop.prevent="handleHueTouch"
       >
-        <view
+        <div
           class="hue-thumb"
           :style="{
             left: `${huePercent}%`,
             backgroundColor: hueColor,
           }"
-        ></view>
-      </view>
-    </view>
+        ></div>
+      </div>
+    </div>
 
-    <view class="field-grid">
-      <view class="field-item field-item-hex">
-        <text class="field-label">HEX</text>
-        <view class="field-input-shell">
+    <div class="field-grid">
+      <div class="field-item field-item-hex">
+        <span class="field-label">HEX</span>
+        <div class="field-input-shell">
           <input
             class="field-input"
             :value="hexInput"
@@ -73,12 +73,12 @@
             @blur="commitHexInput"
             @confirm="commitHexInput"
           />
-        </view>
-      </view>
+        </div>
+      </div>
 
-      <view class="field-item">
-        <text class="field-label">R</text>
-        <view class="field-input-shell">
+      <div class="field-item">
+        <span class="field-label">R</span>
+        <div class="field-input-shell">
           <input
             class="field-input"
             type="number"
@@ -88,12 +88,12 @@
             @blur="commitRgbInput"
             @confirm="commitRgbInput"
           />
-        </view>
-      </view>
+        </div>
+      </div>
 
-      <view class="field-item">
-        <text class="field-label">G</text>
-        <view class="field-input-shell">
+      <div class="field-item">
+        <span class="field-label">G</span>
+        <div class="field-input-shell">
           <input
             class="field-input"
             type="number"
@@ -103,12 +103,12 @@
             @blur="commitRgbInput"
             @confirm="commitRgbInput"
           />
-        </view>
-      </view>
+        </div>
+      </div>
 
-      <view class="field-item">
-        <text class="field-label">B</text>
-        <view class="field-input-shell">
+      <div class="field-item">
+        <span class="field-label">B</span>
+        <div class="field-input-shell">
           <input
             class="field-input"
             type="number"
@@ -118,10 +118,10 @@
             @blur="commitRgbInput"
             @confirm="commitRgbInput"
           />
-        </view>
-      </view>
-    </view>
-  </view>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

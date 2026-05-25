@@ -1,24 +1,24 @@
 <template>
-  <view v-if="visible" class="modal-overlay" @tap="handleMaskTap">
-    <view class="modal-content" @tap.stop>
-      <view class="modal-header">
-        <text class="modal-title">{{ title }}</text>
-      </view>
+  <div v-if="visible" class="modal-overlay" @tap="handleMaskTap">
+    <div class="modal-content" @tap.stop>
+      <div class="modal-header">
+        <span class="modal-title">{{ title }}</span>
+      </div>
       
-      <view class="modal-body">
-        <text class="modal-text">{{ content }}</text>
-      </view>
+      <div class="modal-body">
+        <span class="modal-text">{{ content }}</span>
+      </div>
       
-      <view class="modal-footer" :class="{ 'modal-footer--single': !showCancel }">
-        <view v-if="showCancel" class="modal-btn cancel-btn" @tap="handleCancel">
-          <text class="btn-text">{{ cancelText }}</text>
-        </view>
-        <view class="modal-btn confirm-btn" :class="{ 'danger': danger }" @tap="handleConfirm">
-          <text class="btn-text">{{ confirmText }}</text>
-        </view>
-      </view>
-    </view>
-  </view>
+      <div class="modal-footer" :class="{ 'modal-footer--single': !showCancel }">
+        <div v-if="showCancel" class="modal-btn cancel-btn" @tap="handleCancel">
+          <span class="btn-text">{{ cancelText }}</span>
+        </div>
+        <div class="modal-btn confirm-btn" :class="{ 'danger': danger }" @tap="handleConfirm">
+          <span class="btn-text">{{ confirmText }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

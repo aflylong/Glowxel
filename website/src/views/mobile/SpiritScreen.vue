@@ -268,6 +268,7 @@
 </template>
 
 <script>
+import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import { useDeviceStore } from "@/stores/device.js";
 import { useToast } from "@/composables/useToast.js";
 import statusBarMixin from "@/mixins/statusBar.js";
@@ -1162,7 +1163,7 @@ function pointInQuarterEllipse(px, py, cx, cy, rx, ry, leftSide, topSide) {
 }
 
 export default {
-  mixins: [statusBarMixin, deviceSendUxMixin],
+  mixins: [uniLifecycleAdapter, statusBarMixin, deviceSendUxMixin],
   components: {
     Icon,
     Toast,

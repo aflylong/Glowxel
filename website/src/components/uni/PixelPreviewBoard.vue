@@ -1,21 +1,21 @@
 <template>
-  <view class="pixel-preview-board">
-    <view class="pixel-preview-board__viewport">
-      <view class="pixel-preview-board__surface" :style="surfaceStyle">
-        <view
+  <div class="pixel-preview-board">
+    <div class="pixel-preview-board__viewport">
+      <div class="pixel-preview-board__surface" :style="surfaceStyle">
+        <div
           v-for="pixel in pixelItems"
           :key="pixel.key"
           class="pixel-preview-board__pixel"
           :style="pixel.style"
-        ></view>
-        <view
+        ></div>
+        <div
           v-if="gridVisible"
           class="pixel-preview-board__grid"
           :style="gridStyle"
-        ></view>
-      </view>
-    </view>
-  </view>
+        ></div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

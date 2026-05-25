@@ -162,6 +162,7 @@
 </template>
 
 <script>
+import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import Icon from "@/components/uni/Icon.vue";
 import Toast from "@/components/uni/Toast.vue";
@@ -261,7 +262,7 @@ function normalizeAmbientConfig(saved) {
 }
 
 export default {
-  mixins: [statusBarMixin],
+  mixins: [uniLifecycleAdapter, statusBarMixin],
   components: {
     Icon,
     Toast,

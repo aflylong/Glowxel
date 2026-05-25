@@ -1,14 +1,14 @@
 <template>
-  <view v-if="visible" class="glx-loading-overlay">
-    <view class="glx-loading-card">
+  <div v-if="visible" class="glx-loading-overlay">
+    <div class="glx-loading-card">
       <GlxInlineLoader
         class="glx-loading-indicator"
         variant="chase"
         size="lg"
       />
-      <text class="glx-loading-text">{{ message }}</text>
-    </view>
-  </view>
+      <span class="glx-loading-text">{{ message }}</span>
+    </div>
+  </div>
 </template>
 
 <script>

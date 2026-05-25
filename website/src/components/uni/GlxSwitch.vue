@@ -1,13 +1,13 @@
 <template>
-  <view
+  <div
     class="glx-switch"
     :class="{ 'is-disabled': disabled }"
     @click.stop="handleToggle"
   >
-    <view class="glx-switch-shell" :class="{ active: checked }">
-      <view class="glx-switch-thumb"></view>
-    </view>
-  </view>
+    <div class="glx-switch-shell" :class="{ active: checked }">
+      <div class="glx-switch-thumb"></div>
+    </div>
+  </div>
 </template>
 
 <script>

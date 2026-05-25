@@ -1,44 +1,44 @@
 <template>
-  <view class="settings-card">
-    <view class="card-title-section">
+  <div class="settings-card">
+    <div class="card-title-section">
       <Icon name="picture" :size="32" />
-      <text class="card-title">主题库</text>
-      <text class="card-count">{{ presets.length }} 个主题</text>
-    </view>
+      <span class="card-title">主题库</span>
+      <span class="card-count">{{ presets.length }} 个主题</span>
+    </div>
 
-    <view class="theme-sections">
-      <view class="theme-grid">
-        <view
+    <div class="theme-sections">
+      <div class="theme-grid">
+        <div
           v-for="preset in presets"
           :key="preset.id"
           class="theme-card glx-feature-card-option"
           :class="{ active: selectedThemeId === preset.id }"
           @click="$emit('apply-theme', preset.id)"
         >
-          <view class="theme-preview-shell">
-            <image
+          <div class="theme-preview-shell">
+            <img
               :src="preset.previewImage"
               class="theme-preview-image"
               mode="aspectFit"
             />
-          </view>
-          <view class="theme-meta">
-            <text class="theme-name">{{ preset.name }}</text>
-          </view>
-          <view v-if="currentThemeId === preset.id" class="theme-badge">
-            <view class="theme-badge-text">当前</view>
-          </view>
-          <view
+          </div>
+          <div class="theme-meta">
+            <span class="theme-name">{{ preset.name }}</span>
+          </div>
+          <div v-if="currentThemeId === preset.id" class="theme-badge">
+            <div class="theme-badge-text">当前</div>
+          </div>
+          <div
             v-if="preset.requiresImage"
             class="theme-image-badge"
             :class="{ warn: selectedThemeId === preset.id && !hasImage }"
           >
-            <view class="theme-image-badge-text">图片</view>
-          </view>
-        </view>
-      </view>
-    </view>
-  </view>
+            <div class="theme-image-badge-text">图片</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

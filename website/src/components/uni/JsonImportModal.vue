@@ -1,17 +1,17 @@
 <template>
-  <view v-if="visible" class="modal-overlay" @click="handleOverlayClick">
-    <view class="modal-container" @click.stop>
-      <view class="modal-header">
-        <text class="modal-title">{{ title }}</text>
-        <view class="close-btn" :class="{ 'disabled': sending }" @click="handleCancel">
-          <text class="close-icon">×</text>
-        </view>
-      </view>
+  <div v-if="visible" class="modal-overlay" @click="handleOverlayClick">
+    <div class="modal-container" @click.stop>
+      <div class="modal-header">
+        <span class="modal-title">{{ title }}</span>
+        <div class="close-btn" :class="{ 'disabled': sending }" @click="handleCancel">
+          <span class="close-icon">×</span>
+        </div>
+      </div>
       
-      <view class="modal-body">
-        <text class="modal-description">{{ description }}</text>
+      <div class="modal-body">
+        <span class="modal-description">{{ description }}</span>
 
-        <view class="input-wrapper">
+        <div class="input-wrapper">
           <textarea
             v-model="inputValue"
             :placeholder="placeholder"
@@ -21,24 +21,24 @@
             :disabled="sending"
             auto-height
           />
-        </view>
+        </div>
 
-        <view v-if="sending" class="status-box sending">
+        <div v-if="sending" class="status-box sending">
           <GlxInlineLoader class="loading-spinner" variant="chase" size="xs" />
-          <text class="status-text">传输中...</text>
-        </view>
-      </view>
+          <span class="status-text">传输中...</span>
+        </div>
+      </div>
       
-      <view class="modal-footer">
-        <view class="modal-btn cancel-btn" :class="{ 'disabled': sending }" @click="handleCancel">
-          <text class="btn-text">取消</text>
-        </view>
-        <view class="modal-btn confirm-btn" :class="{ 'disabled': sending }" @click="handleConfirm">
-          <text class="btn-text">{{ sending ? '传输中...' : '确定' }}</text>
-        </view>
-      </view>
-    </view>
-  </view>
+      <div class="modal-footer">
+        <div class="modal-btn cancel-btn" :class="{ 'disabled': sending }" @click="handleCancel">
+          <span class="btn-text">取消</span>
+        </div>
+        <div class="modal-btn confirm-btn" :class="{ 'disabled': sending }" @click="handleConfirm">
+          <span class="btn-text">{{ sending ? '传输中...' : '确定' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

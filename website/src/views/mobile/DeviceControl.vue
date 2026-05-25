@@ -157,6 +157,7 @@
 </template>
 
 <script>
+import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import { useDeviceStore } from "@/stores/device.js";
 import { useToast } from "@/composables/useToast.js";
 import { applyCompactAnimation } from "@/utils/animationUploader.js";
@@ -167,7 +168,7 @@ import ConnectModal from "@/components/uni/ConnectModal.vue";
 import JsonImportModal from "@/components/uni/JsonImportModal.vue";
 
 export default {
-  mixins: [statusBarMixin],
+  mixins: [uniLifecycleAdapter, statusBarMixin],
   components: {
     Icon,
     Toast,

@@ -1,17 +1,17 @@
 <template>
-  <view v-if="visible" class="modal-overlay" @tap="handleCancel">
-    <view class="modal-content" @tap.stop>
-      <view class="modal-header">
-        <text class="modal-title">{{ title }}</text>
-        <view class="close-btn" @tap="handleCancel">
+  <div v-if="visible" class="modal-overlay" @tap="handleCancel">
+    <div class="modal-content" @tap.stop>
+      <div class="modal-header">
+        <span class="modal-title">{{ title }}</span>
+        <div class="close-btn" @tap="handleCancel">
           <Icon name="close" :size="32" />
-        </view>
-      </view>
+        </div>
+      </div>
 
-      <view class="modal-body">
-        <text class="modal-desc">{{ description }}</text>
+      <div class="modal-body">
+        <span class="modal-desc">{{ description }}</span>
 
-        <view class="input-wrapper">
+        <div class="input-wrapper">
           <input
             v-model="inputValue"
             type="text"
@@ -21,41 +21,41 @@
             :adjust-position="false"
             @confirm="handleConfirm"
           />
-        </view>
+        </div>
 
         <!-- 连接状态 -->
-        <view v-if="connecting" class="status-box connecting">
+        <div v-if="connecting" class="status-box connecting">
           <GlxInlineLoader
             class="status-loader"
             variant="chase"
             size="sm"
           />
-          <view class="status-copy">
-            <text class="status-text">正在连接设备</text>
-            <text class="status-tip">请稍候，连接成功后会自动关闭弹窗</text>
-          </view>
-        </view>
+          <div class="status-copy">
+            <span class="status-text">正在连接设备</span>
+            <span class="status-tip">请稍候，连接成功后会自动关闭弹窗</span>
+          </div>
+        </div>
 
-        <view v-if="error" class="status-box error">
+        <div v-if="error" class="status-box error">
           <Icon name="close" :size="32" />
-          <text class="status-text">{{ error }}</text>
-        </view>
-      </view>
+          <span class="status-text">{{ error }}</span>
+        </div>
+      </div>
 
-      <view class="modal-footer">
-        <view class="modal-btn cancel-btn" @tap="handleCancel">
-          <text class="btn-text">取消</text>
-        </view>
-        <view
+      <div class="modal-footer">
+        <div class="modal-btn cancel-btn" @tap="handleCancel">
+          <span class="btn-text">取消</span>
+        </div>
+        <div
           class="modal-btn confirm-btn"
           :class="{ disabled: !inputValue || connecting }"
           @tap="handleConfirm"
         >
-          <text class="btn-text">{{ connecting ? "连接中" : "连接" }}</text>
-        </view>
-      </view>
-    </view>
-  </view>
+          <span class="btn-text">{{ connecting ? "连接中" : "连接" }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

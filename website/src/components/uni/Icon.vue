@@ -1,9 +1,9 @@
 <template>
-  <text
+  <span
     class="iconfont"
     :class="'icon-' + resolvedName"
     :style="iconStyle"
-  ></text>
+  ></span>
 </template>
 
 <script>

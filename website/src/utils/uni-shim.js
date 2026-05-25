@@ -311,22 +311,55 @@ SelectorQueryShim.prototype.exec = function (cb) {
 
 // ============ SocketTask Shim ============
 // uniapp SocketTask: onOpen / onMessage / onError / onClose / send / close
+//
+// 关键: uniapp 风格里 connectSocket() 同步返回 task, 然后异步 onOpen() 注册回调.
+// 但浏览器 WebSocket 的 open 事件可能在 onOpen 注册之前已经触发.
+// 我们记录 _readyState 和 _firstError, 注册时如果已 OPEN 立即派发, 避免错过.
 class SocketTaskShim {
   constructor(ws) {
     this.ws = ws;
     this._handlers = { open: [], message: [], error: [], close: [] };
-    ws.addEventListener('open', () => this._fire('open', {}));
+    this._fired = { open: false, error: null, close: null };
+
+    ws.addEventListener('open', () => {
+      this._fired.open = true;
+      this._fire('open', {});
+    });
     ws.addEventListener('message', (ev) => {
       // uniapp message: { data: string | ArrayBuffer }
       this._fire('message', { data: ev.data });
     });
-    ws.addEventListener('error', (ev) => this._fire('error', { errMsg: 'socket error' }));
-    ws.addEventListener('close', (ev) => this._fire('close', { code: ev.code, reason: ev.reason }));
+    ws.addEventListener('error', (ev) => {
+      const payload = { errMsg: 'socket error' };
+      this._fired.error = payload;
+      this._fire('error', payload);
+    });
+    ws.addEventListener('close', (ev) => {
+      const payload = { code: ev.code, reason: ev.reason };
+      this._fired.close = payload;
+      this._fire('close', payload);
+    });
   }
-  onOpen(cb) { this._handlers.open.push(cb); }
+  onOpen(cb) {
+    this._handlers.open.push(cb);
+    // 如果已经触发过 open, 立即派发 (避免 webSocket.js 注册晚了错过)
+    if (this._fired.open) {
+      try { cb({}); } catch (e) { console.error('[socket-shim] onOpen replay', e); }
+    }
+  }
   onMessage(cb) { this._handlers.message.push(cb); }
-  onError(cb) { this._handlers.error.push(cb); }
-  onClose(cb) { this._handlers.close.push(cb); }
+  onError(cb) {
+    this._handlers.error.push(cb);
+    if (this._fired.error) {
+      try { cb(this._fired.error); } catch (e) { console.error('[socket-shim] onError replay', e); }
+    }
+  }
+  onClose(cb) {
+    this._handlers.close.push(cb);
+    if (this._fired.close) {
+      try { cb(this._fired.close); } catch (e) { console.error('[socket-shim] onClose replay', e); }
+    }
+  }
   _fire(type, payload) {
     for (const h of this._handlers[type] || []) {
       try { h(payload); } catch (e) { console.error('[socket-shim]', type, e); }

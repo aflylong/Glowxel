@@ -1,37 +1,37 @@
 <template>
-  <view class="color-palette-container">
+  <div class="color-palette-container">
     <!-- 颜色网格 -->
-    <view class="color-grid-wrapper">
+    <div class="color-grid-wrapper">
       <!-- 顶部信息栏 -->
-      <view class="palette-header">
-        <text class="palette-info">调色板 ({{ colors.length }}色)</text>
-        <text v-if="selectedColorInfo" class="selected-code">当前选中:{{ selectedColorInfo.code }}</text>
-      </view>
+      <div class="palette-header">
+        <span class="palette-info">调色板 ({{ colors.length }}色)</span>
+        <span v-if="selectedColorInfo" class="selected-code">当前选中:{{ selectedColorInfo.code }}</span>
+      </div>
       
       <!-- 颜色网格 -->
-      <scroll-view 
+      <div data-scroll-view 
         scroll-y 
         class="color-grid-scroll"
         :scroll-into-view="scrollIntoView"
         @scroll="handleScroll"
       >
-        <view 
+        <div 
           v-for="group in colorGroups" 
           :key="group.letter" 
           class="color-group"
         >
           <!-- 分组标题 -->
-          <view 
+          <div 
             :id="`letter-${group.letter}`"
             class="group-header"
           >
-            <text class="group-letter">{{ group.letter }}</text>
-            <text class="group-count">({{ group.colors.length }})</text>
-          </view>
+            <span class="group-letter">{{ group.letter }}</span>
+            <span class="group-count">({{ group.colors.length }})</span>
+          </div>
           
           <!-- 该字母下的颜色 -->
-          <view class="color-grid">
-            <view
+          <div class="color-grid">
+            <div
               v-for="color in group.colors"
               :key="color.code"
               class="color-item"
@@ -39,28 +39,28 @@
               @click="handleColorClick(color.hex)"
             >
               <!-- 颜色圆圈 -->
-              <view 
+              <div 
                 class="color-swatch" 
                 :style="{ backgroundColor: color.hex }"
-              ></view>
+              ></div>
               
               <!-- 色号 -->
-              <text class="color-code">{{ color.code }}</text>
-            </view>
-          </view>
-        </view>
-      </scroll-view>
-    </view>
+              <span class="color-code">{{ color.code }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     
     <!-- 右侧字母索引条 -->
-    <view 
+    <div 
       class="index-bar"
       @touchstart="handleIndexTouchStart"
       @touchmove="handleIndexTouchMove"
       @touchend="handleIndexTouchEnd"
     >
-      <view class="index-letters">
-        <view
+      <div class="index-letters">
+        <div
           v-for="(letter, index) in availableLetters"
           :key="letter"
           :data-letter="letter"
@@ -69,13 +69,13 @@
           :class="{ 'active': currentVisibleLetter === letter }"
           @click="scrollToLetter(letter)"
         >
-          <text class="letter-text">{{ letter }}</text>
-        </view>
-      </view>
-    </view>
+          <span class="letter-text">{{ letter }}</span>
+        </div>
+      </div>
+    </div>
     
     <!-- 字母提示气泡 -->
-    <view 
+    <div 
       v-if="showLetterBubble && currentTouchLetter"
       class="letter-bubble"
       :style="{ 
@@ -83,9 +83,9 @@
         top: bubblePosition.y + 'px'
       }"
     >
-      <text class="bubble-letter">{{ currentTouchLetter }}</text>
-    </view>
-  </view>
+      <span class="bubble-letter">{{ currentTouchLetter }}</span>
+    </div>
+  </div>
 </template>
 
 <script>

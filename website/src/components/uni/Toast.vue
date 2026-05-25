@@ -1,17 +1,17 @@
 <template>
-  <view v-if="visible" class="glx-toast-overlay">
-    <view :class="['glx-toast-container', `glx-toast--${type}`]">
-      <view class="glx-toast-main">
-        <view class="glx-toast-icon-wrapper">
-          <text class="glx-toast-icon-glyph">{{ iconGlyph }}</text>
-        </view>
-        <text class="glx-toast-message">{{ message }}</text>
-      </view>
-      <view class="glx-toast-close" @click="hide">
-        <text class="glx-toast-close-glyph">×</text>
-      </view>
-    </view>
-  </view>
+  <div v-if="visible" class="glx-toast-overlay">
+    <div :class="['glx-toast-container', `glx-toast--${type}`]">
+      <div class="glx-toast-main">
+        <div class="glx-toast-icon-wrapper">
+          <span class="glx-toast-icon-glyph">{{ iconGlyph }}</span>
+        </div>
+        <span class="glx-toast-message">{{ message }}</span>
+      </div>
+      <div class="glx-toast-close" @click="hide">
+        <span class="glx-toast-close-glyph">×</span>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

@@ -192,6 +192,7 @@
 </template>
 
 <script>
+import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
 import Icon from "@/components/uni/Icon.vue";
@@ -206,7 +207,7 @@ import { useToast } from "@/composables/useToast.js";
 const CANVAS_PIXELS_KEY = "canvas_mode_pixels";
 
 export default {
-  mixins: [statusBarMixin, deviceSendUxMixin],
+  mixins: [uniLifecycleAdapter, statusBarMixin, deviceSendUxMixin],
   components: {
     Icon,
     Toast,

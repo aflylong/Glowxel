@@ -351,6 +351,7 @@
 </template>
 
 <script>
+import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import { useDeviceStore } from "@/stores/device.js";
 import { useToast } from "@/composables/useToast.js";
 import { useDialog } from "@/composables/useDialog.js";
@@ -401,7 +402,7 @@ const NTP_PRESET_OPTIONS = [
 const UI_BRIGHTNESS_MAX = 178;
 
 export default {
-  mixins: [statusBarMixin],
+  mixins: [uniLifecycleAdapter, statusBarMixin],
   components: {
     ConfirmDialogHost,
     Icon,
