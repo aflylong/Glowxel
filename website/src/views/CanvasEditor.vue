@@ -1,717 +1,952 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/canvas-editor/canvas-editor.vue -->
 <template>
-  <div class="canvas-page glx-page-shell">
-    
+  <div class="glx-page-shell canvas-editor-page">
+    <section class="glx-page-shell__hero">
+      <span class="glx-page-shell__eyebrow">Canvas Mode</span>
+      <h1 class="glx-page-shell__title">画板模式</h1>
+      <p class="glx-page-shell__desc">
+        这里按 `uniapp/canvas-editor` 的正式链路复刻 64×64 画板编辑：本地缓存恢复、预览编辑、清空撤销、切到画板模式后发送稀疏像素都在这一页完成。
+      </p>
 
-    <div class="navbar glx-topbar glx-page-shell__fixed">
-      <div class="nav-left" @click="handleBack">
-        <Icon
-          name="direction-left"
-          :size="32"
-          color="var(--nb-ink)"
-        />
-      </div>
-      <span class="nav-title glx-topbar__title">画板模式</span>
-      <div class="nav-right"></div>
-    </div>
-
-    <div class="canvas-section">
-      <div class="canvas-container">
-        <PixelCanvas
-          v-if="canvasReady && !shouldShowSendingSnapshot"
-          :width="64"
-          :height="64"
-          :pixels="pixels"
-          :zoom="zoom"
-          :offset-x="pan.x"
-          :offset-y="pan.y"
-          :canvas-width="containerSize.width"
-          :canvas-height="containerSize.height"
-          :grid-visible="true"
-          :allow-single-touch-pan="currentTool === 'move'"
-          :is-dark-mode="true"
-          canvas-id="deviceCanvasEditor"
-          @pixel-click="handlePixelClick"
-          @pan="handlePan"
-          @zoom="handlePinchZoom"
-        />
-        <PixelPreviewBoard
-          v-else-if="canvasReady && shouldShowSendingSnapshot"
-          :width="64"
-          :height="64"
-          :pixels="sendingPreviewPixels"
-          :refresh-token="sendingPreviewTick"
-          :zoom="zoom"
-          :offset-x="pan.x"
-          :offset-y="pan.y"
-          :grid-visible="true"
-          :is-dark-mode="true"
-        />
+      <div class="glx-inline-actions">
+        <router-link to="/device-control" class="glx-button glx-button--ghost">返回设备控制</router-link>
+        <router-link to="/device-params" class="glx-button glx-button--ghost">设备参数</router-link>
       </div>
 
-      <div class="preview-caption glx-preview-panel">
-        <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-caption-title">预览效果</span>
+      <div class="glx-hero-metrics">
+        <article class="glx-hero-metric">
+          <span class="glx-hero-metric__label">连接状态</span>
+          <strong class="glx-hero-metric__value">{{ deviceStore.connected ? "已连接" : "未连接" }}</strong>
+        </article>
+        <article class="glx-hero-metric">
+          <span class="glx-hero-metric__label">已上色像素</span>
+          <strong class="glx-hero-metric__value">{{ coloredPixelCount }}</strong>
+        </article>
+        <article class="glx-hero-metric">
+          <span class="glx-hero-metric__label">当前缩放</span>
+          <strong class="glx-hero-metric__value">{{ zoom }}x</strong>
+        </article>
+        <article class="glx-hero-metric">
+          <span class="glx-hero-metric__label">当前业务模式</span>
+          <strong class="glx-hero-metric__value">{{ businessModeText }}</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="canvas-editor-layout">
+      <article class="glx-section-card glx-section-card--stack canvas-editor-preview-card">
+        <div class="canvas-editor-preview-card__head">
+          <div>
+            <h2 class="glx-section-title">预览效果</h2>
+            <p class="canvas-editor-preview-card__desc">
+              黑底预览舞台和正式发送使用同一份 64×64 像素数据；拖动画板时切到“拖动”，绘制时切到“绘画”或“擦除”。
+            </p>
+          </div>
+          <span class="glx-chip glx-chip--blue">64 × 64</span>
         </div>
-        <div class="preview-actions">
-          <div
-            class="action-btn-sm primary glx-primary-action"
-            :class="{ disabled: isSending }"
-            @click="publishCanvas"
+
+        <div ref="stageRef" class="canvas-editor-stage">
+          <canvas
+            ref="canvasRef"
+            class="canvas-editor-stage__canvas"
+            :class="{
+              'canvas-editor-stage__canvas--drag': currentTool === 'move',
+            }"
+            @pointerdown="handlePointerDown"
+            @pointermove="handlePointerMove"
+            @pointerup="handlePointerUp"
+            @pointerleave="handlePointerUp"
+            @pointercancel="handlePointerUp"
+            @wheel.prevent="handleWheel"
+          ></canvas>
+          <DeviceSendingOverlay
+            :visible="isSending"
+            title="正在发送画板像素"
+            description="发送期间锁定当前 64×64 快照，等待设备完成画板模式切换和稀疏像素写入。"
           >
-            <Icon name="link" :size="36" color="var(--nb-ink)" />
-            <span>发送</span>
+            <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
+          </DeviceSendingOverlay>
+        </div>
+
+        <div class="canvas-editor-preview-bar">
+          <div class="canvas-editor-preview-bar__copy">
+            <strong class="canvas-editor-preview-bar__title">首屏预览</strong>
+            <span class="canvas-editor-preview-bar__desc">
+              {{ currentToolLabel }} · 画笔 {{ brushSize }}x{{ brushSize }}
+            </span>
+          </div>
+
+          <div class="glx-inline-actions">
+            <button
+              type="button"
+              class="glx-button glx-button--primary"
+              :disabled="isSending"
+              @click="publishCanvas"
+            >
+              {{ isSending ? "发送中..." : "发送" }}
+            </button>
+            <button type="button" class="glx-button glx-button--ghost" @click="handleFit">
+              适配
+            </button>
           </div>
         </div>
+      </article>
+
+      <div class="canvas-editor-stack">
+        <article class="glx-section-card glx-section-card--stack">
+          <div class="glx-section-head">
+            <h2 class="glx-section-title">快捷操作</h2>
+            <span class="glx-section-meta">清空 / 撤销 / 视图</span>
+          </div>
+
+          <div class="canvas-editor-action-grid">
+            <button
+              type="button"
+              class="canvas-editor-action-btn"
+              :disabled="historyIndex <= 0"
+              @click="handleUndo"
+            >
+              撤销
+            </button>
+            <button
+              type="button"
+              class="canvas-editor-action-btn"
+              :disabled="historyIndex >= history.length - 1"
+              @click="handleRedo"
+            >
+              重做
+            </button>
+            <button type="button" class="canvas-editor-action-btn" @click="handleZoom(-1)">
+              缩小
+            </button>
+            <button type="button" class="canvas-editor-action-btn" @click="handleZoom(1)">
+              放大
+            </button>
+            <button type="button" class="canvas-editor-action-btn" @click="handleFit">
+              适配
+            </button>
+            <button type="button" class="canvas-editor-action-btn canvas-editor-action-btn--danger" @click="clearCanvas">
+              清空
+            </button>
+          </div>
+        </article>
+
+        <article class="glx-section-card glx-section-card--stack">
+          <div class="glx-section-head">
+            <h2 class="glx-section-title">绘制工具</h2>
+            <span class="glx-section-meta">拖动 / 绘画 / 擦除</span>
+          </div>
+
+          <DeviceModeTabs v-model="currentTool" :items="toolItems" />
+        </article>
+
+        <article
+          v-if="currentTool !== 'move'"
+          class="glx-section-card glx-section-card--stack"
+        >
+          <div class="glx-section-head">
+            <h2 class="glx-section-title">笔触大小</h2>
+            <span class="glx-section-meta">与 uniapp 对齐</span>
+          </div>
+
+          <DeviceModeTabs v-model="brushSize" :items="brushSizeItems" />
+        </article>
+
+        <article
+          v-if="currentTool !== 'move'"
+          class="glx-section-card glx-section-card--stack"
+        >
+          <div class="glx-section-head">
+            <h2 class="glx-section-title">画笔颜色</h2>
+            <span class="glx-section-meta">本地缓存画布数据</span>
+          </div>
+
+          <div class="canvas-editor-color-row">
+            <label class="canvas-editor-color-picker">
+              <span class="canvas-editor-color-picker__label">当前颜色</span>
+              <input
+                type="color"
+                :value="selectedColor"
+                class="canvas-editor-color-picker__input"
+                @input="handleNativeColorInput($event.target.value)"
+              />
+            </label>
+
+            <div class="canvas-editor-color-code">
+              <span class="canvas-editor-color-code__label">颜色值</span>
+              <strong class="canvas-editor-color-code__value">{{ selectedColor }}</strong>
+            </div>
+          </div>
+
+          <DeviceColorSwatches v-model="selectedColor" :items="presetColors" />
+        </article>
+
+        <article class="glx-section-card glx-section-card--stack">
+          <div class="glx-section-head">
+            <h2 class="glx-section-title">当前状态</h2>
+            <span class="glx-section-meta">本地缓存已启用</span>
+          </div>
+
+          <div class="glx-kv-grid">
+            <div class="glx-kv-card">
+              <span class="glx-kv-card__label">本地缓存键</span>
+              <strong class="glx-kv-card__value">{{ storageKey }}</strong>
+            </div>
+            <div class="glx-kv-card">
+              <span class="glx-kv-card__label">画布尺寸</span>
+              <strong class="glx-kv-card__value">64 × 64</strong>
+            </div>
+            <div class="glx-kv-card">
+              <span class="glx-kv-card__label">拖动偏移</span>
+              <strong class="glx-kv-card__value">{{ panText }}</strong>
+            </div>
+            <div class="glx-kv-card">
+              <span class="glx-kv-card__label">当前工具</span>
+              <strong class="glx-kv-card__value">{{ currentToolLabel }}</strong>
+            </div>
+          </div>
+        </article>
       </div>
-    </div>
-
-    <div data-scroll-view scroll-y class="content glx-scroll-region glx-page-shell__content" :style="{ height: contentHeight }">
-      <div class="content-wrapper glx-scroll-stack">
-        <div class="action-grid">
-          <div
-            class="panel-btn glx-action-tile"
-            :class="{ disabled: historyIndex <= 0 }"
-            @click="handleUndo"
-          >
-            <Icon name="back" :size="36" />
-            <span>撤销</span>
-          </div>
-          <div
-            class="panel-btn glx-action-tile"
-            :class="{ disabled: historyIndex >= history.length - 1 }"
-            @click="handleRedo"
-          >
-            <Icon name="forward" :size="36" />
-            <span>重做</span>
-          </div>
-          <div class="panel-btn glx-action-tile" @click="handleZoom(-1)">
-            <Icon name="zoom-out" :size="36" />
-            <span>缩小</span>
-          </div>
-          <div class="panel-btn glx-action-tile" @click="handleZoom(1)">
-            <Icon name="zoom-in" :size="36" />
-            <span>放大</span>
-          </div>
-          <div class="panel-btn glx-action-tile" @click="handleFit">
-            <Icon name="fullscreen-expand" :size="36" />
-            <span>适配</span>
-          </div>
-          <div class="panel-btn danger glx-action-tile" @click="clearCanvas">
-            <Icon name="delete" :size="36" />
-            <span>清空</span>
-          </div>
-        </div>
-        <div class="card glx-panel-card glx-editor-card canvas-section-card">
-          <div class="card-title-section glx-panel-head">
-            <span class="card-title glx-panel-title">绘制工具</span>
-          </div>
-
-          <div class="tool-grid">
-            <div
-              class="tool-card glx-tool-tile"
-              :class="{ active: currentTool === 'move' }"
-              @click="setTool('move')"
-            >
-              <Icon name="move" :size="40" />
-              <span class="tool-card-label">拖动</span>
-            </div>
-            <div
-              class="tool-card glx-tool-tile"
-              :class="{ active: currentTool === 'pencil' }"
-              @click="setTool('pencil')"
-            >
-              <Icon name="edit" :size="40" />
-              <span class="tool-card-label">绘画</span>
-            </div>
-            <div
-              class="tool-card eraser glx-tool-tile"
-              :class="{ active: currentTool === 'eraser' }"
-              @click="setTool('eraser')"
-            >
-              <Icon name="delete" :size="40" />
-              <span class="tool-card-label">擦除</span>
-            </div>
-          </div>
-        </div>
-        <div v-if="currentTool !== 'move'" class="card glx-panel-card glx-editor-card canvas-section-card">
-          <div class="card-title-section glx-panel-head">
-            <span class="card-title glx-panel-title">笔触大小</span>
-          </div>
-          <div class="option-row">
-            <div
-              v-for="size in brushSizeOptions"
-              :key="size"
-              class="option-btn glx-feature-option"
-              :class="{ active: brushSize === size }"
-              @click="brushSize = size"
-            >
-              <span class="glx-feature-option__label">{{ size }}x{{ size }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="currentTool !== 'move'" class="card glx-panel-card glx-editor-card canvas-section-card">
-          <div class="card-title-section glx-panel-head">
-            <span class="card-title glx-panel-title">画笔颜色</span>
-          </div>
-          <div class="color-panel-wrap">
-            <ColorPanelPicker
-              :value="selectedColor"
-              label="画笔颜色"
-              :preset-colors="[]"
-              @input="handleColorSelect"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div
-      v-if="isSending"
-      class="glx-device-sending-overlay"
-      @touchmove.stop.prevent
-    >
-      <div class="glx-device-sending-card">
-        <GlxInlineLoader
-          class="glx-device-sending-spinner"
-          variant="chase"
-          size="lg"
-        />
-        <span class="glx-device-sending-title">{{ sendOverlayTitle }}</span>
-        <span class="glx-device-sending-tip">{{ sendOverlayTip }}</span>
-      </div>
-    </div>
-
-    <Toast
-      ref="toastRef"
-      @show="handleToastShow"
-      @hide="handleToastHide"
-    />
+    </section>
   </div>
 </template>
 
-<script>
-import statusBarMixin from "@/mixins/statusBar.js";
-import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
-import Icon from "@/components/uni/Icon.vue";
-import Toast from "@/components/uni/Toast.vue";
-import GlxInlineLoader from "@/components/uni/GlxInlineLoader.vue";
-import PixelCanvas from "@/components/uni/PixelCanvas.vue";
-import PixelPreviewBoard from "@/components/uni/PixelPreviewBoard.vue";
-import ColorPanelPicker from "@/components/uni/ColorPanelPicker.vue";
-import { useDeviceStore } from "@/stores/device.js";
-import { useToast } from "@/composables/useToast.js";
+<script setup>
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
+import DeviceSendingOverlay from "@/components/device/DeviceSendingOverlay.vue";
+import DevicePixelBoard from "@/components/device/modes/DevicePixelBoard.vue";
+import DeviceColorSwatches from "@/components/device/modes/DeviceColorSwatches.vue";
+import DeviceModeTabs from "@/components/device/modes/DeviceModeTabs.vue";
+import { useFeedback } from "@/composables/useFeedback.js";
+import { useDeviceLegacyStore } from "@/stores/deviceLegacy.js";
+import { hexToRgb, normalizeHexColor, readStorageJson, writeStorageJson } from "@/utils/device-mode-core.js";
 
+const PANEL_SIZE = 64;
+const HISTORY_LIMIT = 50;
+const MIN_ZOOM = 2;
+const MAX_ZOOM = 20;
 const CANVAS_PIXELS_KEY = "canvas_mode_pixels";
 
-export default {
-  mixins: [statusBarMixin, deviceSendUxMixin],
-  components: {
-    Icon,
-    Toast,
-    GlxInlineLoader,
-    PixelCanvas,
-    PixelPreviewBoard,
-    ColorPanelPicker,
+const toolItems = Object.freeze([
+  { value: "move", label: "拖动" },
+  { value: "pencil", label: "绘画" },
+  { value: "eraser", label: "擦除" },
+]);
+
+const brushSizeItems = Object.freeze([
+  { value: 1, label: "1x1" },
+  { value: 2, label: "2x2" },
+  { value: 3, label: "3x3" },
+  { value: 4, label: "4x4" },
+]);
+
+const presetColors = Object.freeze([
+  { label: "冰蓝", value: "#64c8ff" },
+  { label: "亮黄", value: "#ffd23f" },
+  { label: "橘红", value: "#ff8454" },
+  { label: "薄荷", value: "#67d7a5" },
+  { label: "紫粉", value: "#d57cff" },
+  { label: "白色", value: "#ffffff" },
+  { label: "深蓝", value: "#356dff" },
+  { label: "暖红", value: "#ff5f6d" },
+]);
+
+const deviceStore = useDeviceLegacyStore();
+const feedback = useFeedback();
+
+const stageRef = ref(null);
+const canvasRef = ref(null);
+const pixels = ref(new Map());
+const history = ref([]);
+const historyIndex = ref(-1);
+const currentTool = ref("pencil");
+const brushSize = ref(1);
+const selectedColor = ref("#64c8ff");
+const zoom = ref(4);
+const pan = reactive({ x: 0, y: 0 });
+const viewport = reactive({ width: 0, height: 0 });
+const isSending = ref(false);
+const sendingPixels = ref(new Map());
+
+const moveState = reactive({
+  active: false,
+  startClientX: 0,
+  startClientY: 0,
+  startPanX: 0,
+  startPanY: 0,
+});
+
+const drawState = reactive({
+  active: false,
+  dirty: false,
+});
+
+let strokePixels = null;
+let resizeObserver = null;
+
+const storageKey = CANVAS_PIXELS_KEY;
+
+const coloredPixelCount = computed(() => {
+  return pixels.value.size;
+});
+
+const businessModeText = computed(() => {
+  if (typeof deviceStore.businessMode === "string" && deviceStore.businessMode.length > 0) {
+    return deviceStore.businessMode;
+  }
+  return "--";
+});
+
+const panText = computed(() => {
+  return `${Math.round(pan.x)}, ${Math.round(pan.y)}`;
+});
+
+const currentToolLabel = computed(() => {
+  const matched = toolItems.find((item) => item.value === currentTool.value);
+  if (matched) {
+    return matched.label;
+  }
+  return "--";
+});
+
+watch(
+  pixels,
+  () => {
+    renderCanvas();
   },
-  data() {
-    return {
-      deviceStore: null,
-      toast: null,
-      contentHeight: "calc(100vh - 88rpx - 520rpx)",
-      deviceCanvasModeReady: false,
-      currentTool: "pencil",
-      brushSize: 1,
-      brushSizeOptions: [1, 2, 3, 4],
-      selectedColor: "#64c8ff",
-      zoom: 4,
-      pan: { x: 0, y: 0 },
-      containerSize: { width: 320, height: 320 },
-      canvasReady: false,
-      pixels: new Map(),
-      sendingPreviewPixels: new Map(),
-      sendingPreviewTick: 0,
-      history: [],
-      historyIndex: -1,
-    };
+  { deep: true },
+);
+
+watch(
+  () => zoom.value,
+  () => {
+    renderCanvas();
   },
-  computed: {},
-  onLoad() {
-    this.deviceStore = useDeviceStore();
-    this.deviceStore.init();
-    this.toast = useToast();
-    this.loadPixels();
+);
+
+watch(
+  () => [pan.x, pan.y],
+  () => {
+    renderCanvas();
   },
-  onReady() {
-    if (this.$refs.toastRef) {
-      this.toast.setToastInstance(this.$refs.toastRef);
+);
+
+watch(
+  selectedColor,
+  (value) => {
+    selectedColor.value = normalizeHexColor(value);
+  },
+);
+
+onMounted(async () => {
+  loadPixels();
+  deviceStore.init();
+
+  try {
+    await deviceStore.restoreConnection();
+  } catch (error) {
+    // 保持离线编辑，不阻断页面打开
+  }
+
+  if (deviceStore.connected) {
+    try {
+      await deviceStore.syncDeviceStatus();
+    } catch (error) {
+      // 保持当前本地态
     }
-    this.initCanvas();
-  },
-  methods: {
-    captureSendingPreview() {
-      this.sendingPreviewPixels = new Map(this.pixels);
-      this.sendingPreviewTick += 1;
-    },
-    clearSendingPreview() {
-      this.sendingPreviewPixels = new Map();
-      this.sendingPreviewTick += 1;
-    },
-    beginSendUi() {
-      this.captureSendingPreview();
-      deviceSendUxMixin.methods.beginSendUi.call(this);
-    },
-    endSendUi() {
-      deviceSendUxMixin.methods.endSendUi.call(this);
-    },
-    setTool(newTool) {
-      if (this.currentTool !== newTool) {
-        this.currentTool = newTool;
+  }
+
+  await nextTick();
+  setupResizeObserver();
+  renderCanvas();
+});
+
+onBeforeUnmount(() => {
+  teardownResizeObserver();
+});
+
+function loadPixels() {
+  const savedPixels = readStorageJson(CANVAS_PIXELS_KEY);
+  if (Array.isArray(savedPixels)) {
+    pixels.value = new Map(savedPixels);
+  } else {
+    pixels.value = new Map();
+  }
+  history.value = [new Map(pixels.value)];
+  historyIndex.value = 0;
+}
+
+function persistPixels() {
+  writeStorageJson(CANVAS_PIXELS_KEY, Array.from(pixels.value.entries()));
+}
+
+function pushHistory(nextPixels) {
+  const nextHistory = history.value.slice(0, historyIndex.value + 1);
+  nextHistory.push(new Map(nextPixels));
+  if (nextHistory.length > HISTORY_LIMIT) {
+    nextHistory.shift();
+  }
+  history.value = nextHistory;
+  historyIndex.value = nextHistory.length - 1;
+}
+
+function setupResizeObserver() {
+  const target = stageRef.value;
+  if (target === null) {
+    return;
+  }
+
+  if (typeof ResizeObserver === "undefined") {
+    measureViewport();
+    return;
+  }
+
+  resizeObserver = new ResizeObserver(() => {
+    measureViewport();
+  });
+  resizeObserver.observe(target);
+  measureViewport();
+}
+
+function teardownResizeObserver() {
+  if (resizeObserver !== null) {
+    resizeObserver.disconnect();
+    resizeObserver = null;
+  }
+}
+
+function measureViewport() {
+  const target = stageRef.value;
+  if (target === null) {
+    return;
+  }
+
+  const nextWidth = Math.max(240, Math.floor(target.clientWidth));
+  const nextHeight = Math.max(240, Math.floor(target.clientHeight));
+  viewport.width = nextWidth;
+  viewport.height = nextHeight;
+  handleFit();
+}
+
+function handleFit() {
+  if (viewport.width <= 0 || viewport.height <= 0) {
+    return;
+  }
+
+  const fitZoomWidth = Math.floor((viewport.width * 0.96) / PANEL_SIZE);
+  const fitZoomHeight = Math.floor((viewport.height * 0.96) / PANEL_SIZE);
+  const fitZoom = Math.min(fitZoomWidth, fitZoomHeight, MAX_ZOOM);
+  zoom.value = Math.max(MIN_ZOOM, fitZoom);
+  pan.x = Math.round((viewport.width - PANEL_SIZE * zoom.value) / 2);
+  pan.y = Math.round((viewport.height - PANEL_SIZE * zoom.value) / 2);
+  renderCanvas();
+}
+
+function handleZoom(delta) {
+  const nextZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom.value + delta));
+  if (nextZoom === zoom.value) {
+    return;
+  }
+
+  const centerX = viewport.width / 2;
+  const centerY = viewport.height / 2;
+  const scale = nextZoom / zoom.value;
+  pan.x = centerX - (centerX - pan.x) * scale;
+  pan.y = centerY - (centerY - pan.y) * scale;
+  zoom.value = nextZoom;
+  renderCanvas();
+}
+
+function renderCanvas() {
+  const canvas = canvasRef.value;
+  if (canvas === null || viewport.width <= 0 || viewport.height <= 0) {
+    return;
+  }
+
+  const dpr = globalThis.devicePixelRatio || 1;
+  const width = viewport.width;
+  const height = viewport.height;
+  canvas.width = Math.round(width * dpr);
+  canvas.height = Math.round(height * dpr);
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
+
+  const context = canvas.getContext("2d");
+  if (context === null) {
+    return;
+  }
+
+  context.setTransform(dpr, 0, 0, dpr, 0, 0);
+  context.imageSmoothingEnabled = false;
+  context.clearRect(0, 0, width, height);
+  context.fillStyle = "#000000";
+  context.fillRect(0, 0, width, height);
+
+  context.save();
+  context.beginPath();
+  context.rect(0, 0, width, height);
+  context.clip();
+
+  const cellSize = zoom.value;
+  const boardWidth = PANEL_SIZE * cellSize;
+  const boardHeight = PANEL_SIZE * cellSize;
+  const startX = pan.x;
+  const startY = pan.y;
+
+  context.fillStyle = "#000000";
+  context.fillRect(startX, startY, boardWidth, boardHeight);
+
+  pixels.value.forEach((color, key) => {
+    if (typeof color !== "string" || typeof key !== "string") {
+      return;
+    }
+    const parts = key.split(",");
+    if (parts.length !== 2) {
+      return;
+    }
+    const x = Number(parts[0]);
+    const y = Number(parts[1]);
+    if (!Number.isInteger(x) || !Number.isInteger(y)) {
+      return;
+    }
+
+    context.fillStyle = color;
+    context.fillRect(
+      Math.round(startX + x * cellSize),
+      Math.round(startY + y * cellSize),
+      Math.ceil(cellSize),
+      Math.ceil(cellSize),
+    );
+  });
+
+  context.strokeStyle = "rgba(255,255,255,0.08)";
+  context.lineWidth = 1;
+  for (let index = 0; index <= PANEL_SIZE; index += 1) {
+    const offsetX = Math.round(startX + index * cellSize) + 0.5;
+    context.beginPath();
+    context.moveTo(offsetX, startY);
+    context.lineTo(offsetX, startY + boardHeight);
+    context.stroke();
+
+    const offsetY = Math.round(startY + index * cellSize) + 0.5;
+    context.beginPath();
+    context.moveTo(startX, offsetY);
+    context.lineTo(startX + boardWidth, offsetY);
+    context.stroke();
+  }
+
+  context.strokeStyle = "#ffffff";
+  context.strokeRect(
+    Math.round(startX) + 0.5,
+    Math.round(startY) + 0.5,
+    Math.round(boardWidth),
+    Math.round(boardHeight),
+  );
+  context.restore();
+}
+
+function resolveBoardCell(event) {
+  const canvas = canvasRef.value;
+  if (canvas === null) {
+    return null;
+  }
+
+  const rect = canvas.getBoundingClientRect();
+  const localX = event.clientX - rect.left;
+  const localY = event.clientY - rect.top;
+  const boardX = Math.floor((localX - pan.x) / zoom.value);
+  const boardY = Math.floor((localY - pan.y) / zoom.value);
+
+  if (
+    !Number.isInteger(boardX) ||
+    !Number.isInteger(boardY) ||
+    boardX < 0 ||
+    boardX >= PANEL_SIZE ||
+    boardY < 0 ||
+    boardY >= PANEL_SIZE
+  ) {
+    return null;
+  }
+
+  return { x: boardX, y: boardY };
+}
+
+function handlePointerDown(event) {
+  if (event.button !== 0) {
+    return;
+  }
+
+  if (canvasRef.value !== null) {
+    canvasRef.value.setPointerCapture(event.pointerId);
+  }
+
+  if (currentTool.value === "move") {
+    moveState.active = true;
+    moveState.startClientX = event.clientX;
+    moveState.startClientY = event.clientY;
+    moveState.startPanX = pan.x;
+    moveState.startPanY = pan.y;
+    return;
+  }
+
+  drawState.active = true;
+  drawState.dirty = false;
+  strokePixels = new Map(pixels.value);
+  applyBrushFromEvent(event);
+}
+
+function handlePointerMove(event) {
+  if (moveState.active) {
+    const deltaX = event.clientX - moveState.startClientX;
+    const deltaY = event.clientY - moveState.startClientY;
+    pan.x = moveState.startPanX + deltaX;
+    pan.y = moveState.startPanY + deltaY;
+    renderCanvas();
+    return;
+  }
+
+  if (drawState.active) {
+    applyBrushFromEvent(event);
+  }
+}
+
+function handlePointerUp(event) {
+  if (canvasRef.value !== null && canvasRef.value.hasPointerCapture(event.pointerId)) {
+    canvasRef.value.releasePointerCapture(event.pointerId);
+  }
+
+  if (moveState.active) {
+    moveState.active = false;
+  }
+
+  if (!drawState.active) {
+    return;
+  }
+
+  drawState.active = false;
+  if (drawState.dirty) {
+    pushHistory(pixels.value);
+    persistPixels();
+  }
+  drawState.dirty = false;
+  strokePixels = null;
+}
+
+function applyBrushFromEvent(event) {
+  const cell = resolveBoardCell(event);
+  if (cell === null || strokePixels === null) {
+    return;
+  }
+
+  const changed = applyBrushToMap(strokePixels, cell.x, cell.y);
+  if (!changed) {
+    return;
+  }
+
+  drawState.dirty = true;
+  pixels.value = new Map(strokePixels);
+  renderCanvas();
+}
+
+function applyBrushToMap(targetMap, x, y) {
+  const startX = x - Math.floor((brushSize.value - 1) / 2);
+  const startY = y - Math.floor((brushSize.value - 1) / 2);
+  let changed = false;
+
+  for (let offsetX = 0; offsetX < brushSize.value; offsetX += 1) {
+    for (let offsetY = 0; offsetY < brushSize.value; offsetY += 1) {
+      const pixelX = startX + offsetX;
+      const pixelY = startY + offsetY;
+
+      if (pixelX < 0 || pixelX >= PANEL_SIZE || pixelY < 0 || pixelY >= PANEL_SIZE) {
+        continue;
       }
-    },
 
-    handleBack() {
-      uni.navigateBack();
-    },
-
-    initCanvas() {
-      setTimeout(() => {
-        const systemInfo = uni.getSystemInfoSync();
-        const statusBarHeight = systemInfo.statusBarHeight || 0;
-        const query = uni.createSelectorQuery().in(this);
-
-        query.select(".canvas-section").boundingClientRect((sectionRect) => {
-          if (!sectionRect || !sectionRect.height) {
-            return;
-          }
-
-          const nextHeight =
-            systemInfo.windowHeight - statusBarHeight - 88 - sectionRect.height;
-          this.contentHeight = `${Math.max(120, nextHeight)}px`;
-        });
-
-        query.select(".canvas-container").boundingClientRect((data) => {
-          if (!data || data.width <= 0) {
-            return;
-          }
-
-          this.containerSize = { width: data.width, height: data.height };
-          const fitZoomW = (data.width * 0.96) / 64;
-          const fitZoomH = (data.height * 0.96) / 64;
-          const fitZoom = Math.floor(Math.min(fitZoomW, fitZoomH, 20));
-
-          this.zoom = Math.max(2, fitZoom);
-          this.pan = {
-            x: (data.width - 64 * this.zoom) / 2,
-            y: (data.height - 64 * this.zoom) / 2,
-          };
-          this.canvasReady = true;
-
-          if (this.history.length === 0) {
-            this.history = [new Map(this.pixels)];
-            this.historyIndex = 0;
-          }
-        });
-
-        query.exec();
-      }, 120);
-    },
-
-    loadPixels() {
-      const savedPixels = uni.getStorageSync(CANVAS_PIXELS_KEY);
-      if (Array.isArray(savedPixels)) {
-        this.pixels = new Map(savedPixels);
-      } else {
-        this.pixels = new Map();
-      }
-      this.history = [new Map(this.pixels)];
-      this.historyIndex = 0;
-    },
-
-    persistPixels() {
-      uni.setStorageSync(CANVAS_PIXELS_KEY, Array.from(this.pixels.entries()));
-    },
-
-    pushHistory(newPixels) {
-      const newHistory = this.history.slice(0, this.historyIndex + 1);
-      newHistory.push(new Map(newPixels));
-      if (newHistory.length > 50) {
-        newHistory.shift();
-      }
-      this.history = newHistory;
-      this.historyIndex = newHistory.length - 1;
-    },
-
-    handlePixelClick(x, y) {
-      if (this.currentTool === "move") {
-        return;
-      }
-
-      const newPixels = new Map(this.pixels);
-      const updates = [];
-      const startX = x - Math.floor((this.brushSize - 1) / 2);
-      const startY = y - Math.floor((this.brushSize - 1) / 2);
-
-      for (let offsetX = 0; offsetX < this.brushSize; offsetX += 1) {
-        for (let offsetY = 0; offsetY < this.brushSize; offsetY += 1) {
-          const pixelX = startX + offsetX;
-          const pixelY = startY + offsetY;
-
-          if (pixelX < 0 || pixelX >= 64 || pixelY < 0 || pixelY >= 64) {
-            continue;
-          }
-
-          const key = `${pixelX},${pixelY}`;
-
-          if (this.currentTool === "eraser") {
-            if (!newPixels.has(key)) {
-              continue;
-            }
-            newPixels.delete(key);
-            updates.push({ x: pixelX, y: pixelY, color: "#000000" });
-            continue;
-          }
-
-          if (newPixels.get(key) === this.selectedColor) {
-            continue;
-          }
-
-          newPixels.set(key, this.selectedColor);
-          updates.push({ x: pixelX, y: pixelY, color: this.selectedColor });
+      const key = `${pixelX},${pixelY}`;
+      if (currentTool.value === "eraser") {
+        if (targetMap.has(key)) {
+          targetMap.delete(key);
+          changed = true;
         }
+        continue;
       }
 
-      if (updates.length === 0) {
-        return;
+      if (targetMap.get(key) === selectedColor.value) {
+        continue;
       }
+      targetMap.set(key, selectedColor.value);
+      changed = true;
+    }
+  }
 
-      this.pixels = newPixels;
-      this.pushHistory(newPixels);
-      this.persistPixels();
-    },
+  return changed;
+}
 
-    handleUndo() {
-      if (this.historyIndex <= 0) {
-        return;
-      }
-      this.historyIndex -= 1;
-      this.pixels = new Map(this.history[this.historyIndex]);
-      this.persistPixels();
-    },
+function handleWheel(event) {
+  const direction = event.deltaY > 0 ? -1 : 1;
+  handleZoom(direction);
+}
 
-    handleRedo() {
-      if (this.historyIndex >= this.history.length - 1) {
-        return;
-      }
-      this.historyIndex += 1;
-      this.pixels = new Map(this.history[this.historyIndex]);
-      this.persistPixels();
-    },
+function handleUndo() {
+  if (historyIndex.value <= 0) {
+    return;
+  }
+  historyIndex.value -= 1;
+  pixels.value = new Map(history.value[historyIndex.value]);
+  persistPixels();
+  renderCanvas();
+}
 
-    handleZoom(delta) {
-      const centerX = this.containerSize.width / 2;
-      const centerY = this.containerSize.height / 2;
-      const newZoom = Math.max(1, Math.min(20, this.zoom + delta));
-      const scale = newZoom / this.zoom;
-      this.pan = {
-        x: centerX - (centerX - this.pan.x) * scale,
-        y: centerY - (centerY - this.pan.y) * scale,
-      };
-      this.zoom = newZoom;
-    },
+function handleRedo() {
+  if (historyIndex.value >= history.value.length - 1) {
+    return;
+  }
+  historyIndex.value += 1;
+  pixels.value = new Map(history.value[historyIndex.value]);
+  persistPixels();
+  renderCanvas();
+}
 
-    handlePan(dx, dy) {
-      this.pan = { x: this.pan.x + dx, y: this.pan.y + dy };
-    },
+function clearCanvas() {
+  if (pixels.value.size === 0) {
+    feedback.info("画板已为空", "当前本地画板没有需要清除的像素。");
+    return;
+  }
 
-    handlePinchZoom(delta, centerX, centerY) {
-      const newZoom = Math.max(1, Math.min(20, this.zoom + delta));
-      const scale = newZoom / this.zoom;
-      this.pan = {
-        x: centerX - (centerX - this.pan.x) * scale,
-        y: centerY - (centerY - this.pan.y) * scale,
-      };
-      this.zoom = newZoom;
-    },
+  pixels.value = new Map();
+  pushHistory(pixels.value);
+  persistPixels();
+  renderCanvas();
+  feedback.info("画板已清空", "本地 64×64 画板已经清空。");
+}
 
-    handleFit() {
-      const fitZoomW = (this.containerSize.width * 0.96) / 64;
-      const fitZoomH = (this.containerSize.height * 0.96) / 64;
-      const fitZoom = Math.floor(Math.min(fitZoomW, fitZoomH, 20));
-      this.zoom = Math.max(2, fitZoom);
-      this.pan = {
-        x: (this.containerSize.width - 64 * this.zoom) / 2,
-        y: (this.containerSize.height - 64 * this.zoom) / 2,
-      };
-    },
+function handleNativeColorInput(value) {
+  selectedColor.value = normalizeHexColor(value);
+}
 
-    handleColorSelect(color) {
-      if (!color) {
-        return;
-      }
-      this.selectedColor = color;
-    },
+async function publishCanvas() {
+  persistPixels();
 
-    clearCanvas() {
-      this.pixels = new Map();
-      this.pushHistory(this.pixels);
-      this.persistPixels();
-      this.toast.showInfo("画板已清空");
-    },
+  if (!deviceStore.connected) {
+    feedback.warning("设备未连接", "已保存到本地，请先返回设备控制页建立连接。");
+    return;
+  }
 
-    async publishCanvas() {
-      this.persistPixels();
+  isSending.value = true;
+  sendingPixels.value = new Map(pixels.value);
+  feedback.showBlocking("发送画板", "正在切换到画板模式并发送当前稀疏像素。");
 
-      if (
-        !this.guardBeforeSend(
-          this.deviceStore.connected,
-          "已保存到本地，请先连接设备",
-          "info",
-        )
-      ) {
-        return;
-      }
+  try {
+    await deviceStore.ensureCanvasMode();
+    await deviceStore.sendSparseImage(buildSparsePixels(), PANEL_SIZE, PANEL_SIZE);
+    await deviceStore.syncDeviceStatus();
+    feedback.success("发送成功", "画板像素已经发送到设备。");
+  } catch (error) {
+    if (error instanceof Error) {
+      feedback.error("发送失败", error.message);
+    } else {
+      feedback.error("发送失败", "画板像素发送失败。");
+    }
+  } finally {
+    isSending.value = false;
+    feedback.hideBlocking();
+  }
+}
 
-      await this.saveAndApply();
-    },
+function buildSparsePixels() {
+  const sparsePixels = [];
+  pixels.value.forEach((color, key) => {
+    if (typeof key !== "string" || typeof color !== "string") {
+      return;
+    }
 
-    async saveAndApply() {
-      this.persistPixels();
+    const parts = key.split(",");
+    if (parts.length !== 2) {
+      return;
+    }
 
-      if (!this.deviceStore.connected) {
-        return;
-      }
+    const x = Number(parts[0]);
+    const y = Number(parts[1]);
+    if (!Number.isInteger(x) || !Number.isInteger(y)) {
+      return;
+    }
 
-      const previousMode = this.deviceStore.deviceMode;
-      this.beginSendUi();
-      try {
-        await this.ensureDeviceCanvasMode();
-
-        if (this.pixels.size === 0) {
-          await this.deviceStore.sendSparseImage([], 64, 64);
-          this.showSendSuccess();
-          return;
-        }
-
-        const sparsePixels = [];
-        this.pixels.forEach((color, key) => {
-          const [x, y] = key.split(",").map(Number);
-          const rgb = this.hexToRgb(color);
-          sparsePixels.push(x, y, rgb.r, rgb.g, rgb.b);
-        });
-
-        await this.deviceStore.sendSparseImage(sparsePixels, 64, 64);
-        this.showSendSuccess();
-      } catch (err) {
-        await this.deviceStore.rollbackBusinessMode(previousMode, {
-          expectedMode: "canvas",
-        });
-        console.error("画板发送失败:", err);
-        this.showSendFailure(err);
-      } finally {
-        this.endSendUi();
-      }
-    },
-
-    async ensureDeviceCanvasMode() {
-      if (!this.deviceStore.connected) {
-        return;
-      }
-
-      if (this.deviceCanvasModeReady) {
-        return;
-      }
-
-      await this.deviceStore.ensureCanvasMode();
-      this.deviceCanvasModeReady = true;
-    },
-
-    hexToRgb(hex) {
-      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result
-        ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16),
-          }
-        : { r: 0, g: 0, b: 0 };
-    },
-  },
-
-  onUnload() {
-  },
-
-  onHide() {
-  },
-};
+    const rgb = hexToRgb(color);
+    sparsePixels.push(x, y, rgb.r, rgb.g, rgb.b);
+  });
+  return sparsePixels;
+}
 </script>
 
 <style scoped>
-.canvas-page {
-  height: 100vh;
+.canvas-editor-page {
+  gap: 24px;
+}
+
+.canvas-editor-layout {
+  display: grid;
+  grid-template-columns: minmax(340px, 0.98fr) minmax(0, 1.02fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.canvas-editor-preview-card {
+  position: sticky;
+  top: 88px;
+}
+
+.canvas-editor-preview-card__head {
   display: flex;
-  flex-direction: column;
-  background-color: var(--bg-secondary);
-  overflow: hidden;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
 }
 
-.status-bar {
-  background-color: #1a1a1a;
+.canvas-editor-preview-card__desc {
+  margin: 6px 0 0;
+  color: var(--nb-text-secondary);
+  font-size: 13px;
+  line-height: 1.7;
 }
 
-.canvas-container {
+.canvas-editor-stage {
+  position: relative;
   width: 100%;
   aspect-ratio: 1;
-  position: relative;
+  border: 2px solid #000000;
+  background: #000000;
+  box-shadow: 4px 4px 0 #000000;
   overflow: hidden;
-  background-color: #000000;
   touch-action: none;
 }
 
-.action-btn-sm.disabled,
-.panel-btn.disabled {
-  opacity: 0.4;
+.canvas-editor-stage__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
 }
 
-.sending-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+.canvas-editor-stage__canvas--drag {
+  cursor: grab;
+}
+
+.canvas-editor-preview-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 9999;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border: 2px solid #000000;
+  background: #ffffff;
 }
 
-.sending-modal {
-  min-width: 420rpx;
-  padding: 60rpx 50rpx;
-  border-radius: 0;
-  background: var(--bg-elevated);
+.canvas-editor-preview-bar__copy {
+  display: grid;
+  gap: 4px;
+}
+
+.canvas-editor-preview-bar__title {
+  color: var(--nb-ink);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.canvas-editor-preview-bar__desc {
+  color: var(--nb-text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.canvas-editor-stack {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 24rpx;
+  gap: 24px;
 }
 
-.sending-spinner {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  line-height: 1;
-}
-
-.sending-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.sending-tip {
-  font-size: 24rpx;
-  color: var(--text-secondary);
-}
-
-.content {
-  flex: 1;
-  min-height: 0;
-  background: var(--bg-tertiary);
-  padding: 16rpx 20rpx 0;
-}
-
-.canvas-section-card {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-
-.option-btn.glx-feature-option.active {
-  background: var(--nb-yellow) !important;
-  border-color: var(--nb-ink) !important;
-  color: var(--nb-ink) !important;
-}
-
-.option-btn.glx-feature-option.active .glx-feature-option__label {
-  color: var(--nb-ink) !important;
-  font-weight: 900 !important;
-}
-
-.tool-grid {
+.canvas-editor-action-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10rpx;
+  gap: 12px;
 }
 
-.tool-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6rpx;
-  min-height: 104rpx;
-  padding: 12rpx 10rpx;
-  border-radius: 0;
-  background-color: #ffffff;
-  border: 2rpx solid #000000;
-  color: var(--text-primary);
-}
-
-.tool-card.active {
-  background: var(--nb-yellow);
-  border-color: var(--nb-ink);
+.canvas-editor-action-btn {
+  min-height: 54px;
+  padding: 12px 10px;
+  border: 2px solid #000000;
+  background: #ffffff;
   color: #000000;
-  box-shadow: none;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
 }
 
-.tool-card.eraser.active {
-  background: var(--nb-yellow);
-  border-color: var(--nb-ink);
-  color: #000000;
-  box-shadow: none;
+.canvas-editor-action-btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
-.tool-card-label {
-  font-size: 22rpx;
-  font-weight: 600;
-  color: currentColor;
+.canvas-editor-action-btn--danger {
+  background: #ffd6d6;
 }
 
-.action-grid {
+.canvas-editor-color-row {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 10rpx;
+  grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
 }
 
-.panel-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6rpx;
-  min-height: 88rpx;
-  padding: 10rpx 8rpx;
-  border-radius: 0;
+.canvas-editor-color-picker,
+.canvas-editor-color-code {
+  min-height: 82px;
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+  border: 2px solid #000000;
   background: #ffffff;
-  border: 2rpx solid #000000;
-  color: var(--text-primary);
 }
 
-.panel-btn text {
-  font-size: 20rpx;
-  color: currentColor;
-  font-weight: 600;
+.canvas-editor-color-picker__label,
+.canvas-editor-color-code__label {
+  color: var(--nb-text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.canvas-editor-color-picker__input {
+  width: 100%;
+  height: 40px;
+  border: 2px solid #000000;
+  background: #ffffff;
+  padding: 0;
+}
+
+.canvas-editor-color-code__value {
+  color: var(--nb-ink);
+  font-size: 20px;
   line-height: 1.1;
+  font-weight: 900;
+  text-transform: lowercase;
 }
 
-.panel-btn.danger {
-  color: var(--error-color);
-  border-color: rgba(255, 100, 100, 0.28);
+@media (max-width: 1080px) {
+  .canvas-editor-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .canvas-editor-preview-card {
+    position: static;
+  }
 }
 
-.color-panel-wrap :deep(.color-panel-picker) {
-  background: #ffffff;
-  border: 0;
+@media (max-width: 720px) {
+  .canvas-editor-action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .canvas-editor-color-row {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

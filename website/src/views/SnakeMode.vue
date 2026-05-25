@@ -1,261 +1,175 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/snake-mode/snake-mode.vue -->
 <template>
-  <div class="snake-page glx-page-shell">
-    
-
-    <div class="navbar glx-topbar glx-page-shell__fixed">
-      <div class="nav-left" @click="handleBack">
-        <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
-      </div>
-      <span class="nav-title glx-topbar__title">贪吃蛇</span>
-      <div class="nav-right"></div>
-    </div>
-
-    <div class="canvas-section">
-      <div class="preview-canvas-container" :style="previewCanvasBoxStyle">
-        <PixelCanvas
-          v-if="previewCanvasReady && !shouldShowSendingSnapshot"
-          :width="64"
-          :height="64"
-          :pixels="currentPreviewPixels"
-          :zoom="previewZoom"
-          :offset-x="previewOffset.x"
-          :offset-y="previewOffset.y"
-          :canvas-width="previewContainerSize.width"
-          :canvas-height="previewContainerSize.height"
-          :grid-visible="previewGridVisible"
-          :is-dark-mode="true"
-          :touch-enabled="false"
-          canvas-id="snakePreviewCanvas"
-        />
-        <PixelPreviewBoard
-          v-else-if="previewCanvasReady && shouldShowSendingSnapshot"
-          :width="64"
-          :height="64"
-          :pixels="sendingPreviewPixels"
-          :refresh-token="sendingPreviewTick"
-          :zoom="previewZoom"
-          :offset-x="previewOffset.x"
-          :offset-y="previewOffset.y"
-          :grid-visible="previewGridVisible"
-          :is-dark-mode="true"
-        />
-      </div>
-      <div class="preview-caption glx-preview-panel">
-        <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-title">预览效果</span>
-          <span class="preview-note">发送会保存当前外观和参数</span>
+  <div class="glx-page-shell game-mode-page">
+    <section class="game-mode-layout">
+      <article class="glx-section-card glx-section-card--stack game-preview-card">
+        <div class="game-preview-card__head">
+          <div>
+            <h1 class="game-page-title">贪吃蛇</h1>
+            <p class="game-page-meta">预览、随机蛇色、字体和发送都按 uniapp 同一组参数驱动。</p>
+          </div>
+          <span class="glx-chip" :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'">
+            {{ deviceStore.connected ? "已连接" : "未连接" }}
+          </span>
         </div>
-        <div class="preview-actions">
-          <div
-            class="action-btn-sm primary glx-primary-action"
-            :class="{ disabled: isSending }"
-            @click="saveAndApply"
+
+        <div class="game-preview-stage">
+          <DevicePixelBoard :pixels="displayPixels" :grid-visible="true" />
+          <DeviceSendingOverlay
+            :visible="isSending"
+            title="正在发送贪吃蛇"
+            description="发送期间锁定当前预览快照，等待设备完成贪吃蛇参数事务提交。"
           >
-            <Icon name="link" :size="36" color="var(--nb-ink)" />
-            <span>发送</span>
-          </div>
+            <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
+          </DeviceSendingOverlay>
         </div>
-      </div>
-    </div>
 
-    <div data-scroll-view
-      scroll-y
-      class="content glx-scroll-region glx-page-shell__content"
-      :style="{ height: contentHeight }"
-    >
-      <div class="content-wrapper glx-scroll-stack">
-        <div v-if="currentTab === 0" class="tab-panel glx-tab-panel">
-          <div class="tab-section-head glx-section-head">
-            <span class="tab-section-title glx-section-title">外观</span>
-            <span class="tab-section-meta">皮肤、字体、果子颜色</span>
+        <div class="game-preview-actions">
+          <button
+            type="button"
+            class="glx-button glx-button--primary"
+            :disabled="isSending"
+            @click="handleSend"
+          >
+            {{ isSending ? "发送中..." : "发送到设备" }}
+          </button>
+        </div>
+      </article>
+
+      <div class="game-mode-stack">
+        <article class="glx-section-card glx-section-card--stack">
+          <div class="glx-section-head">
+            <h2 class="glx-section-title">分组</h2>
+            <span class="glx-section-meta">外观 / 参数</span>
+          </div>
+          <DeviceModeTabs v-model="currentTab" :items="tabItems" />
+        </article>
+
+        <article v-if="currentTab === 'appearance'" class="glx-section-card glx-section-card--stack">
+          <div class="glx-section-head">
+            <h2 class="glx-section-title">蛇皮肤</h2>
+            <span class="glx-section-meta">纯色 / 渐变 / 斑点</span>
           </div>
 
-          <div class="skin-card glx-panel-card snake-top-card">
-            <div class="snake-top-head">
-              <span class="card-title glx-panel-title">蛇皮肤</span>
-            </div>
-            <div class="skin-toolbar">
-              <div
-                class="skin-toolbar-btn glx-feature-option"
-                @click="randomizeSkinColor"
-              >
-                <span class="glx-feature-option__label">换个随机颜色</span>
-              </div>
-            </div>
-            <div class="skin-grid">
-              <div
-                v-for="item in snakeSkinOptions"
-                :key="item.value"
-                class="skin-option glx-feature-option"
-                :class="{ active: snakeSkin === item.value }"
-                @click="selectSnakeSkin(item.value)"
-              >
-                <span class="glx-feature-option__label">{{ item.label }}</span>
-              </div>
-            </div>
+          <div class="game-inline-actions">
+            <button type="button" class="glx-button glx-button--ghost" @click="randomizeSkinColor">
+              换个随机颜色
+            </button>
           </div>
 
-          <ClockFontPanel
+          <DeviceModeTabs v-model="config.snakeSkin" :items="snakeSkinOptions" />
+
+          <GameModeFontSelector
+            title="字体样式"
+            description="沿用设备时钟字模，保持和 uniapp 同一套蛇身时间显示效果。"
             :font-options="fontOptions"
-            :selected-font="font"
-            :show-seconds="showSeconds"
+            :selected-font="config.font"
+            :show-seconds="config.showSeconds"
             :show-hour-format="false"
-            @select-font="selectFont"
+            @select-font="handleFontChange"
+            @set-show-seconds="handleShowSecondsChange"
           />
 
-          <div class="card glx-panel-card glx-editor-card">
-            <div class="card-title-section glx-panel-head">
-              <span class="card-title glx-panel-title">颜色</span>
-            </div>
-            <div class="form-row color-picker-row">
-              <ColorPanelPicker
-                :value="foodColor"
-                label="果子颜色"
-                :preset-colors="foodPresetColors"
-                @change="handleFoodColorChange"
-              />
-            </div>
-          </div>
-        </div>
+          <GameModeColorField
+            v-model="config.foodColor"
+            label="果子颜色"
+            :preset-colors="foodPresetColors"
+          />
+        </article>
 
-        <div v-else class="tab-panel glx-tab-panel">
-          <div class="tab-section-head glx-section-head">
-            <span class="tab-section-title glx-section-title">参数</span>
-            <span class="tab-section-meta">速度、蛇宽、秒钟</span>
+        <article v-else class="glx-section-card glx-section-card--stack">
+          <div class="glx-section-head">
+            <h2 class="glx-section-title">参数</h2>
+            <span class="glx-section-meta">速度 / 蛇宽 / 秒钟</span>
           </div>
 
-          <div class="card glx-panel-card glx-editor-card">
-            <div class="form-row">
-              <span class="form-label">速度 {{ speed }}</span>
-              <GlxStepper
-                :value="speed"
-                :min="1"
-                :max="10"
-                :step="1"
-                @change="handleSpeedChange"
-              />
-            </div>
-            <div class="form-row">
-              <span class="form-label">蛇宽 {{ snakeWidth }}</span>
-              <GlxStepper
-                :value="snakeWidth"
-                :min="2"
-                :max="4"
-                :step="1"
-                @change="handleSnakeWidthChange"
-              />
-            </div>
-            <div class="form-row">
-              <span class="form-label">显示秒钟</span>
-              <GlxSwitch
-                class="glx-row-switch"
-                :checked="showSeconds"
-                @change="setShowSeconds($event.detail.value)"
-              />
-            </div>
+          <div class="game-row">
+            <span class="game-row__label">速度 {{ config.speed }}</span>
+            <DeviceModeStepper v-model="config.speed" :min="1" :max="10" />
           </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="bottom-tabs">
-      <div
-        v-for="tab in tabDefinitions"
-        :key="tab.index"
-        class="bottom-tab-item"
-        :class="{ active: currentTab === tab.index }"
-        @click="switchTab(tab.index)"
-      >
-        <Icon
-          :name="tab.icon"
-          :size="36"
-          :color="currentTab === tab.index ? '#000000' : '#666666'"
-        />
-        <span class="bottom-tab-text">{{ tab.label }}</span>
-      </div>
-    </div>
+          <div class="game-row">
+            <span class="game-row__label">蛇宽 {{ config.snakeWidth }}</span>
+            <DeviceModeStepper v-model="config.snakeWidth" :min="2" :max="4" />
+          </div>
 
-    <div
-      v-if="isSending"
-      class="glx-device-sending-overlay"
-      @touchmove.stop.prevent
-    >
-      <div class="glx-device-sending-card">
-        <GlxInlineLoader
-          class="glx-device-sending-spinner"
-          variant="chase"
-          size="lg"
-        />
-        <span class="glx-device-sending-title">{{ sendOverlayTitle }}</span>
-        <span class="glx-device-sending-tip">{{ sendOverlayTip }}</span>
+          <div class="game-row">
+            <span class="game-row__label">显示秒钟</span>
+            <GlxSwitch :checked="config.showSeconds" @change="handleShowSecondsChange" />
+          </div>
+        </article>
       </div>
-    </div>
-
-    <Toast
-      ref="toastRef"
-      @show="handleToastShow"
-      @hide="handleToastHide"
-    />
+    </section>
   </div>
 </template>
 
-<script>
-import statusBarMixin from "@/mixins/statusBar.js";
-import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
-import Icon from "@/components/uni/Icon.vue";
-import Toast from "@/components/uni/Toast.vue";
-import GlxInlineLoader from "@/components/uni/GlxInlineLoader.vue";
-import PixelCanvas from "@/components/uni/PixelCanvas.vue";
-import PixelPreviewBoard from "@/components/uni/PixelPreviewBoard.vue";
-import GlxStepper from "@/components/uni/GlxStepper.vue";
-import GlxSwitch from "@/components/uni/GlxSwitch.vue";
-import ColorPanelPicker from "@/components/uni/ColorPanelPicker.vue";
-import ClockFontPanel from "@/components/uni/clock-editor/ClockFontPanel.vue";
-import { useDeviceStore } from "@/stores/device.js";
-import { useToast } from "@/composables/useToast.js";
-import { buildLedMatrixPreviewSequence } from "@/utils/ledMatrixShowcase.js";
-import { getClockFontOptions } from "@/utils/clockCanvas.js";
+<script setup>
+import { computed, onMounted, reactive, ref, watch } from "vue";
+import DeviceSendingOverlay from "@/components/device/DeviceSendingOverlay.vue";
+import { useFeedback } from "@/composables/useFeedback.js";
+import { usePixelPreviewPlayer } from "@/composables/usePixelPreviewPlayer.js";
+import GameModeColorField from "@/components/device/modes/GameModeColorField.vue";
+import GameModeFontSelector from "@/components/device/modes/GameModeFontSelector.vue";
+import DeviceModeStepper from "@/components/device/modes/DeviceModeStepper.vue";
+import DeviceModeTabs from "@/components/device/modes/DeviceModeTabs.vue";
+import DevicePixelBoard from "@/components/device/modes/DevicePixelBoard.vue";
+import GlxSwitch from "@/components/glx/GlxSwitch.vue";
+import { useDeviceLegacyStore } from "@/stores/deviceLegacy.js";
+import { getDeviceClockFontOptions } from "@/utils/device-clock-core.js";
+import { readStorageJson, writeStorageJson } from "@/utils/device-mode-core.js";
+import { buildLedMatrixPreviewSequence } from "../../../uniapp/utils/ledMatrixShowcase.js";
 
 const SNAKE_MODE_CONFIG_KEY = "snake_mode_config";
-const SNAKE_FONT_OPTIONS = getClockFontOptions();
-const SNAKE_FONT_IDS = Object.freeze(
-  SNAKE_FONT_OPTIONS.map((item) => item.id),
-);
-const SNAKE_SKIN_OPTIONS = Object.freeze([
+const fontOptions = getDeviceClockFontOptions();
+const SNAKE_FONT_IDS = Object.freeze(fontOptions.map((item) => item.id));
+const snakeSkinOptions = Object.freeze([
   { value: "solid", label: "纯色" },
   { value: "gradient", label: "渐变" },
   { value: "spotted", label: "斑点" },
 ]);
-const SNAKE_TAB_DEFINITIONS = Object.freeze([
-  { index: 0, label: "外观", icon: "palette" },
-  { index: 1, label: "参数", icon: "setting" },
+const tabItems = Object.freeze([
+  { value: "appearance", label: "外观" },
+  { value: "params", label: "参数" },
+]);
+const foodPresetColors = Object.freeze([
+  { hex: "#ffa854", name: "#ffa854" },
+  { hex: "#ff7f50", name: "#ff7f50" },
+  { hex: "#ff5c5c", name: "#ff5c5c" },
+  { hex: "#ffd166", name: "#ffd166" },
+  { hex: "#c7f464", name: "#c7f464" },
+  { hex: "#ffffff", name: "#ffffff" },
 ]);
 const SNAKE_RANDOM_COLOR_MAP = Object.freeze({
-  solid: [
-    "#56d678",
-    "#39c46a",
-    "#8bff8a",
-    "#4fd1c5",
-    "#7dd3fc",
-    "#facc15",
-  ],
-  gradient: [
-    "#ff8a5b",
-    "#ffd166",
-    "#7c9cff",
-    "#fb7185",
-    "#67e8f9",
-    "#86efac",
-  ],
-  spotted: [
-    "#a3d977",
-    "#d4a373",
-    "#34d399",
-    "#22c55e",
-    "#f59e0b",
-    "#c084fc",
-  ],
+  solid: ["#56d678", "#39c46a", "#8bff8a", "#4fd1c5", "#7dd3fc", "#facc15"],
+  gradient: ["#ff8a5b", "#ffd166", "#7c9cff", "#fb7185", "#67e8f9", "#86efac"],
+  spotted: ["#a3d977", "#d4a373", "#34d399", "#22c55e", "#f59e0b", "#c084fc"],
+});
+
+const deviceStore = useDeviceLegacyStore();
+const feedback = useFeedback();
+const { currentPixels, playSequence, snapshot } = usePixelPreviewPlayer();
+
+const currentTab = ref("appearance");
+const config = reactive(loadSnakeConfig());
+const isSending = ref(false);
+const sendingPixels = ref(new Map());
+
+const displayPixels = computed(() => {
+  if (isSending.value) {
+    return sendingPixels.value;
+  }
+  return currentPixels.value;
+});
+
+watch(
+  config,
+  () => {
+    refreshPreview();
+  },
+  { deep: true, immediate: true },
+);
+
+onMounted(() => {
+  deviceStore.init();
 });
 
 function createDefaultSnakeModeConfig() {
@@ -267,6 +181,18 @@ function createDefaultSnakeModeConfig() {
     font: "minimal_3x5",
     showSeconds: false,
     snakeSkin: "gradient",
+  };
+}
+
+function cloneSnakeModeConfig(source) {
+  return {
+    speed: source.speed,
+    snakeWidth: source.snakeWidth,
+    snakeColor: source.snakeColor,
+    foodColor: source.foodColor,
+    font: source.font,
+    showSeconds: source.showSeconds,
+    snakeSkin: source.snakeSkin,
   };
 }
 
@@ -301,18 +227,50 @@ function normalizeSavedSnakeModeConfig(saved) {
   ) {
     normalized.snakeSkin = saved.snakeSkin;
   }
+
   return normalized;
 }
 
-function readSavedSnakeModeConfig() {
-  const saved = uni.getStorageSync(SNAKE_MODE_CONFIG_KEY);
-  if (!saved || typeof saved !== "object") {
-    return null;
+function normalizeHexText(value) {
+  if (typeof value !== "string") {
+    return "";
   }
-  return normalizeSavedSnakeModeConfig(saved);
+  return value.trim().toLowerCase();
 }
 
-function cloneSnakeModeConfig(config) {
+function pickRandomSnakeColorBySkin(snakeSkin, currentColor) {
+  const colorPool = SNAKE_RANDOM_COLOR_MAP[snakeSkin];
+  if (!Array.isArray(colorPool) || colorPool.length === 0) {
+    return currentColor;
+  }
+  const current = normalizeHexText(currentColor);
+  const candidates = colorPool.filter((item) => {
+    return item !== current;
+  });
+  const pool = candidates.length > 0 ? candidates : colorPool;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function shouldAvoidSnakeColor(color) {
+  return normalizeHexText(color) === "#000000";
+}
+
+function resolveVisibleSnakeColor(snakeSkin, snakeColor) {
+  if (shouldAvoidSnakeColor(snakeColor)) {
+    return pickRandomSnakeColorBySkin(snakeSkin, snakeColor);
+  }
+  return snakeColor;
+}
+
+function loadSnakeConfig() {
+  const saved = readStorageJson(SNAKE_MODE_CONFIG_KEY);
+  const normalized = normalizeSavedSnakeModeConfig(saved);
+  const visibleConfig = cloneSnakeModeConfig(normalized);
+  visibleConfig.snakeColor = resolveVisibleSnakeColor(visibleConfig.snakeSkin, visibleConfig.snakeColor);
+  return visibleConfig;
+}
+
+function buildSnakeConfig() {
   return {
     speed: config.speed,
     snakeWidth: config.snakeWidth,
@@ -324,560 +282,149 @@ function cloneSnakeModeConfig(config) {
   };
 }
 
-function normalizeHexText(value) {
-  return typeof value === "string" ? value.trim().toLowerCase() : "";
+function saveSnakeConfig() {
+  writeStorageJson(SNAKE_MODE_CONFIG_KEY, buildSnakeConfig());
 }
 
-function pickRandomSnakeColorBySkin(snakeSkin, currentColor) {
-  const colorPool = SNAKE_RANDOM_COLOR_MAP[snakeSkin];
-  if (!Array.isArray(colorPool) || colorPool.length === 0) {
-    return currentColor;
+function refreshPreview() {
+  playSequence(
+    buildLedMatrixPreviewSequence({
+      demoId: "snake",
+      speed: config.speed,
+      snakeWidth: config.snakeWidth,
+      snakeColor: config.snakeColor,
+      foodColor: config.foodColor,
+      font: config.font,
+      showSeconds: config.showSeconds,
+      snakeSkin: config.snakeSkin,
+    }),
+  );
+}
+
+function handleFontChange(fontId) {
+  config.font = fontId;
+}
+
+function handleShowSecondsChange(value) {
+  config.showSeconds = value === true;
+}
+
+function randomizeSkinColor() {
+  config.snakeColor = pickRandomSnakeColorBySkin(config.snakeSkin, config.snakeColor);
+}
+
+async function handleSend() {
+  if (deviceStore.connected !== true) {
+    feedback.warning("设备未连接", "请先返回设备控制页建立连接。");
+    return;
   }
-  const current = normalizeHexText(currentColor);
-  const candidates = colorPool.filter((item) => item !== current);
-  const pool = candidates.length > 0 ? candidates : colorPool;
-  return pool[Math.floor(Math.random() * pool.length)];
-}
 
-function shouldAvoidSnakeColor(color) {
-  return normalizeHexText(color) === "#000000";
-}
-
-function resolveVisibleSnakeColor(snakeSkin, snakeColor) {
-  if (!shouldAvoidSnakeColor(snakeColor)) {
-    return snakeColor;
-  }
-  return pickRandomSnakeColorBySkin(snakeSkin, snakeColor);
-}
-
-export default {
-  mixins: [statusBarMixin, deviceSendUxMixin],
-  components: {
-    Icon,
-    Toast,
-    GlxInlineLoader,
-    PixelCanvas,
-    PixelPreviewBoard,
-    GlxStepper,
-    GlxSwitch,
-    ColorPanelPicker,
-    ClockFontPanel,
-  },
-  data() {
-    const defaultConfig = createDefaultSnakeModeConfig();
-    return {
-      deviceStore: null,
-      toast: null,
-      contentHeight: "calc(100vh - 88rpx - 520rpx - 112rpx)",
-      previewCanvasReady: false,
-      previewZoom: 4,
-      previewOffset: { x: 0, y: 0 },
-      previewContainerSize: { width: 320, height: 320 },
-      previewFrameMaps: [],
-      sendingPreviewPixels: new Map(),
-      sendingPreviewTick: 0,
-      previewFrameDelays: [],
-      previewFrameIndex: 0,
-      previewTimer: null,
-      previewRefreshTimer: null,
-      currentTab: 0,
-      tabDefinitions: SNAKE_TAB_DEFINITIONS,
-      speed: defaultConfig.speed,
-      snakeWidth: defaultConfig.snakeWidth,
-      snakeColor: defaultConfig.snakeColor,
-      foodColor: defaultConfig.foodColor,
-      font: defaultConfig.font,
-      showSeconds: defaultConfig.showSeconds,
-      snakeSkin: defaultConfig.snakeSkin,
-      fontOptions: SNAKE_FONT_OPTIONS,
-      snakeSkinOptions: SNAKE_SKIN_OPTIONS,
-      foodPresetColors: [
-        { hex: "#ffa854" },
-        { hex: "#ff7f50" },
-        { hex: "#ff5c5c" },
-        { hex: "#ffd166" },
-        { hex: "#c7f464" },
-        { hex: "#ffffff" },
-      ],
-    };
-  },
-  computed: {
-    currentPreviewPixels() {
-      if (this.previewFrameMaps.length === 0) {
-        return new Map();
-      }
-      if (this.previewFrameIndex >= this.previewFrameMaps.length) {
-        return this.previewFrameMaps[0];
-      }
-      return this.previewFrameMaps[this.previewFrameIndex];
-    },
-    previewCanvasBoxStyle() {
-      const size =
-        this.previewContainerSize && this.previewContainerSize.height
-          ? this.previewContainerSize.height
-          : 320;
-      return {
-        height: `${size}px`,
-      };
-    },
-    previewGridVisible() {
-      return true;
-    },
-  },
-  watch: {
-    speed() {
-      this.schedulePreviewRefresh();
-    },
-    snakeWidth() {
-      this.resetPreviewFrames();
-      this.schedulePreviewRefresh();
-    },
-    snakeColor() {
-      this.schedulePreviewRefresh();
-    },
-    foodColor() {
-      this.schedulePreviewRefresh();
-    },
-    font() {
-      this.resetPreviewFrames();
-      this.schedulePreviewRefresh();
-    },
-    showSeconds() {
-      this.resetPreviewFrames();
-      this.schedulePreviewRefresh();
-    },
-    snakeSkin() {
-      this.schedulePreviewRefresh();
-    },
-  },
-  onLoad() {
-    this.deviceStore = useDeviceStore();
-    this.deviceStore.init();
-    this.toast = useToast();
-    this.loadSavedConfig();
-  },
-  onReady() {
-    if (this.$refs.toastRef) {
-      this.toast.setToastInstance(this.$refs.toastRef);
+  isSending.value = true;
+  sendingPixels.value = snapshot();
+  feedback.showBlocking("发送贪吃蛇", "正在把当前贪吃蛇参数发送到设备。");
+  try {
+    const nextConfig = buildSnakeConfig();
+    await deviceStore.startSnake(nextConfig);
+    saveSnakeConfig();
+    feedback.success("发送成功", "贪吃蛇已发送到设备。");
+  } catch (error) {
+    if (error instanceof Error) {
+      feedback.error("发送失败", error.message);
+    } else {
+      feedback.error("发送失败", "贪吃蛇发送失败。");
     }
-    this.initPreviewCanvas();
-  },
-  onHide() {
-    this.cleanupPreviewTimers();
-  },
-  onUnload() {
-    this.cleanupPreviewTimers();
-  },
-  methods: {
-    captureSendingPreview() {
-      this.sendingPreviewPixels = new Map(this.currentPreviewPixels);
-      this.sendingPreviewTick += 1;
-    },
-    clearSendingPreview() {
-      this.sendingPreviewPixels = new Map();
-      this.sendingPreviewTick += 1;
-    },
-    beginSendUi() {
-      this.captureSendingPreview();
-      deviceSendUxMixin.methods.beginSendUi.call(this);
-    },
-    endSendUi() {
-      deviceSendUxMixin.methods.endSendUi.call(this);
-    },
-    applyConfig(config) {
-      const visibleSnakeColor = resolveVisibleSnakeColor(
-        config.snakeSkin,
-        config.snakeColor,
-      );
-      this.speed = config.speed;
-      this.snakeWidth = config.snakeWidth;
-      this.snakeColor = visibleSnakeColor;
-      this.foodColor = config.foodColor;
-      this.font = config.font;
-      this.showSeconds = config.showSeconds;
-      this.snakeSkin = config.snakeSkin;
-    },
-    buildCurrentConfig() {
-      return {
-        speed: this.speed,
-        snakeWidth: this.snakeWidth,
-        snakeColor: this.snakeColor,
-        foodColor: this.foodColor,
-        font: this.font,
-        showSeconds: this.showSeconds,
-        snakeSkin: this.snakeSkin,
-      };
-    },
-    handleBack() {
-      uni.navigateBack();
-    },
-    switchTab(tabIndex) {
-      this.currentTab = tabIndex;
-    },
-    initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
-      const statusBarHeight = systemInfo.statusBarHeight || 0;
-      const fallbackBottomTabsHeight = 76;
-
-      this.$nextTick(() => {
-        setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
-          query.select(".canvas-section").boundingClientRect();
-          query.select(".bottom-tabs").boundingClientRect();
-          query.select(".preview-canvas-container").boundingClientRect();
-          query.exec((results) => {
-            const [sectionRect, tabsRect, previewRect] = Array.isArray(results)
-              ? results
-              : [];
-
-            if (sectionRect && sectionRect.height) {
-              const nextHeight =
-                systemInfo.windowHeight -
-                statusBarHeight -
-                88 -
-                sectionRect.height;
-              const bottomTabsHeight =
-                tabsRect && tabsRect.height
-                  ? tabsRect.height
-                  : fallbackBottomTabsHeight;
-              this.contentHeight = `${Math.max(120, nextHeight - bottomTabsHeight)}px`;
-            }
-
-            if (!previewRect || !previewRect.width) {
-              this.previewCanvasReady = true;
-              this.schedulePreviewRefresh();
-              return;
-            }
-
-            const fitZoom = Math.max(
-              2,
-              Math.floor((previewRect.width * 0.96) / 64),
-            );
-            this.previewContainerSize = {
-              width: previewRect.width,
-              height: previewRect.width,
-            };
-            this.previewZoom = fitZoom;
-            this.previewOffset = {
-              x: (previewRect.width - 64 * fitZoom) / 2,
-              y: (previewRect.width - 64 * fitZoom) / 2,
-            };
-            this.previewCanvasReady = true;
-            this.schedulePreviewRefresh();
-          });
-        }, 80);
-      });
-    },
-    resetPreviewFrames() {
-      this.stopPreviewPlayback();
-      this.previewFrameMaps = [];
-      this.previewFrameDelays = [];
-      this.previewFrameIndex = 0;
-    },
-    schedulePreviewRefresh() {
-      if (!this.previewCanvasReady) {
-        return;
-      }
-      if (this.previewRefreshTimer) {
-        clearTimeout(this.previewRefreshTimer);
-        this.previewRefreshTimer = null;
-      }
-      this.previewRefreshTimer = setTimeout(() => {
-        this.refreshPreviewFrames();
-      }, 100);
-    },
-    refreshPreviewFrames() {
-      const previewSequence = buildLedMatrixPreviewSequence({
-        demoId: "snake",
-        speed: this.speed,
-        snakeWidth: this.snakeWidth,
-        snakeColor: this.snakeColor,
-        foodColor: this.foodColor,
-        font: this.font,
-        showSeconds: this.showSeconds,
-        snakeSkin: this.snakeSkin,
-      });
-      this.previewFrameMaps = Array.isArray(previewSequence.maps)
-        ? previewSequence.maps
-        : [];
-      this.previewFrameDelays = Array.isArray(previewSequence.delays)
-        ? previewSequence.delays
-        : [];
-      this.previewFrameIndex = 0;
-      this.startPreviewPlayback();
-    },
-    startPreviewPlayback() {
-      this.stopPreviewPlayback();
-      if (this.previewFrameMaps.length <= 1) {
-        return;
-      }
-      const playNext = () => {
-        const currentDelay = this.previewFrameDelays[this.previewFrameIndex];
-        const delay = typeof currentDelay === "number" ? currentDelay : 120;
-        this.previewTimer = setTimeout(() => {
-          if (this.previewFrameMaps.length === 0) {
-            return;
-          }
-          this.previewFrameIndex =
-            this.previewFrameIndex + 1 >= this.previewFrameMaps.length
-              ? 0
-              : this.previewFrameIndex + 1;
-          playNext();
-        }, delay);
-      };
-      playNext();
-    },
-    stopPreviewPlayback() {
-      if (this.previewTimer) {
-        clearTimeout(this.previewTimer);
-        this.previewTimer = null;
-      }
-    },
-    cleanupPreviewTimers() {
-      this.stopPreviewPlayback();
-      if (this.previewRefreshTimer) {
-        clearTimeout(this.previewRefreshTimer);
-        this.previewRefreshTimer = null;
-      }
-    },
-    handleSpeedChange(event) {
-      this.speed = Number(event.detail.value);
-    },
-    handleSnakeWidthChange(event) {
-      this.snakeWidth = Number(event.detail.value);
-    },
-    handleFoodColorChange(value) {
-      this.foodColor = value;
-    },
-    selectSnakeSkin(value) {
-      if (this.snakeSkin === value) {
-        return;
-      }
-      this.snakeColor = pickRandomSnakeColorBySkin(value, this.snakeColor);
-      this.snakeSkin = value;
-    },
-    randomizeSkinColor() {
-      this.snakeColor = pickRandomSnakeColorBySkin(
-        this.snakeSkin,
-        this.snakeColor,
-      );
-    },
-    selectFont(fontId) {
-      this.font = fontId;
-    },
-    setShowSeconds(value) {
-      this.showSeconds = value === true;
-    },
-    loadSavedConfig() {
-      const savedConfig = readSavedSnakeModeConfig();
-      if (savedConfig) {
-        const visibleConfig = cloneSnakeModeConfig(savedConfig);
-        visibleConfig.snakeColor = resolveVisibleSnakeColor(
-          visibleConfig.snakeSkin,
-          visibleConfig.snakeColor,
-        );
-        this.applyConfig(visibleConfig);
-        return;
-      }
-      this.applyConfig(createDefaultSnakeModeConfig());
-    },
-    saveConfig() {
-      const currentConfig = this.buildCurrentConfig();
-      uni.setStorageSync(SNAKE_MODE_CONFIG_KEY, currentConfig);
-    },
-    async saveAndApply() {
-      if (!this.guardBeforeSend(this.deviceStore.connected)) {
-        return;
-      }
-
-      this.beginSendUi();
-      try {
-        const ws = this.deviceStore.getWebSocket();
-        await ws.startSnake({
-          speed: this.speed,
-          snakeWidth: this.snakeWidth,
-          snakeColor: this.snakeColor,
-          foodColor: this.foodColor,
-          font: this.font,
-          showSeconds: this.showSeconds,
-          snakeSkin: this.snakeSkin,
-        });
-        this.saveConfig();
-        this.showSendSuccess();
-      } catch (error) {
-        console.error("发送贪吃蛇失败:", error);
-        this.showSendFailure(error);
-      } finally {
-        this.endSendUi();
-      }
-    },
-  },
-};
+  } finally {
+    feedback.hideBlocking();
+    isSending.value = false;
+  }
+}
 </script>
 
 <style scoped>
-.snake-page {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--bg-primary);
-  overflow: hidden;
+.game-mode-page {
+  gap: 24px;
 }
 
-.status-bar {
-  background-color: #1a1a1a;
-}
-
-.preview-title {
-  font-size: 24rpx;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.preview-note {
-  font-size: 20rpx;
-  line-height: 1.2;
-  color: var(--text-secondary);
-}
-
-.content {
-  flex: 1;
-  width: 100%;
-  min-height: 0;
-  box-sizing: border-box;
-  background: var(--bg-tertiary);
-  padding: 16rpx 20rpx 0;
-}
-
-.tab-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
-}
-
-.tab-section-head {
-  align-items: center;
-}
-
-.tab-section-title {
-  font-size: 28rpx;
-}
-
-.tab-section-meta {
-  font-size: 22rpx;
-  line-height: 1.2;
-  color: var(--text-secondary);
-}
-
-.card {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-
-.color-picker-row {
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-}
-
-.snake-top-card {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  padding: 0 8rpx 8rpx;
-}
-
-.snake-top-head {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-  margin-bottom: 14rpx;
-}
-
-.skin-toolbar {
+.game-mode-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 12rpx;
-  margin-bottom: 14rpx;
+  grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+  gap: 24px;
 }
 
-.skin-toolbar-btn {
-  min-height: 78rpx;
-  padding: 14rpx 16rpx;
+.game-preview-card {
+  position: sticky;
+  top: 88px;
+  align-self: start;
+}
+
+.game-preview-card__head {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  text-align: center;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
 }
 
-.skin-toolbar-btn.disabled {
-  opacity: 0.42;
-}
-
-.skin-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12rpx;
-}
-
-.skin-option {
-  min-height: 0;
-  padding: 20rpx 16rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  text-align: center;
-}
-
-.skin-option .glx-feature-option__label,
-.skin-toolbar-btn .glx-feature-option__label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100%;
-  white-space: nowrap;
-}
-.bottom-tabs {
-  display: flex;
-  flex-shrink: 0;
-  padding: 2rpx 10rpx 0;
-  padding-bottom: var(--layout-bottom-offset);
-  background-color: var(--bg-elevated);
-  border-top: 2rpx solid var(--nb-ink);
-  gap: 2rpx;
-}
-
-.bottom-tab-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2rpx;
-  min-height: 68rpx;
-  padding: 2rpx 0;
-  background-color: transparent;
-}
-
-.bottom-tab-item:active {
-  background-color: transparent;
-}
-
-.bottom-tab-item.active {
-  background-color: transparent;
-}
-
-.bottom-tab-item.active .bottom-tab-text {
-  color: #000000;
+.game-page-title {
+  margin: 0;
+  font-size: 28px;
   font-weight: 900;
-  font-size: 22rpx;
 }
 
-.bottom-tab-text {
-  font-size: 20rpx;
-  color: var(--text-secondary);
+.game-page-meta {
+  margin: 8px 0 0;
+  color: var(--glx-text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.game-preview-stage {
+  position: relative;
+  padding: 18px;
+  border: 2px solid #000000;
+  background: #000000;
+}
+
+.game-preview-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.game-mode-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.game-inline-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.game-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.game-row__label {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+@media (max-width: 1080px) {
+  .game-mode-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .game-preview-card {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .game-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 </style>

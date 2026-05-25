@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { devicePreviewRoutes } from "@/config/appNavigation.js";
+import { appNavigation as devicePreviewRoutes } from "@/config/appNavigation.js";
 
 const previewRoutes = devicePreviewRoutes;
 </script>

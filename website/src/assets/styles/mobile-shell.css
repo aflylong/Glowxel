@@ -1,6 +1,9 @@
-/* 设备控制页 (从 uniapp 复刻) - 移动端 + 桌面端响应式
- * 设计稿 750rpx, postcss-rpx-to-vw 插件已转 rpx → min(Nvw, Mpx)
- * 桌面端整页居中限制 414px 宽 (uniapp 默认手机壳)
+/* 设备页移动端外壳样式
+ * 路由层根据 UA 选择加载: views/X.vue (PC) | views/mobile/X.vue (Mobile)
+ * 这份 CSS 仅作用于 mobile 加载的页面 (用 body.is-mobile-device 标记)
+ *
+ * uniapp 设计稿 750rpx 已被 postcss-rpx-to-vw 转成 vw,
+ * 移动端 100vw = 屏宽, 跟 uniapp 视觉一致
  */
 
 /* ============ scroll-view: uniapp 滚动容器 ============ */
@@ -9,16 +12,8 @@
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
-
-[data-scroll-view][scroll-x] {
-  overflow-x: auto;
-  overflow-y: hidden;
-}
-
-[data-scroll-view][scroll-y] {
-  overflow-y: auto;
-  overflow-x: hidden;
-}
+[data-scroll-view][scroll-x] { overflow-x: auto; overflow-y: hidden; }
+[data-scroll-view][scroll-y] { overflow-y: auto; overflow-x: hidden; }
 
 /* ============ 触摸优化 ============ */
 .glx-page-shell,
@@ -26,14 +21,12 @@
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
-
 button,
 .action-btn-sm,
 .weapon-btn,
 .option-btn,
 .control-btn,
 .equip-tab,
-.tab,
 .bottom-tab-item {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -41,49 +34,35 @@ button,
   -webkit-user-select: none;
 }
 
-/* ============ 设备页 body 背景 ============ */
-body.is-device-page {
-  background: #f0f0f0;
+/* ============ 设备页 (移动端模拟手机) ============
+ * 桌面浏览器看移动端预览时居中限宽 414px (常用手机壳宽)
+ * 真实移动设备 100vw 满屏
+ */
+body.is-device-page.is-mobile-device {
   margin: 0;
   padding: 0;
-}
-
-/* ============ 设备页整页限宽 (PC 端手机壳) ============
- * 移动端: 100vw 满铺
- * 桌面端: 居中 414px 手机壳宽度 (跟 rpx 转换基准一致)
- */
-body.is-device-page #app {
-  min-height: 100vh;
-  width: 100vw;
-  max-width: 414px;
-  margin: 0 auto;
   background: var(--nb-paper, #fffaf2);
-  position: relative;
-  /* 桌面端给手机壳加边框阴影 */
-  box-sizing: border-box;
 }
 
 @media (min-width: 769px) {
-  body.is-device-page #app {
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08),
-                0 8px 32px rgba(0, 0, 0, 0.12);
-    border-radius: 12px;
-    margin-top: 16px;
-    margin-bottom: 16px;
-    min-height: calc(100vh - 32px);
+  body.is-device-page.is-mobile-device {
+    background: #f0f0f0;
+  }
+  body.is-device-page.is-mobile-device #app {
+    max-width: 414px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: var(--nb-paper, #fffaf2);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06),
+                0 4px 24px rgba(0, 0, 0, 0.08);
+    overflow-x: hidden;
   }
 }
 
-/* ============ 防止 uniapp 页面里的 vh/100% 计算溢出 ============ */
-body.is-device-page .glx-page-shell {
+/* 防止 uniapp 页面溢出 */
+body.is-device-page.is-mobile-device .glx-page-shell,
+body.is-device-page.is-mobile-device [class*="-page"] {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
-}
-
-/* ============ 兜底: rpx 转换后的 min() 在老浏览器 fallback ============ */
-@supports not (width: min(1vw, 1px)) {
-  body.is-device-page {
-    /* 老浏览器看到的就是 vw 基准 (跟 mobile 表现一致, 不限宽) */
-  }
 }

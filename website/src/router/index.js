@@ -1,7 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { getStoredAuthToken } from '@/utils/session.js'
+import { isMobileDevice } from '@/utils/device-detect.js'
 
 const Migrating = () => import('@/views/DeviceMigrating.vue')
+
+// 设备页双版本: PC 版 = views/X.vue, 移动版 = views/mobile/X.vue
+// 路由根据 UA 选择加载哪个 (vue-router 4 component 函数返回的 Promise)
+function deviceDual(name) {
+  return () => isMobileDevice()
+    ? import(`@/views/mobile/${name}.vue`).catch(() => import(`@/views/${name}.vue`))
+    : import(`@/views/${name}.vue`).catch(() => import(`@/views/mobile/${name}.vue`))
+}
 
 const routes = [
   // ===== 公共/社区类 (不动) =====
@@ -37,33 +46,32 @@ const routes = [
   { path: '/following', name: 'MyFollowing', component: () => import('@/views/FollowList.vue'), meta: { shell: 'app', auth: true } },
   { path: '/design-compare', name: 'DesignCompare', component: () => import('@/views/DesignCompare.vue'), meta: { shell: 'app' } },
 
-  // ===== 设备控制 (从 uniapp 全量复刻) =====
-  { path: '/device-control', name: 'DeviceControl', component: () => import('@/views/DeviceControl.vue'), meta: { shell: 'app' } },
-  { path: '/ble-config', name: 'BleConfig', component: () => import('@/views/BleConfig.vue'), meta: { shell: 'app' } },
-  { path: '/device-params', name: 'DeviceParams', component: () => import('@/views/DeviceParams.vue'), meta: { shell: 'app' } },
-  { path: '/canvas-editor', name: 'CanvasEditor', component: () => import('@/views/CanvasEditor.vue'), meta: { shell: 'app' } },
-  { path: '/gif-player', name: 'GifPlayer', component: () => import('@/views/GifPlayer.vue'), meta: { shell: 'app' } },
-  { path: '/led-matrix', name: 'LedMatrix', component: () => import('@/views/LedMatrix.vue'), meta: { shell: 'app' } },
+  // ===== 设备控制类 (双端: PC = views/X.vue, mobile = views/mobile/X.vue) =====
+  { path: '/device-control', name: 'DeviceControl', component: deviceDual('DeviceControl'), meta: { shell: 'app' } },
+  { path: '/ble-config', name: 'BleConfig', component: deviceDual('BleConfig'), meta: { shell: 'app' } },
+  { path: '/device-params', name: 'DeviceParams', component: deviceDual('DeviceParams'), meta: { shell: 'app' } },
+  { path: '/canvas-editor', name: 'CanvasEditor', component: deviceDual('CanvasEditor'), meta: { shell: 'app' } },
+  { path: '/gif-player', name: 'GifPlayer', component: deviceDual('GifPlayer'), meta: { shell: 'app' } },
+  { path: '/led-matrix', name: 'LedMatrix', component: deviceDual('LedMatrix'), meta: { shell: 'app' } },
+  { path: '/maze-mode', name: 'MazeMode', component: deviceDual('MazeMode'), meta: { shell: 'app' } },
+  { path: '/snake-mode', name: 'SnakeMode', component: deviceDual('SnakeMode'), meta: { shell: 'app' } },
+  { path: '/tetris-settings', name: 'TetrisSettings', component: deviceDual('TetrisSettings'), meta: { shell: 'app' } },
+  { path: '/tetris-clock-settings', name: 'TetrisClockSettings', component: deviceDual('TetrisClockSettings'), meta: { shell: 'app' } },
+  { path: '/planet-screensaver', name: 'PlanetScreensaver', component: deviceDual('PlanetScreensaver'), meta: { shell: 'app' } },
+  { path: '/water-world', name: 'WaterWorld', component: deviceDual('WaterWorld'), meta: { shell: 'app' } },
+  { path: '/spirit-screen', name: 'SpiritScreen', component: deviceDual('SpiritScreen'), meta: { shell: 'app' } },
 
-  // ===== 屏保 / 模式类 =====
-  { path: '/maze-mode', name: 'MazeMode', component: () => import('@/views/MazeMode.vue'), meta: { shell: 'app' } },
-  { path: '/snake-mode', name: 'SnakeMode', component: () => import('@/views/SnakeMode.vue'), meta: { shell: 'app' } },
-  { path: '/tetris-settings', name: 'TetrisSettings', component: () => import('@/views/TetrisSettings.vue'), meta: { shell: 'app' } },
-  { path: '/tetris-clock-settings', name: 'TetrisClockSettings', component: () => import('@/views/TetrisClockSettings.vue'), meta: { shell: 'app' } },
-  { path: '/planet-screensaver', name: 'PlanetScreensaver', component: () => import('@/views/PlanetScreensaver.vue'), meta: { shell: 'app' } },
-  { path: '/water-world', name: 'WaterWorld', component: () => import('@/views/WaterWorld.vue'), meta: { shell: 'app' } },
-  { path: '/spirit-screen', name: 'SpiritScreen', component: () => import('@/views/SpiritScreen.vue'), meta: { shell: 'app' } },
-  { path: '/ambient-editor', name: 'AmbientEditor', component: () => import('@/views/AmbientEditor.vue'), meta: { shell: 'app' } },
-  { path: '/rick-morty-portal', name: 'RickMortyPortal', component: () => import('@/views/RickMortyPortal.vue'), meta: { shell: 'app' } },
+  // 仅移动端有 (PC 版未实现)
+  { path: '/ambient-editor', name: 'AmbientEditor', component: () => import('@/views/mobile/AmbientEditor.vue'), meta: { shell: 'app' } },
+  { path: '/rick-morty-portal', name: 'RickMortyPortal', component: () => import('@/views/mobile/RickMortyPortal.vue'), meta: { shell: 'app' } },
+  { path: '/terraria-clock', name: 'TerrariaClock', component: () => import('@/views/mobile/TerrariaClock.vue'), meta: { shell: 'app' } },
+  { path: '/minecraft-clock', name: 'MinecraftClock', component: () => import('@/views/mobile/MinecraftClock.vue'), meta: { shell: 'app' } },
 
-  // ===== 时钟主题类 =====
-  { path: '/terraria-clock', name: 'TerrariaClock', component: () => import('@/views/TerrariaClock.vue'), meta: { shell: 'app' } },
-  { path: '/minecraft-clock', name: 'MinecraftClock', component: () => import('@/views/MinecraftClock.vue'), meta: { shell: 'app' } },
-
-  // 暂未实现的旧路由 (兼容老链接)
-  { path: '/clock', name: 'Clock', component: Migrating, meta: { shell: 'app' } },
-  { path: '/animation-clock', name: 'AnimationClock', component: Migrating, meta: { shell: 'app' } },
-  { path: '/theme-clock', name: 'ThemeClock', component: Migrating, meta: { shell: 'app' } },
+  // 仅 PC 端有 (移动端未实现)
+  { path: '/clock', name: 'Clock', component: () => import('@/views/Clock.vue'), meta: { shell: 'app' } },
+  { path: '/animation-clock', name: 'AnimationClock', component: () => import('@/views/AnimationClock.vue'), meta: { shell: 'app' } },
+  { path: '/theme-clock', name: 'ThemeClock', component: () => import('@/views/ThemeClock.vue'), meta: { shell: 'app' } },
+  { path: '/device-mode', name: 'DeviceModePage', component: () => import('@/views/DeviceModePage.vue'), meta: { shell: 'app' } },
 ]
 
 const router = createRouter({
@@ -80,7 +88,7 @@ router.beforeEach((to) => {
   }
 })
 
-// 设备页给 body 加 .is-device-page (mobile-shell.css 会展示桌面端手机壳)
+// 设备页给 body 加 .is-device-page (用于沉浸式样式 + 移动端 mobile-shell)
 router.afterEach((to) => {
   const isDevicePage = to.meta.shell === 'app' && (
     to.path.startsWith('/device-') ||
@@ -98,13 +106,10 @@ router.afterEach((to) => {
     to.path.startsWith('/rick-morty-') ||
     to.path.startsWith('/terraria-') ||
     to.path.startsWith('/minecraft-') ||
-    to.path === '/clock' ||
-    to.path === '/animation-clock' ||
-    to.path === '/theme-clock'
+    to.path === '/clock' || to.path === '/animation-clock' || to.path === '/theme-clock'
   )
   if (typeof document !== 'undefined') {
     document.body.classList.toggle('is-device-page', isDevicePage)
-    document.body.classList.toggle('has-mobile-shell', isDevicePage)
   }
 })
 

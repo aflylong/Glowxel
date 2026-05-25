@@ -1,1151 +1,449 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/water-world/water-world.vue -->
 <template>
-  <div class="water-world-page glx-page-shell">
-    
-
-    <div class="navbar glx-topbar glx-page-shell__fixed">
-      <div class="nav-left" @click="handleBack">
-        <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
-      </div>
-      <span class="nav-title glx-topbar__title">水世界</span>
-      <div class="nav-right"></div>
-    </div>
-
-    <div class="canvas-section">
-      <div class="preview-canvas-container" :style="previewCanvasBoxStyle">
-        <PixelCanvas
-          v-if="previewCanvasReady && !shouldShowSendingSnapshot"
-          :width="64"
-          :height="64"
-          :pixels="currentPreviewPixels"
-          :zoom="previewZoom"
-          :offset-x="previewOffset.x"
-          :offset-y="previewOffset.y"
-          :canvas-width="previewContainerSize.width"
-          :canvas-height="previewContainerSize.height"
-          :grid-visible="false"
-          :is-dark-mode="true"
-          :touch-enabled="false"
-          canvas-id="waterWorldPreviewCanvas"
-        />
-        <PixelPreviewBoard
-          v-else-if="previewCanvasReady && shouldShowSendingSnapshot"
-          :width="64"
-          :height="64"
-          :pixels="sendingPreviewPixels"
-          :refresh-token="sendingPreviewTick"
-          :zoom="previewZoom"
-          :offset-x="previewOffset.x"
-          :offset-y="previewOffset.y"
-          :grid-visible="false"
-          :is-dark-mode="true"
-        />
-      </div>
-      <div class="preview-caption glx-preview-panel">
-        <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-title">预览效果</span>
-        </div>
-        <div class="preview-actions">
-          <div
-            class="action-btn-sm primary glx-primary-action"
-            :class="{ disabled: isSending }"
-            @click="handleSend"
-          >
-            <Icon name="link" :size="36" color="var(--nb-ink)" />
-            <span>发送</span>
+  <div class="glx-page-shell game-mode-page">
+    <section class="game-mode-layout">
+      <article class="glx-section-card glx-section-card--stack game-preview-card">
+        <div class="game-preview-card__head">
+          <div>
+            <h1 class="game-page-title">水世界</h1>
+            <p class="game-page-meta">海面波浪、深海海流和海底焦散都在网站端先做首屏预览，再按同一组配置发送到设备。</p>
           </div>
+          <span class="glx-chip" :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'">
+            {{ deviceStore.connected ? "已连接" : "未连接" }}
+          </span>
         </div>
-      </div>
-    </div>
 
-    <div data-scroll-view
-      scroll-y
-      class="content glx-scroll-region glx-page-shell__content"
-      :style="{ height: contentHeight }"
-    >
-      <div class="content-wrapper glx-scroll-stack">
-        <div v-show="currentTab === 1" class="water-tab-panel">
-          <div class="settings-card glx-panel-card water-section-card">
-            <div class="route-grid">
-              <div
-                v-for="option in waterOptions"
-                :key="option.preset"
-                class="water-option glx-feature-option glx-feature-option--scene"
-                :class="{ active: config.preset === option.preset }"
-                @click="applyPreset(option.preset)"
-              >
-                <span class="glx-feature-option__label">{{ option.label }}</span>
-              </div>
+        <div class="game-preview-stage">
+          <DevicePixelBoard :pixels="currentPreviewPixels" :grid-visible="false" />
+          <DeviceSendingOverlay
+            :visible="isSending"
+            title="正在发送水世界"
+            description="发送期间锁定当前预览快照，等待设备完成水世界场景与时钟配置事务提交。"
+          >
+            <DevicePixelBoard :pixels="sendingPixels" :grid-visible="false" />
+          </DeviceSendingOverlay>
+        </div>
+
+        <div class="game-preview-actions">
+          <button type="button" class="glx-button glx-button--primary" :disabled="isSending" @click="handleSend">
+            {{ isSending ? "发送中..." : "发送到设备" }}
+          </button>
+        </div>
+      </article>
+
+      <div class="game-mode-stack">
+        <article class="glx-section-card glx-section-card--stack">
+          <div class="glx-section-head">
+            <h2 class="glx-section-title">分组</h2>
+            <span class="glx-section-meta">场景 / 时间 / 字体</span>
+          </div>
+          <DeviceModeTabs v-model="currentTab" :items="tabItems" />
+        </article>
+
+        <template v-if="currentTab === 'scene'">
+          <article class="glx-section-card glx-section-card--stack">
+            <div class="glx-section-head">
+              <h2 class="glx-section-title">路线</h2>
+              <span class="glx-section-meta">{{ WATER_WORLD_OPTIONS.length }} 个水域</span>
             </div>
-            <div class="water-toolbar">
-              <span class="water-toolbar-label">海水颜色</span>
-              <div
-                class="action-btn-sm glx-secondary-action water-random-btn"
-                :class="{ disabled: isSending }"
-                @click="handleRandomColorTheme"
-              >
-                <Icon name="palette" :size="32" color="var(--nb-ink)" />
-                <span>随机海色</span>
-              </div>
+            <DeviceModeTabs
+              v-model="config.preset"
+              :items="WATER_WORLD_OPTIONS.map((item) => ({ value: item.preset, label: item.label }))"
+            />
+          </article>
+
+          <article class="glx-section-card glx-section-card--stack">
+            <div class="glx-section-head">
+              <h2 class="glx-section-title">海水颜色</h2>
+              <span class="glx-section-meta">随机海色也会一起缓存</span>
+            </div>
+            <div class="game-inline-actions">
+              <button type="button" class="glx-button glx-button--ghost" @click="randomizeColorTheme">随机海色</button>
             </div>
             <div class="color-theme-grid">
-              <div
-                v-for="theme in colorThemeOptions"
+              <button
+                v-for="theme in WATER_WORLD_COLOR_THEME_OPTIONS"
                 :key="theme.id"
-                class="water-color-option glx-feature-option"
-                :class="{ active: colorThemeId === theme.id }"
-                @click="applyColorTheme(theme.id)"
+                type="button"
+                class="color-theme-card"
+                :class="{ 'is-active': colorThemeId === theme.id }"
+                @click="colorThemeId = theme.id"
               >
-                <div class="water-color-swatches">
-                  <div
+                <div class="color-theme-swatches">
+                  <span
                     v-for="swatch in theme.swatches"
                     :key="`${theme.id}-${swatch}`"
-                    class="water-color-dot"
+                    class="color-theme-dot"
                     :style="{ backgroundColor: swatch }"
-                  ></div>
+                  ></span>
                 </div>
-                <span class="glx-feature-option__label">{{ theme.label }}</span>
-              </div>
+                <strong>{{ theme.label }}</strong>
+              </button>
             </div>
-          </div>
-        </div>
+          </article>
+        </template>
 
-        <ClockTextSettingsCard
-          v-show="currentTab === 2"
-          icon-name="time"
-          title="时间显示"
-          :section="effectiveTimeSection"
-          :preset-colors="presetColors"
-          :show-font-size="true"
-          :show-seconds-control="true"
-          :show-seconds="clockConfig.showSeconds"
-          :min-font-size="1"
-          :max-font-size="3"
-          :show-toggle="false"
-          @toggle-seconds="toggleShowSeconds"
-          @adjust="handleTimeAdjust"
-          @update-color="handleTimeColor"
-          @set-align="handleTimeAlign"
-        />
+        <article v-else-if="currentTab === 'time'" class="glx-section-card glx-section-card--stack">
+          <ClockTextSettingsSection
+            title="时间显示"
+            description="时间层字段继续沿用时钟配置合同，位置、字号、颜色和对齐与 uniapp 同源。"
+            :section="timeSection"
+            :preset-colors="presetColors"
+            :show-font-size="true"
+            :show-seconds-control="true"
+            :show-seconds="clockConfig.showSeconds"
+            :min-font-size="1"
+            :max-font-size="3"
+            @toggle="toggleTimeShow"
+            @toggle-seconds="toggleShowSeconds"
+            @adjust="handleTimeAdjust"
+            @set-align="handleTimeAlign"
+            @update-color="handleTimeColor"
+          />
+        </article>
 
-        <ClockFontPanel
-          v-show="currentTab === 3"
-          :font-options="fontOptions"
-          :selected-font="clockConfig.font"
-          :show-seconds="clockConfig.showSeconds"
-          :hour-format="clockConfig.hourFormat"
-          @select-font="selectFont"
-          @set-hour-format="setHourFormat"
-        />
+        <article v-else class="glx-section-card glx-section-card--stack">
+          <GameModeFontSelector
+            title="字体样式"
+            description="水世界时钟覆盖和站内其它时钟页保持同一套字模与小时制切换。"
+            :font-options="fontOptions"
+            :selected-font="clockConfig.font"
+            :show-seconds="clockConfig.showSeconds"
+            :hour-format="clockConfig.hourFormat"
+            :show-hour-format="true"
+            @select-font="clockConfig.font = $event"
+            @set-show-seconds="handleShowSecondsChange"
+            @set-hour-format="setHourFormat"
+          />
+        </article>
       </div>
-    </div>
-
-    <div
-      v-if="isSending"
-      class="glx-device-sending-overlay"
-      @touchmove.stop.prevent
-    >
-      <div class="glx-device-sending-card">
-        <GlxInlineLoader
-          class="glx-device-sending-spinner"
-          variant="chase"
-          size="lg"
-        />
-        <span class="glx-device-sending-title">{{ sendOverlayTitle }}</span>
-        <span class="glx-device-sending-tip">{{ sendOverlayTip }}</span>
-      </div>
-    </div>
-
-    <div class="bottom-tabs">
-      <div
-        v-for="tab in tabDefinitions"
-        :key="tab.index"
-        class="bottom-tab-item"
-        :class="{ active: currentTab === tab.index }"
-        @click="currentTab = tab.index"
-      >
-        <Icon
-          :name="tab.icon"
-          :size="36"
-          :color="currentTab === tab.index ? '#000000' : '#666666'"
-        />
-        <span class="bottom-tab-text">{{ tab.label }}</span>
-      </div>
-    </div>
-
-    <Toast
-      ref="toastRef"
-      @show="handleToastShow"
-      @hide="handleToastHide"
-    />
+    </section>
   </div>
 </template>
 
-<script>
-import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
-import { useDeviceStore } from "@/stores/device.js";
-import statusBarMixin from "@/mixins/statusBar.js";
-import Icon from "@/components/uni/Icon.vue";
-import Toast from "@/components/uni/Toast.vue";
-import GlxInlineLoader from "@/components/uni/GlxInlineLoader.vue";
-import PixelCanvas from "@/components/uni/PixelCanvas.vue";
-import PixelPreviewBoard from "@/components/uni/PixelPreviewBoard.vue";
-import ClockFontPanel from "@/components/uni/clock-editor/ClockFontPanel.vue";
-import ClockTextSettingsCard from "@/components/uni/clock-editor/ClockTextSettingsCard.vue";
-import { useToast } from "@/composables/useToast.js";
+<script setup>
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
+import ClockTextSettingsSection from "@/components/device/clock/ClockTextSettingsSection.vue";
+import DeviceSendingOverlay from "@/components/device/DeviceSendingOverlay.vue";
+import DeviceModeTabs from "@/components/device/modes/DeviceModeTabs.vue";
+import DevicePixelBoard from "@/components/device/modes/DevicePixelBoard.vue";
+import GameModeFontSelector from "@/components/device/modes/GameModeFontSelector.vue";
+import { useFeedback } from "@/composables/useFeedback.js";
+import { useDeviceLegacyStore } from "@/stores/deviceLegacy.js";
+import { buildDeviceClockPayload, getDeviceClockFontOptions } from "@/utils/device-clock-core.js";
 import {
-  drawClockTextToPixels,
-  getClockFontOptions,
-  getCurrentTimeText,
-  getClockTextHeight,
-  getClockTextWidth,
-} from "@/utils/clockCanvas.js";
-import {
-  DEFAULT_WATER_WORLD_COLOR_THEME_ID,
-  WATER_WORLD_COLOR_THEME_OPTIONS,
-  buildWaterWorldColorThemePayload,
+  buildWaterWorldPreviewPixels,
+  buildWaterWorldSendPlan,
+  createDefaultWaterWorldClockConfig,
+  createDefaultWaterWorldConfig,
   createWaterWorldPreviewState,
-  renderWaterWorldPreviewState,
+  DEFAULT_WATER_WORLD_COLOR_THEME_ID,
+  normalizeWaterWorldClockConfig,
+  normalizeWaterWorldConfig,
+  pickRandomWaterWorldColorThemeId,
   stepWaterWorldPreviewState,
-} from "@/utils/waterWorldPreview.js";
+  WATER_WORLD_CLOCK_CONFIG_KEY,
+  WATER_WORLD_COLOR_THEME_OPTIONS,
+  WATER_WORLD_CONFIG_KEY,
+  WATER_WORLD_OPTIONS,
+  WATER_WORLD_PRESET_COLORS,
+} from "@/utils/device-mode-water-world.js";
+import { readStorageJson, writeStorageJson } from "@/utils/device-mode-core.js";
 
-const WATER_WORLD_CONFIG_KEY = "water_world_preview_config";
-const WATER_WORLD_CLOCK_CONFIG_KEY = "water_world_preview_clock_config";
-const WATER_WORLD_OPTIONS = Object.freeze([
-  { preset: "surface", label: "海面波浪" },
-  { preset: "current", label: "深海海流" },
-  { preset: "caustics", label: "海底焦散" },
+const WATER_WORLD_THEME_KEY = "water_world_preview_theme_id";
+
+const tabItems = Object.freeze([
+  { value: "scene", label: "场景" },
+  { value: "time", label: "时间" },
+  { value: "font", label: "字体" },
 ]);
-const WATER_WORLD_FONT_OPTIONS = getClockFontOptions();
-const WATER_WORLD_FONT_IDS = Object.freeze(
-  WATER_WORLD_FONT_OPTIONS.map((item) => item.id),
-);
-const PRESET_COLORS = Object.freeze([
-  { name: "青色", hex: "#64c8ff" },
-  { name: "绿色", hex: "#00ff9d" },
-  { name: "黄色", hex: "#ffdc00" },
-  { name: "橙色", hex: "#ffa500" },
-  { name: "红色", hex: "#ff6464" },
-  { name: "紫色", hex: "#c864ff" },
-  { name: "白色", hex: "#ffffff" },
-]);
-const WATER_WORLD_SEND_MODE = "led_matrix_showcase";
-const WATER_WORLD_BOARD_COMMANDS = Object.freeze({
-  surface: Object.freeze({
-    preset: "surface",
-    speed: 4,
-    loop: true,
-  }),
-  current: Object.freeze({
-    preset: "current",
-    speed: 5,
-    loop: true,
-  }),
-  caustics: Object.freeze({
-    preset: "caustics",
-    speed: 4,
-    loop: true,
-  }),
+
+const presetColors = WATER_WORLD_PRESET_COLORS.map((item) => ({
+  name: item.label,
+  hex: item.value,
+}));
+
+const fontOptions = getDeviceClockFontOptions();
+const deviceStore = useDeviceLegacyStore();
+const feedback = useFeedback();
+
+const currentTab = ref("scene");
+const config = reactive(loadWaterConfig());
+const clockConfig = reactive(loadWaterClockConfig());
+const colorThemeId = ref(loadColorThemeId());
+const previewState = ref(createWaterWorldPreviewState(config, colorThemeId.value));
+const currentPreviewPixels = ref(new Map());
+const isSending = ref(false);
+const sendingPixels = ref(new Map());
+let previewTimerId = null;
+
+const timeSection = computed(() => {
+  return {
+    show: clockConfig.time.show,
+    fontSize: clockConfig.time.fontSize,
+    x: clockConfig.time.x,
+    y: clockConfig.time.y,
+    color: clockConfig.time.color,
+    align: clockConfig.time.align,
+  };
 });
 
-function isBoardReadyPreset(preset) {
-  return Object.prototype.hasOwnProperty.call(
-    WATER_WORLD_BOARD_COMMANDS,
-    preset,
-  );
-}
-
-function buildWaterWorldSendPlan(preset) {
-  if (!isBoardReadyPreset(preset)) {
-    throw new Error("当前路线暂未接入设备");
-  }
-  const command = WATER_WORLD_BOARD_COMMANDS[preset];
-  return {
-    type: "command",
-    deviceMode: WATER_WORLD_SEND_MODE,
-    command: {
-      cmd: "set_ambient_effect",
-      preset: command.preset,
-      speed: command.speed,
-      loop: command.loop,
-    },
-  };
-}
-
-function createDefaultWaterWorldConfig() {
-  return {
-    preset: "surface",
-  };
-}
-
-function createDefaultClockConfig() {
-  return {
-    font: "classic_5x7",
-    showSeconds: false,
-    hourFormat: 24,
-    time: {
-      show: true,
-      fontSize: 2,
-      x: 32,
-      y: 7,
-      color: "#ffffff",
-      align: "center",
-    },
-    date: {
-      show: false,
-      fontSize: 1,
-      x: 32,
-      y: 22,
-      color: "#787878",
-      align: "center",
-    },
-    week: {
-      show: false,
-      x: 32,
-      y: 38,
-      color: "#646464",
-      align: "center",
-    },
-    image: {
-      show: false,
-      x: 0,
-      y: 0,
-      width: 64,
-      height: 64,
-    },
-  };
-}
-
-function isSupportedPreset(value) {
-  return WATER_WORLD_OPTIONS.some((item) => item.preset === value);
-}
-
-function isSupportedFont(value) {
-  return WATER_WORLD_FONT_IDS.includes(value);
-}
-
-function normalizeSavedConfig(saved) {
-  const normalized = createDefaultWaterWorldConfig();
-  if (!saved || typeof saved !== "object") {
-    return normalized;
-  }
-  if (typeof saved.preset === "string" && isSupportedPreset(saved.preset)) {
-    normalized.preset = saved.preset;
-  }
-  return normalized;
-}
-
-function resolveWaterWorldTimePlacement(timeText, clockConfig) {
-  const fontSize = Math.max(
-    1,
-    Math.min(3, Number(clockConfig.time.fontSize) || 1),
-  );
-  const width = getClockTextWidth(timeText, clockConfig.font, fontSize);
-  const height = getClockTextHeight(clockConfig.font, fontSize);
-  const maxX = Math.max(0, 64 - width);
-  const maxY = Math.max(0, 64 - height);
-  let x = Number(clockConfig.time.x);
-  let y = Number(clockConfig.time.y);
-
-  if (clockConfig.time.align === "center") {
-    x -= Math.floor(width / 2);
-  } else if (clockConfig.time.align === "right") {
-    x -= width;
-  }
-
-  if (!Number.isFinite(x)) {
-    x = 0;
-  }
-  if (!Number.isFinite(y)) {
-    y = 0;
-  }
-
-  return {
-    x: Math.max(0, Math.min(maxX, Math.round(x))),
-    y: Math.max(0, Math.min(maxY, Math.round(y))),
-    fontSize,
-  };
-}
-
-function drawWaterWorldTimeToPixels(timeText, clockConfig, pixelMap) {
-  const placement = resolveWaterWorldTimePlacement(timeText, clockConfig);
-
-  drawClockTextToPixels(
-    timeText,
-    placement.x,
-    placement.y,
-    clockConfig.time.color,
-    pixelMap,
-    clockConfig.font,
-    placement.fontSize,
-    "left",
-  );
-}
-
-function resolveAlignedClockX(text, fontId, fontSize, align, x) {
-  const width = getClockTextWidth(text, fontId, fontSize);
-  if (align === "center") {
-    return x - Math.floor(width / 2);
-  }
-  if (align === "right") {
-    return x - width;
-  }
-  return x;
-}
-
-function normalizeSavedClockConfig(saved) {
-  const normalized = createDefaultClockConfig();
-  if (!saved || typeof saved !== "object") {
-    return normalized;
-  }
-
-  if (typeof saved.font === "string" && isSupportedFont(saved.font)) {
-    normalized.font = saved.font;
-  }
-  if (typeof saved.showSeconds === "boolean") {
-    normalized.showSeconds = saved.showSeconds;
-  }
-  if (saved.hourFormat === 12 || saved.hourFormat === 24) {
-    normalized.hourFormat = saved.hourFormat;
-  }
-
-  if (saved.time && typeof saved.time === "object") {
-    if (saved.time.show === true) {
-      normalized.time.show = true;
-    }
-    if (
-      Number.isFinite(Number(saved.time.fontSize)) &&
-      Number(saved.time.fontSize) >= 1 &&
-      Number(saved.time.fontSize) <= 3
-    ) {
-      normalized.time.fontSize = Number(saved.time.fontSize);
-    }
-    if (Number.isFinite(Number(saved.time.x))) {
-      normalized.time.x = Math.max(0, Math.min(63, Number(saved.time.x)));
-    }
-    if (Number.isFinite(Number(saved.time.y))) {
-      normalized.time.y = Math.max(0, Math.min(63, Number(saved.time.y)));
-    }
-    if (typeof saved.time.color === "string") {
-      normalized.time.color = saved.time.color;
-    }
-    if (
-      saved.time.align === "left" ||
-      saved.time.align === "center" ||
-      saved.time.align === "right"
-    ) {
-      normalized.time.align = saved.time.align;
-    }
-  }
-
-  if (saved.date && typeof saved.date === "object") {
-    if (saved.date.show === true || saved.date.show === false) {
-      normalized.date.show = saved.date.show;
-    }
-    if (
-      Number.isFinite(Number(saved.date.fontSize)) &&
-      Number(saved.date.fontSize) >= 1 &&
-      Number(saved.date.fontSize) <= 3
-    ) {
-      normalized.date.fontSize = Number(saved.date.fontSize);
-    }
-    if (Number.isFinite(Number(saved.date.x))) {
-      normalized.date.x = Math.max(0, Math.min(63, Number(saved.date.x)));
-    }
-    if (Number.isFinite(Number(saved.date.y))) {
-      normalized.date.y = Math.max(0, Math.min(63, Number(saved.date.y)));
-    }
-    if (typeof saved.date.color === "string") {
-      normalized.date.color = saved.date.color;
-    }
-    if (
-      saved.date.align === "left" ||
-      saved.date.align === "center" ||
-      saved.date.align === "right"
-    ) {
-      normalized.date.align = saved.date.align;
-    }
-  }
-
-  if (saved.week && typeof saved.week === "object") {
-    if (saved.week.show === true || saved.week.show === false) {
-      normalized.week.show = saved.week.show;
-    }
-    if (Number.isFinite(Number(saved.week.x))) {
-      normalized.week.x = Math.max(0, Math.min(63, Number(saved.week.x)));
-    }
-    if (Number.isFinite(Number(saved.week.y))) {
-      normalized.week.y = Math.max(0, Math.min(63, Number(saved.week.y)));
-    }
-    if (typeof saved.week.color === "string") {
-      normalized.week.color = saved.week.color;
-    }
-    if (
-      saved.week.align === "left" ||
-      saved.week.align === "center" ||
-      saved.week.align === "right"
-    ) {
-      normalized.week.align = saved.week.align;
-    }
-  }
-
-  if (saved.image && typeof saved.image === "object") {
-    if (saved.image.show === true || saved.image.show === false) {
-      normalized.image.show = saved.image.show;
-    }
-    if (Number.isFinite(Number(saved.image.x))) {
-      normalized.image.x = Math.max(0, Math.min(63, Number(saved.image.x)));
-    }
-    if (Number.isFinite(Number(saved.image.y))) {
-      normalized.image.y = Math.max(0, Math.min(63, Number(saved.image.y)));
-    }
-    if (Number.isFinite(Number(saved.image.width))) {
-      normalized.image.width = Math.max(0, Math.min(64, Number(saved.image.width)));
-    }
-    if (Number.isFinite(Number(saved.image.height))) {
-      normalized.image.height = Math.max(0, Math.min(64, Number(saved.image.height)));
-    }
-  }
-
-  return normalized;
-}
-
-function pickRandomWaterWorldColorThemeId(currentThemeId) {
-  const candidates = WATER_WORLD_COLOR_THEME_OPTIONS.filter((theme) => {
-    return theme.id !== currentThemeId;
-  });
-  const pool =
-    candidates.length > 0 ? candidates : WATER_WORLD_COLOR_THEME_OPTIONS;
-  const nextIndex = Math.floor(Math.random() * pool.length);
-  return pool[nextIndex].id;
-}
-
-export default {
-  mixins: [statusBarMixin, deviceSendUxMixin],
-  components: {
-    Icon,
-    Toast,
-    GlxInlineLoader,
-    PixelCanvas,
-    PixelPreviewBoard,
-    ClockFontPanel,
-    ClockTextSettingsCard,
+watch(
+  config,
+  () => {
+    persistState();
+    rebuildPreview();
   },
-  data() {
-    return {
-      deviceStore: null,
-      toast: null,
-      contentHeight: "calc(100vh - 88rpx - 520rpx)",
-      previewCanvasReady: false,
-      previewZoom: 4,
-      previewOffset: { x: 0, y: 0 },
-      previewContainerSize: { width: 320, height: 320 },
-      previewState: null,
-      currentPreviewMap: new Map(),
-      sendingPreviewPixels: new Map(),
-      sendingPreviewTick: 0,
-      previewTimer: null,
-      previewRefreshTimer: null,
-      waterOptions: WATER_WORLD_OPTIONS,
-      colorThemeOptions: WATER_WORLD_COLOR_THEME_OPTIONS,
-      colorThemeId: DEFAULT_WATER_WORLD_COLOR_THEME_ID,
-      config: createDefaultWaterWorldConfig(),
-      clockConfig: createDefaultClockConfig(),
-      fontOptions: WATER_WORLD_FONT_OPTIONS,
-      currentTab: 1,
-      tabDefinitions: [
-        { index: 1, label: "水世界", icon: "prompt" },
-        { index: 2, label: "时间", icon: "time" },
-        { index: 3, label: "字体", icon: "text" },
-      ],
-      presetColors: PRESET_COLORS,
-    };
+  { deep: true },
+);
+
+watch(
+  clockConfig,
+  () => {
+    persistState();
+    rebuildPreview();
   },
-  computed: {
-    currentPreviewPixels() {
-      return this.currentPreviewMap;
-    },
-    previewCanvasBoxStyle() {
-      return {
-        height: `${this.previewContainerSize.height}px`,
-      };
-    },
-    effectiveTimeSection() {
-      return {
-        ...this.clockConfig.time,
-        show: true,
-      };
-    },
-  },
-  watch: {
-    config: {
-      deep: true,
-      handler() {
-        this.persistLocalState();
-        this.schedulePreviewRefresh();
+  { deep: true },
+);
+
+watch(colorThemeId, () => {
+  persistState();
+  rebuildPreview();
+});
+
+onMounted(() => {
+  deviceStore.init();
+  rebuildPreview();
+  startPreviewLoop();
+});
+
+onBeforeUnmount(() => {
+  stopPreviewLoop();
+});
+
+function loadWaterConfig() {
+  return normalizeWaterWorldConfig(readStorageJson(WATER_WORLD_CONFIG_KEY) || createDefaultWaterWorldConfig());
+}
+
+function loadWaterClockConfig() {
+  return normalizeWaterWorldClockConfig(readStorageJson(WATER_WORLD_CLOCK_CONFIG_KEY) || createDefaultWaterWorldClockConfig());
+}
+
+function loadColorThemeId() {
+  const saved = localStorage.getItem(WATER_WORLD_THEME_KEY);
+  if (WATER_WORLD_COLOR_THEME_OPTIONS.some((item) => item.id === saved)) {
+    return saved;
+  }
+  return DEFAULT_WATER_WORLD_COLOR_THEME_ID;
+}
+
+function persistState() {
+  writeStorageJson(WATER_WORLD_CONFIG_KEY, config);
+  writeStorageJson(WATER_WORLD_CLOCK_CONFIG_KEY, clockConfig);
+  localStorage.setItem(WATER_WORLD_THEME_KEY, colorThemeId.value);
+}
+
+function rebuildPreview() {
+  previewState.value = createWaterWorldPreviewState(config, colorThemeId.value);
+  currentPreviewPixels.value = buildWaterWorldPreviewPixels(previewState.value, clockConfig);
+}
+
+function startPreviewLoop() {
+  stopPreviewLoop();
+  previewTimerId = window.setInterval(() => {
+    stepWaterWorldPreviewState(previewState.value);
+    currentPreviewPixels.value = buildWaterWorldPreviewPixels(previewState.value, clockConfig);
+  }, 120);
+}
+
+function stopPreviewLoop() {
+  if (previewTimerId !== null) {
+    window.clearInterval(previewTimerId);
+    previewTimerId = null;
+  }
+}
+
+function randomizeColorTheme() {
+  colorThemeId.value = pickRandomWaterWorldColorThemeId(colorThemeId.value);
+}
+
+function toggleTimeShow() {
+  clockConfig.time.show = !clockConfig.time.show;
+}
+
+function toggleShowSeconds() {
+  clockConfig.showSeconds = !clockConfig.showSeconds;
+}
+
+function handleShowSecondsChange(value) {
+  clockConfig.showSeconds = value === true;
+}
+
+function setHourFormat(value) {
+  if (value === 12 || value === 24) {
+    clockConfig.hourFormat = value;
+  }
+}
+
+function handleTimeAdjust(fieldKey, delta, min, max) {
+  const nextValue = Math.max(min, Math.min(max, clockConfig.time[fieldKey] + delta));
+  clockConfig.time[fieldKey] = nextValue;
+}
+
+function handleTimeAlign(align) {
+  clockConfig.time.align = align;
+  if (align === "left") {
+    clockConfig.time.x = 0;
+  } else if (align === "center") {
+    clockConfig.time.x = 32;
+  } else {
+    clockConfig.time.x = 63;
+  }
+}
+
+function handleTimeColor(color) {
+  clockConfig.time.color = color;
+}
+
+async function handleSend() {
+  if (deviceStore.connected !== true) {
+    feedback.warning("设备未连接", "请先返回设备控制页建立连接。");
+    return;
+  }
+
+  isSending.value = true;
+  sendingPixels.value = new Map(currentPreviewPixels.value);
+  feedback.showBlocking("发送水世界", "正在把当前水世界配置发送到设备。");
+  try {
+    const sendPlan = buildWaterWorldSendPlan(config.preset);
+    await deviceStore.setAmbientEffect(
+      {
+        preset: sendPlan.command.preset,
+        speed: sendPlan.command.speed,
+        loop: sendPlan.command.loop,
       },
-    },
-    clockConfig: {
-      deep: true,
-      handler() {
-        this.persistLocalState();
-        this.schedulePreviewRefresh();
-      },
-    },
-    colorThemeId() {
-      this.schedulePreviewRefresh();
-    },
-  },
-  onLoad() {
-    this.deviceStore = useDeviceStore();
-    this.deviceStore.init();
-    this.toast = useToast();
-    const savedConfig = normalizeSavedConfig(
-      uni.getStorageSync(WATER_WORLD_CONFIG_KEY),
+      { clockConfig: buildDeviceClockPayload(clockConfig, new Date()) },
     );
-    this.config = savedConfig;
-    this.clockConfig = normalizeSavedClockConfig(
-      uni.getStorageSync(WATER_WORLD_CLOCK_CONFIG_KEY),
-    );
-  },
-  onReady() {
-    if (this.$refs.toastRef) {
-      this.toast.setToastInstance(this.$refs.toastRef);
+    persistState();
+    feedback.success("发送成功", "水世界已发送到设备。");
+  } catch (error) {
+    if (error instanceof Error) {
+      feedback.error("发送失败", error.message);
+    } else {
+      feedback.error("发送失败", "水世界发送失败。");
     }
-    this.initPreviewCanvas();
-  },
-  async onShow() {
-    if (!this.deviceStore || !this.deviceStore.connected) {
-      return;
-    }
-    const status = await this.deviceStore.syncDeviceStatus();
-    this.syncPresetFromDeviceStatus(status);
-  },
-  onHide() {
-    this.cleanupPreviewTimers();
-  },
-  onUnload() {
-    this.cleanupPreviewTimers();
-  },
-  methods: {
-    captureSendingPreview() {
-      this.sendingPreviewPixels = new Map(this.currentPreviewPixels);
-      this.sendingPreviewTick += 1;
-    },
-    clearSendingPreview() {
-      this.sendingPreviewPixels = new Map();
-      this.sendingPreviewTick += 1;
-    },
-    beginSendUi() {
-      this.captureSendingPreview();
-      deviceSendUxMixin.methods.beginSendUi.call(this);
-    },
-    endSendUi() {
-      deviceSendUxMixin.methods.endSendUi.call(this);
-    },
-    handleBack() {
-      uni.navigateBack();
-    },
-    initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
-      const statusBarHeight = systemInfo.statusBarHeight || 0;
-
-      this.$nextTick(() => {
-        setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
-          query.select(".canvas-section").boundingClientRect((sectionRect) => {
-            if (!sectionRect || !sectionRect.height) {
-              return;
-            }
-            const nextHeight =
-              systemInfo.windowHeight -
-              statusBarHeight -
-              88 -
-              sectionRect.height;
-            this.contentHeight = `${Math.max(120, nextHeight)}px`;
-          });
-          query
-            .select(".preview-canvas-container")
-            .boundingClientRect((rect) => {
-              if (!rect || !rect.width) {
-                this.previewCanvasReady = true;
-                this.schedulePreviewRefresh();
-                return;
-              }
-              const fitZoom = Math.max(2, Math.floor((rect.width * 0.96) / 64));
-              this.previewContainerSize = {
-                width: rect.width,
-                height: rect.width,
-              };
-              this.previewZoom = fitZoom;
-              this.previewOffset = {
-                x: (rect.width - 64 * fitZoom) / 2,
-                y: (rect.width - 64 * fitZoom) / 2,
-              };
-              this.previewCanvasReady = true;
-              this.schedulePreviewRefresh();
-            })
-            .exec();
-        }, 80);
-      });
-    },
-    persistLocalState() {
-      uni.setStorageSync(WATER_WORLD_CONFIG_KEY, {
-        preset: this.config.preset,
-      });
-      uni.setStorageSync(WATER_WORLD_CLOCK_CONFIG_KEY, {
-        font: this.clockConfig.font,
-        showSeconds: this.clockConfig.showSeconds,
-        hourFormat: this.clockConfig.hourFormat,
-        time: {
-          show: this.clockConfig.time.show,
-          fontSize: this.clockConfig.time.fontSize,
-          x: this.clockConfig.time.x,
-          y: this.clockConfig.time.y,
-          color: this.clockConfig.time.color,
-          align: this.clockConfig.time.align,
-        },
-        date: {
-          show: this.clockConfig.date.show,
-          fontSize: this.clockConfig.date.fontSize,
-          x: this.clockConfig.date.x,
-          y: this.clockConfig.date.y,
-          color: this.clockConfig.date.color,
-          align: this.clockConfig.date.align,
-        },
-        week: {
-          show: this.clockConfig.week.show,
-          x: this.clockConfig.week.x,
-          y: this.clockConfig.week.y,
-          color: this.clockConfig.week.color,
-          align: this.clockConfig.week.align,
-        },
-        image: {
-          show: this.clockConfig.image.show,
-          x: this.clockConfig.image.x,
-          y: this.clockConfig.image.y,
-          width: this.clockConfig.image.width,
-          height: this.clockConfig.image.height,
-        },
-      });
-    },
-    schedulePreviewRefresh() {
-      if (!this.previewCanvasReady) {
-        return;
-      }
-      if (this.previewRefreshTimer) {
-        clearTimeout(this.previewRefreshTimer);
-        this.previewRefreshTimer = null;
-      }
-      this.previewRefreshTimer = setTimeout(() => {
-        this.previewState = createWaterWorldPreviewState(
-          this.config,
-          this.colorThemeId,
-        );
-        this.currentPreviewMap = this.buildPreviewPixels();
-        this.startPreviewPlayback();
-      }, 60);
-    },
-    startPreviewPlayback() {
-      this.stopPreviewPlayback();
-      if (!this.previewState) {
-        return;
-      }
-      const playNext = () => {
-        if (!this.previewState) {
-          return;
-        }
-        this.previewTimer = setTimeout(() => {
-          if (!this.previewState) {
-            return;
-          }
-          stepWaterWorldPreviewState(this.previewState);
-          this.currentPreviewMap = this.buildPreviewPixels();
-          playNext();
-        }, this.previewState.frameDelay);
-      };
-      playNext();
-    },
-    stopPreviewPlayback() {
-      if (this.previewTimer) {
-        clearTimeout(this.previewTimer);
-        this.previewTimer = null;
-      }
-    },
-    cleanupPreviewTimers() {
-      this.stopPreviewPlayback();
-      if (this.previewRefreshTimer) {
-        clearTimeout(this.previewRefreshTimer);
-        this.previewRefreshTimer = null;
-      }
-      this.previewState = null;
-    },
-    buildPreviewPixels() {
-      if (!this.previewState) {
-        return new Map();
-      }
-      const pixels = new Map(renderWaterWorldPreviewState(this.previewState));
-      const clockConfig = this.buildEffectiveClockConfig();
-      const timeText = getCurrentTimeText(
-        clockConfig.showSeconds,
-        clockConfig.hourFormat,
-      );
-      drawWaterWorldTimeToPixels(timeText, clockConfig, pixels);
-      return pixels;
-    },
-    buildEffectiveClockConfig() {
-      return {
-        ...this.clockConfig,
-        time: {
-          ...this.clockConfig.time,
-          show: true,
-        },
-      };
-    },
-    hexToRgb(hex) {
-      const body = hex.replace(/^#/, "");
-      return {
-        r: parseInt(body.slice(0, 2), 16),
-        g: parseInt(body.slice(2, 4), 16),
-        b: parseInt(body.slice(4, 6), 16),
-      };
-    },
-    buildClockConfigPayload() {
-      const clockConfig = this.buildEffectiveClockConfig();
-      const timeText = getCurrentTimeText(
-        clockConfig.showSeconds,
-        clockConfig.hourFormat,
-      );
-      const timeX = resolveAlignedClockX(
-        timeText,
-        clockConfig.font,
-        clockConfig.time.fontSize,
-        clockConfig.time.align,
-        clockConfig.time.x,
-      );
-      const dateX = resolveAlignedClockX(
-        "00-00",
-        clockConfig.font,
-        clockConfig.date.fontSize,
-        clockConfig.date.align,
-        clockConfig.date.x,
-      );
-      const weekX = resolveAlignedClockX(
-        "SUN",
-        clockConfig.font,
-        1,
-        clockConfig.week.align,
-        clockConfig.week.x,
-      );
-
-      return {
-        font: clockConfig.font,
-        showSeconds: clockConfig.showSeconds,
-        hourFormat: clockConfig.hourFormat,
-        time: {
-          show: clockConfig.time.show,
-          fontSize: clockConfig.time.fontSize,
-          x: timeX,
-          y: clockConfig.time.y,
-          color: this.hexToRgb(clockConfig.time.color),
-        },
-        date: {
-          show: clockConfig.date.show,
-          fontSize: clockConfig.date.fontSize,
-          x: dateX,
-          y: clockConfig.date.y,
-          color: this.hexToRgb(clockConfig.date.color),
-        },
-        week: {
-          show: clockConfig.week.show,
-          x: weekX,
-          y: clockConfig.week.y,
-          color: this.hexToRgb(clockConfig.week.color),
-        },
-        image: {
-          show: clockConfig.image.show,
-          x: clockConfig.image.x,
-          y: clockConfig.image.y,
-          width: clockConfig.image.width,
-          height: clockConfig.image.height,
-        },
-      };
-    },
-    syncPresetFromDeviceStatus(status) {
-      if (!status || typeof status !== "object") {
-        return;
-      }
-      if (status.businessMode !== WATER_WORLD_SEND_MODE) {
-        return;
-      }
-      if (!isBoardReadyPreset(status.effectPreset)) {
-        return;
-      }
-      this.applyPreset(status.effectPreset);
-    },
-    applyPreset(preset) {
-      this.config.preset = preset;
-    },
-    applyColorTheme(themeId) {
-      if (this.isSending || this.colorThemeId === themeId) {
-        return;
-      }
-      this.colorThemeId = themeId;
-    },
-    handleRandomColorTheme() {
-      if (this.isSending) {
-        return;
-      }
-      this.colorThemeId = pickRandomWaterWorldColorThemeId(this.colorThemeId);
-    },
-    selectFont(fontId) {
-      this.clockConfig.font = fontId;
-    },
-    toggleShowSeconds() {
-      this.clockConfig.showSeconds = !this.clockConfig.showSeconds;
-    },
-    setShowSeconds(showSeconds) {
-      this.clockConfig.showSeconds = showSeconds;
-    },
-    setHourFormat(hourFormat) {
-      this.clockConfig.hourFormat = hourFormat;
-    },
-    handleTimeAdjust(key, delta, min, max) {
-      const currentValue = this.clockConfig.time[key];
-      const nextMax = key === "x" || key === "y" ? Math.min(max, 63) : max;
-      const nextValue = Math.max(min, Math.min(nextMax, currentValue + delta));
-      if (nextValue !== currentValue) {
-        this.clockConfig.time[key] = nextValue;
-      }
-    },
-    handleTimeColor(color) {
-      this.clockConfig.time.color = color;
-    },
-    handleTimeAlign(align) {
-      this.clockConfig.time.align = align;
-      if (align === "left") {
-        this.clockConfig.time.x = 0;
-      } else if (align === "center") {
-        this.clockConfig.time.x = 32;
-      } else if (align === "right") {
-        this.clockConfig.time.x = 63;
-      }
-    },
-    async handleSend() {
-      if (!this.guardBeforeSend(this.deviceStore && this.deviceStore.connected)) {
-        return;
-      }
-
-      const previousMode = this.deviceStore.deviceMode;
-      let expectedMode = WATER_WORLD_SEND_MODE;
-      this.beginSendUi();
-
-      try {
-        const sendPlan = buildWaterWorldSendPlan(this.config.preset);
-        expectedMode = sendPlan.deviceMode;
-        const ws = this.deviceStore.getWebSocket();
-        // 把当前选中的色板（含 rainbow-flow 等动态主题）一并传给板载
-        sendPlan.command.colorTheme = buildWaterWorldColorThemePayload(this.colorThemeId);
-        await ws.setAmbientEffect(sendPlan.command, {
-          clockConfig: this.buildClockConfigPayload(),
-        });
-        const status = await this.deviceStore.syncDeviceStatus();
-        this.syncPresetFromDeviceStatus(status);
-        this.showSendSuccess();
-      } catch (error) {
-        await this.deviceStore.rollbackBusinessMode(previousMode, {
-          expectedMode,
-        });
-        this.showSendFailure(error);
-      } finally {
-        this.endSendUi();
-      }
-    },
-  },
-};
+  } finally {
+    feedback.hideBlocking();
+    isSending.value = false;
+  }
+}
 </script>
 
 <style scoped>
-.water-world-page {
-  height: 100vh;
+.game-mode-page {
+  gap: 24px;
+}
+
+.game-mode-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+  gap: 24px;
+}
+
+.game-preview-card {
+  position: sticky;
+  top: 88px;
+  align-self: start;
+}
+
+.game-preview-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.game-page-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.game-page-meta {
+  margin: 8px 0 0;
+  color: var(--glx-text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.game-preview-stage {
+  position: relative;
+  padding: 18px;
+  border: 2px solid #000000;
+  background: #000000;
+}
+
+.game-preview-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.game-mode-stack {
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-primary);
-  overflow: hidden;
+  gap: 24px;
 }
 
-.status-bar {
-  background-color: #1a1a1a;
-}
-
-.preview-title {
-  font-size: 24rpx;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.content {
-  flex: 1;
-  width: 100%;
-  min-height: 0;
-  box-sizing: border-box;
-  background: var(--bg-tertiary);
-  padding: 16rpx 20rpx 0;
-}
-
-.content-wrapper {
-  padding: 0 0 56rpx;
-}
-
-.water-tab-panel {
-  padding-top: 0;
-}
-
-.water-section-card {
-  background-color: transparent;
-  border: 0;
-  padding: 8rpx 12rpx 14rpx;
-  margin-bottom: 16rpx;
-  box-shadow: none;
-}
-
-.route-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12rpx;
-}
-
-.water-option {
-  min-height: 88rpx;
-  padding: 10rpx 8rpx;
+.game-inline-actions {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-.water-option .glx-feature-option__label {
-  text-align: center;
-  font-size: 24rpx;
-  line-height: 1.2;
-  white-space: nowrap;
-}
-
-.water-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12rpx;
-  margin-top: 16rpx;
-}
-
-.water-toolbar-label {
-  flex: 0 0 auto;
-  font-size: 22rpx;
-  line-height: 1.2;
-  font-weight: 800;
-  color: var(--text-secondary);
-}
-
-.water-random-btn {
-  flex: 1;
-  min-width: 0;
-  height: 72rpx !important;
-  padding: 0 14rpx !important;
-}
-
-.water-random-btn text {
-  font-size: 22rpx !important;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .color-theme-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12rpx;
-  margin-top: 12rpx;
+  gap: 12px;
 }
 
-.water-color-option {
-  min-height: 88rpx;
-  padding: 10rpx 8rpx;
+.color-theme-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10rpx;
-  box-sizing: border-box;
+  gap: 10px;
+  padding: 12px;
+  border: 2px solid #000000;
+  background: #ffffff;
+  cursor: pointer;
+  text-align: left;
 }
 
-.water-color-swatches {
+.color-theme-card.is-active {
+  background: #ffd23f;
+}
+
+.color-theme-swatches {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6rpx;
+  gap: 8px;
 }
 
-.water-color-dot {
-  width: 22rpx;
-  height: 22rpx;
-  border: 2rpx solid var(--nb-ink);
-  box-sizing: border-box;
+.color-theme-dot {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #000000;
 }
 
-.water-color-option .glx-feature-option__label {
-  font-size: 20rpx;
-  line-height: 1.2;
-  white-space: nowrap;
+@media (max-width: 1080px) {
+  .game-mode-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .game-preview-card {
+    position: static;
+  }
 }
 
-.water-option.glx-feature-option.active {
-  background: var(--nb-yellow) !important;
-  border-color: var(--nb-ink) !important;
-  color: var(--nb-ink) !important;
-}
-
-.water-option.glx-feature-option.active .glx-feature-option__label,
-.water-color-option.glx-feature-option.active .glx-feature-option__label {
-  color: var(--nb-ink) !important;
-  font-weight: 900 !important;
-}
-
-.bottom-tabs {
-  display: flex;
-  flex-shrink: 0;
-  padding: 2rpx 10rpx 0;
-  padding-bottom: var(--layout-bottom-offset);
-  background-color: var(--bg-elevated);
-  border-top: 2rpx solid var(--nb-ink);
-  gap: 2rpx;
-}
-
-.bottom-tab-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2rpx;
-  min-height: 68rpx;
-  padding: 2rpx 0;
-  background-color: transparent;
-}
-
-.bottom-tab-item:active {
-  background-color: transparent;
-}
-
-.bottom-tab-item.active {
-  background-color: transparent;
-}
-
-.bottom-tab-item.active .bottom-tab-text {
-  color: #000000;
-  font-weight: 900;
-  font-size: 22rpx;
-}
-
-.bottom-tab-text {
-  font-size: 20rpx;
-  color: var(--text-secondary);
+@media (max-width: 720px) {
+  .color-theme-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 </style>

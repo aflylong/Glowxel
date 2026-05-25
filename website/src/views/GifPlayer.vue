@@ -1,470 +1,298 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/gif-player/gif-player.vue -->
 <template>
-  <div class="gif-player-page glx-page-shell">
-    
-
-    <div class="navbar glx-topbar glx-page-shell__fixed">
-      <div class="nav-left" @click="handleBack">
-        <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
+  <div class="glx-page-shell device-mode-page">
+    <section class="glx-page-shell__hero">
+      <span class="glx-page-shell__eyebrow">GIF Player</span>
+      <h1 class="glx-page-shell__title">GIF 播放器</h1>
+      <p class="glx-page-shell__desc">
+        网页端复刻 `uniapp/gif-player` 的离线素材播放器，当前提供内置场景预览、参数调整和 GIF 动画事务发送。
+      </p>
+      <div class="glx-hero-metrics">
+        <article class="glx-hero-metric">
+          <span class="glx-hero-metric__label">当前素材</span>
+          <strong class="glx-hero-metric__value">{{ selectedSceneLabel }}</strong>
+        </article>
+        <article class="glx-hero-metric">
+          <span class="glx-hero-metric__label">速度</span>
+          <strong class="glx-hero-metric__value">{{ config.speed }}</strong>
+        </article>
+        <article class="glx-hero-metric">
+          <span class="glx-hero-metric__label">强度</span>
+          <strong class="glx-hero-metric__value">{{ config.intensity }}</strong>
+        </article>
       </div>
-      <span class="nav-title glx-topbar__title">GIF/场景播放器</span>
-      <div class="nav-right"></div>
-    </div>
+    </section>
 
-    <div class="canvas-section">
-      <div class="preview-canvas-container" :style="previewCanvasBoxStyle">
-        <PixelCanvas
-          v-if="previewCanvasReady && !shouldShowSendingSnapshot"
-          :width="64"
-          :height="64"
-          :pixels="currentPreviewPixels"
-          :zoom="previewZoom"
-          :offset-x="previewOffset.x"
-          :offset-y="previewOffset.y"
-          :canvas-width="previewContainerSize.width"
-          :canvas-height="previewContainerSize.height"
-          :grid-visible="true"
-          :is-dark-mode="true"
-          :touch-enabled="false"
-          canvas-id="gifPlayerPreviewCanvas"
-        />
-        <PixelPreviewBoard
-          v-else-if="previewCanvasReady && shouldShowSendingSnapshot"
-          :width="64"
-          :height="64"
-          :pixels="sendingPreviewPixels"
-          :refresh-token="sendingPreviewTick"
-          :zoom="previewZoom"
-          :offset-x="previewOffset.x"
-          :offset-y="previewOffset.y"
-          :grid-visible="true"
-          :is-dark-mode="true"
-        />
-      </div>
-      <div class="preview-caption glx-preview-panel">
-        <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-title">预览效果</span>
+    <section class="device-mode-layout">
+      <article class="glx-section-card glx-section-card--stack device-preview-card">
+        <div class="device-preview-card__head">
+          <div>
+            <h2 class="glx-section-title">预览效果</h2>
+            <p class="device-preview-card__desc">内置场景预览和 GIF 二进制发送使用同一套帧数据。</p>
+          </div>
+          <span class="glx-chip glx-chip--green">{{ selectedSceneLabel }}</span>
         </div>
-        <div class="preview-actions">
-          <div
-            class="action-btn-sm primary glx-primary-action"
-            :class="{ disabled: isSending }"
-            @click="saveAndApply"
+
+        <div class="device-preview-stage">
+          <DevicePixelBoard :pixels="currentPixels" :grid-visible="true" />
+          <DeviceSendingOverlay
+            :visible="isSending"
+            title="正在发送 GIF 动画"
+            description="发送期间锁定当前预览快照，等待设备完成动画事务写入。"
           >
-            <Icon name="link" :size="36" color="var(--nb-ink)" />
-            <span>发送</span>
-          </div>
+            <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
+          </DeviceSendingOverlay>
         </div>
-      </div>
-    </div>
 
-    <div data-scroll-view
-      scroll-y
-      class="content glx-scroll-region glx-page-shell__content"
-      :style="{ height: contentHeight }"
-    >
-      <div class="content-wrapper glx-scroll-stack">
-        <div class="card glx-panel-card glx-editor-card">
-          <div class="card-title-section glx-panel-head">
-            <span class="card-title glx-panel-title">离线素材</span>
+        <div class="glx-inline-actions">
+          <button type="button" class="glx-button glx-button--primary" :disabled="isSending" @click="handleSend">
+            {{ isSending ? "发送中..." : "发送到设备" }}
+          </button>
+          <button type="button" class="glx-button glx-button--ghost" @click="refreshPreview">刷新预览</button>
+        </div>
+      </article>
+
+      <div class="device-mode-stack">
+        <article class="glx-section-card glx-section-card--stack">
+          <div class="glx-section-head">
+            <h2 class="glx-section-title">离线素材</h2>
+            <span class="glx-section-meta">{{ sceneItems.length }} 组</span>
           </div>
-          <div class="scene-grid">
-            <div
+          <div class="mode-grid">
+            <button
               v-for="item in sceneItems"
               :key="item.id"
-              class="glx-feature-option glx-feature-option--scene"
-              :class="{ active: selectedSceneId === item.id }"
-              @click="handleSceneSelect(item.id)"
+              type="button"
+              class="mode-grid__item"
+              :class="{ 'is-active': config.sceneId === item.id }"
+              @click="config.sceneId = item.id"
             >
-              <span class="glx-feature-option__label">{{ item.label }}</span>
-            </div>
+              <strong>{{ item.label }}</strong>
+              <span>{{ item.id }}</span>
+            </button>
           </div>
-        </div>
+        </article>
 
-        <div class="card glx-panel-card glx-editor-card">
-          <div class="card-title-section glx-panel-head">
-            <span class="card-title glx-panel-title">参数</span>
+        <article class="glx-section-card glx-section-card--stack">
+          <div class="glx-section-head">
+            <h2 class="glx-section-title">参数</h2>
+            <span class="glx-section-meta">本地缓存恢复</span>
           </div>
-          <div class="form-row">
-            <span class="form-label">速度 {{ speed }}</span>
-            <GlxStepper
-              :value="speed"
-              :min="1"
-              :max="10"
-              :step="1"
-              @change="handleSpeedChange"
-            />
+
+          <div class="mode-row">
+            <span class="mode-row__label">速度</span>
+            <DeviceModeStepper v-model="config.speed" :min="1" :max="10" />
           </div>
-          <div class="form-row">
-            <span class="form-label">强度 {{ intensity }}</span>
-            <GlxStepper
-              :value="intensity"
-              :min="10"
-              :max="100"
-              :step="1"
-              @change="handleIntensityChange"
-            />
+
+          <div class="mode-row">
+            <span class="mode-row__label">强度</span>
+            <DeviceModeStepper v-model="config.intensity" :min="10" :max="100" />
           </div>
-        </div>
+        </article>
       </div>
-    </div>
-
-    <div
-      v-if="isSending"
-      class="glx-device-sending-overlay"
-      @touchmove.stop.prevent
-    >
-      <div class="glx-device-sending-card">
-        <GlxInlineLoader
-          class="glx-device-sending-spinner"
-          variant="chase"
-          size="lg"
-        />
-        <span class="glx-device-sending-title">{{ sendOverlayTitle }}</span>
-        <span class="glx-device-sending-tip">{{ sendOverlayTip }}</span>
-      </div>
-    </div>
-
-    <Toast
-      ref="toastRef"
-      @show="handleToastShow"
-      @hide="handleToastHide"
-    />
+    </section>
   </div>
 </template>
 
-<script>
-import statusBarMixin from "@/mixins/statusBar.js";
-import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
-import Icon from "@/components/uni/Icon.vue";
-import Toast from "@/components/uni/Toast.vue";
-import GlxInlineLoader from "@/components/uni/GlxInlineLoader.vue";
-import PixelCanvas from "@/components/uni/PixelCanvas.vue";
-import PixelPreviewBoard from "@/components/uni/PixelPreviewBoard.vue";
-import GlxStepper from "@/components/uni/GlxStepper.vue";
-import { useDeviceStore } from "@/stores/device.js";
-import { useToast } from "@/composables/useToast.js";
+<script setup>
+import { computed, onMounted, reactive, ref, watch } from "vue";
+import DeviceSendingOverlay from "@/components/device/DeviceSendingOverlay.vue";
+import { useFeedback } from "@/composables/useFeedback.js";
+import { usePixelPreviewPlayer } from "@/composables/usePixelPreviewPlayer.js";
+import DeviceModeStepper from "@/components/device/modes/DeviceModeStepper.vue";
+import DevicePixelBoard from "@/components/device/modes/DevicePixelBoard.vue";
+import { useDeviceLegacyStore } from "@/stores/deviceLegacy.js";
+import { readStorageJson, writeStorageJson } from "@/utils/device-mode-core.js";
 import {
   buildGifPlayerAnimationPayload,
   buildGifPlayerPreviewSequence,
   getGifPlayerSceneItems,
-  resolveSceneById,
-} from "@/utils/gif-player/localPlayer.js";
-import { applyCompactAnimation } from "@/utils/animationUploader.js";
+} from "@/utils/device-mode-gif-player.js";
 
-const GIF_PLAYER_CONFIG_KEY = "gif_player_config";
+const STORAGE_KEY = "gif_player_config";
+const sceneItems = getGifPlayerSceneItems();
+const savedConfig = readStorageJson(STORAGE_KEY);
+const config = reactive({
+  sceneId: typeof savedConfig?.sceneId === "string" ? savedConfig.sceneId : "matrix_fire",
+  speed: Number.isFinite(Number(savedConfig?.speed)) ? Math.round(Number(savedConfig.speed)) : 6,
+  intensity: Number.isFinite(Number(savedConfig?.intensity)) ? Math.round(Number(savedConfig.intensity)) : 72,
+});
 
-export default {
-  mixins: [statusBarMixin, deviceSendUxMixin],
-  components: {
-    Icon,
-    Toast,
-    GlxInlineLoader,
-    PixelCanvas,
-    PixelPreviewBoard,
-    GlxStepper,
-  },
-  data() {
-    return {
-      deviceStore: null,
-      toast: null,
-      contentHeight: "calc(100vh - 88rpx - 520rpx)",
-      previewCanvasReady: false,
-      previewZoom: 4,
-      previewOffset: { x: 0, y: 0 },
-      previewContainerSize: { width: 320, height: 320 },
-      previewFrameMaps: [],
-      sendingPreviewPixels: new Map(),
-      sendingPreviewTick: 0,
-      previewFrameDelays: [],
-      previewFrameIndex: 0,
-      previewTimer: null,
-      previewRefreshTimer: null,
-      sceneItems: getGifPlayerSceneItems(),
-      selectedSceneId: "matrix_fire",
-      speed: 6,
-      intensity: 72,
-    };
-  },
-  computed: {
-    currentPreviewPixels() {
-      if (this.previewFrameMaps.length === 0) {
-        return new Map();
-      }
-      if (this.previewFrameIndex >= this.previewFrameMaps.length) {
-        return this.previewFrameMaps[0];
-      }
-      return this.previewFrameMaps[this.previewFrameIndex];
-    },
-    previewCanvasBoxStyle() {
-      const size =
-        this.previewContainerSize && this.previewContainerSize.height
-          ? this.previewContainerSize.height
-          : 320;
-      return {
-        height: `${size}px`,
-      };
-    },
-  },
-  watch: {
-    selectedSceneId() {
-      this.resetPreviewFrames();
-      this.schedulePreviewRefresh();
-    },
-    speed() {
-      this.schedulePreviewRefresh();
-    },
-    intensity() {
-      this.schedulePreviewRefresh();
-    },
-  },
-  onLoad() {
-    this.deviceStore = useDeviceStore();
-    this.deviceStore.init();
-    this.toast = useToast();
-    this.loadSavedConfig();
-  },
-  onReady() {
-    if (this.$refs.toastRef) {
-      this.toast.setToastInstance(this.$refs.toastRef);
+const deviceStore = useDeviceLegacyStore();
+const feedback = useFeedback();
+const { currentPixels, playSequence, snapshot } = usePixelPreviewPlayer();
+const isSending = ref(false);
+const sendingPixels = ref(new Map());
+
+const selectedScene = computed(() => {
+  return sceneItems.find((item) => item.id === config.sceneId) ?? null;
+});
+
+const selectedSceneLabel = computed(() => {
+  return selectedScene.value === null ? "--" : selectedScene.value.label;
+});
+
+function saveConfig() {
+  writeStorageJson(STORAGE_KEY, {
+    sceneId: config.sceneId,
+    speed: config.speed,
+    intensity: config.intensity,
+  });
+}
+
+function refreshPreview() {
+  playSequence(
+    buildGifPlayerPreviewSequence({
+      sceneId: config.sceneId,
+      speed: config.speed,
+      intensity: config.intensity,
+    }),
+  );
+}
+
+async function handleSend() {
+  if (isSending.value) {
+    return;
+  }
+
+  if (!deviceStore.connected) {
+    feedback.warning("设备未连接", "请先返回设备控制页建立连接。");
+    return;
+  }
+
+  isSending.value = true;
+  sendingPixels.value = snapshot();
+  feedback.showBlocking("发送 GIF", `正在把 ${selectedSceneLabel.value} 发送到设备。`);
+  try {
+    await deviceStore.setGifAnimation(
+      buildGifPlayerAnimationPayload({
+        sceneId: config.sceneId,
+        speed: config.speed,
+        intensity: config.intensity,
+      }),
+    );
+    feedback.success("发送成功", `${selectedSceneLabel.value} 已经发送到设备。`);
+  } catch (error) {
+    if (error instanceof Error) {
+      feedback.error("发送失败", error.message);
+    } else {
+      feedback.error("发送失败", "GIF 播放器发送失败。");
     }
-    this.initPreviewCanvas();
-  },
-  onHide() {
-    this.cleanupPreviewTimers();
-  },
-  onUnload() {
-    this.cleanupPreviewTimers();
-  },
-  methods: {
-    captureSendingPreview() {
-      this.sendingPreviewPixels = new Map(this.currentPreviewPixels);
-      this.sendingPreviewTick += 1;
-    },
-    clearSendingPreview() {
-      this.sendingPreviewPixels = new Map();
-      this.sendingPreviewTick += 1;
-    },
-    beginSendUi() {
-      this.captureSendingPreview();
-      deviceSendUxMixin.methods.beginSendUi.call(this);
-    },
-    endSendUi() {
-      deviceSendUxMixin.methods.endSendUi.call(this);
-    },
-    handleBack() {
-      uni.navigateBack();
-    },
-    initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
-      const statusBarHeight = systemInfo.statusBarHeight || 0;
+  } finally {
+    isSending.value = false;
+    feedback.hideBlocking();
+  }
+}
 
-      this.$nextTick(() => {
-        setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
-          query.select(".canvas-section").boundingClientRect((sectionRect) => {
-            if (!sectionRect || !sectionRect.height) {
-              return;
-            }
-            const nextHeight =
-              systemInfo.windowHeight -
-              statusBarHeight -
-              88 -
-              sectionRect.height;
-            this.contentHeight = `${Math.max(120, nextHeight)}px`;
-          });
-          query
-            .select(".preview-canvas-container")
-            .boundingClientRect((rect) => {
-              if (!rect || !rect.width) {
-                this.previewCanvasReady = true;
-                this.schedulePreviewRefresh();
-                return;
-              }
-              const fitZoom = Math.max(2, Math.floor((rect.width * 0.96) / 64));
-              this.previewContainerSize = {
-                width: rect.width,
-                height: rect.width,
-              };
-              this.previewZoom = fitZoom;
-              this.previewOffset = {
-                x: (rect.width - 64 * fitZoom) / 2,
-                y: (rect.width - 64 * fitZoom) / 2,
-              };
-              this.previewCanvasReady = true;
-              this.schedulePreviewRefresh();
-            })
-            .exec();
-        }, 80);
-      });
-    },
-    resetPreviewFrames() {
-      this.stopPreviewPlayback();
-      this.previewFrameMaps = [];
-      this.previewFrameDelays = [];
-      this.previewFrameIndex = 0;
-    },
-    schedulePreviewRefresh() {
-      if (!this.previewCanvasReady) {
-        return;
-      }
-      if (this.previewRefreshTimer) {
-        clearTimeout(this.previewRefreshTimer);
-        this.previewRefreshTimer = null;
-      }
-      this.previewRefreshTimer = setTimeout(() => {
-        this.refreshPreviewFrames();
-      }, 100);
-    },
-    refreshPreviewFrames() {
-      const previewSequence = buildGifPlayerPreviewSequence({
-        sceneId: this.selectedSceneId,
-        speed: this.speed,
-        intensity: this.intensity,
-      });
-      this.previewFrameMaps = Array.isArray(previewSequence.maps)
-        ? previewSequence.maps
-        : [];
-      this.previewFrameDelays = Array.isArray(previewSequence.delays)
-        ? previewSequence.delays
-        : [];
-      this.previewFrameIndex = 0;
-      this.startPreviewPlayback();
-    },
-    startPreviewPlayback() {
-      this.stopPreviewPlayback();
-      if (this.previewFrameMaps.length <= 1) {
-        return;
-      }
-      const playNext = () => {
-        const currentDelay = this.previewFrameDelays[this.previewFrameIndex];
-        const delay = typeof currentDelay === "number" ? currentDelay : 120;
-        this.previewTimer = setTimeout(() => {
-          if (this.previewFrameMaps.length === 0) {
-            return;
-          }
-          this.previewFrameIndex =
-            this.previewFrameIndex + 1 >= this.previewFrameMaps.length
-              ? 0
-              : this.previewFrameIndex + 1;
-          playNext();
-        }, delay);
-      };
-      playNext();
-    },
-    stopPreviewPlayback() {
-      if (this.previewTimer) {
-        clearTimeout(this.previewTimer);
-        this.previewTimer = null;
-      }
-    },
-    cleanupPreviewTimers() {
-      this.stopPreviewPlayback();
-      if (this.previewRefreshTimer) {
-        clearTimeout(this.previewRefreshTimer);
-        this.previewRefreshTimer = null;
-      }
-    },
-    handleSceneSelect(sceneId) {
-      this.selectedSceneId = sceneId;
-    },
-    handleSpeedChange(event) {
-      this.speed = Number(event.detail.value);
-    },
-    handleIntensityChange(event) {
-      this.intensity = Number(event.detail.value);
-    },
-    loadSavedConfig() {
-      const saved = uni.getStorageSync(GIF_PLAYER_CONFIG_KEY);
-      if (!saved || typeof saved !== "object") {
-        return;
-      }
-      if (typeof saved.sceneId === "string" && resolveSceneById(saved.sceneId)) {
-        this.selectedSceneId = saved.sceneId;
-      }
-      if (Number.isFinite(Number(saved.speed))) {
-        this.speed = Number(saved.speed);
-      }
-      if (Number.isFinite(Number(saved.intensity))) {
-        this.intensity = Number(saved.intensity);
-      }
-    },
-    saveConfig() {
-      uni.setStorageSync(GIF_PLAYER_CONFIG_KEY, {
-        sceneId: this.selectedSceneId,
-        speed: this.speed,
-        intensity: this.intensity,
-      });
-    },
-    async saveAndApply() {
-      if (!this.guardBeforeSend(this.deviceStore.connected)) {
-        return;
-      }
-
-      const previousMode = this.deviceStore.deviceMode;
-      this.beginSendUi();
-      try {
-        const ws = this.deviceStore.getWebSocket();
-        const payload = buildGifPlayerAnimationPayload({
-          sceneId: this.selectedSceneId,
-          speed: this.speed,
-          intensity: this.intensity,
-        });
-        await applyCompactAnimation(ws, payload.animationData, "gif_player");
-        this.saveConfig();
-        this.showSendSuccess();
-      } catch (error) {
-        await this.deviceStore.rollbackBusinessMode(previousMode, {
-          expectedMode: "gif_player",
-        });
-        console.error("发送 GIF 素材失败:", error);
-        this.showSendFailure(error);
-      } finally {
-        this.endSendUi();
-      }
-    },
+watch(
+  () => ({ ...config }),
+  () => {
+    saveConfig();
+    refreshPreview();
   },
-};
+  { deep: true },
+);
+
+onMounted(() => {
+  deviceStore.init();
+  refreshPreview();
+});
 </script>
 
 <style scoped>
-.gif-player-page {
-  height: 100vh;
+.device-mode-page {
+  gap: 24px;
+}
+
+.device-mode-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+  gap: 24px;
+}
+
+.device-preview-card {
+  position: sticky;
+  top: 88px;
+  align-self: start;
+}
+
+.device-preview-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.device-preview-card__desc {
+  margin: 6px 0 0;
+  color: var(--glx-text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.device-preview-stage {
+  position: relative;
+  padding: 18px;
+  border: 2px solid #000000;
+  background: #000000;
+}
+
+.device-mode-stack {
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-primary);
-  overflow: hidden;
+  gap: 24px;
 }
 
-.status-bar {
-  background-color: #1a1a1a;
-}
-
-.preview-title {
-  font-size: 24rpx;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.content {
-  flex: 1;
-  width: 100%;
-  min-height: 0;
-  box-sizing: border-box;
-  background: var(--bg-tertiary);
-  padding: 16rpx 20rpx 0;
-}
-
-.scene-grid {
+.mode-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10rpx;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
 
-.card {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
+.mode-grid__item {
+  min-height: 88px;
+  padding: 14px;
+  display: grid;
+  gap: 6px;
+  border: 2px solid #000000;
+  background: #ffffff;
+  text-align: left;
+  cursor: pointer;
 }
 
+.mode-grid__item.is-active {
+  background: #ffd23f;
+}
+
+.mode-grid__item span {
+  color: var(--glx-text-muted);
+  font-size: 12px;
+}
+
+.mode-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.mode-row__label {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+@media (max-width: 1080px) {
+  .device-mode-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .device-preview-card {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .mode-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 </style>
