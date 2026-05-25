@@ -1,0 +1,583 @@
+<!-- AUTO-CONVERTED FROM uniapp/pages/minecraft-clock/minecraft-clock.vue -->
+<template>
+  <div class="clock-editor-page glx-page-shell">
+    <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
+
+    <div class="navbar glx-topbar glx-page-shell__fixed">
+      <div class="nav-left" @click="handleBack">
+        <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
+      </div>
+      <span class="nav-title glx-topbar__title">我的世界时钟</span>
+      <div class="nav-right"></div>
+    </div>
+
+    <div class="canvas-section">
+      <div class="preview-canvas-container" :style="previewCanvasBoxStyle">
+        <PixelPreviewBoard
+          v-if="previewCanvasReady"
+          :width="64"
+          :height="64"
+          :pixels="previewPixels"
+          :refresh-token="previewTick"
+          :zoom="previewZoom"
+          :offset-x="previewOffset.x"
+          :offset-y="previewOffset.y"
+          :grid-visible="true"
+          :is-dark-mode="true"
+        />
+        <div v-else class="canvas-placeholder"></div>
+      </div>
+      <div class="preview-caption glx-preview-panel">
+        <div class="preview-caption-info glx-preview-panel__info">
+          <span class="preview-caption-title">模拟预览</span>
+        </div>
+        <div class="preview-actions">
+          <div
+            class="action-btn-sm primary glx-primary-action"
+            :class="{ disabled: isSending }"
+            @click="triggerDemo"
+          >
+            <span>演示</span>
+          </div>
+          <div
+            class="action-btn-sm primary glx-primary-action"
+            :class="{ disabled: isSending }"
+            @click="sendToDevice"
+          >
+            <Icon name="link" :size="36" color="#000000" />
+            <span>发送</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-scroll-view
+      scroll-y
+      class="content glx-scroll-region glx-page-shell__content"
+      :style="{ height: contentHeight }"
+    >
+      <div class="content-wrapper glx-scroll-stack">
+        <div class="settings-card">
+          <div class="setting-item-row">
+            <span class="setting-label">镐子类型</span>
+            <div class="setting-control-buttons" style="gap:8rpx">
+              <div
+                v-for="pick in pickaxeOptions"
+                :key="pick.id"
+                class="weapon-btn"
+                :class="{ active: config.pickaxe === pick.id }"
+                style="padding:6rpx 16rpx"
+                @click="config.pickaxe = pick.id"
+              >
+                <span>{{ pick.name }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item-row">
+            <span class="setting-label">方块风格</span>
+            <div class="setting-control-buttons" style="gap:8rpx;flex-wrap:wrap">
+              <div
+                v-for="bs in blockStyleOptions"
+                :key="bs.id"
+                class="weapon-btn"
+                :class="{ active: config.blockStyle === bs.id }"
+                style="padding:6rpx 16rpx"
+                @click="config.blockStyle = bs.id"
+              >
+                <span>{{ bs.name }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item-row">
+            <span class="setting-label">时间格式</span>
+            <div class="setting-control-buttons" style="gap:8rpx">
+              <div class="weapon-btn" :class="{ active: config.hourFormat === 24 }" style="padding:6rpx 16rpx" @click="config.hourFormat = 24"><span>24h</span></div>
+              <div class="weapon-btn" :class="{ active: config.hourFormat === 12 }" style="padding:6rpx 16rpx" @click="config.hourFormat = 12"><span>12h</span></div>
+            </div>
+          </div>
+
+          <div class="setting-item-row">
+            <span class="setting-label">角色缩放 {{ config.steveScale }}%</span>
+            <slider :value="config.steveScale" :min="50" :max="150" :step="5" @change="onSteveScale" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">角色 X 偏移 {{ config.steveX }}</span>
+            <slider :value="config.steveX" :min="-10" :max="10" :step="1" @change="onSteveX" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">角色 Y 偏移 {{ config.steveY }}</span>
+            <slider :value="config.steveY" :min="-10" :max="10" :step="1" @change="onSteveY" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">走路速度 {{ config.walkSpeed }}px</span>
+            <slider :value="config.walkSpeed" :min="0.5" :max="3" :step="0.25" @change="onWalkSpeed" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">镐子 X 偏移 {{ config.pickItemX }}</span>
+            <slider :value="config.pickItemX" :min="-15" :max="15" :step="1" @change="onPickItemX" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">镐子 Y 偏移 {{ config.pickItemY }}</span>
+            <slider :value="config.pickItemY" :min="-15" :max="15" :step="1" @change="onPickItemY" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">镐子缩放 {{ config.pickItemScale }}%</span>
+            <slider :value="config.pickItemScale" :min="30" :max="200" :step="5" @change="onPickItemScale" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">镐子旋转 {{ config.pickItemRotate }}°</span>
+            <slider :value="config.pickItemRotate" :min="-180" :max="180" :step="5" @change="onPickItemRotate" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">方块 X 偏移 {{ config.blockItemX }}</span>
+            <slider :value="config.blockItemX" :min="-15" :max="15" :step="1" @change="onBlockItemX" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">方块 Y 偏移 {{ config.blockItemY }}</span>
+            <slider :value="config.blockItemY" :min="-15" :max="15" :step="1" @change="onBlockItemY" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">方块缩放 {{ config.blockItemScale }}%</span>
+            <slider :value="config.blockItemScale" :min="50" :max="300" :step="10" @change="onBlockItemScale" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">方块旋转 {{ config.blockItemRotate }}°</span>
+            <slider :value="config.blockItemRotate" :min="-180" :max="180" :step="5" @change="onBlockItemRotate" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">手臂峰角 {{ config.armPeakAngle }}°</span>
+            <slider :value="config.armPeakAngle" :min="-150" :max="30" :step="5" @change="onArmPeakAngle" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">摆动幅度 {{ config.armSwingAmp }}°</span>
+            <slider :value="config.armSwingAmp" :min="0" :max="60" :step="5" @change="onArmSwingAmp" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">侧身缩放 {{ config.sideScale }}%</span>
+            <slider :value="config.sideScale" :min="50" :max="150" :step="5" @change="onSideScale" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">右臂肩 X {{ config.armOffsetX }}</span>
+            <slider :value="config.armOffsetX" :min="-10" :max="10" :step="1" @change="onArmOffsetX" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+          <div class="setting-item-row">
+            <span class="setting-label">右臂肩 Y {{ config.armOffsetY }}</span>
+            <slider :value="config.armOffsetY" :min="-10" :max="10" :step="1" @change="onArmOffsetY" block-size="20" activeColor="#000000" backgroundColor="#cccccc" style="flex:1;margin-left:20rpx" />
+          </div>
+
+          <div class="setting-item-row">
+            <span class="setting-label">调试静态预览</span>
+            <div class="setting-control-buttons" style="gap:8rpx">
+              <div class="weapon-btn" :class="{ active: config.debugStatic === 'off' }" style="padding:6rpx 16rpx" @click="onClickAnimation"><span>动画</span></div>
+              <div class="weapon-btn" :class="{ active: config.debugStatic === 'pickaxe' }" style="padding:6rpx 16rpx" @click="config.debugStatic = 'pickaxe'"><span>持镐</span></div>
+              <div class="weapon-btn" :class="{ active: config.debugStatic === 'block' }" style="padding:6rpx 16rpx" @click="config.debugStatic = 'block'"><span>持方块</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="isSending" class="glx-device-sending-overlay" @touchmove.stop.prevent>
+      <div class="glx-device-sending-card">
+        <GlxInlineLoader class="glx-device-sending-spinner" variant="chase" size="lg" />
+        <span class="glx-device-sending-title">{{ sendOverlayTitle }}</span>
+        <span class="glx-device-sending-tip">{{ sendOverlayTip }}</span>
+      </div>
+    </div>
+
+    <Toast ref="toastRef" @show="handleToastShow" @hide="handleToastHide" />
+  </div>
+</template>
+
+<script>
+import { useDeviceStore } from "@/stores/device.js";
+import { useToast } from "@/composables/useToast.js";
+import statusBarMixin from "@/mixins/statusBar.js";
+import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
+import Icon from "@/components/uni/Icon.vue";
+import Toast from "@/components/uni/Toast.vue";
+import GlxInlineLoader from "@/components/uni/GlxInlineLoader.vue";
+import PixelPreviewBoard from "@/components/uni/PixelPreviewBoard.vue";
+import {
+  createMinecraftClockState,
+  stepMinecraftClockState,
+  renderMinecraftClockFrame,
+} from "@/utils/minecraftClockPreview.js";
+
+export default {
+  mixins: [statusBarMixin, deviceSendUxMixin],
+  components: {
+    Icon,
+    Toast,
+    GlxInlineLoader,
+    PixelPreviewBoard,
+  },
+  data() {
+    return {
+      deviceStore: null,
+      toast: null,
+      contentHeight: "calc(100vh - 88rpx - 520rpx)",
+      previewCanvasReady: false,
+      previewZoom: 4,
+      previewOffset: { x: 16, y: 16 },
+      previewContainerSize: { width: 320, height: 320 },
+      previewPixels: new Map(),
+      previewTick: 0,
+      previewTimer: null,
+      mcState: null,
+
+      config: {
+        pickaxe: "iron",
+        blockStyle: "random",
+        hourFormat: 24,
+        steveScale: 80,
+        steveX: 0,
+        steveY: 0,
+        walkSpeed: 1.0,
+        handItemX: -1,
+        handItemY: -3,
+        handItemScale: 60,
+        handItemRotate: 180,
+        // 镐子手持参数（用户调好的值）
+        pickItemX: 4,
+        pickItemY: 1,
+        pickItemScale: 60,
+        pickItemRotate: 90,
+        // 方块手持参数
+        blockItemX: 0,
+        blockItemY: 0,
+        blockItemScale: 100,
+        blockItemRotate: 0,
+        armPeakAngle: -110,
+        armSwingAmp: 30,
+        sideScale: 100,
+        armOffsetX: 0,
+        armOffsetY: 0,
+        blockRenderMode: 'fake3d',
+        breakCharOrder: "leftToRight",
+        breakBlockOrder: "topToBottom",
+        buildCharOrder: "rightToLeft",
+        buildBlockOrder: "bottomToTop",
+        debugStatic: "off",
+      },
+
+      pickaxeOptions: [
+        { id: "wood", name: "木镐" },
+        { id: "stone", name: "石镐" },
+        { id: "iron", name: "铁镐" },
+        { id: "diamond", name: "钻石镐" },
+        { id: "netherite", name: "下界合金镐" },
+      ],
+
+      blockStyleOptions: [
+        { id: "random", name: "随机" },
+        { id: "oak", name: "橡木板" },
+        { id: "oak_log", name: "橡木原木" },
+        { id: "stone", name: "石头" },
+        { id: "cobble", name: "圆石" },
+        { id: "diamond", name: "钻石块" },
+        { id: "gold", name: "金块" },
+        { id: "iron", name: "铁块" },
+        { id: "emerald", name: "绿宝石块" },
+        { id: "lapis", name: "青金石块" },
+        { id: "redstone", name: "红石块" },
+        { id: "diamond_ore", name: "钻石矿" },
+        { id: "gold_ore", name: "金矿" },
+        { id: "iron_ore", name: "铁矿" },
+        { id: "emerald_ore", name: "绿宝石矿" },
+        { id: "lapis_ore", name: "青金石矿" },
+        { id: "redstone_ore", name: "红石矿" },
+        { id: "obsidian", name: "黑曜石" },
+        { id: "glowstone", name: "萤石" },
+        { id: "netherite", name: "下界合金块" },
+        { id: "quartz", name: "石英块" },
+        { id: "tnt", name: "TNT" },
+      ],
+    };
+  },
+  computed: {
+    previewCanvasBoxStyle() {
+      const size = this.previewContainerSize?.height || 320;
+      return { height: `${size}px` };
+    },
+  },
+  onLoad() {
+    this.deviceStore = useDeviceStore();
+    this.deviceStore.init();
+    this.toast = useToast();
+  },
+  onReady() {
+    if (this.$refs.toastRef) {
+      this.toast.setToastInstance(this.$refs.toastRef);
+    }
+    this.initPreviewCanvas();
+  },
+  onHide() {
+    this.stopPreview();
+  },
+  onUnload() {
+    this.stopPreview();
+  },
+  watch: {
+    config: {
+      handler() {
+        this.stopPreview();
+        this.startPreview();
+      },
+      deep: true,
+    },
+  },
+  methods: {
+    handleBack() {
+      uni.navigateBack();
+    },
+    onSteveScale(e) { this.config.steveScale = e.detail.value; },
+    onSteveX(e) { this.config.steveX = e.detail.value; },
+    onSteveY(e) { this.config.steveY = e.detail.value; },
+    onWalkSpeed(e) { this.config.walkSpeed = e.detail.value; },
+    onHandItemX(e) { this.config.handItemX = e.detail.value; },
+    onHandItemY(e) { this.config.handItemY = e.detail.value; },
+    onHandItemScale(e) { this.config.handItemScale = e.detail.value; },
+    onHandItemRotate(e) { this.config.handItemRotate = e.detail.value; },
+    onPickItemX(e) { this.config.pickItemX = e.detail.value; },
+    onPickItemY(e) { this.config.pickItemY = e.detail.value; },
+    onPickItemScale(e) { this.config.pickItemScale = e.detail.value; },
+    onPickItemRotate(e) { this.config.pickItemRotate = e.detail.value; },
+    onBlockItemX(e) { this.config.blockItemX = e.detail.value; },
+    onBlockItemY(e) { this.config.blockItemY = e.detail.value; },
+    onBlockItemScale(e) { this.config.blockItemScale = e.detail.value; },
+    onBlockItemRotate(e) { this.config.blockItemRotate = e.detail.value; },
+    onArmPeakAngle(e) { this.config.armPeakAngle = e.detail.value; },
+    onArmSwingAmp(e) { this.config.armSwingAmp = e.detail.value; },
+    onSideScale(e) { this.config.sideScale = e.detail.value; },
+    onClickAnimation() {
+      // 切到动画模式，并立即触发一次完整循环
+      this.config.debugStatic = 'off';
+      // 等 watch 重启 mcState 后再触发
+      this.$nextTick(() => {
+        if (this.mcState) this.mcState.lastMinute = -1;
+      });
+    },
+    onArmOffsetX(e) { this.config.armOffsetX = e.detail.value; },
+    onArmOffsetY(e) { this.config.armOffsetY = e.detail.value; },
+    triggerDemo() {
+      // 强制触发一次摧毁→搭建循环：把 lastMinute 设为不同值
+      if (this.mcState) {
+        this.mcState.lastMinute = -1;
+      }
+    },
+    initPreviewCanvas() {
+      const systemInfo = uni.getSystemInfoSync();
+      const statusBarHeight = systemInfo.statusBarHeight || 0;
+      const headerHeight = 56;
+      this.contentHeight = `${systemInfo.windowHeight - statusBarHeight - headerHeight - 360}px`;
+
+      this.$nextTick(() => {
+        setTimeout(() => {
+          const query = uni.createSelectorQuery().in(this);
+          query
+            .select(".preview-canvas-container")
+            .boundingClientRect((data) => {
+              if (data && data.width) {
+                const fitZoom = Math.max(2, Math.floor((data.width * 0.96) / 64));
+                this.previewContainerSize = {
+                  width: data.width,
+                  height: data.width,
+                };
+                this.previewZoom = fitZoom;
+                this.previewOffset = {
+                  x: (data.width - 64 * fitZoom) / 2,
+                  y: (data.width - 64 * fitZoom) / 2,
+                };
+              }
+              this.previewCanvasReady = true;
+              this.startPreview();
+            })
+            .exec();
+        }, 120);
+      });
+    },
+    startPreview() {
+      this.mcState = createMinecraftClockState(this.config);
+      this.renderFrame();
+      this.previewTimer = setInterval(() => {
+        stepMinecraftClockState(this.mcState);
+        this.renderFrame();
+      }, 50);
+    },
+    stopPreview() {
+      if (this.previewTimer) {
+        clearInterval(this.previewTimer);
+        this.previewTimer = null;
+      }
+    },
+    renderFrame() {
+      if (!this.mcState) return;
+      this.previewPixels = renderMinecraftClockFrame(this.mcState);
+      this.previewTick++;
+    },
+    renderStaticPreview() {
+      this.startPreview();
+    },
+    async sendToDevice() {
+      if (!this.guardBeforeSend(this.deviceStore.connected)) return;
+      // TODO: 实现发送到设备
+      this.toast.showInfo("Minecraft 时钟开发中，暂不支持发送");
+    },
+  },
+};
+</script>
+
+<style scoped>
+.clock-editor-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-secondary);
+  overflow: hidden;
+}
+
+.canvas-section {
+  display: flex;
+  flex-direction: column;
+  background: #000;
+}
+
+.preview-canvas-container {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #000000;
+}
+
+.canvas-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #000000;
+}
+
+.preview-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+  padding: 10rpx 16rpx 12rpx;
+  background: var(--bg-tertiary);
+}
+
+.preview-caption-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.preview-caption-title {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.preview-actions {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-shrink: 0;
+}
+
+.action-btn-sm {
+  width: auto;
+  min-width: 118rpx;
+  height: 64rpx;
+  padding: 0 18rpx;
+  gap: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid var(--nb-ink);
+  background-color: var(--bg-tertiary);
+}
+
+.action-btn-sm.primary {
+  background-color: var(--nb-yellow);
+  border-color: var(--nb-ink);
+}
+
+.action-btn-sm text {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.action-btn-sm.primary text {
+  color: #000000;
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+  background: var(--bg-tertiary);
+  padding: 16rpx 20rpx 0;
+}
+
+.content-wrapper {
+  padding: 0 0 56rpx;
+}
+
+.settings-card {
+  background: var(--bg-secondary);
+  border: 2rpx solid var(--nb-ink);
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+}
+
+.setting-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72rpx;
+  margin-bottom: 16rpx;
+}
+
+.setting-item-row:last-child {
+  margin-bottom: 0;
+}
+
+.setting-label {
+  font-size: 26rpx;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.setting-control-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.weapon-btn {
+  border: 2rpx solid var(--border-secondary);
+  border-radius: 8rpx;
+  padding: 8rpx 16rpx;
+  background: var(--bg-secondary);
+  transition: all 0.15s;
+}
+
+.weapon-btn.active {
+  border-color: var(--nb-ink);
+  background: var(--nb-ink);
+}
+
+.weapon-btn.active text {
+  color: #ffffff;
+}
+
+.weapon-btn text {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+}
+</style>

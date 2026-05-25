@@ -49,13 +49,13 @@ src = replaceTemplateOnly(src, (tpl) => {
   return tpl
     // 自闭合: <view ... /> → <div ... />
     .replace(/<view\b/g, '<div')
-    .replace(/<\/view>/g, '</div>')
+    .replace(/<\/view\s*>/g, '</div>')
     .replace(/<text\b/g, '<span')
-    .replace(/<\/text>/g, '</span>')
+    .replace(/<\/text\s*>/g, '</span>')
     .replace(/<scroll-view\b/g, '<div data-scroll-view')
-    .replace(/<\/scroll-view>/g, '</div>')
+    .replace(/<\/scroll-view\s*>/g, '</div>')
     .replace(/<image\b/g, '<img')
-    .replace(/<\/image>/g, '');
+    .replace(/<\/image\s*>/g, '');
 });
 
 // ===== 4. import 路径调整 =====
