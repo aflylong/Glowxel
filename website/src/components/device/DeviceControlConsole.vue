@@ -50,7 +50,7 @@
       <div v-if="!isDeviceConnected" class="device-home__connect-grid">
         <button type="button" class="device-home__entry-card" @click="openConnectModal">
           <div class="device-home__entry-icon device-home__entry-icon--paper">
-            <DeviceIcon name="wifi" :size="30" />
+            <Icon unit="px" name="scanning" :size="30" />
           </div>
           <div class="device-home__entry-copy">
             <strong class="device-home__entry-title">WiFi 连接</strong>
@@ -60,7 +60,7 @@
 
         <router-link to="/ble-config" class="device-home__entry-card">
           <div class="device-home__entry-icon device-home__entry-icon--mint">
-            <DeviceIcon name="phone" :size="30" />
+            <Icon unit="px" name="mobile-phone" :size="30" />
           </div>
           <div class="device-home__entry-copy">
             <strong class="device-home__entry-title">热点配网</strong>
@@ -75,7 +75,7 @@
         class="device-home__disconnect-entry"
         @click="handleDisconnect"
       >
-        <DeviceIcon name="disconnect" :size="28" />
+        <Icon unit="px" name="close" :size="28" />
         <span>断开连接</span>
       </button>
     </section>
@@ -94,7 +94,7 @@
           class="device-home__tool-card"
         >
           <div class="device-home__tool-icon" :class="entry.iconShellClass">
-            <DeviceIcon :name="entry.icon" :size="28" />
+            <Icon unit="px" :name="entry.icon" :size="28" />
           </div>
           <div class="device-home__tool-copy">
             <strong class="device-home__tool-title">{{ entry.title }}</strong>
@@ -129,17 +129,19 @@
         >
           <div class="device-home__mode-icon-shell">
             <div class="device-home__mode-icon-core">
-              <DeviceIcon :name="entry.icon" :size="34" />
+              <Icon unit="px" :name="entry.icon" :size="44" />
             </div>
           </div>
           <strong class="device-home__mode-name">{{ entry.name }}</strong>
           <span class="device-home__mode-meta">
             {{
-              currentBusinessMode === entry.key
-                ? "当前模式"
-                : modeSwitchingKey === entry.key
-                  ? "切换中..."
-                  : "点击切换"
+              entry.action === "open"
+                ? (currentBusinessMode === entry.key ? "当前模式 · 打开" : "打开页面")
+                : (currentBusinessMode === entry.key
+                    ? "当前模式"
+                    : modeSwitchingKey === entry.key
+                      ? "切换中..."
+                      : "点击切换")
             }}
           </span>
         </button>
@@ -168,7 +170,7 @@
           class="device-home__tool-card device-home__tool-card--directory"
         >
           <div class="device-home__tool-icon" :class="entry.iconShellClass">
-            <DeviceIcon :name="entry.icon" :size="28" />
+            <Icon unit="px" :name="entry.icon" :size="28" />
           </div>
           <div class="device-home__tool-copy">
             <strong class="device-home__tool-title">{{ entry.title }}</strong>
@@ -193,11 +195,13 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import { useDeviceLegacyStore } from "@/stores/deviceLegacy.js";
 import { useFeedback } from "@/composables/useFeedback.js";
 import DeviceConnectModal from "@/components/device/DeviceConnectModal.vue";
-import DeviceIcon from "@/components/device/DeviceIcon.vue";
+import Icon from "@/components/uni/Icon.vue";
 
+const router = useRouter();
 const deviceStore = useDeviceLegacyStore();
 const feedback = useFeedback();
 
@@ -209,7 +213,7 @@ const deviceHostValue = ref("");
 const utilityEntries = [
   {
     to: "/device-params",
-    icon: "params",
+    icon: "setting",
     title: "设备参数",
     desc: "亮度、旋转、色彩顺序和驱动参数统一在这里读取与保存。",
     cta: "打开",
@@ -217,7 +221,7 @@ const utilityEntries = [
   },
   {
     to: "/ble-config",
-    icon: "phone",
+    icon: "mobile-phone",
     title: "热点配网",
     desc: "首次使用时连接设备热点，在浏览器里打开本地配网页完成联网。",
     cta: "打开",
@@ -230,16 +234,23 @@ const pageDirectoryGroups = devicePageGroups.filter((group) => {
 });
 
 const modeCatalog = [
-  { key: "eyes", name: "桌面宠物", icon: "eyes", variantClass: "device-home__mode-card--pink" },
-  { key: "clock", name: "静态时钟", icon: "clock", variantClass: "device-home__mode-card--cyan" },
-  { key: "animation", name: "动态时钟", icon: "animation", variantClass: "device-home__mode-card--teal" },
-  { key: "theme", name: "主题模式", icon: "theme", variantClass: "device-home__mode-card--purple" },
-  { key: "tetris", name: "俄罗斯方块屏保", icon: "tetris", variantClass: "device-home__mode-card--indigo" },
-  { key: "tetris_clock", name: "俄罗斯方块时钟", icon: "tetris-clock", variantClass: "device-home__mode-card--gold" },
-  { key: "maze", name: "迷宫漫游", icon: "maze", variantClass: "device-home__mode-card--orange" },
-  { key: "snake", name: "贪吃蛇", icon: "snake", variantClass: "device-home__mode-card--green" },
-  { key: "led_matrix_showcase", name: "矩阵流光", icon: "matrix", variantClass: "device-home__mode-card--azure" },
-  { key: "planet_screensaver", name: "星球屏保", icon: "planet", variantClass: "device-home__mode-card--slate" },
+  { key: "eyes", name: "桌面宠物", icon: "smile", variantClass: "device-home__mode-card--pink", action: "switch" },
+  { key: "clock", name: "静态时钟", icon: "time", variantClass: "device-home__mode-card--cyan", action: "open", to: "/clock" },
+  { key: "animation", name: "动态时钟", icon: "dynamic-filling", variantClass: "device-home__mode-card--teal", action: "open", to: "/animation-clock" },
+  { key: "theme", name: "主题模式", icon: "picture", variantClass: "device-home__mode-card--purple", action: "open", to: "/theme-clock" },
+  { key: "canvas", name: "画板模式", icon: "edit", variantClass: "device-home__mode-card--lime", action: "open", to: "/canvas-editor" },
+  { key: "tetris", name: "俄罗斯方块屏保", icon: "modular", variantClass: "device-home__mode-card--indigo", action: "open", to: "/tetris-settings" },
+  { key: "tetris_clock", name: "俄罗斯方块时钟", icon: "clock-filling", variantClass: "device-home__mode-card--gold", action: "open", to: "/tetris-clock-settings" },
+  { key: "maze", name: "迷宫漫游", icon: "map", variantClass: "device-home__mode-card--orange", action: "open", to: "/maze-mode" },
+  { key: "snake", name: "贪吃蛇", icon: "move", variantClass: "device-home__mode-card--green", action: "open", to: "/snake-mode" },
+  { key: "led_matrix_showcase", name: "矩阵流光", icon: "column-4", variantClass: "device-home__mode-card--azure", action: "open", to: "/led-matrix" },
+  { key: "gif_player", name: "GIF 播放器", icon: "play-filling", variantClass: "device-home__mode-card--rose", action: "open", to: "/gif-player" },
+  { key: "water_world", name: "水世界", icon: "layers", variantClass: "device-home__mode-card--blue", action: "open", to: "/water-world" },
+  { key: "planet_screensaver", name: "星球屏保", icon: "navigation", variantClass: "device-home__mode-card--slate", action: "switch" },
+  { key: "rick_morty_portal", name: "传送门", icon: "refresh", variantClass: "device-home__mode-card--mint", action: "open", to: "/rick-morty-portal" },
+  { key: "terraria_clock", name: "泰拉瑞亚时钟", icon: "layers", variantClass: "device-home__mode-card--copper", action: "open", to: "/terraria-clock" },
+  { key: "minecraft_clock", name: "我的世界时钟", icon: "layers", variantClass: "device-home__mode-card--moss", action: "open", to: "/minecraft-clock" },
+  { key: "coast_theme", name: "海岸时光", icon: "layers", variantClass: "device-home__mode-card--azure", action: "open", to: "/coast-theme" },
 ];
 
 const isDeviceConnected = computed(() => deviceStore.connected === true);
@@ -369,6 +380,14 @@ function handleDisconnect() {
 }
 
 async function handleModeSelect(entry) {
+  // open 类入口: 直接跳到对应编辑页 (跟 mobile 端语义一致)
+  // 编辑页内部有"发送/切换"按钮, 真正切设备模式由编辑页负责.
+  if (entry.action === "open" && typeof entry.to === "string" && entry.to.length > 0) {
+    router.push(entry.to);
+    return;
+  }
+
+  // switch 类入口 (eyes / planet_screensaver 等无专属编辑页): 直接发 setMode
   if (!isDeviceConnected.value) {
     feedback.info("请先连接设备", "连接成功后才能切换设备模式。");
     return;
@@ -670,8 +689,8 @@ function resolveErrorMessage(error) {
 }
 
 .device-home__mode-card {
-  min-height: 188px;
-  padding: 16px 12px 14px;
+  min-height: 168px;
+  padding: 18px 14px 14px;
   display: grid;
   justify-items: center;
   align-content: start;
@@ -689,9 +708,9 @@ function resolveErrorMessage(error) {
 }
 
 .device-home__mode-icon-shell {
-  width: 92px;
-  height: 92px;
-  padding: 10px;
+  width: 80px;
+  height: 80px;
+  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -777,25 +796,53 @@ function resolveErrorMessage(error) {
   --device-home-mode-accent: #b3bfd6;
 }
 
-@media (max-width: 1180px) {
+.device-home__mode-card--lime {
+  --device-home-mode-accent: #c8e36a;
+}
+
+.device-home__mode-card--rose {
+  --device-home-mode-accent: #ffa3b8;
+}
+
+.device-home__mode-card--blue {
+  --device-home-mode-accent: #7fb6ff;
+}
+
+.device-home__mode-card--mint {
+  --device-home-mode-accent: #74e0c2;
+}
+
+.device-home__mode-card--copper {
+  --device-home-mode-accent: #d99b6a;
+}
+
+.device-home__mode-card--moss {
+  --device-home-mode-accent: #8fbf76;
+}
+
+@media (max-width: 1280px) {
   .device-home__summary-body {
     grid-template-columns: 1fr;
   }
 
-  .device-home__directory-grid,
   .device-home__mode-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .device-home__directory-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .device-home__connect-grid,
   .device-home__tool-grid {
     grid-template-columns: 1fr;
   }
 
-  .device-home__directory-grid,
   .device-home__mode-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .device-home__directory-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
@@ -824,12 +871,12 @@ function resolveErrorMessage(error) {
   }
 
   .device-home__mode-card {
-    min-height: 172px;
+    min-height: 158px;
   }
 
   .device-home__mode-icon-shell {
-    width: 84px;
-    height: 84px;
+    width: 80px;
+    height: 80px;
   }
 }
 </style>

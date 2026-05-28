@@ -8,7 +8,7 @@ const PAD = 2;
 
 // 把"字像素 mask + 字色"转成"带草膨胀边框的像素 Map"
 //   maskPixels: Set<"x,y"> 字本体覆盖的屏坐标
-//   textColor: '#5a4a3a' (默认土色)
+//   textColor: '#d9cd82' (默认麦色)
 //   innerColor: '#63971f' (距离 1 内圈)
 //   outerColor: '#8FD71D' (距离 2 外圈)
 export function applyTerrariaClockBorder(maskPixels, textColor, innerColor, outerColor) {

@@ -139,6 +139,26 @@
       <path d="M12 4.2C9.8 7.4 7 10.6 7 13.7C7 16.8 9.2 19.2 12 19.2C14.8 19.2 17 16.8 17 13.7C17 10.6 14.2 7.4 12 4.2Z" :stroke="color" :stroke-width="strokeWidth" stroke-linejoin="miter" />
       <path d="M6 18.2C7.6 16.8 9 16.2 10.4 16.2C11.8 16.2 12.6 17.2 14 17.2C15.4 17.2 16 16.2 18 14.8" :stroke="color" :stroke-width="strokeWidth" stroke-linecap="square" />
     </template>
+
+    <template v-else-if="name === 'portal'">
+      <ellipse cx="12" cy="12" rx="6" ry="9" :stroke="color" :stroke-width="strokeWidth" />
+      <ellipse cx="12" cy="12" rx="3" ry="9" :stroke="color" :stroke-width="strokeWidth" />
+      <line x1="3" y1="12" x2="21" y2="12" :stroke="color" :stroke-width="strokeWidth" stroke-linecap="square" />
+    </template>
+
+    <template v-else-if="name === 'terraria'">
+      <rect x="4" y="11" width="16" height="9" :stroke="color" :stroke-width="strokeWidth" />
+      <path d="M4 11L12 4L20 11" :stroke="color" :stroke-width="strokeWidth" stroke-linejoin="miter" />
+      <rect x="9" y="14" width="2" height="2" fill="currentColor" />
+      <rect x="13" y="14" width="2" height="2" fill="currentColor" />
+    </template>
+
+    <template v-else-if="name === 'minecraft'">
+      <rect x="4" y="4" width="6" height="6" fill="currentColor" />
+      <rect x="14" y="4" width="6" height="6" :stroke="color" :stroke-width="strokeWidth" />
+      <rect x="4" y="14" width="6" height="6" :stroke="color" :stroke-width="strokeWidth" />
+      <rect x="14" y="14" width="6" height="6" fill="currentColor" />
+    </template>
   </svg>
 </template>
 

@@ -1326,6 +1326,53 @@ class WebSocket {
     return this.send({ cmd: "ping" });
   }
 
+  // ========== HTTP 运行时接口 (跟 PC deviceLegacy 协议对齐) ==========
+  // /clear-wifi GET, /get GET, /set POST x-www-form-urlencoded
+  // 这些是直接打设备 HTTP 端点而不是 ws, 用于设备参数读写 + 清空 WiFi 配置.
+  async requestRuntimeJson(pathname, init = {}) {
+    const normalizedHost = this.normalizeHostInput(this.host);
+    if (normalizedHost.length === 0) {
+      throw new Error("设备 IP 地址无效");
+    }
+    const protocol = this.secure === true ? "https" : "http";
+    const url = `${protocol}://${normalizedHost}:${this.port}${pathname}`;
+    const response = await fetch(url, init);
+    const text = await response.text();
+    let data = null;
+    try { data = JSON.parse(text); }
+    catch (error) { throw new Error("设备返回的不是有效 JSON"); }
+    if (!response.ok) {
+      if (data && typeof data.error === "string" && data.error.length > 0) {
+        throw new Error(data.error);
+      }
+      throw new Error("设备请求失败");
+    }
+    if (data && typeof data.error === "string" && data.error.length > 0) {
+      throw new Error(data.error);
+    }
+    return data;
+  }
+
+  async clearWifiConfig() {
+    return this.requestRuntimeJson("/clear-wifi", { method: "GET" });
+  }
+
+  async getDeviceParams() {
+    return this.requestRuntimeJson("/get", { method: "GET" });
+  }
+
+  async setDeviceParam(key, value) {
+    const body = new URLSearchParams();
+    body.set(key, String(value));
+    return this.requestRuntimeJson("/set", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+      },
+      body: body.toString(),
+    });
+  }
+
   waitForMessage(matcher, timeout = COMMAND_TIMEOUT_MS) {
     return this._createMessageWaiter(matcher, timeout).promise;
   }
@@ -1916,3 +1963,5 @@ class WebSocket {
 }
 
 export default WebSocket;
+// 让 PC 端的 deviceLegacy.js 也能用同一个 ws 实现 (跟 mobile 同源, 不再维护双份)
+export { WebSocket as DeviceWebSocket };

@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { DeviceWebSocket } from "@/utils/deviceWebSocket.js";
+import { DeviceWebSocket } from "@/utils/webSocket.js";
 
 const DEVICE_IP_KEY = "device_ip";
 const DEVICE_SETTINGS_KEY = "device_ws_settings";

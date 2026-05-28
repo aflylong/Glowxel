@@ -5,7 +5,7 @@ import { isMobileDevice } from '@/utils/device-detect.js'
 const Migrating = () => import('@/views/DeviceMigrating.vue')
 
 // 设备页双版本: PC 版 = views/X.vue, 移动版 = views/mobile/X.vue
-// 路由根据 UA 选择加载哪个 (vue-router 4 component 函数返回的 Promise)
+// 路由根据 UA 选择加载哪个 (PC 走自己的桌面布局, mobile 走 uniapp 同源)
 function deviceDual(name) {
   return () => isMobileDevice()
     ? import(`@/views/mobile/${name}.vue`).catch(() => import(`@/views/${name}.vue`))
@@ -46,7 +46,7 @@ const routes = [
   { path: '/following', name: 'MyFollowing', component: () => import('@/views/FollowList.vue'), meta: { shell: 'app', auth: true } },
   { path: '/design-compare', name: 'DesignCompare', component: () => import('@/views/DesignCompare.vue'), meta: { shell: 'app' } },
 
-  // ===== 设备控制类 (双端: PC = views/X.vue, mobile = views/mobile/X.vue) =====
+  // ===== 设备控制类 (双端独立: PC = views/X.vue, mobile = views/mobile/X.vue) =====
   { path: '/device-control', name: 'DeviceControl', component: deviceDual('DeviceControl'), meta: { shell: 'app' } },
   { path: '/ble-config', name: 'BleConfig', component: deviceDual('BleConfig'), meta: { shell: 'app' } },
   { path: '/device-params', name: 'DeviceParams', component: deviceDual('DeviceParams'), meta: { shell: 'app' } },
@@ -66,6 +66,7 @@ const routes = [
   { path: '/rick-morty-portal', name: 'RickMortyPortal', component: () => import('@/views/mobile/RickMortyPortal.vue'), meta: { shell: 'app' } },
   { path: '/terraria-clock', name: 'TerrariaClock', component: () => import('@/views/mobile/TerrariaClock.vue'), meta: { shell: 'app' } },
   { path: '/minecraft-clock', name: 'MinecraftClock', component: () => import('@/views/mobile/MinecraftClock.vue'), meta: { shell: 'app' } },
+  { path: '/coast-theme', name: 'CoastTheme', component: () => import('@/views/mobile/CoastTheme.vue'), meta: { shell: 'app' } },
 
   // Clock 三件套: PC = views/Clock.vue 等, mobile = views/mobile/Clock.vue 等
   { path: '/clock', name: 'Clock', component: deviceDual('Clock'), meta: { shell: 'app' } },
@@ -106,6 +107,7 @@ router.afterEach((to) => {
     to.path.startsWith('/rick-morty-') ||
     to.path.startsWith('/terraria-') ||
     to.path.startsWith('/minecraft-') ||
+    to.path.startsWith('/coast-') ||
     to.path === '/clock' || to.path === '/animation-clock' || to.path === '/theme-clock'
   )
   if (typeof document !== 'undefined') {

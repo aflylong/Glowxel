@@ -430,7 +430,7 @@ export default {
           fontSize: 1,
           x: 32,
           y: 6,
-          color: "#5a4a3a",
+          color: "#d9cd82",
           align: "center",
         },
         date: {
@@ -534,7 +534,7 @@ export default {
       _pendingRotateDisableLabel: null,
 
       presetColors: [
-        { name: "土色", hex: "#5a4a3a" },
+        { name: "麦色", hex: "#d9cd82" },
         { name: "青色", hex: "#64c8ff" },
         { name: "绿色", hex: "#00ff9d" },
         { name: "黄色", hex: "#ffdc00" },

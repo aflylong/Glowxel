@@ -333,6 +333,14 @@ export default {
           type: "mode",
           bucket: "secondary",
         },
+        {
+          key: "coast_theme",
+          name: "海岸时光",
+          icon: "layers",
+          variant: "azure",
+          type: "mode",
+          bucket: "secondary",
+        },
       ];
     },
   },
@@ -423,6 +431,8 @@ export default {
         this.openTerrariaClockEditor();
       } else if (mode === "minecraft_clock") {
         this.openMinecraftClockEditor();
+      } else if (mode === "coast_theme") {
+        this.openCoastTheme();
       } else if (mode === "ambient_effect" || mode === "led_matrix_showcase") {
         this.openLedMatrixShowcase();
       } else if (mode === "tetris") {
@@ -463,6 +473,12 @@ export default {
     openMinecraftClockEditor() {
       uni.navigateTo({
         url: "/pages/minecraft-clock/minecraft-clock",
+      });
+    },
+
+    openCoastTheme() {
+      uni.navigateTo({
+        url: "/pages/coast-theme/coast-theme",
       });
     },
 

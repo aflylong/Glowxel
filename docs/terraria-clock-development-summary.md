@@ -7,6 +7,188 @@
 
 ---
 
+## 0. 当前权威清单 (★ 必读, 任何人接手先看这一节)
+
+> 这一节是**事实快照**,由脚本扫真实代码 + 资产生成,不是规划。代码改动后请同步更新这里,**永远以这一节为准**,文档其余章节是历史过程记录。
+> 最近一次盘点: 2026-05 (脚本: `_tmp_audit_terraria.py`)
+
+### 0.1 资产数量 (uniapp / 板载 完全一致)
+
+| 类别 | uniapp `static/terraria/*.js` | 板载 `theme_assets/terraria/*.h` | 说明 |
+|---|---|---|---|
+| 头甲 (armor heads) | **36** | **36** | 14 个用于套装 + 22 个用于 Boss 面具池 |
+| 胸甲 (armor bodies) | **14** | **14** | 全部用于套装 |
+| 腿甲 (armor legs)   | **14** | **14** | 全部用于套装 |
+| 翅膀 (wings)        | **18** | **18** | 14 个绑套装 + 4 个散装可自选 |
+| 武器 (weapons)      | **20** | **20** | 全部三方一致, 每个套装 2 把 |
+| Boss (bosses_compact / sprites_bosses) | **33** | **33** | 板载按 idx 0–32 编号 |
+| Boss 面具 (头甲池里的子集) | **21** | (复用 head sprite) | uniapp `terraria-clock.vue::maskList` 硬编码 |
+| Biome 地形 | 10 (BIOME_LIST) | 10 (sprites_biomes.h) | forest 用 misc.js, 其他 9 个用 sprites_tiles.js |
+| 召唤物 | summon_guardian (1) + summon_extras | 同 | Stardust Guardian / Stardust Dragon / 帝皇飞剑 |
+| Player layers | 14 | 14 | 角色皮肤层 (头/眼/躯干/腿/...) |
+
+### 0.2 套装表 (15 套, 每套 2 把武器)
+
+> 来源: `uniapp/utils/terrariaRenderer.js::CHARACTERS`,**唯一权威**。
+> novice 套是"无盔甲"占位 (head/body/legs/wings 都是 0,不算引用)。
+
+| id | 套装 | head | body | legs | wing | 武器 1 (id/名) | 武器 2 (id/名) | hasGuardian |
+|---|---|---|---|---|---|---|---|---|
+| warrior     | 耀斑 | 171 | 177 | 112 | 29 | 4956 天顶剑 | 757 泰拉刃 | false |
+| ranger      | 星旋 | 169 | 175 | 110 | 30 | 3475 星旋机枪 | 3540 幻影弓 | false |
+| mage        | 星云 | 170 | 176 | 111 | 31 | 3541 最后的棱镜 | 3542 星云烈焰 | false |
+| summoner    | 星尘 | 189 | 190 | 130 | 32 | 3531 星尘龙杖 | 5005 泰拉棱镜 | **true** |
+| beetle      | 甲虫 | 157 | 105 | 98  | 24 | 757 泰拉刃 | 1122 占有斧 | false |
+| spectre     | 幽灵 | 101 | 66  | 55  | 11 | 1931 暴风雪法杖 | 3541 最后的棱镜 | false |
+| spooky      | 阴森 | 134 | 95  | 79  | 21 | 3531 星尘龙杖 | 1931 暴风雪法杖 | false |
+| frost       | 冰霜 | 46  | 27  | 26  | 10 | 1947 北极 | 1931 暴风雪法杖 | false |
+| hallowed    | 神圣 | 41  | 24  | 23  | 26 | 757 泰拉刃 | 3827 飞龙 | false |
+| chlorophyte | 叶绿 | 78  | 51  | 47  | 27 | 4923 星光 | 4952 棱彩光辉 | false |
+| crystal     | 凝胶 | 261 | 230 | 213 | 49 | 2880 波涌之刃 | 757 泰拉刃 | false |
+| bee         | 蜜蜂 | 160 | 168 | 103 | 6  | 1121 蜂枪 | 121 烈焰巨剑 | false |
+| pirate      | 海盗 | 68  | 45  | 41  | 14 | 3852 魔典法杖 | 757 泰拉刃 | false |
+| molten      | 熔岩 | 9   | 9   | 9   | 1  | 121 烈焰巨剑 | 757 泰拉刃 | false |
+| novice      | 无   | 0   | 0   | 0   | 0  | 3507 铜短剑 | 24 木剑 | false |
+
+### 0.3 全部 20 把武器 (ID → 中文名)
+
+```
+  24  木剑              121  烈焰巨剑          757  泰拉刃
+1121  蜂枪              1122  占有斧          1931  暴风雪法杖
+1947  北极              2880  波涌之刃        3475  星旋机枪
+3507  铜短剑            3531  星尘龙杖        3540  幻影弓
+3541  最后的棱镜        3542  星云烈焰        3827  飞龙
+3852  魔典法杖          4923  星光            4952  棱彩光辉
+4956  天顶剑            5005  泰拉棱镜
+```
+
+### 0.4 全部 18 翅膀 (WING_LIST)
+
+> 来源: `uniapp/utils/terrariaWings.js::WING_LIST`。
+> 14 个固定绑某套装, 4 个 (2/23/37/38) 是不绑套装的散装翅膀。
+
+```
+  1 恶魔之翼      2 天使之翼      6 仙女之翼     10 冰冻翅膀
+ 11 幽灵之翼     14 蝙蝠翅膀     21 阴森翅膀     23 节日翅膀
+ 24 甲虫翅膀     26 猪龙鱼翅膀   27 蛾翼         29 耀斑之翼
+ 30 星旋加速器   31 星云斗篷     32 星尘之翼     37 花妖翅膀
+ 38 Arkhalis之翼 49 Heroicis之翼
+```
+
+### 0.5 全部 33 Boss (按板载 idx 排序)
+
+> 来源: `uniapp/static/terraria/bosses_compact.js`,板载 `sprites_bosses.h` 按相同 idx 编号。
+
+| idx | slug | biome | 中文名 |
+|---|---|---|---|
+| 0 | king_slime | forest | 史莱姆王 |
+| 1 | eye_of_cthulhu | corruption | 克苏鲁之眼 |
+| 2 | eater_of_worlds | corruption | 世界吞噬者 |
+| 3 | brain_of_cthulhu | crimson | 克苏鲁之脑 |
+| 4 | queen_bee | jungle | 蜂王 |
+| 5 | skeletron | dungeon | 骷髅王 |
+| 6 | deerclops | snow | 巨鹿 |
+| 7 | wall_of_flesh | underworld | 血肉墙 |
+| 8 | queen_slime | hallow | 史莱姆女皇 |
+| 9 | the_twins | forest | 双子魔眼 |
+| 10 | destroyer | forest | 毁灭者 |
+| 11 | skeletron_prime | forest | 机械骷髅王 |
+| 12 | plantera | jungle | 世纪之花 |
+| 13 | golem | temple | 石巨人 |
+| 14 | duke_fishron | ocean | 猪龙鱼公爵 |
+| 15 | empress_of_light | hallow | 光之女皇 |
+| 16 | lunatic_cultist | dungeon | 拜月教邪教徒 |
+| 17 | martian_saucer | forest | 火星飞碟 |
+| 18 | moon_lord | forest | 月亮领主 |
+| 19 | pumpking | forest | 南瓜王 |
+| 20 | mourning_wood | forest | 悼木 |
+| 21 | ice_queen | snow | 冰雪女王 |
+| 22 | santa_nk1 | snow | 圣诞坦克 |
+| 23 | everscream | snow | 常青尖叫 |
+| 24 | solar_pillar | forest | 日耀柱 |
+| 25 | nebula_pillar | forest | 星辰柱 |
+| 26 | stardust_pillar | forest | 星云柱 |
+| 27 | vortex_pillar | forest | 涡能柱 |
+| 28 | flying_dutchman | forest | 飞行荷兰人 |
+| 29 | mothron | forest | 蛾怪 |
+| 30 | betsy | forest | 贝齐 |
+| 31 | dark_mage | dungeon | 黑暗法师 |
+| 32 | ogre | forest | 食人魔 |
+
+按 biome 分布 (用于 `getBossesForBiome`):
+forest 16, snow 4, dungeon 3, corruption 2, hallow 2, jungle 2, crimson 1, ocean 1, temple 1, underworld 1。
+
+### 0.6 全部 10 Biome (BIOME_LIST)
+
+> 来源: `uniapp/utils/terrariaBiome.js::BIOME_LIST`。
+
+```
+forest 森林 / corruption 腐化 / crimson 猩红 / jungle 丛林 / snow 雪原
+dungeon 地牢 / underworld 地狱 / hallow 神圣 / ocean 海洋 / temple 神庙
+```
+
+### 0.7 全部 21 Boss 面具 (硬编码在 `terraria-clock.vue::maskList`)
+
+```
+164 史莱姆王 / 154 克苏鲁之眼 / 153 世界吞噬者 / 146 克苏鲁之脑
+150 蜂王 / 98 骷髅王 / 276 巨鹿 / 147 血肉墙 / 260 史莱姆女皇
+148 双子魔眼 / 155 毁灭者 / 149 机械骷髅王 / 151 世纪之花
+152 石巨人 / 168 巨鱼公爵 / 251 光之女皇 / 186 邪教徒
+174 火星生物 / 187 月亮领主 / 137 南瓜王 / 141 树面具
+```
+ID 范围 `98/137/141/146-156/164/168/174/186/187/251/260/276` 都在 `armor_heads.js` 里, 复用同一个 head sprite 池。
+
+### 0.8 资产做了但 CHARACTERS 没引用 (合理冗余)
+
+| 类别 | ID | 用途 |
+|---|---|---|
+| armor head 22 个 | 98/137/141/146/147/148/149/150/151/152/153/154/155/156/164/168/174/186/187/251/260/276 | Boss 面具池 (上面 §0.7) |
+| wings 4 个 | 2 / 23 / 37 / 38 | 散装翅膀 (用户可在 WING_LIST 选, 但不绑任何套装) |
+
+### 0.9 资产文件清单 (静态布局)
+
+```
+uniapp/static/terraria/                 ← uniapp 预览/小程序加载源 (不进 website)
+  armor_heads.js          36 头甲
+  armor_bodies.js         14 胸甲
+  armor_legs.js           14 腿甲
+  wings.js                18 翅膀 (base + delta 差异帧)
+  weapons.js              20 武器
+  player_layers.js        14 player layer
+  summon_guardian.js      Stardust Guardian (8 帧 base+delta)
+  summon_extras.js        Stardust Dragon 4 段 + 帝皇飞剑
+  misc.js                 forest 草地 3 块 + dust_242 + extra_171
+  sprites_tiles.js        其他 9 个 biome 的草地块 (palette 编码)
+  bosses_compact.js       33 Boss (单文件汇总, JSON-in-js)
+  prescaled/              A 类预缩放副本 (armor_*/wings/weapons/player_layers/summon_guardian)
+                          uniapp 实际渲染加载这一份, 不加载全分辨率
+
+esp32-firmware/include/theme_assets/terraria/   ← 板载 PROGMEM
+  sprites_armor_heads.h        36
+  sprites_armor_bodies.h       14
+  sprites_armor_legs.h         14
+  sprites_wings.h              18 (base + delta)
+  sprites_weapons.h            20
+  sprites_player_layers.h      14
+  sprites_guardian.h           Stardust Guardian
+  sprites_summon_extras.h      Stardust Dragon + 帝皇飞剑
+  sprites_misc.h               草地 + 特效
+  sprites_biomes.h             10 biome 草地 tile (palette 压缩)
+  sprites_bosses.h             33 Boss (按 idx 0-32 编号)
+  terraria_sprite_types.h      公共类型
+  index.h                      公共导出
+```
+
+### 0.10 关键约定 (踩过坑的已固化)
+
+- A 类资产 (armor_heads/bodies/legs/wings/weapons/player_layers/summon_guardian) 渲染时**用 prescaled 版**, 不用全分辨率版 (AGENTS.md §15)
+- B 类资产 (summon_extras / misc / sprites_tiles / bosses_compact) **绝对不能被 prescale 覆盖** (AGENTS.md §16)
+- 板载 boss 用 idx (0-32),uniapp 用 slug, 两端转换看 `terraria-clock.vue::_bossSlugToIndex`
+- 板载 biome 用 idx (0-9),uniapp 用 string, 两端转换看 `terraria-clock.vue::_biomeToIndex`
+- WS 字段映射 1:1 不允许 fallback (见 §7.4)
+
+---
+
 ## 1. 总体路线(从 0 到能在屏上跑)
 
 ```
@@ -235,11 +417,11 @@ esp32-firmware/
     terraria_clock_effect.h             — Effect 公共接口
     theme_assets/terraria/
       terraria_sprite_types.h           — TerrariaSprite / TerrariaSpriteAnim / TerrariaFrameBlock 类型
-      sprites_armor_heads.h             — 4 个头甲(189/171/169/170)
-      sprites_armor_bodies.h            — 4 个胸甲(190/177/175/176)
-      sprites_armor_legs.h              — 4 个腿甲(130/112/110/111)
-      sprites_wings.h                   — 4 个翅膀(29/30/31/32)+ delta 差异帧
-      sprites_weapons.h                 — 8 把武器(4956/3065/3531/5005/3475/3540/3541/3542)
+      sprites_armor_heads.h             — 36 个头甲 (14 套装 + 21 Boss 面具 + 1 重叠, 见 §0)
+      sprites_armor_bodies.h            — 14 个胸甲 (套装用)
+      sprites_armor_legs.h              — 14 个腿甲 (套装用)
+      sprites_wings.h                   — 18 个翅膀 (base + delta 差异帧)
+      sprites_weapons.h                 — 20 把武器 (每套装 2 把)
       sprites_player_layers.h           — 14 个 player layer(头/眼/躯干/腿/...)
       sprites_summon_guardian.h         — Stardust Guardian 8 帧 + delta
       sprites_misc.h                    — biome_forest / dust_242
@@ -600,7 +782,7 @@ for (int x = 0; x < SCREEN_W; x++) {
 
 **原因**:每个 sprite 一个文件,头甲 4 个、胸甲 4 个、腿甲 4 个 ……
 
-**修复**:**按"类"合并到 8 个文件**:
+**修复**:**按"类"合并到 8 个文件**(当前文件清单见 §0.9):
 ```
 sprites_armor_heads.js
 sprites_armor_bodies.js
@@ -611,6 +793,8 @@ sprites_player_layers.js
 sprites_summon_guardian.js
 sprites_misc.js
 ```
+
+> 当前实际是 11 个 .js: 上面 8 个 + bosses_compact.js + sprites_tiles.js + summon_extras.js, 仍可控。
 
 **教训**:
 - 资产文件数控制在 8-10 个内
@@ -715,20 +899,19 @@ D:\project\Pokemon\terraria-clock-preview\
 
 D:\project\Glowxel\                  # 主仓库(只保留产物)
 ├── uniapp\
-│   ├── static\terraria\             # sprite bundle
-│   │   ├── armor_heads.js           # 11 个头甲
-│   │   ├── armor_bodies.js          # 10 个胸甲
-│   │   ├── armor_legs.js            # 10 个腿甲
-│   │   ├── wings.js                 # 42 个翅膀(1.2 MB)
-│   │   ├── weapons.js               # 16 把武器
-│   │   ├── player_layers.js         # 角色皮肤层
-│   │   ├── summon_guardian.js        # 守卫 8 帧
-│   │   ├── misc.js                  # 草地 + 特效
-│   │   ├── sprites_tiles.js         # 地形瓦片
-│   │   └── bosses\                  # 33 个 boss(按 slug 分文件)
-│   │       ├── _index.js
-│   │       ├── king_slime.js
-│   │       └── ... (共 33 个)
+│   ├── static\terraria\             # sprite bundle (实际清单见 §0.9, 当前 11 个 .js)
+│   │   ├── armor_heads.js           # 36 个头甲 (14 套装 + 21 面具 + 1 共用)
+│   │   ├── armor_bodies.js          # 14 个胸甲
+│   │   ├── armor_legs.js            # 14 个腿甲
+│   │   ├── wings.js                 # 18 个翅膀 (base + delta)
+│   │   ├── weapons.js               # 20 把武器
+│   │   ├── player_layers.js         # 14 个角色皮肤层
+│   │   ├── summon_guardian.js       # Stardust Guardian 8 帧
+│   │   ├── summon_extras.js         # Stardust Dragon 4 段 + 帝皇飞剑
+│   │   ├── misc.js                  # forest 草地 3 块 + dust_242 + extra_171
+│   │   ├── sprites_tiles.js         # 其他 9 个 biome 草地 (palette)
+│   │   ├── bosses_compact.js        # 33 个 Boss (单文件 JSON-in-js)
+│   │   └── prescaled\               # A 类预缩放副本 (uniapp 实际加载这一份)
 │   ├── utils\
 │   │   ├── terrariaRenderer.js      # 主渲染(CHARACTERS 定义 + 合成逻辑)
 │   │   ├── terrariaWings.js         # 翅膀渲染 + WING_LIST
@@ -757,14 +940,19 @@ D:\project\Glowxel\                  # 主仓库(只保留产物)
 
 ---
 
-## 12. 阶段 6: 第二代深度扩展(33 Boss + 42 翅膀 + 10 套装)
+## 12. 阶段 6: 第二代深度扩展 (33 Boss + 18 翅膀 + 15 套装)
 
 > 时间: 2025 年 5 月  
-> 目标: 让泰拉瑞亚时钟从"4 职业看腻"变成"33 boss + 10 套装 + 42 翅膀自由搭配"
+> 目标: 让泰拉瑞亚时钟从"4 职业看腻"变成"33 boss + 15 套装 + 18 翅膀 (其中 4 散装) 自由搭配"
+>
+> ★ 现状以 §0 为准。本节是**演进过程记录**, 数字不再维护, 看现状直接看 §0.
 
-### 12.1 Boss 系统(33 个)
+### 12.1 Boss 系统 (33 个, 现状见 §0.5)
 
-**架构**: 按 slug 懒加载(一个 boss 一个 .js 文件),避免一次性加载全部 boss 数据导致内存爆炸。
+> ★ 历史架构是"按 slug 一个 .js 懒加载"(`bosses/{slug}.js + _index.js`)。
+> 当前已合并为单文件 `bosses_compact.js`, 详见 §0.9。下面这段保留是**历史**, 不是现状。
+
+**架构 (历史)**: 按 slug 懒加载 (一个 boss 一个 .js 文件), 避免一次性加载全部 boss 数据导致内存爆炸。
 
 ```
 uniapp/static/terraria/bosses/
@@ -841,8 +1029,10 @@ Boss 按 biome 分组显示(切换地形后显示对应 boss 列表)。
 
 ### 12.3 翅膀系统(42 种,独立可选)
 
+### 12.3 翅膀系统 (18 种, 现状见 §0.4)
+
 **文件**:
-- `uniapp/static/terraria/wings.js` — 42 个翅膀 sprite 数据(base + delta 差异帧)
+- `uniapp/static/terraria/wings.js` — 18 个翅膀 sprite 数据(base + delta 差异帧)
 - `uniapp/utils/terrariaWings.js` — 渲染逻辑 + WING_LIST 名称表
 - 翅膀选择独立于盔甲,用户可自由搭配
 
@@ -874,7 +1064,7 @@ function getWingFrameByTime(animTimeSec, wingSpeed, frameCount) {
 - 31 Nebula: 4 方向偏移副本(粉色脉冲)
 - 32 Stardust: 蓝白发光叠加层
 
-### 12.4 盔甲套装扩展(4 → 10 套)
+### 12.4 盔甲套装扩展 (4 → 15 套, 现状见 §0.2)
 
 **新增 6 套中后期盔甲**, 从源码 `ArmorIDs.cs` 查证 Head/Body/Legs ID:
 
@@ -893,7 +1083,7 @@ function getWingFrameByTime(animTimeSec, wingSpeed, frameCount) {
 
 **Body 文件发现**: 解包目录中 body armor PNG 不叫 `Armor_Body_X.png`, 而是在 `Armor/Armor_X.png` 子文件夹里。build 脚本已做重命名拷贝处理。
 
-### 12.5 武器扩展(8 → 16 把)
+### 12.5 武器扩展 (8 → 20 把, 现状见 §0.3)
 
 新增武器(从源码 `ItemID.cs` 确认 ID):
 
@@ -910,12 +1100,13 @@ function getWingFrameByTime(animTimeSec, wingSpeed, frameCount) {
 
 ### 12.6 Build 脚本更新
 
-`uniapp/tools/build-terraria-sprites.js` 已更新:
-- 头甲: 4 → 11 个
-- 胸甲: 4 → 10 个
-- 腿甲: 4 → 10 个
-- 翅膀: 4 → 42 个(自动检测帧数)
-- 武器: 8 → 16 个
+`uniapp/tools/build-terraria-sprites.js` 当前最终版:
+- 头甲: 36 个
+- 胸甲: 14 个
+- 腿甲: 14 个
+- 翅膀: 18 个 (自动检测帧数)
+- 武器: 20 个
+- 武器: 20 个
 - misc.js 加了空数据保护(PNG 缺失时不覆盖已有数据)
 
 **运行方式**:
@@ -930,10 +1121,10 @@ node tools/build-terraria-sprites.js
 
 ### 12.7 UI 变化(terraria-clock.vue)
 
-角色 Tab 新增:
-- **翅膀选择网格**(42 个按钮, 独立于盔甲选择)
-- **翅膀速度调节**(±10% 步进, 范围 0~200%)
-- 职业选择从 4 个扩展到 10 个
+角色 Tab:
+- **翅膀选择网格** (18 个按钮, 独立于盔甲选择)
+- **翅膀速度调节** (±10% 步进, 范围 0~200%)
+- 套装选择 15 个 (warrior/ranger/mage/summoner/beetle/spectre/spooky/frost/hallowed/chlorophyte/crystal/bee/pirate/molten/novice)
 - 切换职业自动同步对应翅膀(可手动覆盖)
 
 ### 12.8 per-boss 位置记忆

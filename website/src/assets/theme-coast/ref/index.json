@@ -1,0 +1,53 @@
+{
+  "generatedAt": "2026-05-26T10:31:13.098Z",
+  "items": [
+    {
+      "name": "Ocean_1",
+      "source": "4.png",
+      "originW": 2304,
+      "originH": 1296
+    },
+    {
+      "name": "Ocean_2",
+      "source": "5.png",
+      "originW": 2304,
+      "originH": 1296
+    },
+    {
+      "name": "Ocean_3",
+      "source": "5.png",
+      "originW": 2304,
+      "originH": 1296
+    },
+    {
+      "name": "Ocean_4",
+      "source": "5.png",
+      "originW": 2304,
+      "originH": 1296
+    },
+    {
+      "name": "Ocean_5",
+      "source": "5.png",
+      "originW": 2304,
+      "originH": 1296
+    },
+    {
+      "name": "Ocean_6",
+      "source": "5.png",
+      "originW": 2304,
+      "originH": 1296
+    },
+    {
+      "name": "Ocean_7",
+      "source": "6.png",
+      "originW": 2304,
+      "originH": 1296
+    },
+    {
+      "name": "Ocean_8",
+      "source": "6.png",
+      "originW": 2304,
+      "originH": 1296
+    }
+  ]
+}

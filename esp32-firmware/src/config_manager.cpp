@@ -421,7 +421,7 @@ TerrariaModeConfig ConfigManager::terrariaConfig = {
   .fontId = CLOCK_FONT_LCD_6X8, .fontScale = 1,
   .clockX = 32, .clockY = 6,
   .hourFormat = 24, .showSeconds = false,
-  .clockTextColor = {0x5A, 0x4A, 0x3A},
+  .clockTextColor = {0xD9, 0xCD, 0x82},
   .clockBgInner = {0x63, 0x97, 0x1F},
   .clockBgOuter = {0x8F, 0xD7, 0x1D},
 };
@@ -1186,7 +1186,7 @@ void ConfigManager::resetToDefault() {
     .fontId = CLOCK_FONT_LCD_6X8, .fontScale = 1,
     .clockX = 32, .clockY = 6,
     .hourFormat = 24, .showSeconds = false,
-    .clockTextColor = {0x5A, 0x4A, 0x3A},
+    .clockTextColor = {0xD9, 0xCD, 0x82},
     .clockBgInner = {0x63, 0x97, 0x1F},
     .clockBgOuter = {0x8F, 0xD7, 0x1D},
   };

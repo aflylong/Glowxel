@@ -132,7 +132,7 @@ struct TerrariaModeConfig {
   bool showSeconds;
 
   // 草膨胀边框 3 色
-  uint8_t clockTextColor[3]; // RGB 字本体色 (默认 #5a4a3a)
+  uint8_t clockTextColor[3]; // RGB 字本体色 (默认 #d9cd82)
   uint8_t clockBgInner[3];   // RGB 内圈色 (默认 #63971f)
   uint8_t clockBgOuter[3];   // RGB 外圈色 (默认 #8FD71D)
 };
@@ -147,7 +147,7 @@ struct TerrariaModeConfig {
 - wingSpeed=50
 - fontId=CLOCK_FONT_LCD_6X8, fontScale=1, clockX=32, clockY=6
 - hourFormat=24, showSeconds=false
-- clockTextColor=#5a4a3a, clockBgInner=#63971f, clockBgOuter=#8FD71D
+- clockTextColor=#d9cd82, clockBgInner=#63971f, clockBgOuter=#8FD71D
 
 ### 2. Sprite 数据格式 (PROGMEM)
 

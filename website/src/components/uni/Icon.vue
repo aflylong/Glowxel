@@ -74,6 +74,11 @@ export default {
       type: String,
       default: "currentColor",
     },
+    // 'rpx' (uniapp 设计稿默认) | 'px' (PC 直接像素)
+    unit: {
+      type: String,
+      default: "rpx",
+    },
   },
   computed: {
     resolvedName() {
@@ -81,7 +86,7 @@ export default {
     },
     iconStyle() {
       return {
-        fontSize: `${this.size}rpx`,
+        fontSize: `${this.size}${this.unit}`,
         color: this.color,
       };
     },
