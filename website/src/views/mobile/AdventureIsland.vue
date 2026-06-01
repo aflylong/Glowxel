@@ -161,17 +161,47 @@ export default {
       });
     },
     startLoop() {
-      const FPS = 30;
-      const tick = () => {
-        if (!this.sceneState) return;
-        // 全部参数用 renderer 默认值, 不传 layoutOpts (定档无参数)
-        tickScene(this.sceneState, {});
-        this.previewPixels = renderAdventureIslandScene(this.sceneState, {});
-        this.previewTick++;
-        this.animHandle = setTimeout(tick, 1000 / FPS);
+      // 静态一帧: 跑一次 tick + render 拿到画面, 不再循环
+      // 板载常量 (跟 esp32-firmware/src/adventure_island_effect.cpp 一致)
+      const layoutOpts = {
+        bgYOffset: -12,
+        charX: 6,
+        groundY: 59,
+        obstacleScale: 0.73,
+        itemScale: 0.73,
+        showClock: true,
+        clockX: 13,
+        clockY: 2,
+        clockSpacing: 1,
+        clockColonGap: 2,
+        axeAnimSpeed: 3,
+        crowYOffset: 36,
+        fruitAirY: 36,
+        fairyOffsetX: -14,
+        fairyOffsetY: 41,
       };
-      tick();
+      const tickOpts = {
+        bgSpeed: 0.5,
+        entSpeed: 0.6,
+        jumpHeight: 21,
+        autoMode: true,
+        charX: 6,
+        spawnInterval: 150,
+        spawnJitter: 0,
+        eggCooldownFrames: 1500,
+        crowYOffset: 36,
+        axeSpeed: 2,
+        reachFactor: null,
+        throwDist: 32,
+        throwRange: 16,
+        crowJumpDist: 40,
+        crowJumpRange: 12,
+      };
+      tickScene(this.sceneState, tickOpts);
+      this.previewPixels = renderAdventureIslandScene(this.sceneState, layoutOpts);
+      this.previewTick++;
     },
+    stopLoop() { /* 静态帧无循环, 不需要 stop */ },
     stopLoop() {
       if (this.animHandle) {
         clearTimeout(this.animHandle);

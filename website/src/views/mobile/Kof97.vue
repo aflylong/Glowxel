@@ -154,19 +154,12 @@ export default {
       });
     },
     startLoop() {
-      const FPS = 30;
-      const tick = () => {
-        if (!this.sceneState) return;
-        tickScene(this.sceneState);
-        this.previewPixels = renderKof97Scene(this.sceneState);
-        this.previewTick++;
-        this.animHandle = setTimeout(tick, 1000 / FPS);
-      };
-      tick();
+      // 静态一帧: 跑一次 tick + render 拿到画面, 不再循环 (省 CPU + 防扒动画)
+      tickScene(this.sceneState);
+      this.previewPixels = renderKof97Scene(this.sceneState);
+      this.previewTick++;
     },
-    stopLoop() {
-      if (this.animHandle) { clearTimeout(this.animHandle); this.animHandle = null; }
-    },
+    stopLoop() { /* 静态帧无循环, 不需要 stop */ },
 
     // 发送到设备 - 无参数模式, 板载用预设值跑
     async sendToDevice() {
