@@ -1946,6 +1946,30 @@ bool prepareEyesTransaction(JsonObject params, const char*& reason) {
   );
 }
 
+// 冒险岛主题: 没有可变参数, 直接通过
+bool prepareAdventureIslandTransaction(JsonObject /*params*/, const char*& reason) {
+  resetPreparedCommand(gWebSocketTransactionSession.preparedCommand);
+  RuntimeCommandBus::RuntimeCommand& command = gWebSocketTransactionSession.preparedCommand;
+  command.type = RuntimeCommandBus::RuntimeCommandType::MODE_SWITCH;
+  command.targetMode = MODE_ANIMATION;
+  command.businessModeTag = ModeTags::ADVENTURE_ISLAND;
+  command.successMessage = "adventure island started";
+  reason = nullptr;
+  return true;
+}
+
+// KOF97 主题: 没有可变参数, 直接通过
+bool prepareKof97Transaction(JsonObject /*params*/, const char*& reason) {
+  resetPreparedCommand(gWebSocketTransactionSession.preparedCommand);
+  RuntimeCommandBus::RuntimeCommand& command = gWebSocketTransactionSession.preparedCommand;
+  command.type = RuntimeCommandBus::RuntimeCommandType::MODE_SWITCH;
+  command.targetMode = MODE_ANIMATION;
+  command.businessModeTag = ModeTags::KOF97;
+  command.successMessage = "kof97 started";
+  reason = nullptr;
+  return true;
+}
+
 bool buildPreparedWebSocketTransaction(
   const String& mode,
   JsonObject params,
@@ -1991,6 +2015,10 @@ bool buildPreparedWebSocketTransaction(
     prepared = prepareTetrisClockTransaction(params, reason);
   } else if (mode == ModeTags::TERRARIA_CLOCK) {
     prepared = prepareTerrariaTransaction(params, reason);
+  } else if (mode == ModeTags::ADVENTURE_ISLAND) {
+    prepared = prepareAdventureIslandTransaction(params, reason);
+  } else if (mode == ModeTags::KOF97) {
+    prepared = prepareKof97Transaction(params, reason);
   } else {
     reason = "mode unsupported";
     return false;
@@ -2515,6 +2543,56 @@ bool executeModeSwitch(
     response["clockY"] = ConfigManager::terrariaConfig.clockY;
     response["hourFormat"] = ConfigManager::terrariaConfig.hourFormat;
     response["showSeconds"] = ConfigManager::terrariaConfig.showSeconds;
+    return true;
+  }
+
+  if (command.businessModeTag == ModeTags::ADVENTURE_ISLAND) {
+    char activationError[kModeActivationErrorMessageSize] = "mode activation failed";
+    RuntimeModeCoordinator::deactivateRuntimeContent();
+    if (shouldClearScreenBeforeBusinessModeEntry(command.businessModeTag)) {
+      DisplayManager::clearScreen();
+    }
+    if (!RuntimeModeCoordinator::switchToMode(
+          MODE_ANIMATION,
+          command.businessModeTag,
+          true,
+          true)) {
+      copyModeActivationErrorMessage(
+        command.businessModeTag,
+        activationError,
+        sizeof(activationError)
+      );
+      RuntimeModeCoordinator::restoreCurrentModeFrame();
+      setErrorResponse(response, activationError);
+      return false;
+    }
+    // 没有可持久化配置 (用户端只发"启动"信号, 所有参数在板载常量)
+    response["message"] = command.successMessage;
+    return true;
+  }
+
+  if (command.businessModeTag == ModeTags::KOF97) {
+    char activationError[kModeActivationErrorMessageSize] = "mode activation failed";
+    RuntimeModeCoordinator::deactivateRuntimeContent();
+    if (shouldClearScreenBeforeBusinessModeEntry(command.businessModeTag)) {
+      DisplayManager::clearScreen();
+    }
+    if (!RuntimeModeCoordinator::switchToMode(
+          MODE_ANIMATION,
+          command.businessModeTag,
+          true,
+          true)) {
+      copyModeActivationErrorMessage(
+        command.businessModeTag,
+        activationError,
+        sizeof(activationError)
+      );
+      RuntimeModeCoordinator::restoreCurrentModeFrame();
+      setErrorResponse(response, activationError);
+      return false;
+    }
+    // 没有可持久化配置
+    response["message"] = command.successMessage;
     return true;
   }
 

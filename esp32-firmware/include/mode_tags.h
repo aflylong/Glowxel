@@ -27,6 +27,8 @@ static constexpr const char* TEXT_DISPLAY = "text_display";
 static constexpr const char* PLANET_SCREENSAVER = "planet_screensaver";
 static constexpr const char* RICK_MORTY_PORTAL = "rick_morty_portal";
 static constexpr const char* TERRARIA_CLOCK = "terraria_clock";
+static constexpr const char* ADVENTURE_ISLAND = "adventure_island";
+static constexpr const char* KOF97 = "kof97";
 
 inline bool isBoardNativeModeTag(const String& modeTag) {
   return modeTag == TEXT_DISPLAY;

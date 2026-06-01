@@ -303,6 +303,8 @@ bool isStaticallyRecoverableBusinessModeTag(const String& businessModeTag) {
          businessModeTag == ModeTags::MAZE ||
          businessModeTag == ModeTags::SNAKE ||
          businessModeTag == ModeTags::TERRARIA_CLOCK ||
+         businessModeTag == ModeTags::ADVENTURE_ISLAND ||
+         businessModeTag == ModeTags::KOF97 ||
          businessModeTag == ModeTags::PLANET_SCREENSAVER ||
          businessModeTag == ModeTags::RICK_MORTY_PORTAL;
 }

@@ -1,6 +1,8 @@
 #include "runtime_mode_coordinator.h"
 
 #include "animation_manager.h"
+#include "adventure_island_effect.h"
+#include "kof97_effect.h"
 #include "board_native_effect.h"
 #include "config_manager.h"
 #include "maze_effect.h"
@@ -21,6 +23,8 @@ bool shouldClearScreenBeforeBusinessModeEntryInternal(const String& businessMode
          businessModeTag == ModeTags::PLANET_SCREENSAVER ||
          businessModeTag == ModeTags::RICK_MORTY_PORTAL ||
          businessModeTag == ModeTags::TERRARIA_CLOCK ||
+         businessModeTag == ModeTags::ADVENTURE_ISLAND ||
+         businessModeTag == ModeTags::KOF97 ||
          businessModeTag == ModeTags::TETRIS ||
          businessModeTag == ModeTags::TETRIS_CLOCK;
 }
@@ -136,6 +140,24 @@ bool renderAnimationBusinessFrame(const String& businessModeTag) {
     return true;
   }
 
+  if (businessModeTag == ModeTags::ADVENTURE_ISLAND) {
+    AdventureIslandEffect::applyConfig();
+    if (!AdventureIslandEffect::isActive()) {
+      return false;
+    }
+    AdventureIslandEffect::render();
+    return true;
+  }
+
+  if (businessModeTag == ModeTags::KOF97) {
+    Kof97Effect::applyConfig();
+    if (!Kof97Effect::isActive()) {
+      return false;
+    }
+    Kof97Effect::render();
+    return true;
+  }
+
   if (businessModeTag == ModeTags::EYES) {
     DisplayManager::clearScreen();
     DisplayManager::activateEyesEffect(ConfigManager::eyesConfig);
@@ -214,6 +236,8 @@ bool isRecoverableBusinessModeTag(const String& businessModeTag) {
       businessModeTag == ModeTags::MAZE ||
       businessModeTag == ModeTags::SNAKE ||
       businessModeTag == ModeTags::TERRARIA_CLOCK ||
+      businessModeTag == ModeTags::ADVENTURE_ISLAND ||
+      businessModeTag == ModeTags::KOF97 ||
       businessModeTag == ModeTags::EYES ||
       businessModeTag == ModeTags::AMBIENT_EFFECT ||
       businessModeTag == ModeTags::LED_MATRIX_SHOWCASE ||
@@ -269,6 +293,8 @@ void deactivateRuntimeContent() {
   MazeEffect::deactivate();
   SnakeEffect::deactivate();
   TerrariaClockEffect::deactivate();
+  AdventureIslandEffect::deactivate();
+  Kof97Effect::deactivate();
   if (DisplayManager::currentBusinessModeTag == ModeTags::ANIMATION ||
       DisplayManager::currentBusinessModeTag == ModeTags::GIF_PLAYER) {
     AnimationManager::freeGIFAnimation();

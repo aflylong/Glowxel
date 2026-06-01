@@ -1,0 +1,90 @@
+// Adventure Island sprite 主索引
+// 不要手改; 由 build-firmware-sprites.js 生成
+#pragma once
+
+#include "adventure_island_sprite_types.h"
+#include "sprites_higgins.h"
+#include "sprites_enemies.h"
+#include "sprites_obstacles.h"
+#include "sprites_items.h"
+#include "sprites_digits.h"
+#include "sprites_bg.h"
+
+namespace AISprites {
+
+// 用字符串查 sprite (跟 JS 端 SPRITES[key] 一致, key 例: "higgins.run.0")
+inline const AISprite* getByKey(const char* key) {
+  if (strcmp(key, "higgins.run.0") == 0) return &kHiggins_run_0;
+  if (strcmp(key, "higgins.run.1") == 0) return &kHiggins_run_1;
+  if (strcmp(key, "higgins.run.2") == 0) return &kHiggins_run_2;
+  if (strcmp(key, "higgins.jump.0") == 0) return &kHiggins_jump_0;
+  if (strcmp(key, "higgins.throw.0") == 0) return &kHiggins_throw_0;
+  if (strcmp(key, "higgins.throw.1") == 0) return &kHiggins_throw_1;
+  if (strcmp(key, "higgins.throw.2") == 0) return &kHiggins_throw_2;
+  if (strcmp(key, "higgins.throw.3") == 0) return &kHiggins_throw_3;
+  if (strcmp(key, "higgins.skateboard.0") == 0) return &kHiggins_skateboard_0;
+  if (strcmp(key, "higgins.skateboard.1") == 0) return &kHiggins_skateboard_1;
+  if (strcmp(key, "higgins.skateboard_jump.0") == 0) return &kHiggins_skateboard_jump_0;
+  if (strcmp(key, "higgins.skateboard_jump.1") == 0) return &kHiggins_skateboard_jump_1;
+  if (strcmp(key, "higgins.skateboard_land.0") == 0) return &kHiggins_skateboard_land_0;
+  if (strcmp(key, "higgins.stumble") == 0) return &kHiggins_stumble;
+  if (strcmp(key, "enemy.snail.0") == 0) return &kEnemy_snail_0;
+  if (strcmp(key, "enemy.snail.1") == 0) return &kEnemy_snail_1;
+  if (strcmp(key, "enemy.snail.dead") == 0) return &kEnemy_snail_dead;
+  if (strcmp(key, "enemy.crow.0") == 0) return &kEnemy_crow_0;
+  if (strcmp(key, "enemy.crow.1") == 0) return &kEnemy_crow_1;
+  if (strcmp(key, "enemy.crow.dead") == 0) return &kEnemy_crow_dead;
+  if (strcmp(key, "enemy.boar.0") == 0) return &kEnemy_boar_0;
+  if (strcmp(key, "enemy.boar.1") == 0) return &kEnemy_boar_1;
+  if (strcmp(key, "enemy.snake.0") == 0) return &kEnemy_snake_0;
+  if (strcmp(key, "enemy.snake.1") == 0) return &kEnemy_snake_1;
+  if (strcmp(key, "obstacle.fire.0") == 0) return &kObstacle_fire_0;
+  if (strcmp(key, "obstacle.fire.1") == 0) return &kObstacle_fire_1;
+  if (strcmp(key, "obstacle.fire.2") == 0) return &kObstacle_fire_2;
+  if (strcmp(key, "obstacle.fire.3") == 0) return &kObstacle_fire_3;
+  if (strcmp(key, "obstacle.rock") == 0) return &kObstacle_rock;
+  if (strcmp(key, "item.axe.0") == 0) return &kItem_axe_0;
+  if (strcmp(key, "item.axe.1") == 0) return &kItem_axe_1;
+  if (strcmp(key, "item.axe.2") == 0) return &kItem_axe_2;
+  if (strcmp(key, "item.axe.3") == 0) return &kItem_axe_3;
+  if (strcmp(key, "item.fairy") == 0) return &kItem_fairy;
+  if (strcmp(key, "item.egg") == 0) return &kItem_egg;
+  if (strcmp(key, "item.egg_cracked") == 0) return &kItem_egg_cracked;
+  if (strcmp(key, "item.skateboard") == 0) return &kItem_skateboard;
+  if (strcmp(key, "fruit.0") == 0) return &kItem_fruit_0;
+  if (strcmp(key, "fruit.1") == 0) return &kItem_fruit_1;
+  if (strcmp(key, "fruit.2") == 0) return &kItem_fruit_2;
+  if (strcmp(key, "fruit.3") == 0) return &kItem_fruit_3;
+  if (strcmp(key, "fruit.4") == 0) return &kItem_fruit_4;
+  if (strcmp(key, "hud.digit.0") == 0) return &kDigit_0;
+  if (strcmp(key, "hud.digit.1") == 0) return &kDigit_1;
+  if (strcmp(key, "hud.digit.2") == 0) return &kDigit_2;
+  if (strcmp(key, "hud.digit.3") == 0) return &kDigit_3;
+  if (strcmp(key, "hud.digit.4") == 0) return &kDigit_4;
+  if (strcmp(key, "hud.digit.5") == 0) return &kDigit_5;
+  if (strcmp(key, "hud.digit.6") == 0) return &kDigit_6;
+  if (strcmp(key, "hud.digit.7") == 0) return &kDigit_7;
+  if (strcmp(key, "hud.digit.8") == 0) return &kDigit_8;
+  if (strcmp(key, "hud.digit.9") == 0) return &kDigit_9;
+  if (strcmp(key, "bg.tile") == 0) return &kBg_tile;
+  return nullptr;
+}
+
+inline const AISprite* getDigit(uint8_t n) {
+  if (n > 9) return nullptr;
+  switch (n) {
+    case 0: return &kDigit_0;
+    case 1: return &kDigit_1;
+    case 2: return &kDigit_2;
+    case 3: return &kDigit_3;
+    case 4: return &kDigit_4;
+    case 5: return &kDigit_5;
+    case 6: return &kDigit_6;
+    case 7: return &kDigit_7;
+    case 8: return &kDigit_8;
+    case 9: return &kDigit_9;
+  }
+  return nullptr;
+}
+
+}  // namespace AISprites

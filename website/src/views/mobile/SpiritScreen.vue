@@ -1,7 +1,7 @@
 <!-- AUTO-CONVERTED FROM uniapp/pages/spirit-screen/spirit-screen.vue -->
 <template>
   <div class="spirit-page glx-page-shell">
-    
+    <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
 
     <div class="navbar glx-topbar glx-page-shell__fixed">
       <div class="nav-left" @click="handleBack">
@@ -16,7 +16,7 @@
     </div>
 
     <div class="canvas-section">
-      <div class="preview-canvas-container">
+      <div class="preview-canvas-container" :style="previewCanvasBoxStyle">
         <PixelCanvas
           v-if="previewCanvasReady && !shouldShowSendingSnapshot"
           :width="64"
@@ -47,7 +47,7 @@
       </div>
       <div class="preview-caption glx-preview-panel">
         <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-title">预览效果</span>
+          <span class="preview-caption-title">预览效果</span>
         </div>
         <div class="preview-actions">
           <div
@@ -55,7 +55,7 @@
             :class="{ disabled: isSending }"
             @click="saveAndApply"
           >
-            <Icon name="link" :size="36" color="var(--nb-ink)" />
+            <Icon name="link" :size="36" color="#000000" />
             <span>发送</span>
           </div>
         </div>
@@ -1224,6 +1224,15 @@ export default {
     };
   },
   computed: {
+    previewCanvasBoxStyle() {
+      const size =
+        this.previewContainerSize && this.previewContainerSize.height
+          ? this.previewContainerSize.height
+          : 320;
+      return {
+        height: `${size}px`,
+      };
+    },
     expressionModeValue() {
       return this.eyesConfig.behavior.autoSwitch ? "auto" : "manual";
     },
@@ -2791,7 +2800,7 @@ export default {
   background-color: #1a1a1a;
 }
 
-.preview-title {
+.preview-caption-title {
   font-size: 24rpx;
   font-weight: 700;
   color: var(--text-primary);

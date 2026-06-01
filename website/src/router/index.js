@@ -65,8 +65,8 @@ const routes = [
   { path: '/ambient-editor', name: 'AmbientEditor', component: () => import('@/views/mobile/AmbientEditor.vue'), meta: { shell: 'app' } },
   { path: '/rick-morty-portal', name: 'RickMortyPortal', component: () => import('@/views/mobile/RickMortyPortal.vue'), meta: { shell: 'app' } },
   { path: '/terraria-clock', name: 'TerrariaClock', component: () => import('@/views/mobile/TerrariaClock.vue'), meta: { shell: 'app' } },
-  { path: '/minecraft-clock', name: 'MinecraftClock', component: () => import('@/views/mobile/MinecraftClock.vue'), meta: { shell: 'app' } },
-  { path: '/coast-theme', name: 'CoastTheme', component: () => import('@/views/mobile/CoastTheme.vue'), meta: { shell: 'app' } },
+  { path: '/adventure-island', name: 'AdventureIsland', component: () => import('@/views/mobile/AdventureIsland.vue'), meta: { shell: 'app' } },
+  { path: '/kof97', name: 'Kof97', component: () => import('@/views/mobile/Kof97.vue'), meta: { shell: 'app' } },
 
   // Clock 三件套: PC = views/Clock.vue 等, mobile = views/mobile/Clock.vue 等
   { path: '/clock', name: 'Clock', component: deviceDual('Clock'), meta: { shell: 'app' } },
@@ -106,8 +106,6 @@ router.afterEach((to) => {
     to.path.startsWith('/ambient-') ||
     to.path.startsWith('/rick-morty-') ||
     to.path.startsWith('/terraria-') ||
-    to.path.startsWith('/minecraft-') ||
-    to.path.startsWith('/coast-') ||
     to.path === '/clock' || to.path === '/animation-clock' || to.path === '/theme-clock'
   )
   if (typeof document !== 'undefined') {

@@ -1,7 +1,7 @@
 <!-- AUTO-CONVERTED FROM uniapp/pages/led-matrix/led-matrix.vue -->
 <template>
   <div class="led-matrix-page glx-page-shell">
-    
+    <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
 
     <div class="navbar glx-topbar glx-page-shell__fixed">
       <div class="nav-left" @click="handleBack">
@@ -43,7 +43,7 @@
       </div>
       <div class="preview-caption glx-preview-panel">
         <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-title">预览效果</span>
+          <span class="preview-caption-title">预览效果</span>
         </div>
         <div class="preview-actions">
           <div
@@ -51,7 +51,7 @@
             :class="{ disabled: isSending }"
             @click="saveAndApply"
           >
-            <Icon name="link" :size="36" color="var(--nb-ink)" />
+            <Icon name="link" :size="36" color="#000000" />
             <span>发送</span>
           </div>
         </div>
@@ -565,7 +565,7 @@ export default {
   background-color: #1a1a1a;
 }
 
-.preview-title {
+.preview-caption-title {
   font-size: 24rpx;
   font-weight: 700;
   color: var(--text-primary);

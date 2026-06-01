@@ -326,18 +326,18 @@ export default {
           bucket: "secondary",
         },
         {
-          key: "minecraft_clock",
-          name: "我的世界时钟",
-          icon: "layers",
-          variant: "green",
+          key: "adventure_island",
+          name: "冒险岛",
+          icon: "navigation",
+          variant: "orange",
           type: "mode",
           bucket: "secondary",
         },
         {
-          key: "coast_theme",
-          name: "海岸时光",
-          icon: "layers",
-          variant: "azure",
+          key: "kof97",
+          name: "拳皇 97",
+          icon: "modular",
+          variant: "copper",
           type: "mode",
           bucket: "secondary",
         },
@@ -429,10 +429,10 @@ export default {
         this.editClockWithMode(mode);
       } else if (mode === "terraria_clock") {
         this.openTerrariaClockEditor();
-      } else if (mode === "minecraft_clock") {
-        this.openMinecraftClockEditor();
-      } else if (mode === "coast_theme") {
-        this.openCoastTheme();
+      } else if (mode === "adventure_island") {
+        this.openAdventureIsland();
+      } else if (mode === "kof97") {
+        this.openKof97();
       } else if (mode === "ambient_effect" || mode === "led_matrix_showcase") {
         this.openLedMatrixShowcase();
       } else if (mode === "tetris") {
@@ -470,15 +470,15 @@ export default {
       });
     },
 
-    openMinecraftClockEditor() {
+    openAdventureIsland() {
       uni.navigateTo({
-        url: "/pages/minecraft-clock/minecraft-clock",
+        url: "/pages/adventure-island/adventure-island",
       });
     },
 
-    openCoastTheme() {
+    openKof97() {
       uni.navigateTo({
-        url: "/pages/coast-theme/coast-theme",
+        url: "/pages/kof97/kof97",
       });
     },
 

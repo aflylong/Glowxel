@@ -249,8 +249,8 @@ const modeCatalog = [
   { key: "planet_screensaver", name: "星球屏保", icon: "navigation", variantClass: "device-home__mode-card--slate", action: "switch" },
   { key: "rick_morty_portal", name: "传送门", icon: "refresh", variantClass: "device-home__mode-card--mint", action: "open", to: "/rick-morty-portal" },
   { key: "terraria_clock", name: "泰拉瑞亚时钟", icon: "layers", variantClass: "device-home__mode-card--copper", action: "open", to: "/terraria-clock" },
-  { key: "minecraft_clock", name: "我的世界时钟", icon: "layers", variantClass: "device-home__mode-card--moss", action: "open", to: "/minecraft-clock" },
-  { key: "coast_theme", name: "海岸时光", icon: "layers", variantClass: "device-home__mode-card--azure", action: "open", to: "/coast-theme" },
+  { key: "adventure_island", name: "冒险岛", icon: "navigation", variantClass: "device-home__mode-card--orange", action: "open", to: "/adventure-island" },
+  { key: "kof97", name: "拳皇 97", icon: "modular", variantClass: "device-home__mode-card--copper", action: "open", to: "/kof97" },
 ];
 
 const isDeviceConnected = computed(() => deviceStore.connected === true);

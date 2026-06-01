@@ -152,13 +152,6 @@
       <rect x="9" y="14" width="2" height="2" fill="currentColor" />
       <rect x="13" y="14" width="2" height="2" fill="currentColor" />
     </template>
-
-    <template v-else-if="name === 'minecraft'">
-      <rect x="4" y="4" width="6" height="6" fill="currentColor" />
-      <rect x="14" y="4" width="6" height="6" :stroke="color" :stroke-width="strokeWidth" />
-      <rect x="4" y="14" width="6" height="6" :stroke="color" :stroke-width="strokeWidth" />
-      <rect x="14" y="14" width="6" height="6" fill="currentColor" />
-    </template>
   </svg>
 </template>
 

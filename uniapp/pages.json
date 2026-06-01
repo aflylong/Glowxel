@@ -133,15 +133,6 @@
       }
     },
     {
-      "path": "pages/minecraft-clock/minecraft-clock",
-      "style": {
-        "navigationStyle": "custom",
-        "navigationBarTextStyle": "white",
-        "backgroundColor": "#1a1a1a",
-        "enablePullDownRefresh": false
-      }
-    },
-    {
       "path": "pages/clock-editor/theme-clock",
       "style": {
         "navigationStyle": "custom",

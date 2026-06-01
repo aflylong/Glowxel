@@ -1,7 +1,7 @@
 <!-- AUTO-CONVERTED FROM uniapp/pages/rick-morty-portal/rick-morty-portal.vue -->
 <template>
   <div class="portal-page glx-page-shell">
-    
+    <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
 
     <div class="navbar glx-topbar glx-page-shell__fixed">
       <div class="nav-left" @click="handleBack">
@@ -44,7 +44,7 @@
       </div>
       <div class="preview-caption glx-preview-panel">
         <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-title">预览效果</span>
+          <span class="preview-caption-title">预览效果</span>
         </div>
         <div class="preview-actions">
           <div
@@ -52,7 +52,7 @@
             :class="{ disabled: isSending }"
             @click="handleSend"
           >
-            <Icon name="link" :size="36" color="var(--nb-ink)" />
+            <Icon name="link" :size="36" color="#000000" />
             <span>发送</span>
           </div>
         </div>
@@ -872,7 +872,7 @@ export default {
   padding: 16rpx 20rpx 0;
 }
 
-.preview-title {
+.preview-caption-title {
   font-size: 24rpx;
   font-weight: 700;
   color: var(--text-primary);

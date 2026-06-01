@@ -328,14 +328,6 @@ export default {
           type: "mode",
           bucket: "secondary",
         },
-        {
-          key: "minecraft_clock",
-          name: "我的世界时钟",
-          icon: "layers",
-          variant: "green",
-          type: "mode",
-          bucket: "secondary",
-        },
       ];
     },
   },
@@ -411,8 +403,6 @@ export default {
         this.editClockWithMode(mode);
       } else if (mode === "terraria_clock") {
         this.openTerrariaClockEditor();
-      } else if (mode === "minecraft_clock") {
-        this.openMinecraftClockEditor();
       } else if (mode === "ambient_effect" || mode === "led_matrix_showcase") {
         this.openLedMatrixShowcase();
       } else if (mode === "tetris") {
@@ -447,12 +437,6 @@ export default {
     openTerrariaClockEditor() {
       uni.navigateTo({
         url: "/pages/clock-editor/terraria-clock",
-      });
-    },
-
-    openMinecraftClockEditor() {
-      uni.navigateTo({
-        url: "/pages/minecraft-clock/minecraft-clock",
       });
     },
 

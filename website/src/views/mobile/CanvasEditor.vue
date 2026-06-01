@@ -1,7 +1,7 @@
 <!-- AUTO-CONVERTED FROM uniapp/pages/canvas-editor/canvas-editor.vue -->
 <template>
   <div class="canvas-page glx-page-shell">
-    
+    <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
 
     <div class="navbar glx-topbar glx-page-shell__fixed">
       <div class="nav-left" @click="handleBack">
@@ -59,7 +59,7 @@
             :class="{ disabled: isSending }"
             @click="publishCanvas"
           >
-            <Icon name="link" :size="36" color="var(--nb-ink)" />
+            <Icon name="link" :size="36" color="#000000" />
             <span>发送</span>
           </div>
         </div>

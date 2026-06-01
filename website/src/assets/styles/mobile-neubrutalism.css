@@ -300,6 +300,7 @@ background: var(--nb-paper) !important;
 body.is-mobile-device .header-title,
 body.is-mobile-device .project-name,
 body.is-mobile-device .nav-title text,
+body.is-mobile-device .nav-title span,
 body.is-mobile-device .section-title,
 body.is-mobile-device .card-title,
 body.is-mobile-device .preview-title,
@@ -525,8 +526,11 @@ font-size: 34rpx !important;
 }
 
 body.is-mobile-device .glx-topbar.navbar > .nav-title text,
+body.is-mobile-device .glx-topbar.navbar > .nav-title span,
 body.is-mobile-device .glx-topbar .header-content > .header-title text,
-body.is-mobile-device .glx-topbar .header-content > .nav-title text {
+body.is-mobile-device .glx-topbar .header-content > .header-title span,
+body.is-mobile-device .glx-topbar .header-content > .nav-title text,
+body.is-mobile-device .glx-topbar .header-content > .nav-title span {
 text-align: center !important;
 }
 
@@ -964,6 +968,22 @@ display: flex;
   gap: 10rpx;
 }
 
+body.is-mobile-device .canvas-section {
+  display: flex !important;
+  flex-direction: column !important;
+  background: #000 !important;
+}
+
+body.is-mobile-device .preview-canvas-container {
+  width: 100% !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  background: #000 !important;
+}
+
 body.is-mobile-device .glx-primary-action {
 background: var(--nb-yellow);
   color: var(--nb-ink);
@@ -992,13 +1012,15 @@ border: none;
 }
 
 body.is-mobile-device .glx-cta-button text,
+body.is-mobile-device .glx-cta-button span,
 body.is-mobile-device .glx-cta-button .iconfont {
 color: inherit !important;
   font-weight: 900;
   line-height: 1;
 }
 
-body.is-mobile-device .glx-primary-action text {
+body.is-mobile-device .glx-primary-action text,
+body.is-mobile-device .glx-primary-action span {
 color: var(--nb-ink);
   font-weight: 900;
 }
@@ -1063,7 +1085,9 @@ background: var(--nb-yellow);
 }
 
 body.is-mobile-device .glx-choice-chip text,
+body.is-mobile-device .glx-choice-chip span,
 body.is-mobile-device .glx-choice-chip--compact text,
+body.is-mobile-device .glx-choice-chip--compact span,
 body.is-mobile-device .glx-choice-chip .iconfont,
 body.is-mobile-device .glx-choice-chip--compact .iconfont {
 color: currentColor !important;
@@ -1071,7 +1095,9 @@ color: currentColor !important;
 }
 
 body.is-mobile-device .glx-choice-chip.active text,
+body.is-mobile-device .glx-choice-chip.active span,
 body.is-mobile-device .glx-choice-chip--compact.active text,
+body.is-mobile-device .glx-choice-chip--compact.active span,
 body.is-mobile-device .glx-choice-chip.active .iconfont,
 body.is-mobile-device .glx-choice-chip--compact.active .iconfont {
 color: var(--nb-ink) !important;
@@ -1098,8 +1124,11 @@ background: var(--nb-yellow);
 }
 
 body.is-mobile-device .glx-tool-tile text,
+body.is-mobile-device .glx-tool-tile span,
 body.is-mobile-device .glx-action-tile text,
+body.is-mobile-device .glx-action-tile span,
 body.is-mobile-device .glx-scene-tile text,
+body.is-mobile-device .glx-scene-tile span,
 body.is-mobile-device .glx-tool-tile .iconfont,
 body.is-mobile-device .glx-action-tile .iconfont,
 body.is-mobile-device .glx-scene-tile .iconfont {
@@ -1135,6 +1164,7 @@ display: inline-flex;
 }
 
 body.is-mobile-device .glx-inline-cta text,
+body.is-mobile-device .glx-inline-cta span,
 body.is-mobile-device .glx-inline-cta .iconfont {
 color: inherit !important;
   font-weight: 900;
@@ -1232,12 +1262,14 @@ background: var(--nb-yellow);
 }
 
 body.is-mobile-device .glx-feature-option text,
+body.is-mobile-device .glx-feature-option span,
 body.is-mobile-device .glx-feature-option .iconfont {
 color: currentColor !important;
   font-weight: 800;
 }
 
 body.is-mobile-device .glx-feature-option.active text,
+body.is-mobile-device .glx-feature-option.active span,
 body.is-mobile-device .glx-feature-option.active .iconfont {
 color: var(--nb-ink) !important;
   font-weight: 900;
@@ -1323,11 +1355,13 @@ font-size: 26rpx;
 }
 
 body.is-mobile-device .glx-feature-card-option text,
+body.is-mobile-device .glx-feature-card-option span,
 body.is-mobile-device .glx-feature-card-option .iconfont {
 color: currentColor !important;
 }
 
 body.is-mobile-device .glx-feature-card-option.active text,
+body.is-mobile-device .glx-feature-card-option.active span,
 body.is-mobile-device .glx-feature-card-option.active .iconfont {
 color: var(--nb-ink) !important;
 }
@@ -1510,7 +1544,8 @@ flex: none !important;
   box-sizing: border-box !important;
 }
 
-body.is-mobile-device .option-btn text {
+body.is-mobile-device .option-btn text,
+body.is-mobile-device .option-btn span {
 font-size: 26rpx !important;
   line-height: 1.25 !important;
   text-align: center !important;
@@ -1538,6 +1573,7 @@ min-width: 78rpx !important;
 }
 
 body.is-mobile-device .glx-choice-chip--compact text,
+body.is-mobile-device .glx-choice-chip--compact span,
 body.is-mobile-device .glx-choice-chip--compact .iconfont {
 font-size: 20rpx !important;
   line-height: 1 !important;
@@ -1711,6 +1747,7 @@ opacity: 0.45 !important;
 }
 
 body.is-mobile-device .action-btn-sm text,
+body.is-mobile-device .action-btn-sm span,
 body.is-mobile-device .action-btn-sm .iconfont {
 color: var(--nb-ink) !important;
   font-size: 24rpx !important;

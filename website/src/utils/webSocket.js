@@ -1762,6 +1762,26 @@ class WebSocket {
     });
   }
 
+  async startAdventureIsland(options = {}) {
+    // 冒险岛主题: 没有可调参数, 板载用编译期常量自动循环渲染
+    return this.runModeTransaction({
+      mode: "adventure_island",
+      params: {},
+      acceptedTimeout: options.acceptedTimeout,
+      finalTimeout: options.finalTimeout,
+    });
+  }
+
+  async startKof97(options = {}) {
+    // KOF '97 主题: 没有可调参数, 板载用编译期常量自动循环渲染
+    return this.runModeTransaction({
+      mode: "kof97",
+      params: {},
+      acceptedTimeout: options.acceptedTimeout,
+      finalTimeout: options.finalTimeout,
+    });
+  }
+
   async setPlanetScreensaver(config, options = {}) {
     return this.runModeTransaction({
       mode: "planet_screensaver",

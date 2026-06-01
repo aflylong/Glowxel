@@ -67,8 +67,8 @@ function isDevicePath(p) {
     p.startsWith('/ambient-') ||
     p.startsWith('/rick-morty-') ||
     p.startsWith('/terraria-') ||
-    p.startsWith('/minecraft-') ||
-    p.startsWith('/coast-') ||
+    p.startsWith('/adventure-') ||
+    p.startsWith('/kof') ||
     p === '/clock' || p === '/animation-clock' || p === '/theme-clock'
 }
 

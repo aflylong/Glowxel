@@ -18,6 +18,8 @@
 #include "eyes_effect.h"
 #include "snake_effect.h"
 #include "terraria_clock_effect.h"
+#include "adventure_island_effect.h"
+#include "kof97_effect.h"
 #include "theme_renderer.h"
 
 namespace {
@@ -346,6 +348,14 @@ void loop() {
                TerrariaClockEffect::isActive()) {
       TerrariaClockEffect::update();
       TerrariaClockEffect::render();
+    } else if (DisplayManager::currentBusinessModeTag == ModeTags::ADVENTURE_ISLAND &&
+               AdventureIslandEffect::isActive()) {
+      AdventureIslandEffect::update();
+      AdventureIslandEffect::render();
+    } else if (DisplayManager::currentBusinessModeTag == ModeTags::KOF97 &&
+               Kof97Effect::isActive()) {
+      Kof97Effect::update();
+      Kof97Effect::render();
     } else if ((DisplayManager::currentBusinessModeTag == ModeTags::TEXT_DISPLAY ||
                 DisplayManager::currentBusinessModeTag == ModeTags::PLANET_SCREENSAVER ||
                 DisplayManager::currentBusinessModeTag == ModeTags::RICK_MORTY_PORTAL) &&
