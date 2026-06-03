@@ -183,6 +183,41 @@ inline void clearBuffer() {
   memset(&DisplayManager::animationBuffer[0][0], 0, sizeof(DisplayManager::animationBuffer));
 }
 
+struct DecodedSpritePixel {
+  uint16_t sx;
+  uint16_t sy;
+  uint8_t r;
+  uint8_t g;
+  uint8_t b;
+};
+
+bool readSpritePixel(const AISprite* spr, uint16_t i, DecodedSpritePixel& out) {
+  const uint8_t* src = spr->pixels;
+  if (spr->fmt == 5) {
+    const uint8_t* p = src + (size_t)i * 5;
+    out.sx = pgm_read_byte(p);
+    out.sy = pgm_read_byte(p + 1);
+    out.r = pgm_read_byte(p + 2);
+    out.g = pgm_read_byte(p + 3);
+    out.b = pgm_read_byte(p + 4);
+    return true;
+  }
+  if (spr->fmt == 8) {
+    const uint8_t* p = src + (size_t)i * 3;
+    uint16_t pos = (uint16_t)pgm_read_byte(p) | ((uint16_t)pgm_read_byte(p + 1) << 8);
+    uint8_t paletteIdx = pgm_read_byte(p + 2);
+    if (spr->w == 0 || paletteIdx >= kAIPaletteColorCount) return false;
+    const uint8_t* color = kAIPalette + (size_t)paletteIdx * 3;
+    out.sx = pos % spr->w;
+    out.sy = pos / spr->w;
+    out.r = pgm_read_byte(color);
+    out.g = pgm_read_byte(color + 1);
+    out.b = pgm_read_byte(color + 2);
+    return out.sy < spr->h;
+  }
+  return false;
+}
+
 // Sprite 绘制
 //   dx, dy: sprite 左上角在屏幕的位置
 //   flip: 水平镜像 (本主题暂不用, 保留接口)
@@ -196,19 +231,16 @@ void drawSprite(const AISprite* spr, int dx, int dy, bool flip, float scale) {
   const uint16_t w = spr->w;
   const uint16_t h = spr->h;
   const uint16_t n = spr->pixelCount;
-  const uint8_t* src = spr->pixels;
 
   if (scale == 1.0f) {
     for (uint16_t i = 0; i < n; i++) {
-      const uint8_t* p = src + (size_t)i * 5;
-      uint8_t sx = pgm_read_byte(p);
-      uint8_t sy = pgm_read_byte(p + 1);
-      uint8_t r  = pgm_read_byte(p + 2);
-      uint8_t g  = pgm_read_byte(p + 3);
-      uint8_t b  = pgm_read_byte(p + 4);
+      DecodedSpritePixel px;
+      if (!readSpritePixel(spr, i, px)) continue;
+      uint16_t sx = px.sx;
+      uint16_t sy = px.sy;
       int tx = dx + (flip ? (w - 1 - sx) : sx);
       int ty = dy + sy;
-      putPixel(tx, ty, r, g, b);
+      putPixel(tx, ty, px.r, px.g, px.b);
     }
     return;
   }
@@ -216,25 +248,26 @@ void drawSprite(const AISprite* spr, int dx, int dy, bool flip, float scale) {
   // 缩放: JS 端反向最近邻采样, 每个目标像素 -> floor(dyy/scale) 源像素
   //   为了跟 JS 完全一致, 先把稀疏 PROGMEM 像素列表解到稠密 RGBA 查找表
   //   sprite 最大尺寸 (本主题): 角色 24x32, 蛋 24x16. 用 32x32 buffer 兜底
-  static uint8_t s_lut[32 * 32 * 4];
+  static uint16_t s_lut565[32 * 32];
+  static uint32_t s_lutMask[32];
   if (w > 32 || h > 32) return;   // 安全门 (scale != 1 仅用于敌人/障碍/水果/蛋/斧, 都不超 32x32)
-  const size_t stride = (size_t)w * 4;
+  const size_t stride = (size_t)w;
   // 清 alpha
   for (uint16_t y = 0; y < h; y++) {
     for (uint16_t x = 0; x < w; x++) {
-      s_lut[(size_t)y * stride + (size_t)x * 4 + 3] = 0;
+      if (x == 0) s_lutMask[y] = 0;
     }
   }
   // 填稀疏像素
   for (uint16_t i = 0; i < n; i++) {
-    const uint8_t* p = src + (size_t)i * 5;
-    uint8_t sx = pgm_read_byte(p);
-    uint8_t sy = pgm_read_byte(p + 1);
-    uint8_t* d = &s_lut[(size_t)sy * stride + (size_t)sx * 4];
-    d[0] = pgm_read_byte(p + 2);
-    d[1] = pgm_read_byte(p + 3);
-    d[2] = pgm_read_byte(p + 4);
-    d[3] = 255;
+    DecodedSpritePixel px;
+    if (!readSpritePixel(spr, i, px)) continue;
+    uint16_t sx = px.sx;
+    uint16_t sy = px.sy;
+    if (sx >= w || sy >= h) continue;
+    const size_t idx = (size_t)sy * stride + (size_t)sx;
+    s_lut565[idx] = MatrixPanel_I2S_DMA::color565(px.r, px.g, px.b);
+    s_lutMask[sy] |= (uint32_t(1) << sx);
   }
 
   // 反向最近邻 (跟 JS Math.floor(dyy/scale) 一致)
@@ -249,9 +282,13 @@ void drawSprite(const AISprite* spr, int dx, int dy, bool flip, float scale) {
       int sxIdx = (int)(dxx / scale);
       if (sxIdx >= w) sxIdx = w - 1;
       int sxFinal = flip ? (w - 1 - sxIdx) : sxIdx;
-      const uint8_t* d = &s_lut[(size_t)sy * stride + (size_t)sxFinal * 4];
-      if (d[3] == 0) continue;
-      putPixel(dx + dxx, dy + dyy, d[0], d[1], d[2]);
+      const size_t idx = (size_t)sy * stride + (size_t)sxFinal;
+      if ((s_lutMask[sy] & (uint32_t(1) << sxFinal)) == 0) continue;
+      int tx = dx + dxx;
+      int ty = dy + dyy;
+      if (tx < 0 || tx >= SCREEN_W || ty < 0 || ty >= SCREEN_H) continue;
+      int by = (ty + 1) % SCREEN_H;
+      DisplayManager::animationBuffer[by][tx] = s_lut565[idx];
     }
   }
 }
@@ -271,21 +308,19 @@ void drawBackground() {
   const uint16_t tw = tile->w;
   const uint16_t th = tile->h;
   const uint16_t n  = tile->pixelCount;
-  const uint8_t* src = tile->pixels;
 
   // 把 PROGMEM 像素列表解到稠密 RGB 表 (48 x 82 x 3 = ~12 KB)
   // 静态 BSS, 只在第一次填充
-  static uint8_t s_bgRgb[82][48][3] = {};
+  static uint16_t s_bg565[82][48] = {};
   static bool s_bgFilled = false;
   if (!s_bgFilled) {
     for (uint16_t i = 0; i < n; i++) {
-      const uint8_t* p = src + (size_t)i * 5;
-      uint8_t sx = pgm_read_byte(p);
-      uint8_t sy = pgm_read_byte(p + 1);
+      DecodedSpritePixel px;
+      if (!readSpritePixel(tile, i, px)) continue;
+      uint16_t sx = px.sx;
+      uint16_t sy = px.sy;
       if (sx >= 48 || sy >= 82) continue;
-      s_bgRgb[sy][sx][0] = pgm_read_byte(p + 2);
-      s_bgRgb[sy][sx][1] = pgm_read_byte(p + 3);
-      s_bgRgb[sy][sx][2] = pgm_read_byte(p + 4);
+      s_bg565[sy][sx] = MatrixPanel_I2S_DMA::color565(px.r, px.g, px.b);
     }
     s_bgFilled = true;
   }
@@ -300,9 +335,9 @@ void drawBackground() {
     if (sy < 0 || sy >= (int)th) continue;
     for (int dx = 0; dx < SCREEN_W; dx++) {
       int tx = ((dx + sx0) % tw + tw) % tw;
-      const uint8_t* c = s_bgRgb[sy][tx];
+      int by = (dy + 1) % SCREEN_H;
       // 全部画 (背景没有透明)
-      putPixel(dx, dy, c[0], c[1], c[2]);
+      DisplayManager::animationBuffer[by][dx] = s_bg565[sy][tx];
     }
   }
 }

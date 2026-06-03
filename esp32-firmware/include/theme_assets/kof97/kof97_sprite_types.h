@@ -11,11 +11,13 @@ struct KofSprite {
   uint8_t  h;
   uint16_t pixelCount;
   const uint8_t* pixels;
-  uint8_t  fmt;     // 5 = [x, y, r, g, b] 每像素 5 字节
+  uint8_t  fmt;     // 5 = head RGB, 7/8 = palette8 stance, 9/10 = palette16 stance
 };
 
 // 一个角色的 stance 动画: 多帧 sprite 数组
 struct KofStanceSet {
   uint8_t frameCount;
   const KofSprite* const* frames;
+  uint16_t paletteCount;
+  const uint8_t* palette;
 };

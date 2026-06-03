@@ -12,6 +12,7 @@
 
 #include "display_manager.h"
 #include "theme_assets/kof97/index.h"
+#include "theme_assets/kof97/sprites_bg.h"
 
 namespace {
 
@@ -23,7 +24,7 @@ constexpr int SCREEN_H = 64;
 constexpr uint8_t SX0  = 4;
 constexpr uint8_t SY0  = 4;
 constexpr uint8_t SCRW = 56;
-constexpr uint8_t SCRH = 43;
+constexpr uint8_t SCRH = 45;
 
 // ============ 屏幕背景色 ============
 // #0a3870 = (10, 56, 112)
@@ -48,30 +49,30 @@ constexpr uint8_t TIME_R = 0x00, TIME_G = 0xff, TIME_B = 0x66;
 constexpr uint8_t TV_CORNER = 1;
 
 // ============ 底座 ============
-constexpr uint8_t BASE_TOP    = 50;
-constexpr uint8_t BASE_BOT    = 57;
+constexpr uint8_t BASE_TOP    = 51;
+constexpr uint8_t BASE_BOT    = 58;
 constexpr uint8_t BASE_LEFT   = 12;
 constexpr uint8_t BASE_RIGHT_INSET = 12;
-constexpr uint8_t SLOT_Y0 = 52;
-constexpr uint8_t SLOT_Y1 = 56;
+constexpr uint8_t SLOT_Y0 = 53;
+constexpr uint8_t SLOT_Y1 = 57;
 
 // ============ LED 灯 (固定色) ============
-constexpr uint8_t LED_Y     = 60;
+constexpr uint8_t LED_Y     = 61;
 constexpr uint8_t LED1_X    = 18;   // 黄
 constexpr uint8_t LED1_R = 0xdc, LED1_G = 0xb4, LED1_B = 0x1e;
 constexpr uint8_t LED2_X    = 22;   // 灰
 constexpr uint8_t LED2_R = 0x8c, LED2_G = 0x8c, LED2_B = 0x91;
 constexpr uint8_t LED3_X    = 26;   // 红
 constexpr uint8_t LED3_R = 0xb4, LED3_G = 0x1e, LED3_B = 0x1e;
-constexpr uint8_t LED4_X    = 46;   // 绿
+constexpr uint8_t LED4_X    = 45;   // 绿
 constexpr uint8_t LED4_R = 0x50, LED4_G = 0xc8, LED4_B = 0x3c;
 
 // ============ 时间 (3×5 字体) ============
-constexpr uint8_t TIME_X = 23;
-constexpr uint8_t TIME_Y = 52;
+constexpr uint8_t TIME_X = 31;
+constexpr uint8_t TIME_Y = 53;
 
 // ============ 底脚 ============
-constexpr uint8_t FOOT_TOP = 62;
+constexpr uint8_t FOOT_TOP = 63;
 constexpr uint8_t FOOT_BOT = 63;
 constexpr uint8_t FOOT_LX0 = 8;
 constexpr uint8_t FOOT_LX1 = 16;
@@ -79,8 +80,11 @@ constexpr uint8_t FOOT_LX1 = 16;
 // ============ 角色 stance ============
 constexpr uint8_t CHAR_X_LEFT  = 14;   // P1 脚中心 x
 constexpr uint8_t CHAR_X_RIGHT = 40;   // P2 脚中心 x
-constexpr uint8_t CHAR_Y       = 40;   // 脚的基线 y
+constexpr uint8_t CHAR_Y       = 42;   // 脚的基线 y
 // stance 数据已经在 build 阶段缩到 20×23, 板载 1:1 渲染
+constexpr uint8_t STANCE_MAX_W = 35;
+constexpr uint8_t STANCE_MAX_H = 57;
+constexpr uint16_t STANCE_MAX_PIXELS = STANCE_MAX_W * STANCE_MAX_H;
 
 // ============ 头像区 (7×2 = 14 格) ============
 constexpr uint8_t PORTRAIT_W = 4, PORTRAIT_H = 4;
@@ -91,8 +95,8 @@ constexpr uint8_t PORTRAIT_COLS = 7;
 constexpr uint8_t PORTRAIT_ROWS = 2;
 
 // ============ 时间帧推进 / 选人切换 ============
-constexpr uint8_t  CHAR_FRAME_INTERVAL = 6;     // 每 6 帧 (约 200ms) 切下一 stance 帧
-constexpr uint16_t SELECT_INTERVAL     = 150;   // 每 150 帧 (约 5 秒) 随机切 P1/P2
+constexpr uint8_t  CHAR_FRAME_INTERVAL = 4;
+constexpr uint16_t SELECT_INTERVAL     = 1;
 
 // ============ 状态 ============
 bool s_active = false;
@@ -109,6 +113,14 @@ struct State {
 };
 State s_state = {};
 
+struct StanceBuffer {
+  uint8_t w;
+  uint8_t h;
+  uint8_t opaque[STANCE_MAX_PIXELS];
+  uint16_t color[STANCE_MAX_PIXELS];
+};
+StanceBuffer s_stanceBuffer = {};
+
 // ============ 简易 PRNG (避免依赖 random()) ============
 uint32_t s_prng = 0x12345678;
 inline uint32_t rng() {
@@ -124,6 +136,12 @@ inline void putPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
   int by = (y + 1) % SCREEN_H;
   DisplayManager::animationBuffer[by][x] =
       MatrixPanel_I2S_DMA::color565(r, g, b);
+}
+
+inline void putPixel565(int x, int y, uint16_t color) {
+  if (x < 0 || x >= SCREEN_W || y < 0 || y >= SCREEN_H) return;
+  int by = (y + 1) % SCREEN_H;
+  DisplayManager::animationBuffer[by][x] = color;
 }
 
 inline void fillRect(int x0, int y0, int x1, int y1,
@@ -200,6 +218,20 @@ void drawText3x5(const char* text, int x, int y,
   }
 }
 
+void drawKofTimeText(const char* text, int x, int y) {
+  if (text == nullptr) return;
+  char leftText[3] = {0};
+  char rightText[3] = {0};
+  leftText[0] = text[0];
+  leftText[1] = text[1];
+  rightText[0] = text[3];
+  rightText[1] = text[4];
+  const int startX = x - 8;
+  drawText3x5(leftText, startX, y, HL_P1_R, HL_P1_G, HL_P1_B);
+  drawText3x5(":", startX + 8, y, TIME_R, TIME_G, TIME_B);
+  drawText3x5(rightText, startX + 10, y, HL_P2_R, HL_P2_G, HL_P2_B);
+}
+
 // ============ 画 KofSprite ============
 // fmt=5: 每像素 5 字节 [x, y, r, g, b]
 void drawSpriteAt(const KofSprite* sprite, int dx, int dy, bool mirror) {
@@ -222,15 +254,127 @@ void drawSpriteAt(const KofSprite* sprite, int dx, int dy, bool mirror) {
 }
 
 // 画角色 stance 帧 (脚中心 footX, 脚基线 footY, 镜像)
+bool readPaletteColor(const uint8_t* palette, uint16_t paletteCount,
+                      uint16_t colorIndex, uint16_t& color) {
+  if (palette == nullptr || colorIndex >= paletteCount) return false;
+  const uint16_t offset = colorIndex * 3;
+  const uint8_t r = pgm_read_byte(palette + offset + 0);
+  const uint8_t g = pgm_read_byte(palette + offset + 1);
+  const uint8_t b = pgm_read_byte(palette + offset + 2);
+  color = MatrixPanel_I2S_DMA::color565(r, g, b);
+  return true;
+}
+
+bool applyPaletteFullStanceFrame(const KofSprite& copied,
+                                 const uint8_t* palette,
+                                 uint16_t paletteCount,
+                                 StanceBuffer& buffer) {
+  if (copied.fmt != 7 && copied.fmt != 9) return false;
+  if (copied.w > STANCE_MAX_W || copied.h > STANCE_MAX_H) return false;
+
+  buffer.w = copied.w;
+  buffer.h = copied.h;
+  memset(buffer.opaque, 0, sizeof(buffer.opaque));
+
+  const uint8_t* src = copied.pixels;
+  const uint8_t stride = copied.fmt == 7 ? 3 : 4;
+  for (uint16_t i = 0; i < copied.pixelCount; i++) {
+    const uint16_t base = i * stride;
+    const uint16_t packedPos =
+        pgm_read_byte(src + base + 0) |
+        (static_cast<uint16_t>(pgm_read_byte(src + base + 1)) << 8);
+    const uint16_t pos = packedPos & 0x7fff;
+    uint16_t colorIndex = pgm_read_byte(src + base + 2);
+    if (copied.fmt == 9) {
+      colorIndex |= static_cast<uint16_t>(pgm_read_byte(src + base + 3)) << 8;
+    }
+    if (pos >= static_cast<uint16_t>(buffer.w) * buffer.h) return false;
+    uint16_t color = 0;
+    if (!readPaletteColor(palette, paletteCount, colorIndex, color)) return false;
+    buffer.opaque[pos] = 1;
+    buffer.color[pos] = color;
+  }
+  return true;
+}
+
+bool applyPaletteDeltaStanceFrame(const KofSprite& copied,
+                                  const uint8_t* palette,
+                                  uint16_t paletteCount,
+                                  StanceBuffer& buffer) {
+  if (copied.fmt != 8 && copied.fmt != 10) return false;
+  if (copied.w != buffer.w || copied.h != buffer.h) return false;
+
+  const uint8_t* src = copied.pixels;
+  const uint8_t stride = copied.fmt == 8 ? 3 : 4;
+  for (uint16_t i = 0; i < copied.pixelCount; i++) {
+    const uint16_t base = i * stride;
+    const uint16_t packedPos =
+        pgm_read_byte(src + base + 0) |
+        (static_cast<uint16_t>(pgm_read_byte(src + base + 1)) << 8);
+    const uint8_t op = (packedPos & 0x8000) ? 1 : 0;
+    const uint16_t pos = packedPos & 0x7fff;
+    uint16_t colorIndex = pgm_read_byte(src + base + 2);
+    if (copied.fmt == 10) {
+      colorIndex |= static_cast<uint16_t>(pgm_read_byte(src + base + 3)) << 8;
+    }
+    if (pos >= static_cast<uint16_t>(buffer.w) * buffer.h) return false;
+    if (op == 0) {
+      buffer.opaque[pos] = 0;
+    } else {
+      uint16_t color = 0;
+      if (!readPaletteColor(palette, paletteCount, colorIndex, color)) return false;
+      buffer.opaque[pos] = 1;
+      buffer.color[pos] = color;
+    }
+  }
+  return true;
+}
+
+bool rebuildStanceFrame(uint8_t charIdx, uint8_t frameIdx, StanceBuffer& buffer) {
+  const KofStanceSet* set = KofSprites::getStanceSetByIndex(charIdx);
+  if (set == nullptr) return false;
+
+  KofStanceSet copiedSet;
+  memcpy_P(&copiedSet, set, sizeof(KofStanceSet));
+  if (frameIdx >= copiedSet.frameCount) return false;
+
+  for (uint8_t i = 0; i <= frameIdx; i++) {
+    const KofSprite* frame = KofSprites::getStanceFrame(charIdx, i);
+    if (frame == nullptr) return false;
+
+    KofSprite copied;
+    memcpy_P(&copied, frame, sizeof(KofSprite));
+    bool ok = false;
+    if (copied.fmt == 7 || copied.fmt == 9) {
+      ok = applyPaletteFullStanceFrame(
+          copied, copiedSet.palette, copiedSet.paletteCount, buffer);
+    } else if (copied.fmt == 8 || copied.fmt == 10) {
+      ok = applyPaletteDeltaStanceFrame(
+          copied, copiedSet.palette, copiedSet.paletteCount, buffer);
+    }
+    if (!ok) return false;
+  }
+  return true;
+}
+
+void drawDecodedStanceFrame(int footX, int footY,
+                            const StanceBuffer& buffer, bool mirror) {
+  const int leftX = footX - (buffer.w / 2);
+  const int topY = footY - buffer.h + 1;
+  for (uint8_t y = 0; y < buffer.h; y++) {
+    for (uint8_t x = 0; x < buffer.w; x++) {
+      const uint16_t pos = y * buffer.w + x;
+      if (buffer.opaque[pos] == 0) continue;
+      const int drawX = mirror ? (buffer.w - 1 - x) : x;
+      putPixel565(leftX + drawX, topY + y, buffer.color[pos]);
+    }
+  }
+}
+
 void drawStanceFrame(int footX, int footY,
-                     const KofSprite* sprite, bool mirror) {
-  if (sprite == nullptr) return;
-  KofSprite copied;
-  memcpy_P(&copied, sprite, sizeof(KofSprite));
-  // 左上角: 水平 footX 居中 / 底行落在 footY
-  int leftX = footX - (copied.w / 2);
-  int topY  = footY - copied.h + 1;
-  drawSpriteAt(sprite, leftX, topY, mirror);
+                     uint8_t charIdx, uint8_t frameIdx, bool mirror) {
+  if (!rebuildStanceFrame(charIdx, frameIdx, s_stanceBuffer)) return;
+  drawDecodedStanceFrame(footX, footY, s_stanceBuffer, mirror);
 }
 
 // ============ 画头像 ============
@@ -270,9 +414,8 @@ void drawCharacters() {
     memcpy_P(&copied, p1Set, sizeof(KofStanceSet));
     if (copied.frameCount > 0) {
       uint8_t fIdx = s_state.charFrame % copied.frameCount;
-      const KofSprite* frame =
-          KofSprites::getStanceFrame(s_state.selectP1, fIdx);
-      drawStanceFrame(SX0 + CHAR_X_LEFT, SY0 + CHAR_Y, frame, true);
+      drawStanceFrame(SX0 + CHAR_X_LEFT, SY0 + CHAR_Y,
+                      s_state.selectP1, fIdx, true);
     }
   }
   // P2 (右, 不镜像)
@@ -282,17 +425,36 @@ void drawCharacters() {
     memcpy_P(&copied, p2Set, sizeof(KofStanceSet));
     if (copied.frameCount > 0) {
       uint8_t fIdx = s_state.charFrame % copied.frameCount;
-      const KofSprite* frame =
-          KofSprites::getStanceFrame(s_state.selectP2, fIdx);
-      drawStanceFrame(SX0 + CHAR_X_RIGHT, SY0 + CHAR_Y, frame, false);
+      drawStanceFrame(SX0 + CHAR_X_RIGHT, SY0 + CHAR_Y,
+                      s_state.selectP2, fIdx, false);
     }
   }
 }
 
+uint8_t getFrameCount(uint8_t charIdx) {
+  const KofStanceSet* set = KofSprites::getStanceSetByIndex(charIdx);
+  if (set == nullptr) return 0;
+  KofStanceSet copied;
+  memcpy_P(&copied, set, sizeof(KofStanceSet));
+  return copied.frameCount;
+}
+
 // ============ 画屏幕 ============
+void drawScreenBackground() {
+  for (uint8_t y = 0; y < SCRH; y++) {
+    for (uint8_t x = 0; x < SCRW; x++) {
+      const uint16_t index = (y * SCRW + x) * 3;
+      const uint8_t r = pgm_read_byte(kKof97BgPixels + index + 0);
+      const uint8_t g = pgm_read_byte(kKof97BgPixels + index + 1);
+      const uint8_t b = pgm_read_byte(kKof97BgPixels + index + 2);
+      putPixel(SX0 + x, SY0 + y, r, g, b);
+    }
+  }
+}
+
 void drawScreen() {
   // 屏幕背景 (KOF 经典深蓝)
-  fillRect(SX0, SY0, SX0 + SCRW - 1, SY0 + SCRH - 1, BG_R, BG_G, BG_B);
+  drawScreenBackground();
   drawPortraits();
   drawCharacters();
 }
@@ -341,7 +503,7 @@ void drawTvFrame() {
   }
 
   // 时间显示 (3×5 老式 LED 绿)
-  drawText3x5(s_state.timeText, TIME_X, TIME_Y, TIME_R, TIME_G, TIME_B);
+  drawKofTimeText(s_state.timeText, TIME_X, TIME_Y);
 
   // LED 灯 (静态)
   putPixel(LED1_X, LED_Y, LED1_R, LED1_G, LED1_B);
@@ -381,13 +543,22 @@ void tickScene() {
   }
 
   // stance 动画推进
+  bool cycleWrapped = false;
+  const uint8_t p1FrameCount = getFrameCount(s_state.selectP1);
+  const uint8_t p2FrameCount = getFrameCount(s_state.selectP2);
+  const uint8_t totalFrames =
+      p1FrameCount > p2FrameCount ? p1FrameCount : p2FrameCount;
   if (s_state.charTimer >= CHAR_FRAME_INTERVAL) {
     s_state.charTimer = 0;
     s_state.charFrame++;
+    if (totalFrames > 0 && s_state.charFrame >= totalFrames) {
+      s_state.charFrame = 0;
+      cycleWrapped = true;
+    }
   }
 
   // 选人光标动画: 每 SELECT_INTERVAL 帧随机切一次
-  if (s_state.selectTimer >= SELECT_INTERVAL) {
+  if (cycleWrapped && s_state.selectTimer >= SELECT_INTERVAL) {
     s_state.selectTimer = 0;
     const uint8_t N = KofSprites::charCount();
     uint8_t nextP1 = rng() % N;
@@ -398,6 +569,8 @@ void tickScene() {
       nextP2 = rng() % N;
     }
     s_state.selectP2 = nextP2;
+    s_state.charFrame = 0;
+    s_state.charTimer = 0;
   }
 }
 

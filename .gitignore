@@ -52,6 +52,20 @@ esp32-firmware/terraria/_png/
 # Terraria 构建中间产物
 uniapp/static/terraria/prescaled/
 
+# PlatformIO 本地隔离目录
+esp32-firmware/.platformio-home/
+
+# KOF97 本地中间产物
+assets-raw/kof97/frames-out/
+assets-raw/kof97/juese-frames-preview/
+assets-raw/kof97/stance-anchor-debug/
+assets-raw/kof97/stance-data-preview/
+assets-raw/kof97/kof97Stances.global.js
+assets-raw/kof97/preview-stance-data.js
+assets-raw/kof97/frames-out-report.json
+assets-raw/kof97/juese-cut-report.json
+assets-raw/kof97/stance-build-report.json
+
 # 备份文件
 *.backup_*
 

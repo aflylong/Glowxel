@@ -929,24 +929,65 @@ inline void bossPutPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b,
 // 画 boss 帧 (跟 uniapp drawBoss 完全对齐: base + delta(set+clear), 应用 fx + 丢弃)
 //   像素已是屏幕绝对坐标 (0~63), 烘焙时按各 boss 默认 x/y/scale 渲染好, 直接画
 //   dy: 仅用于 4 柱 = -10 整体上移 (其他 boss 永远 dy=0, 不动烘焙位置)
+uint8_t bossSetStride(uint8_t fmt) {
+  if (fmt == 7) return 7;
+  if (fmt == 8) return 3;
+  if (fmt == 9) return 4;
+  return 5;
+}
+
+bool readBossSetPixel(const uint8_t* pixels, uint16_t index, uint8_t fmt,
+                      const uint8_t* palette, uint16_t paletteCount,
+                      uint16_t& x, uint16_t& y,
+                      uint8_t& r, uint8_t& g, uint8_t& b) {
+  const uint8_t stride = bossSetStride(fmt);
+  const uint8_t* p = pixels + (size_t)index * stride;
+
+  if (fmt == 7) {
+    x = pgm_read_byte(p) | (pgm_read_byte(p + 1) << 8);
+    y = pgm_read_byte(p + 2) | (pgm_read_byte(p + 3) << 8);
+    r = pgm_read_byte(p + 4);
+    g = pgm_read_byte(p + 5);
+    b = pgm_read_byte(p + 6);
+    return true;
+  }
+
+  if (fmt == 8 || fmt == 9) {
+    if (palette == nullptr) return false;
+    const uint16_t pos = pgm_read_byte(p) | (pgm_read_byte(p + 1) << 8);
+    const uint16_t colorIndex = (fmt == 9)
+      ? (pgm_read_byte(p + 2) | (pgm_read_byte(p + 3) << 8))
+      : pgm_read_byte(p + 2);
+    if (pos >= 64 * 64 || colorIndex >= paletteCount) return false;
+    const size_t colorOffset = (size_t)colorIndex * 3;
+    x = pos % 64;
+    y = pos / 64;
+    r = pgm_read_byte(palette + colorOffset);
+    g = pgm_read_byte(palette + colorOffset + 1);
+    b = pgm_read_byte(palette + colorOffset + 2);
+    return true;
+  }
+
+  x = pgm_read_byte(p);
+  y = pgm_read_byte(p + 1);
+  r = pgm_read_byte(p + 2);
+  g = pgm_read_byte(p + 3);
+  b = pgm_read_byte(p + 4);
+  return true;
+}
+
 void drawBossFrame(const TerrariaSpriteAnim* anim, uint8_t bossId, uint8_t frameIndex, int dy) {
   if (anim == nullptr) return;
   const BossFx fx = getBossFx(bossId);
-  const uint8_t stride = (anim->fmt == 7) ? 7 : 5;
+  const uint8_t* palette = ::getBossPalette(bossId);
+  const uint16_t paletteCount = ::getBossPaletteCount(bossId);
 
   // 1) 画 base (set 段)
   for (uint16_t i = 0; i < anim->base.setCount; i++) {
-    const uint8_t* p = anim->base.setPixels + (size_t)i * stride;
     uint16_t x, y;
     uint8_t r, g, b;
-    if (anim->fmt == 7) {
-      x = pgm_read_byte(p)     | (pgm_read_byte(p+1) << 8);
-      y = pgm_read_byte(p+2) | (pgm_read_byte(p+3) << 8);
-      r = pgm_read_byte(p+4); g = pgm_read_byte(p+5); b = pgm_read_byte(p+6);
-    } else {
-      x = pgm_read_byte(p); y = pgm_read_byte(p+1);
-      r = pgm_read_byte(p+2); g = pgm_read_byte(p+3); b = pgm_read_byte(p+4);
-    }
+    if (!readBossSetPixel(anim->base.setPixels, i, anim->fmt,
+                          palette, paletteCount, x, y, r, g, b)) continue;
     bossPutPixel((int)x, (int)y + dy, r, g, b, bossId, fx);
   }
 
@@ -966,17 +1007,10 @@ void drawBossFrame(const TerrariaSpriteAnim* anim, uint8_t bossId, uint8_t frame
   }
   // 2b) set 段: 画新像素
   for (uint16_t i = 0; i < delta.setCount; i++) {
-    const uint8_t* p = delta.setPixels + (size_t)i * stride;
     uint16_t x, y;
     uint8_t r, g, b;
-    if (anim->fmt == 7) {
-      x = pgm_read_byte(p)     | (pgm_read_byte(p+1) << 8);
-      y = pgm_read_byte(p+2) | (pgm_read_byte(p+3) << 8);
-      r = pgm_read_byte(p+4); g = pgm_read_byte(p+5); b = pgm_read_byte(p+6);
-    } else {
-      x = pgm_read_byte(p); y = pgm_read_byte(p+1);
-      r = pgm_read_byte(p+2); g = pgm_read_byte(p+3); b = pgm_read_byte(p+4);
-    }
+    if (!readBossSetPixel(delta.setPixels, i, anim->fmt,
+                          palette, paletteCount, x, y, r, g, b)) continue;
     bossPutPixel((int)x, (int)y + dy, r, g, b, bossId, fx);
   }
 }

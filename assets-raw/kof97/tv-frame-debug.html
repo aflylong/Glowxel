@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KOF97 TV Frame Debug</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #111111;
+      --panel: #1b1b1b;
+      --panel-2: #242424;
+      --line: #353535;
+      --text: #f3f3f3;
+      --muted: #a0a0a0;
+      --accent: #ffc857;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #0f0f0f 0%, #171717 100%);
+      color: var(--text);
+      font: 14px/1.45 "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    .page {
+      width: min(1440px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 540px minmax(360px, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: rgba(27, 27, 27, 0.94);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    .card-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .card-head h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .card-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .preview-wrap {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .canvas-stage {
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.07), transparent 42%),
+        linear-gradient(180deg, #0f0f0f 0%, #1a1a1a 100%);
+      border: 1px solid #2f2f2f;
+    }
+
+    canvas {
+      width: 448px;
+      height: 448px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      background: #000;
+      border: 1px solid #3a3a3a;
+      border-radius: 10px;
+    }
+
+    .preview-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .meta-chip {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .meta-chip strong {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .meta-chip span {
+      font-family: Consolas, "SFMono-Regular", monospace;
+      font-size: 13px;
+    }
+
+    .control-wrap {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+      max-height: calc(100vh - 120px);
+      overflow: auto;
+    }
+
+    .section {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .section-title {
+      padding: 12px 14px;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .section-body {
+      padding: 12px 14px 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .control {
+      display: grid;
+      gap: 6px;
+    }
+
+    .control-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .control-head code {
+      color: var(--muted);
+    }
+
+    .value {
+      font-family: Consolas, "SFMono-Regular", monospace;
+      color: var(--accent);
+    }
+
+    .control input[type="range"],
+    .control input[type="color"] {
+      width: 100%;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      background: #2b2b2b;
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #111;
+      font-weight: 700;
+    }
+
+    button:hover {
+      filter: brightness(1.06);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #101010;
+      color: var(--text);
+      padding: 14px;
+      font: 13px/1.45 Consolas, "SFMono-Regular", monospace;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 1120px) {
+      .shell,
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      canvas {
+        width: min(80vw, 448px);
+        height: min(80vw, 448px);
+      }
+
+      .control-wrap {
+        max-height: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <div>
+        <h1>KOF97 电视壳调试页</h1>
+        <p>本地直接打开。改参数会实时重绘，并更新底部 JSON。</p>
+      </div>
+      <div class="action-row">
+        <button id="resetBtn">恢复板载默认</button>
+        <button id="copyBtn" class="primary">复制 JSON</button>
+      </div>
+    </div>
+
+    <div class="shell">
+      <div class="card">
+        <div class="card-head">
+          <h2>预览</h2>
+          <p>左侧是 64x64 放大预览。中间区域用了简化占位内容，主要方便你调壳和开窗比例。</p>
+        </div>
+        <div class="preview-wrap">
+          <div class="canvas-stage">
+            <canvas id="preview" width="64" height="64"></canvas>
+          </div>
+          <div class="preview-meta">
+            <div class="meta-chip">
+              <strong>Screen</strong>
+              <span id="screenMeta">sx0=4 sy0=4 scrw=56 scrh=43</span>
+            </div>
+            <div class="meta-chip">
+              <strong>Base</strong>
+              <span id="baseMeta">top=50 bot=57 left=12 rightInset=12</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>参数</h2>
+          <p>字段名尽量直接对齐旧 `TV_CONFIG` / 板载常量，调好后可以直接把 JSON 发我。</p>
+        </div>
+        <div id="controlWrap" class="control-wrap"></div>
+      </div>
+    </div>
+
+    <div class="footer-grid">
+      <div class="card">
+        <div class="card-head">
+          <h2>JSON 导出</h2>
+          <p>这里会实时更新。复制出去后可以直接回填代码。</p>
+        </div>
+        <div class="preview-wrap">
+          <textarea id="jsonOut" readonly></textarea>
+          <div class="hint">复制的是完整 JSON，不带注释。</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>JSON 导入</h2>
+          <p>可以把之前调过的 JSON 粘进来，点应用继续调。</p>
+        </div>
+        <div class="preview-wrap">
+          <textarea id="jsonIn" placeholder='粘贴 JSON，例如 {"sx0":4,"sy0":4,...}'></textarea>
+          <div class="action-row">
+            <button id="applyJsonBtn">应用 JSON</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_CONFIG = {
+      sx0: 4,
+      sy0: 4,
+      scrw: 56,
+      scrh: 46,
+      bg: "#0a3870",
+      tvBlack: "#1a1a1a",
+      tvDark: "#0a0a0a",
+      tvEdge: "#000000",
+      panel: "#f0f0f0",
+      p1Highlight: "#e80000",
+      p2Highlight: "#3870ff",
+      timeColor: "#00ff66",
+      baseTop: 52,
+      baseBot: 59,
+      baseLeft: 12,
+      baseRightInset: 12,
+      slotY0: 54,
+      slotY1: 58,
+      timeX: 31,
+      timeY: 54,
+      footTop: 63,
+      footBot: 63,
+      footLx0: 8,
+      footLx1: 16,
+      ledY: 62,
+      led1x: 18,
+      led2x: 22,
+      led3x: 26,
+      led4x: 45,
+      charXLeft: 14,
+      charXRight: 40,
+      charY: 46
+    };
+
+    const LED_COLORS = [
+      "#dcb41e",
+      "#8c8c91",
+      "#b41e1e",
+      "#50c83c"
+    ];
+
+    const GROUPS = [
+      {
+        title: "屏幕开窗",
+        fields: [
+          ["sx0", 0, 16, 1],
+          ["sy0", 0, 16, 1],
+          ["scrw", 24, 60, 1],
+          ["scrh", 20, 52, 1]
+        ]
+      },
+      {
+        title: "底座与黑槽",
+        fields: [
+          ["baseTop", 40, 60, 1],
+          ["baseBot", 44, 61, 1],
+          ["baseLeft", 0, 24, 1],
+          ["baseRightInset", 0, 24, 1],
+          ["slotY0", 45, 59, 1],
+          ["slotY1", 46, 60, 1]
+        ]
+      },
+      {
+        title: "时间与灯",
+        fields: [
+          ["timeX", 0, 60, 1],
+          ["timeY", 0, 63, 1],
+          ["ledY", 0, 63, 1],
+          ["led1x", 0, 63, 1],
+          ["led2x", 0, 63, 1],
+          ["led3x", 0, 63, 1],
+          ["led4x", 0, 63, 1]
+        ]
+      },
+      {
+        title: "底脚",
+        fields: [
+          ["footTop", 56, 63, 1],
+          ["footBot", 56, 63, 1],
+          ["footLx0", 0, 28, 1],
+          ["footLx1", 1, 31, 1]
+        ]
+      },
+      {
+        title: "角色占位",
+        fields: [
+          ["charXLeft", 0, 32, 1],
+          ["charXRight", 32, 63, 1],
+          ["charY", 20, 48, 1]
+        ]
+      },
+      {
+        title: "颜色",
+        colors: ["bg", "tvBlack", "tvDark", "tvEdge", "panel", "p1Highlight", "p2Highlight", "timeColor"]
+      }
+    ];
+
+    const FONT_3X5 = {
+      "0": ["111", "101", "101", "101", "111"],
+      "1": ["010", "110", "010", "010", "111"],
+      "2": ["111", "001", "111", "100", "111"],
+      "3": ["111", "001", "111", "001", "111"],
+      "4": ["101", "101", "111", "001", "001"],
+      "5": ["111", "100", "111", "001", "111"],
+      "6": ["111", "100", "111", "101", "111"],
+      "7": ["111", "001", "010", "010", "010"],
+      "8": ["111", "101", "111", "101", "111"],
+      "9": ["111", "101", "111", "001", "111"],
+      "V": ["101", "101", "101", "101", "010"],
+      "S": ["111", "100", "111", "001", "111"],
+      ":": ["000", "010", "000", "010", "000"]
+    };
+
+    const SCREEN_W = 64;
+    const SCREEN_H = 64;
+    const canvas = document.getElementById("preview");
+    const ctx = canvas.getContext("2d");
+    const controlWrap = document.getElementById("controlWrap");
+    const jsonOut = document.getElementById("jsonOut");
+    const jsonIn = document.getElementById("jsonIn");
+    const copyBtn = document.getElementById("copyBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const applyJsonBtn = document.getElementById("applyJsonBtn");
+    const screenMeta = document.getElementById("screenMeta");
+    const baseMeta = document.getElementById("baseMeta");
+
+    let config = { ...DEFAULT_CONFIG };
+
+    function setPixel(imageData, x, y, color) {
+      if (x < 0 || x >= SCREEN_W || y < 0 || y >= SCREEN_H) {
+        return;
+      }
+      const index = (y * SCREEN_W + x) * 4;
+      imageData.data[index] = color.r;
+      imageData.data[index + 1] = color.g;
+      imageData.data[index + 2] = color.b;
+      imageData.data[index + 3] = 255;
+    }
+
+    function hexToRgb(hex) {
+      const normalized = hex.replace("#", "");
+      return {
+        r: parseInt(normalized.slice(0, 2), 16),
+        g: parseInt(normalized.slice(2, 4), 16),
+        b: parseInt(normalized.slice(4, 6), 16)
+      };
+    }
+
+    function fillRect(imageData, x0, y0, x1, y1, hex) {
+      const color = hexToRgb(hex);
+      const left = Math.min(x0, x1);
+      const right = Math.max(x0, x1);
+      const top = Math.min(y0, y1);
+      const bottom = Math.max(y0, y1);
+      for (let y = top; y <= bottom; y += 1) {
+        for (let x = left; x <= right; x += 1) {
+          setPixel(imageData, x, y, color);
+        }
+      }
+    }
+
+    function drawRectBorder(imageData, x0, y0, x1, y1, hex) {
+      const left = Math.min(x0, x1);
+      const right = Math.max(x0, x1);
+      const top = Math.min(y0, y1);
+      const bottom = Math.max(y0, y1);
+      for (let x = left; x <= right; x += 1) {
+        fillRect(imageData, x, top, x, top, hex);
+        fillRect(imageData, x, bottom, x, bottom, hex);
+      }
+      for (let y = top; y <= bottom; y += 1) {
+        fillRect(imageData, left, y, left, y, hex);
+        fillRect(imageData, right, y, right, y, hex);
+      }
+    }
+
+    function drawText3x5(imageData, text, x, y, hex) {
+      const color = hexToRgb(hex);
+      let cursorX = x;
+      for (const char of text) {
+        const glyph = FONT_3X5[char];
+        if (!glyph) {
+          continue;
+        }
+        if (char === ":") {
+          for (let row = 0; row < glyph.length; row += 1) {
+            if (glyph[row][1] === "1") {
+              setPixel(imageData, cursorX, y + row, color);
+            }
+          }
+          cursorX += 2;
+          continue;
+        }
+        for (let row = 0; row < glyph.length; row += 1) {
+          for (let col = 0; col < glyph[row].length; col += 1) {
+            if (glyph[row][col] === "1") {
+              setPixel(imageData, cursorX + col, y + row, color);
+            }
+          }
+        }
+        cursorX += 4;
+      }
+    }
+
+    function drawKofTimeText(imageData, text, x, y) {
+      const safeText = typeof text === "string" ? text : "";
+      const leftText = safeText.slice(0, 2);
+      const rightText = safeText.slice(3, 5);
+      const startX = x - 8;
+      drawText3x5(imageData, leftText, startX, y, config.p1Highlight);
+      drawText3x5(imageData, ":", startX + 8, y, "#dcb41e");
+      drawText3x5(imageData, rightText, startX + 10, y, config.p2Highlight);
+    }
+
+    function drawPlaceholderScreen(imageData) {
+      fillRect(
+        imageData,
+        config.sx0,
+        config.sy0,
+        config.sx0 + config.scrw - 1,
+        config.sy0 + config.scrh - 1,
+        config.bg
+      );
+
+      const cols = 7;
+      const rows = 2;
+      const portraitW = 4;
+      const portraitH = 4;
+      const border = 1;
+      const cellW = portraitW + border * 2;
+      const cellH = portraitH + border * 2;
+      const gap = 1;
+      const totalW = cols * cellW + (cols - 1) * gap;
+      const startX = config.sx0 + Math.floor((config.scrw - totalW) / 2);
+      const startY = config.sy0 + 2;
+
+      for (let index = 0; index < cols * rows; index += 1) {
+        const row = Math.floor(index / cols);
+        const col = index % cols;
+        const x = startX + col * (cellW + gap);
+        const y = startY + row * (cellH + gap);
+        let borderColor = config.panel;
+        if (index === 0) borderColor = config.p1Highlight;
+        if (index === 5) borderColor = config.p2Highlight;
+        drawRectBorder(imageData, x, y, x + cellW - 1, y + cellH - 1, borderColor);
+        fillRect(imageData, x + 1, y + 1, x + 4, y + 4, index % 2 === 0 ? "#f8d8b8" : "#d0d8ff");
+      }
+
+      drawCharacterBlock(imageData, config.sx0 + config.charXLeft, config.sy0 + config.charY, true, "#e3e1cf", "#4f5c70");
+      drawCharacterBlock(imageData, config.sx0 + config.charXRight, config.sy0 + config.charY, false, "#f2d4d4", "#5e4258");
+    }
+
+    function drawCharacterBlock(imageData, footX, footY, mirror, bodyColor, accentColor) {
+      const bodyLeft = footX - 5;
+      const bodyRight = footX + 4;
+      const topY = footY - 14;
+      fillRect(imageData, bodyLeft, topY, bodyRight, footY, bodyColor);
+      fillRect(imageData, footX - 3, topY - 4, footX + 2, topY - 1, "#f0c8a4");
+      if (mirror) {
+        fillRect(imageData, bodyLeft - 2, topY + 2, bodyLeft - 1, topY + 8, accentColor);
+      } else {
+        fillRect(imageData, bodyRight + 1, topY + 2, bodyRight + 2, topY + 8, accentColor);
+      }
+      fillRect(imageData, footX - 4, footY + 1, footX - 1, footY + 2, accentColor);
+      fillRect(imageData, footX + 1, footY + 1, footX + 4, footY + 2, accentColor);
+    }
+
+    function drawTvShell(imageData) {
+      fillRect(imageData, 0, 0, SCREEN_W - 1, config.sy0 - 1, config.tvBlack);
+      fillRect(imageData, 0, config.sy0, config.sx0 - 1, config.sy0 + config.scrh - 1, config.tvBlack);
+      fillRect(
+        imageData,
+        config.sx0 + config.scrw,
+        config.sy0,
+        SCREEN_W - 1,
+        config.sy0 + config.scrh - 1,
+        config.tvBlack
+      );
+      fillRect(
+        imageData,
+        0,
+        config.sy0 + config.scrh,
+        SCREEN_W - 1,
+        SCREEN_H - 1,
+        config.tvBlack
+      );
+
+      drawRectBorder(
+        imageData,
+        config.sx0 - 1,
+        config.sy0 - 1,
+        config.sx0 + config.scrw,
+        config.sy0 + config.scrh,
+        config.tvEdge
+      );
+
+      fillRect(imageData, 0, 0, 0, 0, config.tvDark);
+      fillRect(imageData, SCREEN_W - 1, 0, SCREEN_W - 1, 0, config.tvDark);
+      fillRect(imageData, 0, SCREEN_H - 1, 0, SCREEN_H - 1, config.tvDark);
+      fillRect(imageData, SCREEN_W - 1, SCREEN_H - 1, SCREEN_W - 1, SCREEN_H - 1, config.tvDark);
+
+      const baseRight = SCREEN_W - 1 - config.baseRightInset;
+      fillRect(imageData, config.baseLeft, config.baseTop, baseRight, config.baseBot, config.tvDark);
+      fillRect(imageData, config.baseLeft, config.baseTop, baseRight, config.baseTop, config.tvEdge);
+      fillRect(imageData, config.baseLeft, config.baseTop + 1, config.baseLeft, config.baseBot, config.tvEdge);
+      fillRect(imageData, baseRight, config.baseTop + 1, baseRight, config.baseBot, config.tvEdge);
+      fillRect(imageData, config.baseLeft + 6, config.slotY0, baseRight - 6, config.slotY1, config.tvBlack);
+      if (config.baseBot + 1 < SCREEN_H) {
+        fillRect(imageData, config.baseLeft, config.baseBot + 1, baseRight, config.baseBot + 1, config.tvEdge);
+      }
+
+      drawKofTimeText(imageData, "12:34", config.timeX, config.timeY);
+
+      [config.led1x, config.led2x, config.led3x, config.led4x].forEach((x, index) => {
+        fillRect(imageData, x, config.ledY, x, config.ledY, LED_COLORS[index]);
+      });
+
+      fillRect(imageData, config.footLx0, config.footTop, config.footLx1, config.footBot, config.tvDark);
+      fillRect(
+        imageData,
+        SCREEN_W - 1 - config.footLx1,
+        config.footTop,
+        SCREEN_W - 1 - config.footLx0,
+        config.footBot,
+        config.tvDark
+      );
+      fillRect(imageData, config.footLx0, config.footTop, config.footLx1, config.footTop, config.tvEdge);
+      fillRect(
+        imageData,
+        SCREEN_W - 1 - config.footLx1,
+        config.footTop,
+        SCREEN_W - 1 - config.footLx0,
+        config.footTop,
+        config.tvEdge
+      );
+    }
+
+    function render() {
+      const imageData = ctx.createImageData(SCREEN_W, SCREEN_H);
+      drawPlaceholderScreen(imageData);
+      drawTvShell(imageData);
+      ctx.putImageData(imageData, 0, 0);
+
+      jsonOut.value = JSON.stringify(config, null, 2);
+      screenMeta.textContent = `sx0=${config.sx0} sy0=${config.sy0} scrw=${config.scrw} scrh=${config.scrh}`;
+      baseMeta.textContent = `top=${config.baseTop} bot=${config.baseBot} left=${config.baseLeft} rightInset=${config.baseRightInset}`;
+    }
+
+    function buildRangeControl(key, min, max, step) {
+      const wrapper = document.createElement("label");
+      wrapper.className = "control";
+      wrapper.innerHTML = `
+        <div class="control-head">
+          <span>${key}</span>
+          <span class="value" id="value-${key}">${config[key]}</span>
+        </div>
+        <input id="input-${key}" type="range" min="${min}" max="${max}" step="${step}" value="${config[key]}" />
+      `;
+      const input = wrapper.querySelector("input");
+      const value = wrapper.querySelector(".value");
+      input.addEventListener("input", () => {
+        config[key] = Number(input.value);
+        value.textContent = String(config[key]);
+        render();
+      });
+      return wrapper;
+    }
+
+    function buildColorControl(key) {
+      const wrapper = document.createElement("label");
+      wrapper.className = "control";
+      wrapper.innerHTML = `
+        <div class="control-head">
+          <span>${key}</span>
+          <code>${config[key]}</code>
+        </div>
+        <input id="input-${key}" type="color" value="${config[key]}" />
+      `;
+      const input = wrapper.querySelector("input");
+      const code = wrapper.querySelector("code");
+      input.addEventListener("input", () => {
+        config[key] = input.value;
+        code.textContent = config[key];
+        render();
+      });
+      return wrapper;
+    }
+
+    function buildControls() {
+      controlWrap.innerHTML = "";
+      GROUPS.forEach((group) => {
+        const section = document.createElement("section");
+        section.className = "section";
+        const title = document.createElement("div");
+        title.className = "section-title";
+        title.textContent = group.title;
+        const body = document.createElement("div");
+        body.className = "section-body";
+
+        (group.fields || []).forEach(([key, min, max, step]) => {
+          body.appendChild(buildRangeControl(key, min, max, step));
+        });
+
+        (group.colors || []).forEach((key) => {
+          body.appendChild(buildColorControl(key));
+        });
+
+        section.appendChild(title);
+        section.appendChild(body);
+        controlWrap.appendChild(section);
+      });
+    }
+
+    function reset() {
+      config = { ...DEFAULT_CONFIG };
+      buildControls();
+      render();
+    }
+
+    function applyJson() {
+      try {
+        const parsed = JSON.parse(jsonIn.value.trim());
+        config = { ...DEFAULT_CONFIG, ...parsed };
+        buildControls();
+        render();
+      } catch (error) {
+        window.alert(`JSON 格式不对: ${error.message}`);
+      }
+    }
+
+    async function copyJson() {
+      const text = JSON.stringify(config, null, 2);
+      try {
+        await navigator.clipboard.writeText(text);
+        const prev = copyBtn.textContent;
+        copyBtn.textContent = "已复制";
+        setTimeout(() => {
+          copyBtn.textContent = prev;
+        }, 1200);
+      } catch (error) {
+        window.alert("自动复制失败了，JSON 已经在下方输出框里，可以手动复制。");
+      }
+    }
+
+    resetBtn.addEventListener("click", reset);
+    applyJsonBtn.addEventListener("click", applyJson);
+    copyBtn.addEventListener("click", copyJson);
+
+    buildControls();
+    render();
+  </script>
+</body>
+</html>

@@ -1,4 +1,3 @@
-<!-- KOF '97 选人界面 + 像素电视机外壳预览 (定档无参数模式) -->
 <template>
   <div class="clock-editor-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
@@ -25,16 +24,18 @@
           :grid-visible="true"
           :is-dark-mode="true"
         />
+        <div v-if="isLoading" class="preview-loading">正在加载原始像素数据...</div>
       </div>
+
       <div class="preview-caption glx-preview-panel">
         <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-caption-title">模拟预览</span>
+          <span class="preview-caption-title">网页预览</span>
           <span class="preview-caption-sub">{{ statusText }}</span>
         </div>
         <div class="preview-actions">
           <div
             class="action-btn-sm primary glx-primary-action"
-            :class="{ disabled: isSending }"
+            :class="{ disabled: isSending || isLoading || !isSceneReady }"
             @click="sendToDevice"
           >
             <Icon name="link" :size="36" color="#000000" />
@@ -50,12 +51,45 @@
           <div class="card-title-section glx-panel-head">
             <span class="glx-panel-title">说明</span>
           </div>
-          <p style="font-size: 24rpx; line-height: 1.6; padding: 12rpx 0;">
-            上半 = 头像区 7×2 (14 个角色) + 屏幕中部 stance 待机动画。<br>
-            下半 = 像素电视壳 + 老式绿色时间显示。<br>
-            P1 在左侧 (镜像朝右), P2 在右侧 (默认朝左)。<br>
-            每 5 秒随机切换 P1/P2。点"发送"上板。
+          <p class="desc-text">
+            当前网页端加载原始角色帧像素，页面解包基准帧和差异帧后再按下面的比例投影到 64x64 预览里。
+            这里不会把每一帧提前压成同一个宽高，方便继续确认角色大小、脚底位置和动作节奏。
           </p>
+          <div class="scale-controls">
+            <label class="scale-control">
+              <span class="scale-control__label">P1 缩放 {{ p1ScaleText }}</span>
+              <input
+                v-model.number="p1Scale"
+                class="scale-control__range"
+                type="range"
+                :min="scaleMin"
+                :max="scaleMax"
+                :step="scaleStep"
+              />
+            </label>
+            <label class="scale-control">
+              <span class="scale-control__label">P2 缩放 {{ p2ScaleText }}</span>
+              <input
+                v-model.number="p2Scale"
+                class="scale-control__range"
+                type="range"
+                :min="scaleMin"
+                :max="scaleMax"
+                :step="scaleStep"
+              />
+            </label>
+            <label class="scale-control">
+              <span class="scale-control__label">角色 Y {{ charY }}</span>
+              <input
+                v-model.number="charY"
+                class="scale-control__range"
+                type="range"
+                :min="charYMin"
+                :max="charYMax"
+                step="1"
+              />
+            </label>
+          </div>
         </div>
       </div>
     </div>
@@ -82,7 +116,74 @@ import Icon from '@/components/uni/Icon.vue';
 import Toast from '@/components/uni/Toast.vue';
 import GlxInlineLoader from '@/components/uni/GlxInlineLoader.vue';
 import PixelPreviewBoard from '@/components/uni/PixelPreviewBoard.vue';
-import { renderKof97Scene, createInitialState, tickScene } from '@/utils/kof97Renderer.js';
+import {
+  KOF_CHAR_KEYS,
+  KOF97_DEFAULT_CHAR_Y,
+  KOF97_SCREEN_RECT,
+  createInitialState,
+  loadKof97Stances,
+  renderKof97Scene,
+  tickScene,
+} from '@/utils/kof97Renderer.js';
+
+const FRAME_INTERVAL_MS = 1000 / 30;
+const DEFAULT_PREVIEW_SCALE = 0.225;
+const PREVIEW_SCALE_MIN = 0.1;
+const PREVIEW_SCALE_MAX = 0.3;
+const PREVIEW_SCALE_STEP = 0.005;
+const CHAR_Y_MIN = 20;
+const CHAR_Y_MAX = 48;
+const KOF97_BG_PATH = `${import.meta.env.BASE_URL}kof97/bg.png`;
+
+function toHexPart(value) {
+  return value.toString(16).padStart(2, '0');
+}
+
+function rgbToHex(r, g, b) {
+  return `#${toHexPart(r)}${toHexPart(g)}${toHexPart(b)}`;
+}
+
+function loadKof97ScreenBackgroundPixels() {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.decoding = 'async';
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = KOF97_SCREEN_RECT.width;
+      canvas.height = KOF97_SCREEN_RECT.height;
+      const context = canvas.getContext('2d');
+      if (context === null) {
+        reject(new Error('Failed to create background canvas context'));
+        return;
+      }
+
+      context.imageSmoothingEnabled = false;
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = new Array(canvas.width * canvas.height);
+      for (let index = 0; index < pixels.length; index += 1) {
+        const offset = index * 4;
+        const alpha = imageData.data[offset + 3];
+        if (alpha === 0) {
+          pixels[index] = null;
+          continue;
+        }
+        pixels[index] = rgbToHex(
+          imageData.data[offset],
+          imageData.data[offset + 1],
+          imageData.data[offset + 2]
+        );
+      }
+      resolve(pixels);
+    };
+    image.onerror = () => {
+      reject(new Error(`Failed to load KOF97 background image: ${KOF97_BG_PATH}`));
+    };
+    image.src = KOF97_BG_PATH;
+  });
+}
 
 export default {
   name: 'Kof97',
@@ -98,6 +199,8 @@ export default {
       deviceStore: null,
       toast: null,
       sceneState: null,
+      stances: null,
+      screenBackgroundPixels: null,
       previewPixels: new Map(),
       previewTick: 0,
       previewCanvasReady: false,
@@ -105,77 +208,164 @@ export default {
       previewOffset: { x: 16, y: 16 },
       previewContainerSize: { width: 320, height: 320 },
       animHandle: null,
+      isLoading: true,
+      p1Scale: DEFAULT_PREVIEW_SCALE,
+      p2Scale: DEFAULT_PREVIEW_SCALE,
+      charY: KOF97_DEFAULT_CHAR_Y,
+      scaleMin: PREVIEW_SCALE_MIN,
+      scaleMax: PREVIEW_SCALE_MAX,
+      scaleStep: PREVIEW_SCALE_STEP,
+      charYMin: CHAR_Y_MIN,
+      charYMax: CHAR_Y_MAX,
     };
   },
   computed: {
+    isSceneReady() {
+      return !!this.sceneState && !!this.stances && Array.isArray(this.screenBackgroundPixels);
+    },
     statusText() {
-      if (!this.sceneState) return '';
-      return `P1: ${this.sceneState.selectP1}  P2: ${this.sceneState.selectP2}`;
+      if (this.isLoading) {
+        return '正在加载角色数据';
+      }
+      if (!this.sceneState) {
+        return '预览未启动';
+      }
+      const p1Key = KOF_CHAR_KEYS[this.sceneState.selectP1] || '-';
+      const p2Key = KOF_CHAR_KEYS[this.sceneState.selectP2] || '-';
+      return `P1: ${p1Key} ${this.p1ScaleText}  P2: ${p2Key} ${this.p2ScaleText}  Y: ${this.charY}`;
+    },
+    p1ScaleText() {
+      return `${Math.round(this.p1Scale * 1000) / 10}%`;
+    },
+    p2ScaleText() {
+      return `${Math.round(this.p2Scale * 1000) / 10}%`;
     },
     previewCanvasBoxStyle() {
       return { height: `${this.previewContainerSize.height}px` };
     },
   },
-  mounted() {
+  watch: {
+    p1Scale() {
+      this.renderPreview();
+    },
+    p2Scale() {
+      this.renderPreview();
+    },
+    charY() {
+      this.renderPreview();
+    },
+  },
+  async mounted() {
     this.deviceStore = useDeviceStore();
-    this.deviceStore.init();
+    this.deviceStore.init?.();
     this.toast = useToast();
 
-    this.$nextTick(() => {
-      if (this.$refs.toastRef) this.toast.setToastInstance(this.$refs.toastRef);
+    this.$nextTick(async () => {
+      if (this.$refs.toastRef) {
+        this.toast.setToastInstance(this.$refs.toastRef);
+      }
       this.sceneState = createInitialState();
       this.previewCanvasReady = true;
-      this.startLoop();
       this.initPreviewCanvas();
+
+      try {
+        const [stances, screenBackgroundPixels] = await Promise.all([
+          loadKof97Stances(),
+          loadKof97ScreenBackgroundPixels(),
+        ]);
+        this.stances = stances;
+        this.screenBackgroundPixels = screenBackgroundPixels;
+        this.renderPreview();
+        this.startLoop();
+      } catch (error) {
+        console.error('[kof97] load failed', error);
+        this.showSendFailure(error);
+      } finally {
+        this.isLoading = false;
+      }
     });
   },
-  beforeUnmount() { this.stopLoop(); },
-  beforeDestroy() { this.stopLoop(); },
+  beforeUnmount() {
+    this.stopLoop();
+  },
+  beforeDestroy() {
+    this.stopLoop();
+  },
   methods: {
     handleBack() {
-      try { this.$router.back(); } catch (e) { window.history.back(); }
+      try {
+        this.$router.back();
+      } catch (error) {
+        window.history.back();
+      }
     },
     initPreviewCanvas() {
       this.$nextTick(() => {
         setTimeout(() => {
           const query = uni.createSelectorQuery().in(this);
-          query.select('.preview-canvas-container').boundingClientRect((data) => {
-            if (data && data.width > 0) {
-              this.previewContainerSize = { width: data.width, height: data.width };
-              const fitZoom = Math.max(2, Math.floor((data.width * 0.96) / 64));
-              this.previewZoom = fitZoom;
-              this.previewOffset = {
-                x: (data.width - 64 * fitZoom) / 2,
-                y: (data.width - 64 * fitZoom) / 2,
-              };
-            }
-          }).exec();
+          query
+            .select('.preview-canvas-container')
+            .boundingClientRect((data) => {
+              if (data && data.width > 0) {
+                this.previewContainerSize = { width: data.width, height: data.width };
+                const fitZoom = Math.max(2, Math.floor((data.width * 0.96) / 64));
+                this.previewZoom = fitZoom;
+                this.previewOffset = {
+                  x: (data.width - 64 * fitZoom) / 2,
+                  y: (data.width - 64 * fitZoom) / 2,
+                };
+              }
+            })
+            .exec();
         }, 80);
       });
     },
-    startLoop() {
-      // 静态一帧: 跑一次 tick + render 拿到画面, 不再循环 (省 CPU + 防扒动画)
-      tickScene(this.sceneState);
-      this.previewPixels = renderKof97Scene(this.sceneState);
-      this.previewTick++;
+    renderPreview() {
+      if (!this.sceneState || !this.stances || !Array.isArray(this.screenBackgroundPixels)) {
+        return;
+      }
+      this.previewPixels = renderKof97Scene(this.sceneState, {
+        stances: this.stances,
+        backgroundPixels: this.screenBackgroundPixels,
+        charY: this.charY,
+        p1Scale: this.p1Scale,
+        p2Scale: this.p2Scale,
+      });
+      this.previewTick += 1;
     },
-    stopLoop() { /* 静态帧无循环, 不需要 stop */ },
-
-    // 发送到设备 - 无参数模式, 板载用预设值跑
+    startLoop() {
+      this.stopLoop();
+      const tick = () => {
+        if (!this.sceneState || !this.stances || !Array.isArray(this.screenBackgroundPixels)) {
+          return;
+        }
+        tickScene(this.sceneState, this.stances);
+        this.renderPreview();
+        this.animHandle = setTimeout(tick, FRAME_INTERVAL_MS);
+      };
+      this.animHandle = setTimeout(tick, FRAME_INTERVAL_MS);
+    },
+    stopLoop() {
+      if (this.animHandle) {
+        clearTimeout(this.animHandle);
+        this.animHandle = null;
+      }
+    },
     async sendToDevice() {
-      if (!this.guardBeforeSend(this.deviceStore.connected)) return;
+      if (!this.isSceneReady) {
+        return;
+      }
+      if (!this.guardBeforeSend(this.deviceStore.connected)) {
+        return;
+      }
       this.beginSendUi();
       try {
         const ws = this.deviceStore.getWebSocket();
-        if (typeof ws.startKof97 === 'function') {
-          await ws.startKof97();
-          this.showSendSuccess('已应用');
-        } else {
-          if (this.toast) this.toast.showInfo('板载暂未上线, 当前仅本地预览');
-        }
-      } catch (err) {
-        console.error('[kof97] 发送失败', err);
-        this.showSendFailure(err);
+        await ws.startKof97();
+        this.showSendSuccess('已应用');
+      } catch (error) {
+        console.error('[kof97] send failed', error);
+        this.showSendFailure(error);
       } finally {
         this.endSendUi();
       }
@@ -192,13 +382,18 @@ export default {
   flex-direction: column;
   overflow: hidden;
 }
-.status-bar { width: 100%; }
+
+.status-bar {
+  width: 100%;
+}
+
 .canvas-section {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   background: #000;
 }
+
 .preview-canvas-container {
   width: 100%;
   position: relative;
@@ -208,17 +403,51 @@ export default {
   overflow: hidden;
   background: #000;
 }
+
+.preview-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f2f2f2;
+  font-size: 24rpx;
+  background: rgba(0, 0, 0, 0.5);
+}
+
 .preview-caption {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12rpx;
   padding: 10rpx 16rpx 12rpx;
   background: var(--bg-tertiary, #fafafa);
 }
-.preview-caption-info { display: flex; flex-direction: column; gap: 4rpx; }
-.preview-caption-title { font-size: 24rpx; font-weight: 700; color: var(--text-primary); }
-.preview-caption-sub { font-size: 22rpx; color: var(--text-secondary); }
-.preview-actions { display: flex; gap: 12rpx; }
+
+.preview-caption-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  min-width: 0;
+}
+
+.preview-caption-title {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.preview-caption-sub {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 12rpx;
+  flex-shrink: 0;
+}
 
 .content {
   flex: 1;
@@ -229,7 +458,38 @@ export default {
   padding: 16rpx 20rpx 0;
   background: var(--bg-tertiary);
 }
+
 .content-wrapper {
   padding: 0 0 calc(56rpx + var(--layout-bottom-offset, 0px));
+}
+
+.desc-text {
+  font-size: 24rpx;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  padding: 12rpx 0;
+}
+
+.scale-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  padding: 12rpx 0 4rpx;
+}
+
+.scale-control {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.scale-control__label {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.scale-control__range {
+  width: 100%;
 }
 </style>

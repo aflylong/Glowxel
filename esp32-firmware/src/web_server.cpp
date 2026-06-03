@@ -3871,7 +3871,7 @@ void WebServer::setupRuntimeRoutes() {
   });
 
   server.on("/", HTTP_ANY, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/html; charset=utf-8", kRuntimeSettingsLitePageHtml);
+    request->send(200, "text/html; charset=utf-8", kRuntimeSettingsLitePageHtml);
   });
 
   server.on("/clear-wifi", HTTP_GET, [](AsyncWebServerRequest *request){
