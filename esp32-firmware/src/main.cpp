@@ -22,6 +22,13 @@
 #include "kof97_effect.h"
 #include "theme_renderer.h"
 
+// loopTask 栈大小覆盖: Arduino ESP32 默认 8 KB, 水世界 surface 渲染链
+// (renderAmbientWaterSurface → buildFieldCache → shadeFrame) 峰值会吃满 8 KB
+// 触发 stack overflow panic. 翻倍到 16 KB, 给当前和未来的渲染算法留余量.
+size_t getArduinoLoopTaskStackSize() {
+  return 16384;
+}
+
 namespace {
 enum class BootPhase : uint8_t {
   BOOT_MINIMAL = 0,

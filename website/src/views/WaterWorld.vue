@@ -396,6 +396,7 @@ async function handleSend() {
 .game-inline-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-start;
   gap: 10px;
 }
 

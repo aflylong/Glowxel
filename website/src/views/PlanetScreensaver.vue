@@ -1,49 +1,31 @@
 <template>
-  <div class="glx-page-shell device-mode-page">
-    <section class="glx-page-shell__hero">
-      <span class="glx-page-shell__eyebrow">Planet Screensaver</span>
-      <h1 class="glx-page-shell__title">星球屏保</h1>
-      <p class="glx-page-shell__desc">
-        这里复刻星球屏保页的本地预览、位置/大小/方向/转速控制，以及时间字体与发送链。页面刷新后会恢复上次的星球与时间参数。
-      </p>
-      <div class="glx-hero-metrics">
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">当前预设</span>
-          <strong class="glx-hero-metric__value">{{ selectedPresetLabel }}</strong>
-        </article>
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">大小</span>
-          <strong class="glx-hero-metric__value">{{ selectedSizeLabel }}</strong>
-        </article>
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">转速</span>
-          <strong class="glx-hero-metric__value">{{ config.speed }}</strong>
-        </article>
-      </div>
-    </section>
-
-    <section class="device-mode-layout">
-      <article class="glx-section-card glx-section-card--stack device-preview-card">
-        <div class="device-preview-card__head">
+  <div class="glx-page-shell game-mode-page">
+    <section class="game-mode-layout">
+      <article class="glx-section-card glx-section-card--stack game-preview-card">
+        <div class="game-preview-card__head">
           <div>
-            <h2 class="glx-section-title">预览效果</h2>
-            <p class="device-preview-card__desc">预览持续自转，方向和时间叠加都和当前待发送参数同步。</p>
+            <h1 class="game-page-title">星球屏保</h1>
+            <p class="game-page-meta">
+              这里复刻星球屏保页的本地预览、位置/大小/方向/转速控制，以及时间字体与发送链。页面刷新后会恢复上次的星球与时间参数。
+            </p>
           </div>
-          <span class="glx-chip glx-chip--yellow">{{ selectedPresetLabel }}</span>
+          <span class="glx-chip" :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'">
+            {{ deviceStore.connected ? "已连接" : "未连接" }}
+          </span>
         </div>
 
-        <div class="device-preview-stage">
+        <div class="game-preview-stage">
           <DevicePixelBoard :pixels="currentPixels" :grid-visible="true" />
         </div>
 
-        <div class="glx-inline-actions">
+        <div class="game-preview-actions">
           <button type="button" class="glx-button glx-button--primary" @click="handleSend">发送到设备</button>
           <button type="button" class="glx-button glx-button--ghost" @click="randomPlanet">随机星球</button>
           <button type="button" class="glx-button glx-button--ghost" @click="randomColor">随机颜色</button>
         </div>
       </article>
 
-      <div class="device-mode-stack">
+      <div class="game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
             <h2 class="glx-section-title">分组</h2>
@@ -57,12 +39,12 @@
             <h2 class="glx-section-title">星球类型</h2>
             <span class="glx-section-meta">{{ PLANET_SCREEN_PRESETS.length }} 个预设</span>
           </div>
-          <div class="mode-grid">
+          <div class="planet-grid">
             <button
               v-for="preset in PLANET_SCREEN_PRESETS"
               :key="preset.id"
               type="button"
-              class="mode-grid__item"
+              class="planet-grid__item"
               :class="{ 'is-active': config.preset === preset.id }"
               @click="config.preset = preset.id"
             >
@@ -71,18 +53,18 @@
             </button>
           </div>
 
-          <div class="mode-row">
-            <span class="mode-row__label">水平位置</span>
+          <div class="game-row">
+            <span class="game-row__label">水平位置</span>
             <DeviceModeStepper v-model="config.planetX" :min="0" :max="63" />
           </div>
 
-          <div class="mode-row">
-            <span class="mode-row__label">垂直位置</span>
+          <div class="game-row">
+            <span class="game-row__label">垂直位置</span>
             <DeviceModeStepper v-model="config.planetY" :min="0" :max="63" />
           </div>
 
-          <div class="mode-row">
-            <span class="mode-row__label">转速</span>
+          <div class="game-row">
+            <span class="game-row__label">转速</span>
             <DeviceModeStepper
               v-model="config.speed"
               :min="PLANET_PREVIEW_MIN_SPEED"
@@ -90,13 +72,13 @@
             />
           </div>
 
-          <div class="mode-block">
-            <span class="mode-row__label">大小</span>
+          <div class="game-block">
+            <span class="game-row__label">大小</span>
             <DeviceModeTabs v-model="config.size" :items="PLANET_SIZE_OPTIONS.map((item) => ({ value: item.id, label: item.label }))" />
           </div>
 
-          <div class="mode-block">
-            <span class="mode-row__label">方向</span>
+          <div class="game-block">
+            <span class="game-row__label">方向</span>
             <DeviceModeTabs v-model="config.direction" :items="PLANET_DIRECTION_OPTIONS.map((item) => ({ value: item.id, label: item.label }))" />
           </div>
         </article>
@@ -299,55 +281,86 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.device-mode-page {
+.game-mode-page {
   gap: 24px;
 }
 
-.device-mode-layout {
+.game-mode-layout {
   display: grid;
   grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
   gap: 24px;
 }
 
-.device-preview-card {
+.game-preview-card {
   position: sticky;
   top: 88px;
   align-self: start;
 }
 
-.device-preview-card__head {
+.game-preview-card__head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
 }
 
-.device-preview-card__desc {
-  margin: 6px 0 0;
+.game-page-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.game-page-meta {
+  margin: 8px 0 0;
   color: var(--glx-text-muted);
   font-size: 13px;
   line-height: 1.6;
 }
 
-.device-preview-stage {
+.game-preview-stage {
+  position: relative;
   padding: 18px;
   border: 2px solid #000000;
   background: #000000;
 }
 
-.device-mode-stack {
+.game-preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.game-mode-stack {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.mode-grid {
+.game-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.game-row__label {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.game-block {
+  display: grid;
+  gap: 10px;
+}
+
+.planet-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
-.mode-grid__item {
+.planet-grid__item {
   min-height: 88px;
   padding: 14px;
   display: grid;
@@ -358,43 +371,33 @@ onMounted(() => {
   cursor: pointer;
 }
 
-.mode-grid__item.is-active {
+.planet-grid__item.is-active {
   background: #ffd23f;
 }
 
-.mode-grid__item span {
+.planet-grid__item span {
   color: var(--glx-text-muted);
   font-size: 12px;
 }
 
-.mode-row,
-.mode-block {
-  display: grid;
-  gap: 10px;
-}
-
-.mode-row {
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-}
-
-.mode-row__label {
-  font-size: 14px;
-  font-weight: 800;
-}
-
 @media (max-width: 1080px) {
-  .device-mode-layout {
+  .game-mode-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .device-preview-card {
+  .game-preview-card {
     position: static;
   }
 }
 
 @media (max-width: 720px) {
-  .mode-grid {
+  .planet-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .game-row {
     grid-template-columns: minmax(0, 1fr);
   }
 }

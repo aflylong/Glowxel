@@ -1,6 +1,6 @@
 <!-- AUTO-CONVERTED FROM uniapp/pages/snake-mode/snake-mode.vue -->
 <template>
-  <div class="snake-page glx-page-shell">
+  <div class="clock-editor-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
 
     <div class="navbar glx-topbar glx-page-shell__fixed">
@@ -13,7 +13,7 @@
 
     <div class="canvas-section">
       <div class="preview-canvas-container" :style="previewCanvasBoxStyle">
-        <PixelCanvas
+        <PixelPreviewBoard
           v-if="previewCanvasReady && !shouldShowSendingSnapshot"
           :width="64"
           :height="64"
@@ -21,12 +21,8 @@
           :zoom="previewZoom"
           :offset-x="previewOffset.x"
           :offset-y="previewOffset.y"
-          :canvas-width="previewContainerSize.width"
-          :canvas-height="previewContainerSize.height"
           :grid-visible="previewGridVisible"
           :is-dark-mode="true"
-          :touch-enabled="false"
-          canvas-id="snakePreviewCanvas"
         />
         <PixelPreviewBoard
           v-else-if="previewCanvasReady && shouldShowSendingSnapshot"
@@ -41,14 +37,14 @@
           :is-dark-mode="true"
         />
       </div>
-      <div class="preview-caption glx-preview-panel">
-        <div class="preview-caption-info glx-preview-panel__info">
+      <div class="preview-caption">
+        <div class="preview-caption-info">
           <span class="preview-caption-title">预览效果</span>
           <span class="preview-caption-sub">发送会保存当前外观和参数</span>
         </div>
         <div class="preview-actions">
           <div
-            class="action-btn-sm primary glx-primary-action"
+            class="action-btn-sm primary"
             :class="{ disabled: isSending }"
             @click="saveAndApply"
           >
@@ -207,7 +203,6 @@ import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
 import Icon from "@/components/uni/Icon.vue";
 import Toast from "@/components/uni/Toast.vue";
 import GlxInlineLoader from "@/components/uni/GlxInlineLoader.vue";
-import PixelCanvas from "@/components/uni/PixelCanvas.vue";
 import PixelPreviewBoard from "@/components/uni/PixelPreviewBoard.vue";
 import GlxStepper from "@/components/uni/GlxStepper.vue";
 import GlxSwitch from "@/components/uni/GlxSwitch.vue";
@@ -357,7 +352,6 @@ export default {
     Icon,
     Toast,
     GlxInlineLoader,
-    PixelCanvas,
     PixelPreviewBoard,
     GlxStepper,
     GlxSwitch,
@@ -717,16 +711,93 @@ export default {
 </script>
 
 <style scoped>
-.snake-page {
+.clock-editor-page {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-primary);
+  background-color: var(--bg-secondary);
   overflow: hidden;
 }
 
 .status-bar {
   background-color: #1a1a1a;
+}
+
+.canvas-section {
+  display: flex;
+  flex-direction: column;
+  background: #000;
+}
+
+.preview-canvas-container {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #000000;
+}
+
+.canvas-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #000000;
+}
+
+.preview-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+  padding: 10rpx 16rpx 12rpx;
+  background: var(--bg-tertiary);
+}
+
+.preview-caption-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.preview-caption-title {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.preview-actions {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-shrink: 0;
+}
+
+.action-btn-sm {
+  width: auto;
+  min-width: 118rpx;
+  height: 64rpx;
+  padding: 0 18rpx;
+  gap: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid var(--nb-ink);
+  background-color: var(--bg-tertiary);
+}
+
+.action-btn-sm.primary {
+  background-color: var(--nb-yellow);
+  border-color: var(--nb-ink);
+}
+
+.action-btn-sm text {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.action-btn-sm.primary text {
+  color: #000000;
 }
 
 .preview-caption-title {

@@ -1,6 +1,6 @@
 <!-- AUTO-CONVERTED FROM uniapp/pages/rick-morty-portal/rick-morty-portal.vue -->
 <template>
-  <div class="portal-page glx-page-shell">
+  <div class="clock-editor-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
 
     <div class="navbar glx-topbar glx-page-shell__fixed">
@@ -13,7 +13,7 @@
 
     <div class="canvas-section">
       <div class="preview-canvas-container" :style="previewCanvasBoxStyle">
-        <PixelCanvas
+        <PixelPreviewBoard
           v-if="previewCanvasReady && !shouldShowSendingSnapshot"
           :width="64"
           :height="64"
@@ -22,12 +22,8 @@
           :zoom="previewZoom"
           :offset-x="previewOffset.x"
           :offset-y="previewOffset.y"
-          :canvas-width="previewContainerSize.width"
-          :canvas-height="previewContainerSize.height"
           :grid-visible="true"
           :is-dark-mode="true"
-          :touch-enabled="false"
-          canvas-id="rickMortyPortalPreviewCanvas"
         />
         <PixelPreviewBoard
           v-else-if="previewCanvasReady && shouldShowSendingSnapshot"
@@ -42,13 +38,13 @@
           :is-dark-mode="true"
         />
       </div>
-      <div class="preview-caption glx-preview-panel">
-        <div class="preview-caption-info glx-preview-panel__info">
+      <div class="preview-caption">
+        <div class="preview-caption-info">
           <span class="preview-caption-title">预览效果</span>
         </div>
         <div class="preview-actions">
           <div
-            class="action-btn-sm primary glx-primary-action"
+            class="action-btn-sm primary"
             :class="{ disabled: isSending }"
             @click="handleSend"
           >
@@ -218,7 +214,6 @@ import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
 import Icon from "@/components/uni/Icon.vue";
 import Toast from "@/components/uni/Toast.vue";
 import GlxInlineLoader from "@/components/uni/GlxInlineLoader.vue";
-import PixelCanvas from "@/components/uni/PixelCanvas.vue";
 import PixelPreviewBoard from "@/components/uni/PixelPreviewBoard.vue";
 import GlxStepper from "@/components/uni/GlxStepper.vue";
 import ClockFontPanel from "@/components/uni/clock-editor/ClockFontPanel.vue";
@@ -261,7 +256,6 @@ export default {
     Icon,
     Toast,
     GlxInlineLoader,
-    PixelCanvas,
     PixelPreviewBoard,
     GlxStepper,
     ClockFontPanel,
@@ -851,7 +845,7 @@ export default {
 </script>
 
 <style scoped>
-.portal-page {
+.clock-editor-page {
   height: 100vh;
   display: flex;
   flex-direction: column;

@@ -42,6 +42,10 @@
       <div class="preview-caption glx-preview-panel">
         <div class="preview-caption-info glx-preview-panel__info">
           <span class="preview-caption-title">{{ previewPanelTitle }}</span>
+          <span
+            class="auto-rotate-badge"
+            :class="config.terraria.autoRotate.enabled ? 'auto-rotate-badge--on' : 'auto-rotate-badge--off'"
+          >{{ config.terraria.autoRotate.enabled ? '轮播已开启' : '轮播已关闭' }}</span>
         </div>
         <div class="preview-actions">
           <div
@@ -530,9 +534,6 @@ export default {
 
       biomeList: BIOME_LIST,
 
-      // 用户手动改了角色/武器/Boss 等需要关轮播 — 标记 label, 在 sendToDevice 时消费
-      _pendingRotateDisableLabel: null,
-
       presetColors: [
         { name: "麦色", hex: "#d9cd82" },
         { name: "青色", hex: "#64c8ff" },
@@ -684,30 +685,19 @@ export default {
       this.terrainTab = idx;
     },
     toggleAutoRotate() {
-      const newEnabled = !this.config.terraria.autoRotate.enabled;
-      this.config.terraria.autoRotate.enabled = newEnabled;
-      // 用户主动开启轮播 → 清空之前手动选择留下的"待关闭"标记
-      // 否则用户切了角色 → 再开启轮播 → 发送时会被该标记关掉
-      if (newEnabled) {
-        this._pendingRotateDisableLabel = null;
-      }
+      this.config.terraria.autoRotate.enabled = !this.config.terraria.autoRotate.enabled;
     },
     setRotateMode(mode) {
       this.config.terraria.autoRotate.mode = mode;
-      // 用户在调整轮播配置 → 清掉历史"待关闭"标记 (避免误关本次轮播)
-      this._pendingRotateDisableLabel = null;
     },
     setStrategy(key, strategy) {
       this.config.terraria.autoRotate.strategies[key] = strategy;
-      this._pendingRotateDisableLabel = null;
     },
     setComboStrategy(strategy) {
       this.config.terraria.autoRotate.comboStrategy = strategy;
-      this._pendingRotateDisableLabel = null;
     },
     setRotateInterval(val) {
       this.config.terraria.autoRotate.interval = val;
-      this._pendingRotateDisableLabel = null;
     },
     addCurrentAsCombo() {
       const t = this.config.terraria;
@@ -729,7 +719,7 @@ export default {
     selectCharacter(charId) {
       const ch = CHARACTERS[charId];
       if (!ch) return;
-      this._markRotateDisableOnSend('角色');
+      this._disableAutoRotateOnEdit();
       this.config.terraria.characterId = charId;
       this.config.terraria.weaponId = ch.weapons[0].id;
       const ofs = getWeaponOfs(ch.weapons[0].id);
@@ -740,7 +730,7 @@ export default {
       this.scheduleRender();
     },
     selectWeapon(weaponId) {
-      this._markRotateDisableOnSend('武器');
+      this._disableAutoRotateOnEdit();
       this.config.terraria.weaponId = weaponId;
       const ofs = getWeaponOfs(weaponId);
       this.config.terraria.weaponOfsX = ofs.x;
@@ -749,22 +739,21 @@ export default {
       this.scheduleRender();
     },
     selectWing(wingId) {
-      this._markRotateDisableOnSend('翅膀');
+      this._disableAutoRotateOnEdit();
       this.config.terraria.wingId = wingId;
       this.scheduleRender();
     },
     selectMask(maskId) {
-      this._markRotateDisableOnSend('面具');
+      this._disableAutoRotateOnEdit();
       this.config.terraria.maskId = maskId || 0;
       this.scheduleRender();
     },
-    // 手动选角色/武器/翅膀/面具/Boss/地形时, 标记"待发送时关闭轮播"
-    //   不立刻关 ar.enabled — 用户可能选完反悔, 也可能不发送; 只在点发送时才生效
-    //   pendingRotateDisableLabel 在 sendToDevice() 提交时被消费 + Toast 提示
-    _markRotateDisableOnSend(label) {
+    // 用户手动改了角色/武器/翅膀/面具/Boss/地形 — 立即关闭轮播,
+    //   预览卡上的"轮播已开启/关闭"徽标会立刻同步反映,所见即所得。
+    _disableAutoRotateOnEdit() {
       const ar = this.config.terraria.autoRotate;
       if (ar && ar.enabled) {
-        this._pendingRotateDisableLabel = label;
+        ar.enabled = false;
       }
     },
     adjustTerraria(key, delta) {
@@ -868,7 +857,7 @@ export default {
     },
     selectBiome(biomeId) {
       if (this.config.terraria.biome === biomeId) return;
-      this._markRotateDisableOnSend('地形');
+      this._disableAutoRotateOnEdit();
       this.config.terraria.biome = biomeId;
       // 切地形时 boss 列表会变, 自动选第一个
       const list = getBossesForBiome(biomeId);
@@ -879,13 +868,13 @@ export default {
       this.scheduleRender();
     },
     selectBoss(slug) {
-      this._markRotateDisableOnSend('Boss');
+      this._disableAutoRotateOnEdit();
       this.config.terraria.bossId = slug;
       this._loadBossOverride(slug);
       this.scheduleRender();
     },
     toggleBoss() {
-      this._markRotateDisableOnSend('Boss 开关');
+      this._disableAutoRotateOnEdit();
       this.config.terraria.bossEnabled = !this.config.terraria.bossEnabled;
       this.scheduleRender();
     },
@@ -893,15 +882,6 @@ export default {
     // ===== 直接覆盖 mixin 的 sendToDevice (terraria 走独立 ws.startTerrariaClock) =====
     async sendToDevice() {
       if (!this.guardBeforeSend(this.deviceStore.connected)) return;
-
-      // 消费 _pendingRotateDisableLabel: 用户在轮播开启状态下手动选过角色/武器/Boss/地形/翅膀/面具
-      // 这一刻才真正把轮播关掉, 并 Toast 告知用户
-      let rotateDisabledLabel = null;
-      if (this._pendingRotateDisableLabel && this.config.terraria.autoRotate.enabled) {
-        rotateDisabledLabel = this._pendingRotateDisableLabel;
-        this.config.terraria.autoRotate.enabled = false;
-      }
-      this._pendingRotateDisableLabel = null;
 
       this.beginSendUi();
       const previousMode = this.deviceStore.deviceMode;
@@ -964,9 +944,6 @@ export default {
           },
         });
         this.showSendSuccess("已应用");
-        if (rotateDisabledLabel && this.toast) {
-          this.toast.showInfo('已关闭轮播 (手动选择' + rotateDisabledLabel + ')');
-        }
         this._saveTerrariaConfig();
       } catch (err) {
         await this.deviceStore.rollbackBusinessMode(previousMode, {
@@ -1199,6 +1176,32 @@ export default {
 .preview-caption-info {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.auto-rotate-badge {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  height: 32rpx;
+  padding: 0 12rpx;
+  font-size: 20rpx;
+  font-weight: 800;
+  line-height: 1;
+  border: 2rpx solid var(--nb-ink);
+  box-sizing: border-box;
+}
+
+.auto-rotate-badge--on {
+  background: var(--nb-green, #5fd068);
+  color: var(--nb-ink);
+}
+
+.auto-rotate-badge--off {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
 }
 
 .preview-caption-title {
