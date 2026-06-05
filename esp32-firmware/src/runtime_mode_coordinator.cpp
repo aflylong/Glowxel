@@ -63,6 +63,11 @@ bool canRestoreBoardNativeMode(const String& businessModeTag) {
   return false;
 }
 
+bool shouldDeferInitialBoardNativeRender(const String& businessModeTag) {
+  return businessModeTag == ModeTags::PLANET_SCREENSAVER ||
+         businessModeTag == ModeTags::RICK_MORTY_PORTAL;
+}
+
 void playGifFromFirstFrame() {
   if (AnimationManager::currentGIF == nullptr) {
     return;
@@ -189,6 +194,9 @@ bool renderAnimationBusinessFrame(const String& businessModeTag) {
       businessModeTag == ModeTags::RICK_MORTY_PORTAL) {
     if (!canRestoreBoardNativeMode(businessModeTag)) {
       return false;
+    }
+    if (shouldDeferInitialBoardNativeRender(businessModeTag)) {
+      return true;
     }
     BoardNativeEffect::render();
     return true;

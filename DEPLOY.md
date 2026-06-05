@@ -84,6 +84,18 @@ bash deploy.sh --skip-website
 
 > 首次部署后台时，请把命令中的域名替换为你的后台域名，例如：`sudo certbot --nginx -d admin.your-domain.com`
 
+### 当前部署链路
+
+当前 `deploy.sh` 不是“服务器自己完整构建所有前端”，而是：
+
+1. 本地 `git add -A`、`git commit`、`git push`。
+2. 服务器进入 `~/glowxel-repo` 执行 `git pull`。
+3. 服务器更新后端依赖、数据库结构并重启 `glowxel-server`。
+4. 官网在本地 `website/` 构建出 `dist/`，再打包上传到服务器 `/var/www/glowxel`。
+5. 后台管理同样在本地构建 `dist/`，再上传到 `/var/www/glowxel-admin`。
+
+所以代码、路由、manifest、官网 public 静态资源都应该先进入 git；但实际对外访问的官网文件，以本地构建后上传的 `dist/` 为准。
+
 ---
 
 ## 常用命令
@@ -151,3 +163,56 @@ cd esp32-firmware && pio run --target upload
 | 热点配网名称 | Glowxel PixelBoard-设备序列号 |
 | 配网方式     | AP 热点门户写入 WiFi |
 | WebSocket    | ws://设备IP/ws       |
+
+## 设备网页烧录
+
+官网烧录页路径：`/device-flash`。
+
+这个页面使用 ESP Web Tools，通过浏览器 Web Serial 走 USB 烧录。它不是 WiFi 连接，也不是 WebSocket 连接。
+
+发布烧录页前，需要先准备：
+
+```text
+website/public/firmware/esp32/manifest.json
+website/public/firmware/esp32/bootloader.bin
+website/public/firmware/esp32/partitions.bin
+website/public/firmware/esp32/boot_app0.bin
+website/public/firmware/esp32/firmware.bin
+website/public/firmware/esp32/littlefs.bin
+```
+
+这些 bin 的来源和生成流程见：
+
+- [website/public/firmware/esp32/README.md](website/public/firmware/esp32/README.md)
+- [esp32-firmware/开发环境说明.md](esp32-firmware/开发环境说明.md)
+
+本地准备网页烧录发布包时，推荐流程是：
+
+```powershell
+cd esp32-firmware
+.\pio.cmd run
+.\pio.cmd run -t buildfs
+.\scripts\prepare-web-flash-release.ps1
+```
+
+前两条命令生成 `.pio/build/esp32dev/` 下的固件产物，第三条命令把网页烧录需要的文件整理到 `website/public/firmware/esp32/`。服务器侧如果只是发布网站，正常 `git pull` 后按网站部署流程构建即可，不需要在服务器重新跑 PlatformIO。
+
+部署官网前要确认 `/firmware/esp32/manifest.json` 和 5 个 bin 都能被静态访问，否则浏览器烧录会失败。
+
+### 烧录文件是否需要 git 提交
+
+如果希望“本地准备好，服务器 git pull 后基本就有完整发布包”，那么 `website/public/firmware/esp32/` 下的发布文件需要进入 git：
+
+```text
+manifest.json
+README.md
+bootloader.bin
+partitions.bin
+boot_app0.bin
+firmware.bin
+littlefs.bin
+```
+
+仓库根目录虽然全局忽略 `*.bin`，但已为 `website/public/firmware/esp32/*.bin` 单独开放例外。这样只有官网烧录发布包能提交，`esp32-firmware/.pio/` 里的临时构建产物仍然不会进仓库。
+
+注意：提交 bin 前要确认它们就是本次正式发布版本，不要把随手本地编译的临时产物当 release 包提交。

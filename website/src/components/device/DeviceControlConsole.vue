@@ -53,7 +53,7 @@
             <Icon unit="px" name="scanning" :size="30" />
           </div>
           <div class="device-home__entry-copy">
-            <strong class="device-home__entry-title">WiFi 连接</strong>
+            <strong class="device-home__entry-title">连接设备</strong>
             <span class="device-home__entry-desc">输入设备 IP 地址连接</span>
           </div>
         </button>
@@ -226,6 +226,14 @@ const utilityEntries = [
     desc: "首次使用时连接设备热点，在浏览器里打开本地配网页完成联网。",
     cta: "打开",
     iconShellClass: "device-home__tool-icon--green",
+  },
+  {
+    to: "/device-flash",
+    icon: "upload",
+    title: "设备烧录",
+    desc: "通过 USB Web Serial 写入 ESP32 固件，不走 WiFi，也不走 WebSocket。",
+    cta: "打开",
+    iconShellClass: "device-home__tool-icon--orange",
   },
 ];
 const devicePageGroups = [];

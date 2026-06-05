@@ -1729,6 +1729,7 @@ class WebSocket {
         font: config.font,
         showSeconds: config.showSeconds,
         time: config.time,
+        autoRotate: config.autoRotate,
       },
       acceptedTimeout: options.acceptedTimeout,
       finalTimeout: options.finalTimeout,

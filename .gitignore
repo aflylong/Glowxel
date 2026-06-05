@@ -14,6 +14,9 @@ unpackage/
 dist/
 output/playwright/
 
+# 官网设备烧录发布包需要随代码发布，不能被全局 *.bin 忽略
+!website/public/firmware/esp32/*.bin
+
 # 系统文件
 .DS_Store
 Thumbs.db

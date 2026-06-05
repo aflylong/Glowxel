@@ -32,6 +32,17 @@ const WS_DEBUG_KEY_LABELS = new Set([
   "skip reconnect: limit reached",
   "reconnect attempt failed",
 ]);
+const DEFERRED_RENDER_TRANSACTION_MODES = new Set([
+  "planet_screensaver",
+  "rick_morty_portal",
+]);
+
+function shouldAbortUnfinishedTransaction(mode, binaryPayload) {
+  if (binaryPayload !== null) {
+    return true;
+  }
+  return !DEFERRED_RENDER_TRANSACTION_MODES.has(mode);
+}
 
 function normalizeHexColor(value) {
   if (typeof value !== "string") {
@@ -920,7 +931,11 @@ class WebSocket {
       } catch (err) {
         acceptedWaiter.reject(err);
         finalWaiter.reject(err);
-        if (accepted && !err.transactionFinalReceived) {
+        if (
+          accepted &&
+          !err.transactionFinalReceived &&
+          shouldAbortUnfinishedTransaction(mode, binaryPayload)
+        ) {
           await this._sendTransactionAbort(txId);
         }
         throw err;
@@ -1015,7 +1030,10 @@ class WebSocket {
         reject(err);
       };
 
-      const url = `ws://${normalizedHost}/ws`;
+      const hostWithPort = normalizedHost.includes(":")
+        ? normalizedHost
+        : `${normalizedHost}:${port}`;
+      const url = `ws://${hostWithPort}/ws`;
       console.log('[ws] connect →', url);
       this._debugLog(socketId, "connect start", {
         url,
@@ -1797,6 +1815,7 @@ class WebSocket {
         font: config.font,
         showSeconds: config.showSeconds,
         time: config.time,
+        autoRotate: config.autoRotate,
       },
       acceptedTimeout: options.acceptedTimeout,
       finalTimeout: options.finalTimeout,

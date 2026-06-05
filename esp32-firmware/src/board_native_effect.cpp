@@ -44,6 +44,12 @@ PlanetScreensaverNativeConfig s_planetConfig = {
   CLOCK_FONT_CLASSIC_5X7,
   false,
   {
+    false,
+    true,
+    true,
+    60
+  },
+  {
     true,
     1,
     32,
@@ -79,6 +85,7 @@ float s_planetPhase = 0.0f;
 unsigned long s_planetPhaseBaseAt = 0;
 bool s_planetDirty = false;
 bool s_planetForceFullRefresh = false;
+unsigned long s_planetAutoRotateLastAt = 0;
 char s_lastPlanetClockText[8] = "";
 bool s_lastPlanetClockTextValid = false;
 bool s_lastPlanetClockShowSeconds = false;
@@ -137,8 +144,8 @@ bool s_planetDirectRenderActive = false;
 
 constexpr bool kPlanetPerfTraceEnabled = false;
 constexpr unsigned long kPlanetPerfLogIntervalMs = 1000UL;
-constexpr int kPlanetDirectMaxOctaves = 4;  // 恢复到4，保证云层细节质量
-constexpr int kPlanetDirectMaxCloudNoiseSamples = 6;  // 从3恢复到6，平衡质量和性能
+constexpr int kPlanetDirectMaxOctaves = 3;
+constexpr int kPlanetDirectMaxCloudNoiseSamples = 4;
 constexpr int kPlanetDirectSphereRenderStep = 1;
 constexpr int kPlanetDirectSpecialRenderStep = 1;
 constexpr int kPlanetTerranWetLandTileWidth = 96;
@@ -635,6 +642,7 @@ void rgbToPlanetHsv(const PlanetRgb& color, float& hue, float& saturation, float
 PlanetRgb hsvToPlanetRgb(float hue, float saturation, float value);
 bool shouldDrawPlanetDirectPixel(int x, int y, float alpha);
 void spherifyPlanetUv(float x, float y, float& outX, float& outY);
+bool planetPresetEqualsValue(const char* left, const char* right);
 
 PlanetRgb makePlanetRgbRaw(uint8_t r, uint8_t g, uint8_t b) {
   PlanetRgb color = { r, g, b };
@@ -819,7 +827,8 @@ bool isPlanetPortalPresetValue(const char* preset) {
 }
 
 bool isPlanetFixedPalettePresetValue(const char* preset) {
-  return isPlanetPortalPresetValue(preset);
+  return planetPresetEqualsValue(preset, "earth") ||
+         isPlanetPortalPresetValue(preset);
 }
 
 void refreshPlanetColorVariant() {
@@ -1003,6 +1012,66 @@ float resolvePlanetPlaybackPhase(unsigned long now) {
 
   float elapsedPhase = (float)(now - s_planetPhaseBaseAt) / (float)cycleDuration;
   return wrapPlanetUnit(s_planetPhase + elapsedPhase);
+}
+
+uint32_t createPlanetAutoRotateSeed(unsigned long now, const char* key, uint32_t currentSeed) {
+  uint32_t state = currentSeed;
+  state ^= (uint32_t)now;
+  state ^= hashPlanetString(key);
+  state = hashPlanet(state);
+  if (state == 0UL) {
+    state = hashPlanet(hashPlanetString(key) ^ 0x9e3779b9UL);
+  }
+  return state;
+}
+
+void applyPlanetAutoRotateIfDue(unsigned long now) {
+  if (!s_planetConfig.autoRotate.enabled) {
+    s_planetAutoRotateLastAt = now;
+    return;
+  }
+  if (!s_planetConfig.autoRotate.randomPlanet &&
+      !s_planetConfig.autoRotate.randomColor) {
+    s_planetAutoRotateLastAt = now;
+    return;
+  }
+
+  unsigned long intervalMs = (unsigned long)s_planetConfig.autoRotate.interval * 1000UL;
+  if (intervalMs == 0UL) {
+    return;
+  }
+  if (s_planetAutoRotateLastAt == 0UL) {
+    s_planetAutoRotateLastAt = now;
+    return;
+  }
+  if (now - s_planetAutoRotateLastAt < intervalMs) {
+    return;
+  }
+
+  s_planetPhase = resolvePlanetPlaybackPhase(now);
+  s_planetPhaseBaseAt = now;
+  if (s_planetConfig.autoRotate.randomPlanet &&
+      !isPlanetPortalPresetValue(s_planetConfig.preset)) {
+    s_planetConfig.seed = createPlanetAutoRotateSeed(
+      now,
+      "planet_auto_rotate_seed",
+      s_planetConfig.seed
+    );
+  }
+  if (s_planetConfig.autoRotate.randomColor &&
+      !isPlanetFixedPalettePresetValue(s_planetConfig.preset)) {
+    s_planetConfig.colorSeed = createPlanetAutoRotateSeed(
+      now,
+      "planet_auto_rotate_color_seed",
+      s_planetConfig.colorSeed
+    );
+  }
+
+  releasePlanetRuntimeBuffers();
+  refreshPlanetColorVariant();
+  s_planetDirty = true;
+  s_planetForceFullRefresh = true;
+  s_planetAutoRotateLastAt = now;
 }
 
 float resolvePlanetFlow() {
@@ -8625,14 +8694,6 @@ void drawSpherePlanetFastPreview(const PlanetRenderFrame& frame) {
     resolvePlanetDirectBounds(frame, cloudLayer.planeScale, minX, maxXExclusive, minY, maxYExclusive);
     bool terranWetTilesReady = prepareTerranWetTiles(frame, landLayer, cloudLayer);
 
-    // 性能统计（对比用）
-    static int s_wetPerfFrameCount = 0;
-    static unsigned long s_wetPerfStartTime = 0;
-    
-    if (s_wetPerfFrameCount == 0) {
-      s_wetPerfStartTime = millis();
-    }
-
     for (int y = minY; y < maxYExclusive; y += 1) {
       for (int x = minX; x < maxXExclusive; x += 1) {
         PlanetBufferColor color;
@@ -8640,16 +8701,6 @@ void drawSpherePlanetFastPreview(const PlanetRenderFrame& frame) {
           drawPlanetDirectBufferColor(display, x, y, color);
         }
       }
-    }
-    
-    // 每 60 帧输出一次统计
-    s_wetPerfFrameCount++;
-    if (s_wetPerfFrameCount >= 60) {
-      unsigned long elapsed = millis() - s_wetPerfStartTime;
-      float fps = (elapsed > 0) ? (60000.0f / (float)elapsed) : 0.0f;
-      Serial.printf("[Wet Terran Perf] 60 frames in %lu ms (%.1f FPS)\n", elapsed, fps);
-      s_wetPerfFrameCount = 0;
-      s_wetPerfStartTime = 0;
     }
     
     return;
@@ -9416,6 +9467,7 @@ void setActiveMode(BoardNativeMode mode) {
     s_planetPhaseBaseAt = s_lastTickAt;
     s_planetDirty = true;
     s_planetForceFullRefresh = true;
+    s_planetAutoRotateLastAt = s_lastTickAt;
     s_planetTerranWetTileCacheDisabled = false;
   }
 }
@@ -9434,6 +9486,10 @@ bool planetScreensaverConfigsEqual(
          left.planetY == right.planetY &&
          left.font == right.font &&
          left.showSeconds == right.showSeconds &&
+         left.autoRotate.enabled == right.autoRotate.enabled &&
+         left.autoRotate.randomPlanet == right.autoRotate.randomPlanet &&
+         left.autoRotate.randomColor == right.autoRotate.randomColor &&
+         left.autoRotate.interval == right.autoRotate.interval &&
          left.time.show == right.time.show &&
          left.time.fontSize == right.time.fontSize &&
          left.time.x == right.time.x &&
@@ -9666,6 +9722,7 @@ void update() {
   if (s_mode == BOARD_NATIVE_PLANET) {
     ensurePlanetPerfWindowStarted(now);
     s_planetPerfStats.updateCalls += 1UL;
+    applyPlanetAutoRotateIfDue(now);
     unsigned long tickMs = resolvePlanetTickMs();
     if (s_lastTickAt == 0) {
       s_lastTickAt = now;

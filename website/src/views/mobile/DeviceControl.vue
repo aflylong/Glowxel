@@ -44,7 +44,7 @@
               <Icon name="scanning" :size="36" color="var(--nb-ink)" />
             </div>
             <div class="connect-entry-text">
-              <span class="connect-entry-label">WiFi 连接</span>
+              <span class="connect-entry-label">连接设备</span>
               <span class="connect-entry-desc">输入设备 IP 地址连接</span>
             </div>
           </div>
@@ -110,7 +110,7 @@
 
       <div class="section-block">
         <div class="section-header glx-section-head">
-          <span class="section-title glx-section-title">设备参数</span>
+          <span class="section-title glx-section-title">设备工具</span>
         </div>
         <div class="panel-card glx-panel-card">
           <div class="panel-action" @click="openDeviceParams">
@@ -121,6 +121,18 @@
               <span class="panel-action-label">设备参数</span>
               <span class="panel-action-desc"
                 >调整亮度、方向、颜色、重置网络</span>
+            </div>
+            <Icon name="direction-right" :size="28" color="var(--nb-ink)" />
+          </div>
+          <div class="panel-divider"></div>
+          <div class="panel-action" @click="openDeviceFlash">
+            <div class="panel-action-icon warm">
+              <Icon name="upload" :size="32" color="var(--nb-ink)" />
+            </div>
+            <div class="panel-action-text">
+              <span class="panel-action-label">设备烧录</span>
+              <span class="panel-action-desc"
+                >USB Web Serial 写入固件，不是 WiFi / WS 连接</span>
             </div>
             <Icon name="direction-right" :size="28" color="var(--nb-ink)" />
           </div>
@@ -563,6 +575,12 @@ export default {
       }
       uni.navigateTo({
         url: "/pages/device-params/device-params",
+      });
+    },
+
+    openDeviceFlash() {
+      uni.navigateTo({
+        url: "/pages/device-flash/device-flash",
       });
     },
 

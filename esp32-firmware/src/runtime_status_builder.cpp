@@ -153,6 +153,11 @@ void fillBoardNativeStatus(JsonDocument& doc) {
     doc["planetY"] = config.planetY;
     doc["font"] = clockFontNameFromId(config.font);
     doc["showSeconds"] = config.showSeconds;
+    JsonObject autoRotate = doc["autoRotate"].to<JsonObject>();
+    autoRotate["enabled"] = config.autoRotate.enabled;
+    autoRotate["randomPlanet"] = config.autoRotate.randomPlanet;
+    autoRotate["randomColor"] = config.autoRotate.randomColor;
+    autoRotate["interval"] = config.autoRotate.interval;
     JsonObject time = doc["time"].to<JsonObject>();
     time["show"] = config.time.show;
     time["fontSize"] = config.time.fontSize;
@@ -201,6 +206,11 @@ void fillCompactPlanetScreensaverStatus(JsonDocument& doc) {
   doc["planetY"] = config.planetY;
   doc["font"] = clockFontNameFromId(config.font);
   doc["showSeconds"] = config.showSeconds;
+  JsonObject autoRotate = doc.createNestedObject("autoRotate");
+  autoRotate["enabled"] = config.autoRotate.enabled;
+  autoRotate["randomPlanet"] = config.autoRotate.randomPlanet;
+  autoRotate["randomColor"] = config.autoRotate.randomColor;
+  autoRotate["interval"] = config.autoRotate.interval;
   JsonObject time = doc.createNestedObject("time");
   time["show"] = config.time.show;
   time["fontSize"] = config.time.fontSize;

@@ -46,7 +46,7 @@
               <Icon name="scanning" :size="36" color="var(--nb-ink)" />
             </view>
             <view class="connect-entry-text">
-              <text class="connect-entry-label">WiFi 连接</text>
+              <text class="connect-entry-label">连接设备</text>
               <text class="connect-entry-desc">输入设备 IP 地址连接</text>
             </view>
           </view>

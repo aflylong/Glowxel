@@ -1440,6 +1440,7 @@ bool preparePlanetTransaction(JsonObject params, const char*& reason) {
       !params.containsKey("planetY") ||
       !params.containsKey("font") ||
       !params.containsKey("showSeconds") ||
+      !params.containsKey("autoRotate") ||
       !params.containsKey("time")) {
     reason = "planet fields missing";
     return false;
@@ -1467,6 +1468,28 @@ bool preparePlanetTransaction(JsonObject params, const char*& reason) {
     return false;
   }
 
+  JsonObject autoRotate = params["autoRotate"].as<JsonObject>();
+  if (autoRotate.isNull()) {
+    reason = "planet autoRotate invalid";
+    return false;
+  }
+  if (!autoRotate.containsKey("enabled")) {
+    reason = "planet autoRotate invalid";
+    return false;
+  }
+  if (!autoRotate.containsKey("randomPlanet")) {
+    reason = "planet autoRotate invalid";
+    return false;
+  }
+  if (!autoRotate.containsKey("randomColor")) {
+    reason = "planet autoRotate invalid";
+    return false;
+  }
+  if (!autoRotate.containsKey("interval")) {
+    reason = "planet autoRotate invalid";
+    return false;
+  }
+
   resetPreparedCommand(gWebSocketTransactionSession.preparedCommand);
   RuntimeCommandBus::RuntimeCommand& command = gWebSocketTransactionSession.preparedCommand;
   command.type = RuntimeCommandBus::RuntimeCommandType::PLANET_SCREENSAVER;
@@ -1482,6 +1505,11 @@ bool preparePlanetTransaction(JsonObject params, const char*& reason) {
     static_cast<uint8_t>(wsClampInt(params["planetY"].as<int>(), 0, 63));
   command.planetConfig.font = fontId;
   command.planetConfig.showSeconds = params["showSeconds"].as<bool>();
+  command.planetConfig.autoRotate.enabled = autoRotate["enabled"].as<bool>();
+  command.planetConfig.autoRotate.randomPlanet = autoRotate["randomPlanet"].as<bool>();
+  command.planetConfig.autoRotate.randomColor = autoRotate["randomColor"].as<bool>();
+  command.planetConfig.autoRotate.interval =
+    static_cast<uint16_t>(wsClampInt(autoRotate["interval"].as<int>(), 1, 3600));
   command.planetConfig.time.show = time["show"].as<bool>();
   command.planetConfig.time.fontSize =
     static_cast<uint8_t>(wsClampInt(time["fontSize"].as<int>(), 1, 3));

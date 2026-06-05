@@ -159,6 +159,7 @@ const uni = {
       const specialByName = {
         'clock-editor': '/clock',          // /pages/clock-editor/clock-editor → /clock
         'control': '/device-control',      // /pages/control/control → /device-control
+        'device-flash': '/device-flash',   // /pages/device-flash/device-flash → /device-flash
       };
       let target = specialByName[name];
       if (!target) {

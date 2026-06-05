@@ -38,14 +38,14 @@ export function createDefaultWaterWorldConfig() {
 
 export function createDefaultWaterWorldClockConfig() {
   return {
-    font: "classic_5x7",
+    font: "minimal_3x5",
     showSeconds: false,
     hourFormat: 24,
     time: {
       show: true,
-      fontSize: 2,
+      fontSize: 1,
       x: 32,
-      y: 7,
+      y: 29,
       color: "#ffffff",
       align: "center",
     },

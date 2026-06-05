@@ -116,6 +116,17 @@ const PREVIEW_PIXEL_SIZE_RPX = 10;
 const PREVIEW_PIXEL_GAP_RPX = 2;
 const PREVIEW_VIEWPORT_WIDTH_RPX = 164;
 const PREVIEW_VIEWPORT_HEIGHT_RPX = 72;
+const RPX_DESIGN_WIDTH = 750;
+const RPX_CAP_WIDTH = 480;
+
+function rpxToCssValue(value) {
+  if (value === 0) {
+    return "0";
+  }
+  const vw = Number(((value / RPX_DESIGN_WIDTH) * 100).toFixed(4));
+  const px = Number(((value / RPX_DESIGN_WIDTH) * RPX_CAP_WIDTH).toFixed(4));
+  return `min(${vw}vw, ${px}px)`;
+}
 
 export default {
   components: {
@@ -188,8 +199,8 @@ export default {
     getFontPreviewWrapStyle(fontId) {
       const metrics = this.getFontPreviewMetrics(fontId);
       return {
-        width: `${metrics.gridWidth}rpx`,
-        height: `${metrics.gridHeight}rpx`,
+        width: rpxToCssValue(metrics.gridWidth),
+        height: rpxToCssValue(metrics.gridHeight),
         transform: `scale(${metrics.scale})`,
       };
     },
@@ -197,11 +208,11 @@ export default {
     getFontPreviewGridStyle(fontId) {
       const metrics = this.getFontPreviewMetrics(fontId);
       return {
-        gridTemplateColumns: `repeat(${metrics.width}, ${PREVIEW_PIXEL_SIZE_RPX}rpx)`,
-        gridTemplateRows: `repeat(${metrics.height}, ${PREVIEW_PIXEL_SIZE_RPX}rpx)`,
-        gap: `${PREVIEW_PIXEL_GAP_RPX}rpx`,
-        width: `${metrics.gridWidth}rpx`,
-        height: `${metrics.gridHeight}rpx`,
+        gridTemplateColumns: `repeat(${metrics.width}, ${rpxToCssValue(PREVIEW_PIXEL_SIZE_RPX)})`,
+        gridTemplateRows: `repeat(${metrics.height}, ${rpxToCssValue(PREVIEW_PIXEL_SIZE_RPX)})`,
+        gap: rpxToCssValue(PREVIEW_PIXEL_GAP_RPX),
+        width: rpxToCssValue(metrics.gridWidth),
+        height: rpxToCssValue(metrics.gridHeight),
       };
     },
 

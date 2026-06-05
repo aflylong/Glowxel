@@ -306,6 +306,7 @@ import {
   getCurrentTimeText,
 } from "../../utils/clockCanvas.js";
 import {
+  PLANET_DEFAULT_COLOR_SEED,
   PLANET_REFERENCE_DEFAULT_COLOR_SEED,
   PLANET_SCREEN_PRESETS,
   PLANET_PREVIEW_MIN_SPEED,
@@ -491,7 +492,7 @@ function isPortalPresetValue(preset) {
 }
 
 function isFixedPalettePresetValue(preset) {
-  return isPortalPresetValue(preset);
+  return preset === "earth" || isPortalPresetValue(preset);
 }
 
 export default {
@@ -1026,6 +1027,7 @@ export default {
       }
       const progress = this.getCurrentPreviewProgress();
       this.config.preset = presetId;
+      this.config.colorSeed = PLANET_DEFAULT_COLOR_SEED;
       this.schedulePreviewRefresh(progress);
     },
     handlePortalColorSelect(presetId) {
@@ -1037,6 +1039,7 @@ export default {
       }
       const progress = this.getCurrentPreviewProgress();
       this.config.preset = presetId;
+      this.config.colorSeed = PLANET_FIXED_PALETTE_COLOR_SEED;
       this.schedulePreviewRefresh(progress);
     },
     handleSizeSelect(sizeId) {
@@ -1208,6 +1211,12 @@ export default {
           x: timePlacement.x,
           y: timePlacement.y,
           color: this.hexToRgb(this.clockConfig.time.color),
+        },
+        autoRotate: {
+          enabled: false,
+          randomPlanet: true,
+          randomColor: true,
+          interval: 60,
         },
       };
     },

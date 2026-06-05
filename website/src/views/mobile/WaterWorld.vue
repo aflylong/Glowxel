@@ -152,7 +152,7 @@
       </div>
     </div>
 
-    <div class="bottom-tabs">
+    <!-- <div class="bottom-tabs">
       <div
         v-for="tab in tabDefinitions"
         :key="tab.index"
@@ -167,7 +167,7 @@
         />
         <span class="bottom-tab-text">{{ tab.label }}</span>
       </div>
-    </div>
+    </div> -->
 
     <Toast
       ref="toastRef"
@@ -283,7 +283,7 @@ function createDefaultClockConfig() {
       show: true,
       fontSize: 1,
       x: 32,
-      y: 30,
+      y: 29,
       color: "#ffffff",
       align: "center",
     },

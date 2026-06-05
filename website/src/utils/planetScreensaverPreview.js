@@ -343,7 +343,7 @@ function isPortalPresetValue(presetId) {
 }
 
 function isFixedPalettePlanetPreset(presetId) {
-  return isPortalPresetValue(presetId);
+  return presetId === "earth" || isPortalPresetValue(presetId);
 }
 
 function clamp(value, min, max) {
@@ -2942,6 +2942,7 @@ function buildPlanetScreensaverPreviewSequence(config) {
 
 export {
   FRAME_COUNT,
+  PLANET_DEFAULT_COLOR_SEED,
   PLANET_REFERENCE_DEFAULT_COLOR_SEED,
   PLANET_SCREEN_PRESETS,
   PLANET_PREVIEW_MAX_PIXELS,

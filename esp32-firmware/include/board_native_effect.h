@@ -37,6 +37,12 @@ struct PlanetScreensaverNativeConfig {
   uint8_t font;
   bool showSeconds;
   struct {
+    bool enabled;
+    bool randomPlanet;
+    bool randomColor;
+    uint16_t interval;
+  } autoRotate;
+  struct {
     bool show;
     uint8_t fontSize;
     uint8_t x;

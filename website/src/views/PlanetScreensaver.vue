@@ -236,6 +236,12 @@ async function handleSend() {
         y: clockConfig.time.y,
         color: hexToRgb(clockConfig.time.color),
       },
+      autoRotate: {
+        enabled: false,
+        randomPlanet: true,
+        randomColor: true,
+        interval: 60,
+      },
     });
     feedback.success("发送成功", `${selectedPresetLabel.value} 已经发送到设备。`);
   } catch (error) {

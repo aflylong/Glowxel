@@ -41,6 +41,11 @@
       <div class="preview-caption">
         <div class="preview-caption-info">
           <span class="preview-caption-title">预览效果</span>
+          <span
+            class="send-mode-badge"
+            :class="sendModeBadgeClass"
+          >{{ sendModeBadgeText }}</span>
+          <span class="send-mode-hint">{{ sendModeHint }}</span>
         </div>
         <div class="preview-actions">
           <div
@@ -49,7 +54,7 @@
             @click="handleSend"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>{{ sendButtonText }}</span>
           </div>
         </div>
       </div>
@@ -240,6 +245,71 @@
             @select-font="handleTimeFontChange"
           />
         </div>
+
+        <div v-show="currentTab === 3" class="tab-panel glx-tab-panel">
+          <div class="card glx-panel-card glx-editor-card">
+            <div class="card-title-section glx-panel-head">
+              <span class="glx-panel-title">轮播</span>
+            </div>
+
+            <div class="form-row">
+              <span class="form-label">自动轮播</span>
+              <div class="option-row option-row-double auto-rotate-switch">
+                <div
+                  class="option-btn glx-feature-option"
+                  :class="{ active: autoRotate.enabled }"
+                  @click="setAutoRotateEnabled(true)"
+                >
+                  <span class="glx-feature-option__label">开启</span>
+                </div>
+                <div
+                  class="option-btn glx-feature-option"
+                  :class="{ active: !autoRotate.enabled }"
+                  @click="setAutoRotateEnabled(false)"
+                >
+                  <span class="glx-feature-option__label">关闭</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="option-stack">
+              <span class="form-label">随机内容</span>
+              <div class="option-row option-row-double">
+                <div
+                  class="option-btn glx-feature-option"
+                  :class="{ active: autoRotate.randomPlanet }"
+                  @click="toggleAutoRotateRandomPlanet"
+                >
+                  <span class="glx-feature-option__label">随机地形</span>
+                </div>
+                <div
+                  class="option-btn glx-feature-option"
+                  :class="{ active: autoRotate.randomColor }"
+                  @click="toggleAutoRotateRandomColor"
+                >
+                  <span class="glx-feature-option__label">随机颜色</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="option-stack">
+              <span class="form-label">切换时长</span>
+              <div class="option-row option-row-double">
+                <div
+                  v-for="option in autoRotateIntervalOptions"
+                  :key="option.value"
+                  class="option-btn glx-feature-option"
+                  :class="{ active: autoRotate.interval === option.value }"
+                  @click="setAutoRotateInterval(option.value)"
+                >
+                  <span class="glx-feature-option__label">{{
+                    option.label
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -301,6 +371,7 @@ import {
   getCurrentTimeText,
 } from "@/utils/clockCanvas.js";
 import {
+  PLANET_DEFAULT_COLOR_SEED,
   PLANET_REFERENCE_DEFAULT_COLOR_SEED,
   PLANET_SCREEN_PRESETS,
   PLANET_PREVIEW_MIN_SPEED,
@@ -346,6 +417,13 @@ const PLANET_TIME_COLOR_OPTIONS = Object.freeze([
   { name: "白色", hex: "#ffffff" },
 ]);
 
+const PLANET_AUTO_ROTATE_INTERVAL_OPTIONS = Object.freeze([
+  { value: 30, label: "30秒" },
+  { value: 60, label: "1分钟" },
+  { value: 300, label: "5分钟" },
+  { value: 600, label: "10分钟" },
+]);
+
 function createDefaultPlanetClockConfig() {
   return {
     font: "classic_5x7",
@@ -361,6 +439,15 @@ function createDefaultPlanetClockConfig() {
   };
 }
 
+function createDefaultPlanetAutoRotateConfig() {
+  return {
+    enabled: false,
+    randomPlanet: true,
+    randomColor: true,
+    interval: 60,
+  };
+}
+
 function normalizeHexColor(value, fallback = "#ffffff") {
   if (typeof value !== "string") {
     return fallback;
@@ -372,9 +459,38 @@ function normalizeHexColor(value, fallback = "#ffffff") {
   return `#${body.toLowerCase()}`;
 }
 
+function normalizePlanetAutoRotateConfig(saved) {
+  const config = createDefaultPlanetAutoRotateConfig();
+  if (!saved || typeof saved !== "object") {
+    return config;
+  }
+
+  if (saved.enabled === true || saved.enabled === false) {
+    config.enabled = saved.enabled;
+  }
+  if (saved.randomPlanet === true || saved.randomPlanet === false) {
+    config.randomPlanet = saved.randomPlanet;
+  }
+  if (saved.randomColor === true || saved.randomColor === false) {
+    config.randomColor = saved.randomColor;
+  }
+  if (
+    PLANET_AUTO_ROTATE_INTERVAL_OPTIONS.some(
+      (item) => item.value === saved.interval,
+    )
+  ) {
+    config.interval = saved.interval;
+  }
+
+  return config;
+}
+
 function normalizePlanetPageState(saved) {
   const config = createDefaultPlanetPreviewConfig();
   const clockConfig = createDefaultPlanetClockConfig();
+  const autoRotate = normalizePlanetAutoRotateConfig(
+    saved && typeof saved === "object" ? saved.autoRotate : null,
+  );
   const state = saved && typeof saved === "object" ? saved : {};
 
   if (typeof state.config === "object" && state.config !== null) {
@@ -474,6 +590,7 @@ function normalizePlanetPageState(saved) {
   return {
     config,
     clockConfig,
+    autoRotate,
   };
 }
 
@@ -486,7 +603,7 @@ function isPortalPresetValue(preset) {
 }
 
 function isFixedPalettePresetValue(preset) {
-  return isPortalPresetValue(preset);
+  return preset === "earth" || isPortalPresetValue(preset);
 }
 
 export default {
@@ -532,8 +649,12 @@ export default {
         { index: 0, label: "星球", icon: "prompt" },
         { index: 1, label: "时间", icon: "time" },
         { index: 2, label: "字体", icon: "text" },
+        { index: 3, label: "轮播", icon: "refresh" },
       ],
       config,
+      autoRotate: createDefaultPlanetAutoRotateConfig(),
+      autoRotateIntervalOptions: PLANET_AUTO_ROTATE_INTERVAL_OPTIONS,
+      autoRotateTimer: null,
     };
   },
   computed: {
@@ -582,6 +703,60 @@ export default {
       }
       return "随机星球";
     },
+    isAutoRotatePreviewActive() {
+      if (!this.autoRotate.enabled) {
+        return false;
+      }
+      if (this.autoRotate.randomPlanet) {
+        return true;
+      }
+      return this.autoRotate.randomColor;
+    },
+    autoRotateContentLabel() {
+      if (this.autoRotate.randomPlanet && this.autoRotate.randomColor) {
+        return "随机地形 + 随机颜色";
+      }
+      if (this.autoRotate.randomPlanet) {
+        return "随机地形";
+      }
+      if (this.autoRotate.randomColor) {
+        return "随机颜色";
+      }
+      return "未选择随机内容";
+    },
+    autoRotateIntervalLabel() {
+      const option = PLANET_AUTO_ROTATE_INTERVAL_OPTIONS.find(
+        (item) => item.value === this.autoRotate.interval,
+      );
+      if (option) {
+        return option.label;
+      }
+      return "未设置";
+    },
+    sendModeBadgeText() {
+      if (this.isAutoRotatePreviewActive) {
+        return "随机已开启";
+      }
+      return "随机已关闭";
+    },
+    sendModeBadgeClass() {
+      if (this.isAutoRotatePreviewActive) {
+        return "send-mode-badge--preview-random";
+      }
+      return "send-mode-badge--fixed";
+    },
+    sendModeHint() {
+      if (this.isAutoRotatePreviewActive) {
+        return `发送后设备按 ${this.autoRotateIntervalLabel} ${this.autoRotateContentLabel} 自动轮播`;
+      }
+      return "发送后设备使用当前固定星球配置";
+    },
+    sendButtonText() {
+      if (this.isAutoRotatePreviewActive) {
+        return "发送随机";
+      }
+      return "发送固定";
+    },
   },
   watch: {
     config: {
@@ -591,6 +766,12 @@ export default {
       },
     },
     clockConfig: {
+      deep: true,
+      handler() {
+        this.persistLocalState();
+      },
+    },
+    autoRotate: {
       deep: true,
       handler() {
         this.persistLocalState();
@@ -606,6 +787,7 @@ export default {
     );
     this.config = savedState.config;
     this.clockConfig = savedState.clockConfig;
+    this.autoRotate = savedState.autoRotate;
   },
   onReady() {
     if (this.$refs.toastRef) {
@@ -616,6 +798,7 @@ export default {
   async onShow() {
     if (this.previewCanvasReady) {
       this.startPreviewPlayback();
+      this.startAutoRotateTimer();
     }
     await this.syncConfigFromDeviceStatus();
   },
@@ -644,6 +827,13 @@ export default {
     handleBack() {
       uni.navigateBack();
     },
+    disableAutoRotateForManualEdit() {
+      if (!this.autoRotate.enabled) {
+        return;
+      }
+      this.autoRotate.enabled = false;
+      this.stopAutoRotateTimer();
+    },
     persistLocalState() {
       uni.setStorageSync(PLANET_PAGE_STORAGE_KEY, {
         config: {
@@ -667,6 +857,12 @@ export default {
             color: this.clockConfig.time.color,
             align: this.clockConfig.time.align,
           },
+        },
+        autoRotate: {
+          enabled: this.autoRotate.enabled,
+          randomPlanet: this.autoRotate.randomPlanet,
+          randomColor: this.autoRotate.randomColor,
+          interval: this.autoRotate.interval,
         },
       });
     },
@@ -733,6 +929,7 @@ export default {
         font,
         showSeconds,
         time,
+        autoRotate,
       } = status;
       if (businessMode !== "planet_screensaver") {
         return;
@@ -813,6 +1010,27 @@ export default {
       }
       this.clockConfig.time.color = this.rgbToHex(time.color);
 
+      if (autoRotate && typeof autoRotate === "object") {
+        if (autoRotate.enabled === true || autoRotate.enabled === false) {
+          this.autoRotate.enabled = autoRotate.enabled;
+        }
+        if (autoRotate.randomPlanet === true || autoRotate.randomPlanet === false) {
+          this.autoRotate.randomPlanet = autoRotate.randomPlanet;
+        }
+        if (autoRotate.randomColor === true || autoRotate.randomColor === false) {
+          this.autoRotate.randomColor = autoRotate.randomColor;
+        }
+        const autoRotateInterval = Number(autoRotate.interval);
+        if (
+          PLANET_AUTO_ROTATE_INTERVAL_OPTIONS.some(
+            (item) => item.value === autoRotateInterval,
+          )
+        ) {
+          this.autoRotate.interval = autoRotateInterval;
+        }
+        this.restartAutoRotateTimer();
+      }
+
       if (this.previewCanvasReady) {
         this.schedulePreviewRefresh(this.getCurrentPreviewProgress());
       }
@@ -834,12 +1052,10 @@ export default {
       try {
         const ws = this.deviceStore.getWebSocket();
         await ws.setPlanetScreensaver(this.buildPlanetSendPayload());
-        await this.syncConfigFromDeviceStatus();
+        this.deviceStore.applyResolvedBusinessMode("planet_screensaver");
         this.showSendSuccess();
       } catch (error) {
-        await this.deviceStore.rollbackBusinessMode(previousMode, {
-          expectedMode: "planet_screensaver",
-        });
+        this.deviceStore.applyResolvedBusinessMode(previousMode);
         console.error("发送星球屏保失败:", error);
         this.showSendFailure(error);
       } finally {
@@ -870,6 +1086,7 @@ export default {
               if (!data || !data.width) {
                 this.previewCanvasReady = true;
                 this.startPreviewPlayback();
+                this.startAutoRotateTimer();
                 return;
               }
               const fitZoom = Math.max(2, Math.floor((data.width * 0.96) / 64));
@@ -884,6 +1101,7 @@ export default {
               };
               this.previewCanvasReady = true;
               this.startPreviewPlayback();
+              this.startAutoRotateTimer();
             })
             .exec();
         }, 80);
@@ -1019,7 +1237,9 @@ export default {
         return;
       }
       const progress = this.getCurrentPreviewProgress();
+      this.disableAutoRotateForManualEdit();
       this.config.preset = presetId;
+      this.config.colorSeed = PLANET_DEFAULT_COLOR_SEED;
       this.schedulePreviewRefresh(progress);
     },
     handlePortalColorSelect(presetId) {
@@ -1030,7 +1250,9 @@ export default {
         return;
       }
       const progress = this.getCurrentPreviewProgress();
+      this.disableAutoRotateForManualEdit();
       this.config.preset = presetId;
+      this.config.colorSeed = PLANET_FIXED_PALETTE_COLOR_SEED;
       this.schedulePreviewRefresh(progress);
     },
     handleSizeSelect(sizeId) {
@@ -1038,11 +1260,13 @@ export default {
         return;
       }
       const progress = this.getCurrentPreviewProgress();
+      this.disableAutoRotateForManualEdit();
       this.config.size = sizeId;
       this.schedulePreviewRefresh(progress);
     },
     handleRandomColor() {
       const progress = this.getCurrentPreviewProgress();
+      this.disableAutoRotateForManualEdit();
       this.config.colorSeed = createRandomPlanetColorSeed();
       this.schedulePreviewRefresh(progress);
     },
@@ -1051,14 +1275,88 @@ export default {
         return;
       }
       const progress = this.getCurrentPreviewProgress();
+      this.disableAutoRotateForManualEdit();
       this.config.seed = createRandomPlanetPreviewSeed();
       this.schedulePreviewRefresh(progress);
+    },
+    applyAutoRotateStep() {
+      if (!this.autoRotate.enabled) {
+        return;
+      }
+      if (!this.autoRotate.randomPlanet && !this.autoRotate.randomColor) {
+        return;
+      }
+
+      const progress = this.getCurrentPreviewProgress();
+      if (this.autoRotate.randomPlanet && !isPortalPresetValue(this.config.preset)) {
+        this.config.seed = createRandomPlanetPreviewSeed();
+      }
+      if (this.autoRotate.randomColor && !this.isFixedPalettePreset) {
+        this.config.colorSeed = createRandomPlanetColorSeed();
+      }
+      this.schedulePreviewRefresh(progress);
+    },
+    restartAutoRotateTimer() {
+      this.stopAutoRotateTimer();
+      this.startAutoRotateTimer();
+    },
+    startAutoRotateTimer() {
+      this.stopAutoRotateTimer();
+      if (!this.autoRotate.enabled) {
+        return;
+      }
+      const intervalMs = Math.max(1, this.autoRotate.interval) * 1000;
+      this.autoRotateTimer = setTimeout(() => {
+        this.autoRotateTimer = null;
+        this.applyAutoRotateStep();
+        this.startAutoRotateTimer();
+      }, intervalMs);
+    },
+    stopAutoRotateTimer() {
+      if (this.autoRotateTimer) {
+        clearTimeout(this.autoRotateTimer);
+        this.autoRotateTimer = null;
+      }
+    },
+    setAutoRotateEnabled(enabled) {
+      if (this.autoRotate.enabled === enabled) {
+        return;
+      }
+      this.autoRotate.enabled = enabled;
+      this.restartAutoRotateTimer();
+    },
+    toggleAutoRotateRandomPlanet() {
+      if (this.autoRotate.randomPlanet && !this.autoRotate.randomColor) {
+        return;
+      }
+      this.autoRotate.randomPlanet = !this.autoRotate.randomPlanet;
+    },
+    toggleAutoRotateRandomColor() {
+      if (this.autoRotate.randomColor && !this.autoRotate.randomPlanet) {
+        return;
+      }
+      this.autoRotate.randomColor = !this.autoRotate.randomColor;
+    },
+    setAutoRotateInterval(interval) {
+      if (
+        !PLANET_AUTO_ROTATE_INTERVAL_OPTIONS.some(
+          (item) => item.value === interval,
+        )
+      ) {
+        return;
+      }
+      if (this.autoRotate.interval === interval) {
+        return;
+      }
+      this.autoRotate.interval = interval;
+      this.restartAutoRotateTimer();
     },
     handleDirectionSelect(directionId) {
       if (directionId === this.config.direction) {
         return;
       }
       const progress = this.getCurrentPreviewProgress();
+      this.disableAutoRotateForManualEdit();
       this.config.direction = directionId;
       this.schedulePreviewRefresh(progress);
     },
@@ -1075,6 +1373,7 @@ export default {
         return;
       }
       const progress = this.getCurrentPreviewProgress();
+      this.disableAutoRotateForManualEdit();
       this.config.speed = speed;
       this.schedulePreviewRefresh(progress);
     },
@@ -1088,6 +1387,7 @@ export default {
         return;
       }
       const progress = this.getCurrentPreviewProgress();
+      this.disableAutoRotateForManualEdit();
       this.config.planetX = planetX;
       this.schedulePreviewRefresh(progress);
     },
@@ -1101,6 +1401,7 @@ export default {
         return;
       }
       const progress = this.getCurrentPreviewProgress();
+      this.disableAutoRotateForManualEdit();
       this.config.planetY = planetY;
       this.schedulePreviewRefresh(progress);
     },
@@ -1109,11 +1410,13 @@ export default {
         return;
       }
       const progress = this.getCurrentPreviewProgress();
+      this.disableAutoRotateForManualEdit();
       this.config.planetX = 32;
       this.config.planetY = 32;
       this.schedulePreviewRefresh(progress);
     },
     toggleTimeShow() {
+      this.disableAutoRotateForManualEdit();
       this.clockConfig.time.show = !this.clockConfig.time.show;
       this.refreshOverlayPreview();
     },
@@ -1127,6 +1430,7 @@ export default {
       if (nextValue === currentValue) {
         return;
       }
+      this.disableAutoRotateForManualEdit();
       this.clockConfig.time[key] = nextValue;
       this.refreshOverlayPreview();
     },
@@ -1134,6 +1438,7 @@ export default {
       if (typeof color !== "string" || color.length === 0) {
         return;
       }
+      this.disableAutoRotateForManualEdit();
       this.clockConfig.time.color = color;
       this.refreshOverlayPreview();
     },
@@ -1141,6 +1446,7 @@ export default {
       if (align !== "left" && align !== "center" && align !== "right") {
         return;
       }
+      this.disableAutoRotateForManualEdit();
       this.clockConfig.time.align = align;
       if (align === "left") {
         this.clockConfig.time.x = 0;
@@ -1155,10 +1461,12 @@ export default {
       if (!PLANET_TIME_FONT_IDS.has(fontId)) {
         return;
       }
+      this.disableAutoRotateForManualEdit();
       this.clockConfig.font = fontId;
       this.refreshOverlayPreview();
     },
     toggleTimeSeconds() {
+      this.disableAutoRotateForManualEdit();
       this.clockConfig.showSeconds = !this.clockConfig.showSeconds;
       this.refreshOverlayPreview();
     },
@@ -1202,6 +1510,12 @@ export default {
           x: timePlacement.x,
           y: timePlacement.y,
           color: this.hexToRgb(this.clockConfig.time.color),
+        },
+        autoRotate: {
+          enabled: this.autoRotate.enabled,
+          randomPlanet: this.autoRotate.randomPlanet,
+          randomColor: this.autoRotate.randomColor,
+          interval: this.autoRotate.interval,
         },
       };
     },
@@ -1253,6 +1567,7 @@ export default {
     },
     cleanupPreviewTimers() {
       this.stopPreviewPlayback();
+      this.stopAutoRotateTimer();
       if (this.previewRefreshTimer) {
         clearTimeout(this.previewRefreshTimer);
         this.previewRefreshTimer = null;
@@ -1309,12 +1624,45 @@ export default {
 .preview-caption-info {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
 }
 
 .preview-caption-title {
   font-size: 24rpx;
   font-weight: 700;
   color: var(--text-primary);
+}
+
+.send-mode-badge {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 32rpx;
+  padding: 0 12rpx;
+  border: 2rpx solid var(--nb-ink);
+  border-radius: 999rpx;
+  font-size: 20rpx;
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--nb-ink);
+  box-shadow: 3rpx 3rpx 0 rgba(0, 0, 0, 0.35);
+}
+
+.send-mode-badge--fixed {
+  background: var(--nb-yellow);
+}
+
+.send-mode-badge--preview-random {
+  background: #7fffd4;
+}
+
+.send-mode-hint {
+  display: block;
+  font-size: 20rpx;
+  line-height: 1.35;
+  color: var(--text-secondary);
 }
 
 .preview-actions {

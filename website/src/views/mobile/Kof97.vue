@@ -30,7 +30,7 @@
       <div class="preview-caption glx-preview-panel">
         <div class="preview-caption-info glx-preview-panel__info">
           <span class="preview-caption-title">网页预览</span>
-          <span class="preview-caption-sub">{{ statusText }}</span>
+          <!-- <span class="preview-caption-sub">{{ statusText }}</span> -->
         </div>
         <div class="preview-actions">
           <div
@@ -44,7 +44,7 @@
         </div>
       </div>
     </div>
-
+<!-- 
     <div data-scroll-view scroll-y class="content glx-scroll-region glx-page-shell__content">
       <div class="content-wrapper glx-scroll-stack">
         <div class="card glx-panel-card glx-editor-card">
@@ -92,7 +92,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div v-if="isSending" class="glx-device-sending-overlay" @touchmove.stop.prevent>
       <div class="glx-device-sending-card">

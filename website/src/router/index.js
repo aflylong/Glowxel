@@ -48,6 +48,7 @@ const routes = [
 
   // ===== 设备控制类 (双端独立: PC = views/X.vue, mobile = views/mobile/X.vue) =====
   { path: '/device-control', name: 'DeviceControl', component: deviceDual('DeviceControl'), meta: { shell: 'app' } },
+  { path: '/device-flash', name: 'DeviceFlash', component: () => import('@/views/DeviceFlash.vue'), meta: { shell: 'app' } },
   { path: '/ble-config', name: 'BleConfig', component: deviceDual('BleConfig'), meta: { shell: 'app' } },
   { path: '/device-params', name: 'DeviceParams', component: deviceDual('DeviceParams'), meta: { shell: 'app' } },
   { path: '/canvas-editor', name: 'CanvasEditor', component: deviceDual('CanvasEditor'), meta: { shell: 'app' } },
@@ -57,7 +58,7 @@ const routes = [
   { path: '/snake-mode', name: 'SnakeMode', component: deviceDual('SnakeMode'), meta: { shell: 'app' } },
   { path: '/tetris-settings', name: 'TetrisSettings', component: deviceDual('TetrisSettings'), meta: { shell: 'app' } },
   { path: '/tetris-clock-settings', name: 'TetrisClockSettings', component: deviceDual('TetrisClockSettings'), meta: { shell: 'app' } },
-  { path: '/planet-screensaver', name: 'PlanetScreensaver', component: deviceDual('PlanetScreensaver'), meta: { shell: 'app' } },
+  { path: '/planet-screensaver', name: 'PlanetScreensaver', component: () => import('@/views/mobile/PlanetScreensaver.vue'), meta: { shell: 'app' } },
   { path: '/water-world', name: 'WaterWorld', component: deviceDual('WaterWorld'), meta: { shell: 'app' } },
   { path: '/spirit-screen', name: 'SpiritScreen', component: deviceDual('SpiritScreen'), meta: { shell: 'app' } },
 

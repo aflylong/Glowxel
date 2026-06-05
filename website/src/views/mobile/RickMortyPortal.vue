@@ -287,7 +287,7 @@ export default {
       tabDefinitions: [
         { index: 0, label: "传送门", icon: "refresh" },
         { index: 1, label: "时间", icon: "time" },
-        { index: 2, label: "字体", icon: "text" },
+        // { index: 2, label: "字体", icon: "text" },
       ],
       config,
     };
