@@ -38,12 +38,12 @@ if (-not (Test-Path -LiteralPath $targetDir)) {
 
 foreach ($file in $files) {
   if (-not (Test-Path -LiteralPath $file.Source)) {
-    throw "缺少 $($file.Name)：$($file.Source)。请先在 esp32-firmware 下运行 .\pio.cmd run 和 .\pio.cmd run -t buildfs。"
+    throw "Missing $($file.Name): $($file.Source). Run .\pio.cmd run and .\pio.cmd run -t buildfs in esp32-firmware first."
   }
 
   $sourceItem = Get-Item -LiteralPath $file.Source
   if ($sourceItem.Length -le 0) {
-    throw "$($file.Name) 文件为空：$($file.Source)。请重新生成后再发布。"
+    throw "$($file.Name) is empty: $($file.Source). Regenerate it before release."
   }
 }
 
@@ -51,7 +51,7 @@ foreach ($file in $files) {
   $targetPath = Join-Path $targetDir $file.Name
   Copy-Item -LiteralPath $file.Source -Destination $targetPath -Force
   $targetItem = Get-Item -LiteralPath $targetPath
-  Write-Host ("已更新 {0} ({1} bytes)" -f $file.Name, $targetItem.Length)
+  Write-Host ("Updated {0} ({1} bytes)" -f $file.Name, $targetItem.Length)
 }
 
-Write-Host "网页烧录发布文件已准备到：$targetDir"
+Write-Host "Web flash release files are ready in: $targetDir"
