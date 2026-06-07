@@ -1,89 +1,109 @@
 <template>
-  <div class="glx-page-shell">
-    <section class="glx-page-shell__hero">
-      <span class="glx-page-shell__eyebrow">Theme Clock</span>
-      <h1 class="glx-page-shell__title">主题模式</h1>
-      <p class="glx-page-shell__desc">
-        大预览沿用 uniapp `theme-clock` 的“主题主画面”语义，不切成设备实时帧主视图；网站端负责本地生成预览、管理主题选择和说明边界。
-      </p>
-      <div class="glx-hero-metrics">
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">选中主题</span>
-          <strong class="glx-hero-metric__value">{{ activePresetName }}</strong>
-        </article>
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">当前设备主题</span>
-          <strong class="glx-hero-metric__value">{{ currentDeviceThemeName }}</strong>
-        </article>
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">预览来源</span>
-          <strong class="glx-hero-metric__value">{{ activePreviewImage.length > 0 ? "主题资源图" : "本地生成" }}</strong>
-        </article>
-      </div>
-    </section>
+  <div class="theme-mode-page glx-page-shell game-mode-page">
+    <PcModeTopbar title="主题模式" />
 
-    <section class="clock-theme-layout">
-      <article class="glx-section-card glx-section-card--stack clock-theme-preview-card">
-        <div class="clock-theme-preview-card__head">
+    <section class="theme-mode-layout game-mode-layout">
+      <article
+        class="glx-section-card glx-section-card--stack theme-preview-card game-preview-card"
+      >
+        <div class="theme-preview-card__head">
           <div>
-            <h2 class="glx-section-title">主题展示</h2>
-            <p class="glx-page-shell__desc">这是网站端生成的主题主预览，不会被设备实时帧覆盖。</p>
+            <p class="theme-preview-card__eyebrow">Theme Clock</p>
+            <h2 class="theme-preview-card__title">主题展示</h2>
           </div>
-          <span v-if="activePreset" class="glx-chip glx-chip--yellow">{{ activePreset.styleTag }}</span>
         </div>
 
-        <div class="clock-theme-stage">
-          <img
-            v-if="activePreviewImage.length > 0"
-            :src="activePreviewImage"
-            :alt="activePresetName"
-            class="clock-theme-stage__image"
-          />
-          <ClockPixelCanvas v-else :frame="previewFrame" rounded />
-          <DeviceSendingOverlay
-            :visible="isSending"
-            title="正在发送主题模式"
-            description="发送期间锁定当前主题快照，等待设备完成主题模式事务提交。"
+        <div class="theme-preview-toolbar">
+          <div class="theme-preview-toolbar__actions">
+            <button
+              type="button"
+              class="glx-button glx-button--primary theme-send-button"
+              :disabled="isSending"
+              @click="handleSend"
+            >
+              {{ isSending ? "发送中..." : "发送到设备" }}
+            </button>
+            <button
+              type="button"
+              class="glx-button glx-button--ghost"
+              @click="resetTheme"
+            >
+              恢复默认主题
+            </button>
+          </div>
+          <span
+            class="glx-chip"
+            :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
           >
+            {{ deviceStore.connected ? "已连接" : "未连接" }}
+          </span>
+        </div>
+
+        <div class="theme-preview-stage game-preview-stage">
+          <div class="theme-preview-board">
             <img
-              v-if="sendingPreviewImage.length > 0"
-              :src="sendingPreviewImage"
+              v-if="activePreviewImage.length > 0"
+              :src="activePreviewImage"
               :alt="activePresetName"
-              class="clock-theme-stage__image"
+              class="theme-preview-stage__image"
             />
-            <ClockPixelCanvas v-else :frame="sendingFrame" rounded />
-          </DeviceSendingOverlay>
+            <ClockPixelCanvas v-else :frame="previewFrame" rounded />
+            <DeviceSendingOverlay
+              :visible="isSending"
+              title="正在发送主题模式"
+              description="发送期间锁定当前主题快照，等待设备完成主题模式事务提交。"
+            >
+              <img
+                v-if="sendingPreviewImage.length > 0"
+                :src="sendingPreviewImage"
+                :alt="activePresetName"
+                class="theme-preview-stage__image"
+              />
+              <div v-else class="theme-preview-sending">
+                <ClockPixelCanvas :frame="sendingFrame" rounded />
+              </div>
+            </DeviceSendingOverlay>
+          </div>
         </div>
 
-        <div class="clock-theme-facts">
-          <div class="clock-theme-facts__item">
-            <span>字体</span>
-            <strong>{{ activePreset?.config.font || "--" }}</strong>
-          </div>
-          <div class="clock-theme-facts__item">
-            <span>小时制</span>
-            <strong>{{ activePreset?.config.hourFormat === 12 ? "12h" : "24h" }}</strong>
-          </div>
-          <div class="clock-theme-facts__item">
-            <span>强调色</span>
-            <strong :style="{ color: activePreset?.accentColor || '#000000' }">{{ activePreset?.accentColor || "--" }}</strong>
-          </div>
+        <div class="theme-summary-grid">
+          <article class="theme-summary-card">
+            <span class="theme-summary-card__label">选中主题</span>
+            <strong class="theme-summary-card__value">{{ activePresetName }}</strong>
+            <span class="theme-summary-card__meta">{{ activePreset?.styleTag || "--" }}</span>
+          </article>
+          <article class="theme-summary-card">
+            <span class="theme-summary-card__label">设备主题</span>
+            <strong class="theme-summary-card__value">{{ currentDeviceThemeName }}</strong>
+            <span class="theme-summary-card__meta">
+              {{ activePreviewImage.length > 0 ? "主题资源图" : "本地生成" }}
+            </span>
+          </article>
+          <article class="theme-summary-card">
+            <span class="theme-summary-card__label">风格</span>
+            <strong class="theme-summary-card__value">
+              {{ activePreset?.config.font || "--" }}
+            </strong>
+            <span class="theme-summary-card__meta">
+              {{ activePreset?.config.hourFormat === 12 ? "12h" : "24h" }} / {{ activePreset?.accentColor || "--" }}
+            </span>
+          </article>
         </div>
-
-        <div class="glx-inline-actions">
-          <button type="button" class="glx-button glx-button--primary" :disabled="isSending" @click="handleSend">
-            {{ isSending ? "发送中..." : "发送到设备" }}
-          </button>
-          <button type="button" class="glx-button glx-button--ghost" @click="resetTheme">恢复默认主题</button>
-        </div>
-
-        <p class="clock-inline-note">
-          主题发送现在走和 `uniapp` 一致的事务链：`themeId + clock config` 一起下发，预览区继续保持主题主画面语义。
-        </p>
       </article>
 
-      <div class="clock-theme-stack">
+      <div class="theme-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
+          <div class="glx-section-head">
+            <h2 class="glx-section-title">模式配置</h2>
+            <span class="glx-section-meta">主题库 / 当前主题说明</span>
+          </div>
+          <DeviceModeTabs v-model="currentTab" :items="tabItems" />
+        </article>
+
+        <article
+          v-if="currentTab === 'themes'"
+          class="glx-section-card glx-section-card--stack"
+        >
           <div class="glx-section-head">
             <h2 class="glx-section-title">主题库</h2>
             <span class="glx-section-meta">{{ presets.length }} 个主题</span>
@@ -96,12 +116,12 @@
           />
         </article>
 
-        <article class="glx-section-card glx-section-card--stack">
+        <article v-else class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
             <h2 class="glx-section-title">当前主题说明</h2>
             <span class="glx-section-meta">uniapp 对齐</span>
           </div>
-          <div v-if="activePreset" class="clock-theme-copy">
+          <div v-if="activePreset" class="theme-copy">
             <strong>{{ activePreset.name }}</strong>
             <p>{{ activePreset.description }}</p>
             <p>当前网站端使用与 uniapp 一致的 preset 配置和字模宽度，主差异只剩设备发送链与状态回显。</p>
@@ -117,6 +137,8 @@ import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useDeviceLegacyStore } from "@/stores/deviceLegacy.js";
 import { useFeedback } from "@/composables/useFeedback.js";
 import DeviceSendingOverlay from "@/components/device/DeviceSendingOverlay.vue";
+import PcModeTopbar from "@/components/device/modes/PcModeTopbar.vue";
+import DeviceModeTabs from "@/components/device/modes/DeviceModeTabs.vue";
 import { buildDeviceClockPayload, renderDeviceClockFrame } from "@/utils/device-clock-core.js";
 import ClockPixelCanvas from "./ClockPixelCanvas.vue";
 import ClockThemePresetGrid from "./ClockThemePresetGrid.vue";
@@ -129,6 +151,11 @@ import {
 const deviceStore = useDeviceLegacyStore();
 const feedback = useFeedback();
 const presets = getWebsiteClockThemePresets();
+const tabItems = Object.freeze([
+  { value: "themes", label: "主题库" },
+  { value: "about", label: "当前主题说明" },
+]);
+const currentTab = ref("themes");
 const selectedThemeId = ref(presets[0]?.id || "");
 const previewNow = ref(new Date());
 const isSending = ref(false);
@@ -271,36 +298,77 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.clock-theme-layout {
-  display: grid;
-  grid-template-columns: minmax(340px, 0.92fr) minmax(0, 1.08fr);
+.game-mode-page {
   gap: 24px;
 }
 
-.clock-theme-preview-card {
-  position: sticky;
-  top: 88px;
-  align-self: start;
+.theme-mode-page {
+  background: linear-gradient(180deg, #eef3ff 0%, #f7f4eb 100%);
 }
 
-.clock-theme-preview-card__head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+.theme-mode-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.theme-preview-card {
   gap: 16px;
 }
 
-.clock-theme-stage {
-  position: relative;
-  padding: 20px;
-  border: 2px solid #000000;
-  background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.1), transparent 52%),
-    linear-gradient(180deg, #15181c 0%, #0b0d11 100%);
-  overflow: hidden;
+.theme-preview-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
 }
 
-.clock-theme-stage__image {
+.theme-preview-card__eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--glx-text-muted);
+}
+
+.theme-preview-card__title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  color: #000000;
+}
+
+.theme-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.theme-preview-toolbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.theme-send-button {
+  min-width: 188px;
+  min-height: 48px;
+}
+
+.theme-preview-stage {
+  padding: 18px;
+}
+
+.theme-preview-board {
+  position: relative;
+  width: min(100%, 560px);
+  margin: 0 auto;
+}
+
+.theme-preview-stage__image {
   width: 100%;
   aspect-ratio: 1;
   display: block;
@@ -309,64 +377,72 @@ onBeforeUnmount(() => {
   image-rendering: pixelated;
 }
 
-.clock-theme-facts {
+.theme-preview-sending {
+  width: 100%;
+  height: 100%;
+}
+
+.theme-summary-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
-.clock-theme-facts__item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px;
+.theme-summary-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
   border: 2px solid #000000;
   background: #ffffff;
 }
 
-.clock-theme-facts__item span {
+.theme-summary-card__label {
   font-size: 12px;
+  font-weight: 800;
   color: var(--glx-text-muted);
 }
 
-.clock-inline-note {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.6;
+.theme-summary-card__value {
+  font-size: 16px;
+  font-weight: 900;
+  color: #000000;
+}
+
+.theme-summary-card__meta {
+  font-size: 12px;
+  line-height: 1.5;
   color: var(--glx-text-muted);
 }
 
-.clock-theme-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.theme-config-stack {
+  min-width: 0;
 }
 
-.clock-theme-copy {
+.theme-copy {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.clock-theme-copy p {
+.theme-copy p {
   margin: 0;
   font-size: 14px;
   line-height: 1.6;
 }
 
 @media (max-width: 1080px) {
-  .clock-theme-layout {
+  .theme-mode-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .clock-theme-preview-card {
-    position: static;
+  .theme-summary-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (max-width: 640px) {
-  .clock-theme-facts {
-    grid-template-columns: minmax(0, 1fr);
+  .theme-preview-toolbar__actions {
+    width: 100%;
   }
 }
 </style>

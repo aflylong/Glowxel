@@ -1,73 +1,88 @@
 <template>
-  <div class="glx-page-shell">
-    <section class="glx-page-shell__hero">
-      <span class="glx-page-shell__eyebrow">{{ eyebrow }}</span>
-      <h1 class="glx-page-shell__title">{{ title }}</h1>
-      <p class="glx-page-shell__desc">{{ description }}</p>
-      <div class="glx-hero-metrics">
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">设备模式</span>
-          <strong class="glx-hero-metric__value">{{ modeLabel }}</strong>
-        </article>
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">连接状态</span>
-          <strong class="glx-hero-metric__value">{{ deviceStore.connected ? "已连接" : "未连接" }}</strong>
-        </article>
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">图片发送链</span>
-          <strong class="glx-hero-metric__value">{{ imageSendCapabilityText }}</strong>
-        </article>
-      </div>
-    </section>
+  <div class="clock-mode-page glx-page-shell game-mode-page">
+    <PcModeTopbar :title="title" />
 
-    <section class="clock-editor-layout">
-      <article class="glx-section-card glx-section-card--stack clock-preview-card">
+    <section class="clock-mode-layout game-mode-layout">
+      <article
+        class="glx-section-card glx-section-card--stack clock-preview-card game-preview-card"
+      >
         <div class="clock-preview-card__head">
           <div>
-            <h2 class="glx-section-title">{{ previewTitle }}</h2>
-            <p class="glx-page-shell__desc">预览由网站本地像素渲染生成，不依赖设备实时帧。</p>
+            <p class="clock-preview-card__eyebrow">{{ eyebrow }}</p>
+            <h2 class="clock-preview-card__title">{{ previewTitle }}</h2>
           </div>
-          <span class="glx-chip glx-chip--blue">{{ modeLabel }}</span>
         </div>
 
-        <div class="clock-preview-stage">
-          <ClockPixelCanvas :frame="previewFrame" rounded />
-          <DeviceSendingOverlay
-            :visible="isSending"
-            title="正在发送时钟配置"
-            description="发送期间锁定当前预览快照，等待设备完成模式切换和事务提交。"
+        <div class="clock-preview-toolbar">
+          <div class="clock-preview-toolbar__actions">
+            <button
+              type="button"
+              class="glx-button glx-button--primary clock-send-button"
+              :disabled="isSending"
+              @click="sendToDevice"
+            >
+              {{ isSending ? "发送中..." : "发送到设备" }}
+            </button>
+            <button
+              type="button"
+              class="glx-button glx-button--ghost"
+              @click="resetConfig"
+            >
+              恢复默认
+            </button>
+          </div>
+          <span
+            class="glx-chip"
+            :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
           >
-            <ClockPixelCanvas :frame="sendingFrame" rounded />
-          </DeviceSendingOverlay>
+            {{ deviceStore.connected ? "已连接" : "未连接" }}
+          </span>
         </div>
 
-        <div class="clock-preview-meta">
-          <div class="clock-preview-meta__item">
-            <span>字体</span>
-            <strong>{{ selectedFontName }}</strong>
-          </div>
-          <div class="clock-preview-meta__item">
-            <span>小时制</span>
-            <strong>{{ config.hourFormat === 24 ? "24h" : "12h" }}</strong>
-          </div>
-          <div class="clock-preview-meta__item">
-            <span>秒钟</span>
-            <strong>{{ config.showSeconds ? "显示" : "隐藏" }}</strong>
+        <div class="clock-preview-stage game-preview-stage">
+          <div class="clock-preview-board">
+            <ClockPixelCanvas :frame="previewFrame" rounded />
+            <DeviceSendingOverlay
+              :visible="isSending"
+              title="正在发送时钟配置"
+              description="发送期间锁定当前预览快照，等待设备完成模式切换和事务提交。"
+            >
+              <div class="clock-preview-sending">
+                <ClockPixelCanvas :frame="sendingFrame" rounded />
+              </div>
+            </DeviceSendingOverlay>
           </div>
         </div>
 
-        <div class="glx-inline-actions">
-          <button type="button" class="glx-button glx-button--primary" :disabled="isSending" @click="sendToDevice">
-            {{ isSending ? "发送中..." : "发送到设备" }}
-          </button>
-          <button type="button" class="glx-button glx-button--ghost" @click="resetConfig">恢复默认</button>
+        <div class="clock-summary-grid">
+          <article class="clock-summary-card">
+            <span class="clock-summary-card__label">模式</span>
+            <strong class="clock-summary-card__value">{{ modeLabel }}</strong>
+            <span class="clock-summary-card__meta">{{ imageSendCapabilityText }}</span>
+          </article>
+          <article class="clock-summary-card">
+            <span class="clock-summary-card__label">字体</span>
+            <strong class="clock-summary-card__value">{{ selectedFontName }}</strong>
+            <span class="clock-summary-card__meta">
+              {{ config.hourFormat === 24 ? "24 小时" : "12 小时" }}
+            </span>
+          </article>
+          <article class="clock-summary-card">
+            <span class="clock-summary-card__label">秒钟</span>
+            <strong class="clock-summary-card__value">
+              {{ config.showSeconds ? "显示" : "隐藏" }}
+            </strong>
+            <span class="clock-summary-card__meta">{{ sendHint }}</span>
+          </article>
         </div>
-
-        <p class="clock-inline-note">{{ sendHint }}</p>
       </article>
 
-      <div class="clock-editor-stack">
+      <div class="clock-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
+          <div class="glx-section-head">
+            <h2 class="glx-section-title">模式配置</h2>
+            <span class="glx-section-meta">时间 / 字体 / 图片 / 日期 / 星期</span>
+          </div>
           <div class="glx-tabs">
             <button
               v-for="tab in tabs"
@@ -80,7 +95,9 @@
               {{ tab.label }}
             </button>
           </div>
+        </article>
 
+        <article class="glx-section-card glx-section-card--stack">
           <ClockTextSettingsSection
             v-if="activeTab === 'time'"
             title="时间显示"
@@ -179,6 +196,7 @@ import { GIFParser } from "../../../../../uniapp/utils/gifParser.js";
 import { useFeedback } from "@/composables/useFeedback.js";
 import { useDeviceLegacyStore } from "@/stores/deviceLegacy.js";
 import DeviceSendingOverlay from "@/components/device/DeviceSendingOverlay.vue";
+import PcModeTopbar from "@/components/device/modes/PcModeTopbar.vue";
 import ClockFontSelector from "./ClockFontSelector.vue";
 import ClockImageSettingsSection from "./ClockImageSettingsSection.vue";
 import ClockPixelCanvas from "./ClockPixelCanvas.vue";
@@ -768,70 +786,115 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.clock-editor-layout {
+.game-mode-page {
+  gap: 24px;
+}
+
+.clock-mode-page {
+  background: linear-gradient(180deg, #eef3ff 0%, #f7f4eb 100%);
+}
+
+.clock-mode-layout {
   display: grid;
-  grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
 }
 
 .clock-preview-card {
-  position: sticky;
-  top: 88px;
-  align-self: start;
+  gap: 16px;
 }
 
 .clock-preview-card__head {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 16px;
 }
 
-.clock-preview-stage {
-  position: relative;
-  padding: 18px;
-  border: 2px solid #000000;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.06), transparent 42%),
-    #101316;
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.08);
+.clock-preview-card__eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--glx-text-muted);
 }
 
-.clock-preview-meta {
+.clock-preview-card__title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  color: #000000;
+}
+
+.clock-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.clock-preview-toolbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.clock-send-button {
+  min-width: 188px;
+  min-height: 48px;
+}
+
+.clock-preview-stage {
+  padding: 18px;
+}
+
+.clock-preview-board {
+  position: relative;
+  width: min(100%, 560px);
+  margin: 0 auto;
+}
+
+.clock-preview-sending {
+  width: 100%;
+  height: 100%;
+}
+
+.clock-summary-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
-.clock-preview-meta__item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px;
+.clock-summary-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
   border: 2px solid #000000;
   background: #ffffff;
 }
 
-.clock-preview-meta__item span {
+.clock-summary-card__label {
   font-size: 12px;
+  font-weight: 800;
   color: var(--glx-text-muted);
 }
 
-.clock-preview-meta__item strong {
-  font-size: 15px;
+.clock-summary-card__value {
+  font-size: 16px;
+  font-weight: 900;
+  color: #000000;
 }
 
-.clock-inline-note {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.6;
+.clock-summary-card__meta {
+  font-size: 12px;
+  line-height: 1.5;
   color: var(--glx-text-muted);
 }
 
-.clock-editor-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.clock-config-stack {
+  min-width: 0;
 }
 
 .clock-note-list {
@@ -847,18 +910,18 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 1080px) {
-  .clock-editor-layout {
+  .clock-mode-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .clock-preview-card {
-    position: static;
+  .clock-summary-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (max-width: 640px) {
-  .clock-preview-meta {
-    grid-template-columns: minmax(0, 1fr);
+  .clock-preview-toolbar__actions {
+    width: 100%;
   }
 }
 </style>

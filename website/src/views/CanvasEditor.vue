@@ -1,210 +1,269 @@
 <template>
-  <div class="glx-page-shell canvas-editor-page">
-    <section class="glx-page-shell__hero">
-      <span class="glx-page-shell__eyebrow">Canvas Mode</span>
-      <h1 class="glx-page-shell__title">画板模式</h1>
-      <p class="glx-page-shell__desc">
-        这里按 `uniapp/canvas-editor` 的正式链路复刻 64×64 画板编辑：本地缓存恢复、预览编辑、清空撤销、切到画板模式后发送稀疏像素都在这一页完成。
-      </p>
+  <div class="canvas-editor-page glx-page-shell game-mode-page">
+    <PcModeTopbar title="画板模式" />
 
-      <div class="glx-inline-actions">
-        <router-link to="/device-control" class="glx-button glx-button--ghost">返回设备控制</router-link>
-        <router-link to="/device-params" class="glx-button glx-button--ghost">设备参数</router-link>
-      </div>
-
-      <div class="glx-hero-metrics">
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">连接状态</span>
-          <strong class="glx-hero-metric__value">{{ deviceStore.connected ? "已连接" : "未连接" }}</strong>
-        </article>
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">已上色像素</span>
-          <strong class="glx-hero-metric__value">{{ coloredPixelCount }}</strong>
-        </article>
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">当前缩放</span>
-          <strong class="glx-hero-metric__value">{{ zoom }}x</strong>
-        </article>
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">当前业务模式</span>
-          <strong class="glx-hero-metric__value">{{ businessModeText }}</strong>
-        </article>
-      </div>
-    </section>
-
-    <section class="canvas-editor-layout">
-      <article class="glx-section-card glx-section-card--stack canvas-editor-preview-card">
+    <section class="canvas-editor-layout game-mode-layout">
+      <article
+        class="glx-section-card glx-section-card--stack canvas-editor-preview-card game-preview-card"
+      >
         <div class="canvas-editor-preview-card__head">
           <div>
-            <h2 class="glx-section-title">预览效果</h2>
+            <p class="canvas-editor-preview-card__eyebrow">Device Mode</p>
+            <h2 class="canvas-editor-preview-card__title">64x64 画板预览</h2>
             <p class="canvas-editor-preview-card__desc">
-              黑底预览舞台和正式发送使用同一份 64×64 像素数据；拖动画板时切到“拖动”，绘制时切到“绘画”或“擦除”。
+              左侧统一保留预览、发送和摘要信息，原来的画布编辑、缩放、拖动和发送逻辑不变。
             </p>
           </div>
-          <span class="glx-chip glx-chip--blue">64 × 64</span>
+          <span class="glx-chip glx-chip--blue">64 x 64</span>
         </div>
 
-        <div ref="stageRef" class="canvas-editor-stage">
-          <canvas
-            ref="canvasRef"
-            class="canvas-editor-stage__canvas"
-            :class="{
-              'canvas-editor-stage__canvas--drag': currentTool === 'move',
-            }"
-            @pointerdown="handlePointerDown"
-            @pointermove="handlePointerMove"
-            @pointerup="handlePointerUp"
-            @pointerleave="handlePointerUp"
-            @pointercancel="handlePointerUp"
-            @wheel.prevent="handleWheel"
-          ></canvas>
-          <DeviceSendingOverlay
-            :visible="isSending"
-            title="正在发送画板像素"
-            description="发送期间锁定当前 64×64 快照，等待设备完成画板模式切换和稀疏像素写入。"
-          >
-            <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
-          </DeviceSendingOverlay>
-        </div>
-
-        <div class="canvas-editor-preview-bar">
-          <div class="canvas-editor-preview-bar__copy">
-            <strong class="canvas-editor-preview-bar__title">首屏预览</strong>
-            <span class="canvas-editor-preview-bar__desc">
-              {{ currentToolLabel }} · 画笔 {{ brushSize }}x{{ brushSize }}
-            </span>
-          </div>
-
-          <div class="glx-inline-actions">
+        <div class="canvas-editor-preview-toolbar">
+          <div class="canvas-editor-preview-actions">
             <button
               type="button"
-              class="glx-button glx-button--primary"
+              class="glx-button glx-button--primary canvas-editor-send-button"
               :disabled="isSending"
               @click="publishCanvas"
             >
-              {{ isSending ? "发送中..." : "发送" }}
+              {{ isSending ? "发送中..." : "发送到设备" }}
             </button>
-            <button type="button" class="glx-button glx-button--ghost" @click="handleFit">
+            <button
+              type="button"
+              class="glx-button glx-button--ghost"
+              @click="handleFit"
+            >
               适配
             </button>
           </div>
+
+          <div class="canvas-editor-preview-chips">
+            <span
+              class="glx-chip"
+              :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
+            >
+              {{ deviceStore.connected ? "已连接" : "未连接" }}
+            </span>
+            <span class="glx-chip glx-chip--blue">{{ currentToolLabel }}</span>
+          </div>
+        </div>
+
+        <div class="canvas-editor-preview-stage game-preview-stage">
+          <div ref="stageRef" class="canvas-editor-stage">
+            <canvas
+              ref="canvasRef"
+              class="canvas-editor-stage__canvas"
+              :class="{
+                'canvas-editor-stage__canvas--drag': currentTool === 'move',
+              }"
+              @pointerdown="handlePointerDown"
+              @pointermove="handlePointerMove"
+              @pointerup="handlePointerUp"
+              @pointerleave="handlePointerUp"
+              @pointercancel="handlePointerUp"
+              @wheel.prevent="handleWheel"
+            ></canvas>
+            <DeviceSendingOverlay
+              :visible="isSending"
+              title="正在发送画板像素"
+              description="发送期间锁定当前 64×64 快照，等待设备完成画板模式切换和稀疏像素写入。"
+            >
+              <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
+            </DeviceSendingOverlay>
+          </div>
+        </div>
+
+        <div class="canvas-editor-summary-grid">
+          <article class="canvas-editor-summary-card">
+            <span class="canvas-editor-summary-card__label">已上色像素</span>
+            <strong class="canvas-editor-summary-card__value">{{ coloredPixelCount }}</strong>
+            <span class="canvas-editor-summary-card__meta">当前画布非空像素数量</span>
+          </article>
+          <article class="canvas-editor-summary-card">
+            <span class="canvas-editor-summary-card__label">当前缩放</span>
+            <strong class="canvas-editor-summary-card__value">{{ zoom }}x</strong>
+            <span class="canvas-editor-summary-card__meta">滚轮和快捷按钮同步生效</span>
+          </article>
+          <article class="canvas-editor-summary-card">
+            <span class="canvas-editor-summary-card__label">拖动偏移</span>
+            <strong class="canvas-editor-summary-card__value">{{ panText }}</strong>
+            <span class="canvas-editor-summary-card__meta">拖动画布时更新当前视口</span>
+          </article>
+          <article class="canvas-editor-summary-card">
+            <span class="canvas-editor-summary-card__label">业务模式</span>
+            <strong class="canvas-editor-summary-card__value">{{ businessModeText }}</strong>
+            <span class="canvas-editor-summary-card__meta">{{ storageKey }}</span>
+          </article>
         </div>
       </article>
 
-      <div class="canvas-editor-stack">
+      <div class="canvas-editor-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">快捷操作</h2>
-            <span class="glx-section-meta">清空 / 撤销 / 视图</span>
+            <h2 class="glx-section-title">模式配置</h2>
+            <span class="glx-section-meta">操作 / 绘制 / 状态</span>
           </div>
-
-          <div class="canvas-editor-action-grid">
-            <button
-              type="button"
-              class="canvas-editor-action-btn"
-              :disabled="historyIndex <= 0"
-              @click="handleUndo"
-            >
-              撤销
-            </button>
-            <button
-              type="button"
-              class="canvas-editor-action-btn"
-              :disabled="historyIndex >= history.length - 1"
-              @click="handleRedo"
-            >
-              重做
-            </button>
-            <button type="button" class="canvas-editor-action-btn" @click="handleZoom(-1)">
-              缩小
-            </button>
-            <button type="button" class="canvas-editor-action-btn" @click="handleZoom(1)">
-              放大
-            </button>
-            <button type="button" class="canvas-editor-action-btn" @click="handleFit">
-              适配
-            </button>
-            <button type="button" class="canvas-editor-action-btn canvas-editor-action-btn--danger" @click="clearCanvas">
-              清空
-            </button>
-          </div>
+          <DeviceModeTabs v-model="currentPanel" :items="panelItems" />
         </article>
 
-        <article class="glx-section-card glx-section-card--stack">
-          <div class="glx-section-head">
-            <h2 class="glx-section-title">绘制工具</h2>
-            <span class="glx-section-meta">拖动 / 绘画 / 擦除</span>
-          </div>
-
-          <DeviceModeTabs v-model="currentTool" :items="toolItems" />
-        </article>
-
-        <article
-          v-if="currentTool !== 'move'"
-          class="glx-section-card glx-section-card--stack"
-        >
-          <div class="glx-section-head">
-            <h2 class="glx-section-title">笔触大小</h2>
-            <span class="glx-section-meta">与 uniapp 对齐</span>
-          </div>
-
-          <DeviceModeTabs v-model="brushSize" :items="brushSizeItems" />
-        </article>
-
-        <article
-          v-if="currentTool !== 'move'"
-          class="glx-section-card glx-section-card--stack"
-        >
-          <div class="glx-section-head">
-            <h2 class="glx-section-title">画笔颜色</h2>
-            <span class="glx-section-meta">本地缓存画布数据</span>
-          </div>
-
-          <div class="canvas-editor-color-row">
-            <label class="canvas-editor-color-picker">
-              <span class="canvas-editor-color-picker__label">当前颜色</span>
-              <input
-                type="color"
-                :value="selectedColor"
-                class="canvas-editor-color-picker__input"
-                @input="handleNativeColorInput($event.target.value)"
-              />
-            </label>
-
-            <div class="canvas-editor-color-code">
-              <span class="canvas-editor-color-code__label">颜色值</span>
-              <strong class="canvas-editor-color-code__value">{{ selectedColor }}</strong>
+        <template v-if="currentPanel === 'actions'">
+          <article class="glx-section-card glx-section-card--stack">
+            <div class="glx-section-head">
+              <h2 class="glx-section-title">快捷操作</h2>
+              <span class="glx-section-meta">撤销 / 重做 / 视图 / 清空</span>
             </div>
-          </div>
 
-          <DeviceColorSwatches v-model="selectedColor" :items="presetColors" />
-        </article>
+            <div class="canvas-editor-action-grid">
+              <button
+                type="button"
+                class="canvas-editor-action-btn"
+                :disabled="historyIndex <= 0"
+                @click="handleUndo"
+              >
+                撤销
+              </button>
+              <button
+                type="button"
+                class="canvas-editor-action-btn"
+                :disabled="historyIndex >= history.length - 1"
+                @click="handleRedo"
+              >
+                重做
+              </button>
+              <button type="button" class="canvas-editor-action-btn" @click="handleZoom(-1)">
+                缩小
+              </button>
+              <button type="button" class="canvas-editor-action-btn" @click="handleZoom(1)">
+                放大
+              </button>
+              <button type="button" class="canvas-editor-action-btn" @click="handleFit">
+                适配
+              </button>
+              <button
+                type="button"
+                class="canvas-editor-action-btn canvas-editor-action-btn--danger"
+                @click="clearCanvas"
+              >
+                清空
+              </button>
+            </div>
+          </article>
 
-        <article class="glx-section-card glx-section-card--stack">
-          <div class="glx-section-head">
-            <h2 class="glx-section-title">当前状态</h2>
-            <span class="glx-section-meta">本地缓存已启用</span>
-          </div>
+          <article class="glx-section-card glx-section-card--stack">
+            <div class="glx-section-head">
+              <h2 class="glx-section-title">操作说明</h2>
+              <span class="glx-section-meta">保留原有画布交互</span>
+            </div>
 
-          <div class="glx-kv-grid">
-            <div class="glx-kv-card">
-              <span class="glx-kv-card__label">本地缓存键</span>
-              <strong class="glx-kv-card__value">{{ storageKey }}</strong>
+            <div class="canvas-editor-note-grid">
+              <div class="canvas-editor-note-card">
+                <strong>拖动模式</strong>
+                <p>切到拖动工具后可移动视口，方便检查边缘绘制区域。</p>
+              </div>
+              <div class="canvas-editor-note-card">
+                <strong>发送逻辑</strong>
+                <p>发送时仍使用当前 64×64 稀疏像素快照，不改业务链路。</p>
+              </div>
             </div>
-            <div class="glx-kv-card">
-              <span class="glx-kv-card__label">画布尺寸</span>
-              <strong class="glx-kv-card__value">64 × 64</strong>
+          </article>
+        </template>
+
+        <template v-else-if="currentPanel === 'draw'">
+          <article class="glx-section-card glx-section-card--stack">
+            <div class="glx-section-head">
+              <h2 class="glx-section-title">绘制工具</h2>
+              <span class="glx-section-meta">拖动 / 绘画 / 擦除</span>
             </div>
-            <div class="glx-kv-card">
-              <span class="glx-kv-card__label">拖动偏移</span>
-              <strong class="glx-kv-card__value">{{ panText }}</strong>
+
+            <DeviceModeTabs v-model="currentTool" :items="toolItems" />
+          </article>
+
+          <article
+            v-if="currentTool !== 'move'"
+            class="glx-section-card glx-section-card--stack"
+          >
+            <div class="glx-section-head">
+              <h2 class="glx-section-title">笔触大小</h2>
+              <span class="glx-section-meta">与移动端保持同一规格</span>
             </div>
-            <div class="glx-kv-card">
-              <span class="glx-kv-card__label">当前工具</span>
-              <strong class="glx-kv-card__value">{{ currentToolLabel }}</strong>
+
+            <DeviceModeTabs v-model="brushSize" :items="brushSizeItems" />
+          </article>
+
+          <article
+            v-if="currentTool !== 'move'"
+            class="glx-section-card glx-section-card--stack"
+          >
+            <div class="glx-section-head">
+              <h2 class="glx-section-title">画笔颜色</h2>
+              <span class="glx-section-meta">本地缓存画布数据</span>
             </div>
-          </div>
-        </article>
+
+            <div class="canvas-editor-color-row">
+              <label class="canvas-editor-color-picker">
+                <span class="canvas-editor-color-picker__label">当前颜色</span>
+                <input
+                  type="color"
+                  :value="selectedColor"
+                  class="canvas-editor-color-picker__input"
+                  @input="handleNativeColorInput($event.target.value)"
+                />
+              </label>
+
+              <div class="canvas-editor-color-code">
+                <span class="canvas-editor-color-code__label">颜色值</span>
+                <strong class="canvas-editor-color-code__value">{{ selectedColor }}</strong>
+              </div>
+            </div>
+
+            <DeviceColorSwatches v-model="selectedColor" :items="presetColors" />
+          </article>
+        </template>
+
+        <template v-else>
+          <article class="glx-section-card glx-section-card--stack">
+            <div class="glx-section-head">
+              <h2 class="glx-section-title">当前状态</h2>
+              <span class="glx-section-meta">本地缓存已启用</span>
+            </div>
+
+            <div class="glx-kv-grid">
+              <div class="glx-kv-card">
+                <span class="glx-kv-card__label">本地缓存键</span>
+                <strong class="glx-kv-card__value">{{ storageKey }}</strong>
+              </div>
+              <div class="glx-kv-card">
+                <span class="glx-kv-card__label">画布尺寸</span>
+                <strong class="glx-kv-card__value">64 × 64</strong>
+              </div>
+              <div class="glx-kv-card">
+                <span class="glx-kv-card__label">拖动偏移</span>
+                <strong class="glx-kv-card__value">{{ panText }}</strong>
+              </div>
+              <div class="glx-kv-card">
+                <span class="glx-kv-card__label">当前工具</span>
+                <strong class="glx-kv-card__value">{{ currentToolLabel }}</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="glx-section-card glx-section-card--stack">
+            <div class="glx-section-head">
+              <h2 class="glx-section-title">发送状态</h2>
+              <span class="glx-section-meta">设备连接与模式同步</span>
+            </div>
+
+            <div class="canvas-editor-note-grid">
+              <div class="canvas-editor-note-card">
+                <strong>连接状态</strong>
+                <p>{{ deviceStore.connected ? "设备已连接，可直接发送画板。" : "当前未连接，发送前需要先连接设备。" }}</p>
+              </div>
+              <div class="canvas-editor-note-card">
+                <strong>业务模式</strong>
+                <p>{{ businessModeText }}</p>
+              </div>
+            </div>
+          </article>
+        </template>
       </div>
     </section>
   </div>
@@ -216,6 +275,7 @@ import DeviceSendingOverlay from "@/components/device/DeviceSendingOverlay.vue";
 import DevicePixelBoard from "@/components/device/modes/DevicePixelBoard.vue";
 import DeviceColorSwatches from "@/components/device/modes/DeviceColorSwatches.vue";
 import DeviceModeTabs from "@/components/device/modes/DeviceModeTabs.vue";
+import PcModeTopbar from "@/components/device/modes/PcModeTopbar.vue";
 import { useFeedback } from "@/composables/useFeedback.js";
 import { useDeviceLegacyStore } from "@/stores/deviceLegacy.js";
 import { hexToRgb, normalizeHexColor, readStorageJson, writeStorageJson } from "@/utils/device-mode-core.js";
@@ -239,6 +299,12 @@ const brushSizeItems = Object.freeze([
   { value: 4, label: "4x4" },
 ]);
 
+const panelItems = Object.freeze([
+  { value: "actions", label: "操作" },
+  { value: "draw", label: "绘制" },
+  { value: "status", label: "状态" },
+]);
+
 const presetColors = Object.freeze([
   { label: "冰蓝", value: "#64c8ff" },
   { label: "亮黄", value: "#ffd23f" },
@@ -258,6 +324,7 @@ const canvasRef = ref(null);
 const pixels = ref(new Map());
 const history = ref([]);
 const historyIndex = ref(-1);
+const currentPanel = ref("actions");
 const currentTool = ref("pencil");
 const brushSize = ref(1);
 const selectedColor = ref("#64c8ff");
@@ -779,19 +846,19 @@ function buildSparsePixels() {
 
 <style scoped>
 .canvas-editor-page {
+  background: linear-gradient(180deg, #eef3ff 0%, #f7f4eb 100%);
   gap: 24px;
 }
 
 .canvas-editor-layout {
   display: grid;
-  grid-template-columns: minmax(340px, 0.98fr) minmax(0, 1.02fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
   align-items: start;
 }
 
 .canvas-editor-preview-card {
-  position: sticky;
-  top: 88px;
+  gap: 16px;
 }
 
 .canvas-editor-preview-card__head {
@@ -801,20 +868,63 @@ function buildSparsePixels() {
   gap: 16px;
 }
 
+.canvas-editor-preview-card__eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--glx-text-muted);
+}
+
+.canvas-editor-preview-card__title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  color: #000000;
+}
+
 .canvas-editor-preview-card__desc {
   margin: 6px 0 0;
-  color: var(--nb-text-secondary);
+  color: var(--glx-text-muted);
   font-size: 13px;
   line-height: 1.7;
 }
 
+.canvas-editor-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.canvas-editor-preview-actions,
+.canvas-editor-preview-chips {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.canvas-editor-send-button {
+  min-width: 188px;
+  min-height: 48px;
+}
+
+.canvas-editor-preview-stage {
+  padding: 18px;
+}
+
 .canvas-editor-stage {
   position: relative;
-  width: 100%;
+  width: min(100%, 560px);
   aspect-ratio: 1;
+  margin: 0 auto;
   border: 2px solid #000000;
-  background: #000000;
-  box-shadow: 4px 4px 0 #000000;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 52%),
+    #000000;
   overflow: hidden;
   touch-action: none;
 }
@@ -830,32 +940,38 @@ function buildSparsePixels() {
   cursor: grab;
 }
 
-.canvas-editor-preview-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.canvas-editor-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
-  flex-wrap: wrap;
-  padding: 14px 16px;
+}
+
+.canvas-editor-summary-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
   border: 2px solid #000000;
   background: #ffffff;
 }
 
-.canvas-editor-preview-bar__copy {
-  display: grid;
-  gap: 4px;
+.canvas-editor-summary-card__label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--glx-text-muted);
 }
 
-.canvas-editor-preview-bar__title {
-  color: var(--nb-ink);
-  font-size: 15px;
+.canvas-editor-summary-card__value {
+  font-size: 16px;
+  line-height: 1.3;
   font-weight: 900;
+  color: #000000;
+  word-break: break-word;
 }
 
-.canvas-editor-preview-bar__desc {
-  color: var(--nb-text-secondary);
-  font-size: 13px;
-  line-height: 1.6;
+.canvas-editor-summary-card__meta {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--glx-text-muted);
 }
 
 .canvas-editor-stack {
@@ -871,7 +987,7 @@ function buildSparsePixels() {
 }
 
 .canvas-editor-action-btn {
-  min-height: 54px;
+  min-height: 48px;
   padding: 12px 10px;
   border: 2px solid #000000;
   background: #ffffff;
@@ -888,6 +1004,33 @@ function buildSparsePixels() {
 
 .canvas-editor-action-btn--danger {
   background: #ffd6d6;
+}
+
+.canvas-editor-note-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.canvas-editor-note-card {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 2px solid #000000;
+  background: #ffffff;
+}
+
+.canvas-editor-note-card strong {
+  font-size: 14px;
+  font-weight: 900;
+  color: #000000;
+}
+
+.canvas-editor-note-card p {
+  margin: 0;
+  color: var(--glx-text-muted);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .canvas-editor-color-row {
@@ -930,19 +1073,37 @@ function buildSparsePixels() {
   text-transform: lowercase;
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1180px) {
   .canvas-editor-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .canvas-editor-preview-card {
-    position: static;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 920px) {
+  .canvas-editor-layout,
+  .canvas-editor-summary-grid,
+  .canvas-editor-note-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
   .canvas-editor-action-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .canvas-editor-preview-toolbar {
+    align-items: stretch;
+  }
+
+  .canvas-editor-preview-actions,
+  .canvas-editor-preview-chips {
+    width: 100%;
+  }
+
+  .canvas-editor-send-button {
+    min-width: 0;
+    flex: 1 1 auto;
   }
 
   .canvas-editor-color-row {

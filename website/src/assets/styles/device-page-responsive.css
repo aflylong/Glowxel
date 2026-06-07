@@ -1,0 +1,94 @@
+.glx-device-shell {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--nb-paper);
+  overflow: hidden;
+}
+
+.glx-device-shell__content {
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.glx-device-shell__section {
+  margin-bottom: 24rpx;
+}
+
+.glx-device-shell__section:last-child {
+  margin-bottom: 0;
+}
+
+.glx-device-shell__spacer {
+  height: 120rpx;
+}
+
+@media (min-width: 769px) {
+  .glx-device-shell {
+    height: auto;
+    min-height: auto;
+    padding: 0;
+    gap: 18px;
+    overflow: visible;
+  }
+
+  .glx-device-shell > .status-bar,
+  .glx-device-shell__status-bar {
+    display: none;
+  }
+
+  .glx-device-shell__topbar {
+    position: static !important;
+    min-height: 72px;
+    border: 3px solid var(--nb-ink);
+    box-shadow: var(--glx-shadow-card);
+    background: #ffffff;
+  }
+
+  .glx-device-shell__topbar .header-content {
+    min-height: 72px;
+    height: auto;
+    padding: 0 24px;
+  }
+
+  .glx-device-shell__topbar .header-placeholder {
+    display: none;
+  }
+
+  .glx-device-shell__content {
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  .glx-device-shell--desktop-stack .glx-device-shell__content {
+    display: grid;
+    gap: 18px;
+  }
+
+  .glx-device-shell--desktop-grid .glx-device-shell__content {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    align-items: start;
+  }
+
+  .glx-device-shell--desktop-grid
+    .glx-device-shell__section.glx-device-shell__section--full {
+    grid-column: 1 / -1;
+  }
+
+  .glx-device-shell__section {
+    margin-bottom: 0 !important;
+  }
+
+  .glx-device-shell__spacer {
+    height: 0 !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 980px) {
+  .glx-device-shell--desktop-grid .glx-device-shell__content {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

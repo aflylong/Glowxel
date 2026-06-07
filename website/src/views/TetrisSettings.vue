@@ -1,44 +1,73 @@
 <template>
-  <div class="glx-page-shell game-mode-page">
-    <section class="game-mode-layout">
-      <article class="glx-section-card glx-section-card--stack game-preview-card">
-        <div class="game-preview-card__head">
+  <div class="tetris-page glx-page-shell game-mode-page">
+    <PcModeTopbar title="俄罗斯方块屏保" />
+
+    <section class="tetris-layout game-mode-layout">
+      <article
+        class="glx-section-card glx-section-card--stack tetris-preview-card game-preview-card"
+      >
+        <div class="tetris-preview-card__head">
           <div>
-            <h1 class="game-page-title">俄罗斯方块屏保</h1>
-            <p class="game-page-meta">首屏预览直接走本地俄罗斯方块状态机，发送时保持和 uniapp 同一组时钟叠层字段。</p>
+            <p class="tetris-preview-card__eyebrow">Device Mode</p>
+            <h2 class="tetris-preview-card__title">俄罗斯方块屏保预览</h2>
           </div>
-          <span class="glx-chip" :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'">
-            {{ deviceStore.connected ? "已连接" : "未连接" }}
-          </span>
         </div>
 
-        <div class="game-preview-stage">
-          <DevicePixelBoard :pixels="displayPixels" :grid-visible="true" />
-          <DeviceSendingOverlay
-            :visible="isSending"
-            title="正在发送俄罗斯方块屏保"
-            description="发送期间锁定当前预览快照，等待设备完成屏保参数事务提交。"
-          >
-            <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
-          </DeviceSendingOverlay>
-        </div>
-
-        <div class="game-preview-actions">
+        <div class="tetris-preview-toolbar">
           <button
             type="button"
-            class="glx-button glx-button--primary"
+            class="glx-button glx-button--primary tetris-send-button"
             :disabled="isSending"
             @click="handleSend"
           >
             {{ isSending ? "发送中..." : "发送到设备" }}
           </button>
+          <span
+            class="glx-chip"
+            :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
+          >
+            {{ deviceStore.connected ? "已连接" : "未连接" }}
+          </span>
+        </div>
+
+        <div class="tetris-preview-stage game-preview-stage">
+          <div class="tetris-preview-board">
+            <DevicePixelBoard :pixels="displayPixels" :grid-visible="true" />
+            <DeviceSendingOverlay
+              :visible="isSending"
+              title="正在发送俄罗斯方块屏保"
+              description="发送期间锁定当前预览快照，等待设备完成屏保参数事务提交。"
+            >
+              <div class="tetris-preview-sending">
+                <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
+              </div>
+            </DeviceSendingOverlay>
+          </div>
+        </div>
+
+        <div class="tetris-summary-grid">
+          <article class="tetris-summary-card">
+            <span class="tetris-summary-card__label">模式</span>
+            <strong class="tetris-summary-card__value">{{ selectedClearModeLabel }}</strong>
+            <span class="tetris-summary-card__meta">方块 {{ selectedCellSizeLabel }}</span>
+          </article>
+          <article class="tetris-summary-card">
+            <span class="tetris-summary-card__label">速度</span>
+            <strong class="tetris-summary-card__value">{{ selectedSpeedLabel }}</strong>
+            <span class="tetris-summary-card__meta">{{ TETRIS_SPEED_OPTIONS[config.speed] }} ms</span>
+          </article>
+          <article class="tetris-summary-card">
+            <span class="tetris-summary-card__label">时间</span>
+            <strong class="tetris-summary-card__value">{{ selectedShowClockLabel }}</strong>
+            <span class="tetris-summary-card__meta">{{ selectedHourFormatLabel }}</span>
+          </article>
         </div>
       </article>
 
-      <div class="game-mode-stack">
+      <div class="tetris-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">分组</h2>
+            <h2 class="glx-section-title">模式配置</h2>
             <span class="glx-section-meta">屏保 / 时间 / 字体</span>
           </div>
           <DeviceModeTabs v-model="currentTab" :items="tabItems" />
@@ -163,6 +192,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import DeviceSendingOverlay from "@/components/device/DeviceSendingOverlay.vue";
+import PcModeTopbar from "@/components/device/modes/PcModeTopbar.vue";
 import { useFeedback } from "@/composables/useFeedback.js";
 import ClockTextSettingsSection from "@/components/device/clock/ClockTextSettingsSection.vue";
 import DeviceModeTabs from "@/components/device/modes/DeviceModeTabs.vue";
@@ -246,6 +276,30 @@ const displayPixels = computed(() => {
     return sendingPixels.value;
   }
   return currentPreviewMap.value;
+});
+
+const selectedClearModeLabel = computed(() => {
+  const matched = clearModeOptions.find((item) => item.value === config.clearMode);
+  return matched === undefined ? "--" : matched.label;
+});
+
+const selectedCellSizeLabel = computed(() => {
+  const matched = cellSizeOptions.find((item) => item.value === config.cellSize);
+  return matched === undefined ? "--" : matched.label;
+});
+
+const selectedSpeedLabel = computed(() => {
+  const matched = speedOptions.find((item) => item.value === config.speed);
+  return matched === undefined ? "--" : matched.label;
+});
+
+const selectedShowClockLabel = computed(() => {
+  const matched = showClockOptions.find((item) => item.value === config.showClock);
+  return matched === undefined ? "--" : matched.label;
+});
+
+const selectedHourFormatLabel = computed(() => {
+  return clockConfig.hourFormat === 12 ? "12 小时" : "24 小时";
 });
 
 const effectiveTimeSection = computed(() => {
@@ -693,54 +747,108 @@ async function handleSend() {
   gap: 24px;
 }
 
-.game-mode-layout {
+.tetris-page {
+  background: linear-gradient(180deg, #eef3ff 0%, #f7f4eb 100%);
+}
+
+.tetris-layout {
   display: grid;
-  grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
 }
 
-.game-preview-card {
-  position: sticky;
-  top: 88px;
-  align-self: start;
-}
-
-.game-preview-card__head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+.tetris-preview-card {
   gap: 16px;
 }
 
-.game-page-title {
+.tetris-preview-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.tetris-preview-card__eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--glx-text-muted);
+}
+
+.tetris-preview-card__title {
   margin: 0;
   font-size: 28px;
   font-weight: 900;
+  color: #000000;
 }
 
-.game-page-meta {
-  margin: 8px 0 0;
-  color: var(--glx-text-muted);
-  font-size: 13px;
-  line-height: 1.6;
+.tetris-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.game-preview-stage {
-  position: relative;
+.tetris-send-button {
+  min-width: 188px;
+  min-height: 48px;
+}
+
+.tetris-preview-stage {
   padding: 18px;
+}
+
+.tetris-preview-board {
+  position: relative;
+  width: min(100%, 560px);
+  margin: 0 auto;
+}
+
+.tetris-preview-board :deep(.device-pixel-board) {
+  box-shadow: none;
+}
+
+.tetris-preview-sending {
+  width: 100%;
+  height: 100%;
+}
+
+.tetris-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tetris-summary-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
   border: 2px solid #000000;
-  background: #000000;
+  background: #ffffff;
 }
 
-.game-preview-actions {
-  display: flex;
-  justify-content: flex-start;
+.tetris-summary-card__label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--glx-text-muted);
 }
 
-.game-mode-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.tetris-summary-card__value {
+  font-size: 16px;
+  font-weight: 900;
+  color: #000000;
+}
+
+.tetris-summary-card__meta {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--glx-text-muted);
+}
+
+.tetris-config-stack {
+  min-width: 0;
 }
 
 .game-choice-grid {
@@ -772,12 +880,12 @@ async function handleSend() {
 }
 
 @media (max-width: 1080px) {
-  .game-mode-layout {
+  .tetris-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .game-preview-card {
-    position: static;
+  .tetris-summary-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

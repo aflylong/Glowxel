@@ -1507,4 +1507,5 @@ export default {
   font-weight: 900;
   font-size: 22rpx;
 }
+
 </style>

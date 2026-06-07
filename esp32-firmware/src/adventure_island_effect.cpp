@@ -50,7 +50,7 @@ constexpr uint8_t kStumbleFrames = 24;
 constexpr uint8_t kStumbleHoist  = 12;
 
 // 滑板必栽阈值: 滑板态下成功跳过 >= 此值次障碍物后, 下一颗石头必撞
-constexpr uint8_t kSkateForceWipeoutAt = 15;
+constexpr uint8_t kSkateForceWipeoutAt = 5;
 
 // 实体高度
 constexpr uint8_t kCrowYOffset = 36;
@@ -150,7 +150,7 @@ struct Character {
   uint8_t  landing;
   uint16_t fairyT;
   uint8_t  stumbleT;    // 磕到滑板的停顿帧 (>0 显示 stumble)
-  uint8_t  skateJumpOverCount; // 滑板态下成功跳过的障碍物计数; >=15 时下一颗石头必撞
+  uint8_t  skateJumpOverCount; // 滑板态下成功跳过的障碍物计数; >=5 时下一颗石头必撞
 };
 
 struct SceneState {
@@ -671,7 +671,7 @@ void tickScene() {
           continue;
         }
       }
-      // 滑板撞石头(15% 没跳那次, 或达 15 次必栽): 角色被弹起 + stumble + 滑板掉
+      // 滑板撞石头(达到阈值后强制不跳): 角色被弹起 + stumble + 滑板掉
       // 必须角色基本贴地才算撞到 (jumpY < 4); 跳起来过 X 不算撞
       if (e.type == ET_OBS && e.sub == OS_ROCK && ch.type == 1 && ch.jumpY < 4.0f) {
         ch.type = 0;            // 滑板没了
@@ -809,12 +809,12 @@ void tickScene() {
     );
     if (distToChar > triggerStart && distToChar < triggerEnd) {
       if ((needJumpOver || needJumpForFruit) && !ch.jumping) {
-        // 滑板 + 石头: 默认 15% 概率不跳, 让石头撞上来 (碰撞段会触发磕到流程)
+        // 滑板 + 石头: 跳过足够多障碍后强制不跳, 让石头撞上来 (碰撞段会触发磕到流程)
         // 若 skateJumpOverCount 达阈值, 则强制不跳 (必撞)
         if (ch.type == 1 && e.type == ET_OBS && e.sub == OS_ROCK && !e.failChecked) {
           e.failChecked = true;
           bool forceWipeout = (ch.skateJumpOverCount >= kSkateForceWipeoutAt);
-          if (forceWipeout || rndi(100) < 15) {
+          if (forceWipeout) {
             // 不跳, 走碰撞分支
           } else {
             triggerJump();

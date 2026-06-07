@@ -152,6 +152,7 @@
       <rect x="9" y="14" width="2" height="2" fill="currentColor" />
       <rect x="13" y="14" width="2" height="2" fill="currentColor" />
     </template>
+
   </svg>
 </template>
 

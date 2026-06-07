@@ -1,7 +1,5 @@
-<template>
-  <DeviceControlConsole />
-</template>
+<script>
+import DeviceControlResponsive from "@/views/mobile/DeviceControl.vue";
 
-<script setup>
-import DeviceControlConsole from "@/components/device/DeviceControlConsole.vue";
+export default DeviceControlResponsive;
 </script>

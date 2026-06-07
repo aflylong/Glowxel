@@ -1,0 +1,51 @@
+[
+  {
+    "index": 0,
+    "era": "showa",
+    "name": "ウルトラマン",
+    "slug": "ultraman",
+    "previewPath": "preview-64/showa/ultraman.png"
+  },
+  {
+    "index": 1,
+    "era": "showa",
+    "name": "ゾフィー",
+    "slug": "zoffy",
+    "previewPath": "preview-64/showa/zoffy.png"
+  },
+  {
+    "index": 2,
+    "era": "showa",
+    "name": "ウルトラセブン",
+    "slug": "ultraseven",
+    "previewPath": "preview-64/showa/ultraseven.png"
+  },
+  {
+    "index": 3,
+    "era": "new-generation",
+    "name": "ウルトラマンゼロ",
+    "slug": "zero",
+    "previewPath": "preview-64/new-generation/zero.png"
+  },
+  {
+    "index": 4,
+    "era": "new-generation",
+    "name": "ウルトラマンデッカー",
+    "slug": "decker",
+    "previewPath": "preview-64/new-generation/decker.png"
+  },
+  {
+    "index": 5,
+    "era": "new-generation",
+    "name": "ウルトラマンブレーザー",
+    "slug": "ultraman-blazar",
+    "previewPath": "preview-64/new-generation/ultraman-blazar.png"
+  },
+  {
+    "index": 6,
+    "era": "new-generation",
+    "name": "ウルトラマンアーク",
+    "slug": "ultraman-arc",
+    "previewPath": "preview-64/new-generation/ultraman-arc.png"
+  }
+]

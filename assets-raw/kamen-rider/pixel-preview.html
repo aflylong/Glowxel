@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>假面骑士半身像像素预览</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0d1016;
+      --panel: rgba(18, 23, 32, 0.94);
+      --panel-2: #171d28;
+      --line: #2b3445;
+      --line-soft: #202736;
+      --text: #f3f6fb;
+      --muted: #98a7c2;
+      --accent: #7ee787;
+      --accent-2: #79c0ff;
+      --danger: #ff7b72;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(121, 192, 255, 0.12), transparent 36%),
+        linear-gradient(180deg, #0a0d12 0%, #111722 100%);
+      color: var(--text);
+      font: 14px/1.45 "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    .page {
+      width: min(1520px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-end;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 760px;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button,
+    select {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #161d28;
+      color: var(--text);
+      padding: 10px 14px;
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button.primary {
+      background: linear-gradient(180deg, #9be9a8 0%, #63d471 100%);
+      border-color: transparent;
+      color: #102014;
+      font-weight: 700;
+    }
+
+    button.ghost {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 560px minmax(420px, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line-soft);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.32);
+    }
+
+    .card-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line-soft);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .card-head h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .card-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .preview-wrap {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .canvas-stage {
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at top, rgba(126, 231, 135, 0.08), transparent 42%),
+        linear-gradient(180deg, #0d1117 0%, #141b24 100%);
+      border: 1px solid var(--line);
+    }
+
+    canvas {
+      width: 448px;
+      height: 448px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      background:
+        linear-gradient(45deg, #0f141d 25%, transparent 25%),
+        linear-gradient(-45deg, #0f141d 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #0f141d 75%),
+        linear-gradient(-45deg, transparent 75%, #0f141d 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+      border: 1px solid #384356;
+      border-radius: 12px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .meta-chip {
+      padding: 12px;
+      border-radius: 14px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+    }
+
+    .meta-chip strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.03em;
+    }
+
+    .meta-chip span {
+      font-family: Consolas, "SFMono-Regular", monospace;
+      font-size: 13px;
+    }
+
+    .source-preview {
+      display: grid;
+      gap: 10px;
+    }
+
+    .source-block {
+      display: grid;
+      gap: 8px;
+    }
+
+    .source-label {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+    }
+
+    .source-frame {
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      border-radius: 16px;
+      background:
+        linear-gradient(45deg, #111722 25%, transparent 25%),
+        linear-gradient(-45deg, #111722 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #111722 75%),
+        linear-gradient(-45deg, transparent 75%, #111722 75%);
+      background-size: 18px 18px;
+      background-position: 0 0, 0 9px, 9px -9px, -9px 0;
+      border: 1px solid var(--line);
+    }
+
+    .source-frame img {
+      max-width: 100%;
+      max-height: 260px;
+      display: block;
+    }
+
+    .control-wrap {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+      max-height: calc(100vh - 130px);
+      overflow: auto;
+    }
+
+    .section {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .section-title {
+      padding: 12px 14px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .section-body {
+      padding: 14px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .control {
+      display: grid;
+      gap: 8px;
+    }
+
+    .control-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .control-head code {
+      color: var(--muted);
+    }
+
+    .value {
+      color: var(--accent);
+      font-family: Consolas, "SFMono-Regular", monospace;
+      font-size: 13px;
+    }
+
+    .control input[type="range"] {
+      width: 100%;
+    }
+
+    .picker-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .picker-grid label {
+      display: grid;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .picker-grid select {
+      width: 100%;
+    }
+
+    .thumb-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+      gap: 10px;
+    }
+
+    .thumb {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #141a24;
+      padding: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: transform 120ms ease, border-color 120ms ease;
+    }
+
+    .thumb:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent-2);
+    }
+
+    .thumb.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(126, 231, 135, 0.4) inset;
+    }
+
+    .thumb img {
+      width: 64px;
+      height: 64px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      display: block;
+      margin: 0 auto 6px;
+      border-radius: 8px;
+      background: #0d1117;
+    }
+
+    .thumb span {
+      display: block;
+      font-size: 12px;
+      line-height: 1.3;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      resize: vertical;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #0f141c;
+      color: var(--text);
+      padding: 14px;
+      font: 13px/1.45 Consolas, "SFMono-Regular", monospace;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 1180px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .control-wrap {
+        max-height: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .hero {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      canvas {
+        width: min(82vw, 448px);
+        height: min(82vw, 448px);
+      }
+
+      .meta-grid,
+      .picker-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <div>
+        <h1>假面骑士半身像像素预览</h1>
+        <p>本地直接打开。`processed` 会保留原始处理尺寸，只做半身裁切；64×64 画布现在就是一个视口，里面直接看原始处理图像素。`scale=1` 代表 1:1 像素，不做自动适配。</p>
+      </div>
+      <div class="action-row">
+        <button id="resetBtn" class="ghost">恢复当前默认</button>
+        <button id="copyBtn" class="primary">复制当前 JSON</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="card">
+        <div class="card-head">
+          <h2>64×64 预览</h2>
+          <p>左侧是 `64×64` 视口。这里直接放原始处理图像素，默认可能只能看到局部；你自己用 `x / y / scale` 平移和缩放。</p>
+        </div>
+        <div class="preview-wrap">
+          <div class="canvas-stage">
+            <canvas id="previewCanvas" width="64" height="64"></canvas>
+          </div>
+          <div class="meta-grid">
+            <div class="meta-chip">
+              <strong>当前骑士</strong>
+              <span id="riderMeta">-</span>
+            </div>
+            <div class="meta-chip">
+              <strong>处理图原尺寸</strong>
+              <span id="imageMeta">-</span>
+            </div>
+            <div class="meta-chip">
+              <strong>当前缩放</strong>
+              <span id="scaleMeta">-</span>
+            </div>
+            <div class="meta-chip">
+              <strong>当前参数</strong>
+              <span id="positionMeta">x=0 y=0 scale=1.00</span>
+            </div>
+          </div>
+          <div class="source-preview">
+            <div class="source-block">
+              <div class="source-label">processed 半身图原始尺寸</div>
+              <div class="source-frame">
+                <img id="processedImage" alt="当前骑士半身处理图" />
+              </div>
+            </div>
+            <div class="source-block">
+              <div class="source-label">raw 官方原图</div>
+              <div class="source-frame">
+                <img id="rawImage" alt="当前骑士官方大图" />
+              </div>
+            </div>
+            <div class="status" id="loadStatus">等待载入素材</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>选择与调节</h2>
+          <p>先选年代、再选骑士。左侧 64×64 只负责当视口，右侧的 `processed` 原尺寸图用于看半身构图，`raw` 原图用于判断光效和细节层次。</p>
+        </div>
+        <div class="control-wrap">
+          <div class="section">
+            <div class="section-title">素材选择</div>
+            <div class="section-body">
+              <div class="picker-grid">
+                <label>
+                  <span>年代</span>
+                  <select id="eraSelect"></select>
+                </label>
+                <label>
+                  <span>骑士</span>
+                  <select id="riderSelect"></select>
+                </label>
+              </div>
+              <div class="thumb-grid" id="thumbGrid"></div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">预览参数</div>
+            <div class="section-body" id="controlSection"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">参数导出</div>
+            <div class="section-body">
+              <textarea id="jsonOut" readonly></textarea>
+              <div class="hint">当前只导出一个角色一份参数，字段就是 `slug / x / y / scale`。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./rider-manifest-page.js"></script>
+  <script>
+    const manifest = Array.isArray(window.KAMEN_RIDER_MANIFEST) ? window.KAMEN_RIDER_MANIFEST : [];
+    const previewCanvas = document.getElementById("previewCanvas");
+    const previewCtx = previewCanvas.getContext("2d", { alpha: true });
+    const processedImageEl = document.getElementById("processedImage");
+    const rawImageEl = document.getElementById("rawImage");
+    const eraSelect = document.getElementById("eraSelect");
+    const riderSelect = document.getElementById("riderSelect");
+    const thumbGrid = document.getElementById("thumbGrid");
+    const controlSection = document.getElementById("controlSection");
+    const jsonOut = document.getElementById("jsonOut");
+    const resetBtn = document.getElementById("resetBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const riderMeta = document.getElementById("riderMeta");
+    const imageMeta = document.getElementById("imageMeta");
+    const scaleMeta = document.getElementById("scaleMeta");
+    const positionMeta = document.getElementById("positionMeta");
+    const loadStatus = document.getElementById("loadStatus");
+
+    const STORAGE_KEY = "glowxel-kamen-rider-preview-presets-v2";
+    const ERA_LABELS = {
+      "showa": "昭和",
+      "heisei-early": "平成前期",
+      "heisei-late": "平成后期",
+      "reiwa": "令和"
+    };
+    const DEFAULT_PRESET = {
+      x: 0,
+      y: 0,
+      scale: 1
+    };
+    const CONTROLS = [
+      { key: "x", label: "横向位置", min: -1024, max: 1024, step: 1 },
+      { key: "y", label: "纵向位置", min: -1024, max: 1024, step: 1 },
+      { key: "scale", label: "缩放比例", min: 0.05, max: 16, step: 0.01 }
+    ];
+
+    const eraOrder = ["showa", "heisei-early", "heisei-late", "reiwa"];
+    const groupedManifest = new Map();
+    const riderMap = new Map();
+    const presetStore = loadPresetStore();
+    const imageCache = new Map();
+
+    let currentEra = eraOrder.find((era) => manifest.some((entry) => entry.era === era)) || "";
+    let currentSlug = "";
+
+    for (const entry of manifest) {
+      riderMap.set(entry.slug, entry);
+      if (!groupedManifest.has(entry.era)) {
+        groupedManifest.set(entry.era, []);
+      }
+      groupedManifest.get(entry.era).push(entry);
+    }
+
+    function loadPresetStore() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function savePresetStore() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(presetStore));
+      } catch (error) {
+        console.warn("preset save failed", error);
+      }
+    }
+
+    function getPreset(slug) {
+      const globalScale =
+        typeof presetStore.__globalScale === "number"
+          ? presetStore.__globalScale
+          : DEFAULT_PRESET.scale;
+
+      return {
+        ...DEFAULT_PRESET,
+        ...(presetStore[slug] || {}),
+        scale: globalScale
+      };
+    }
+
+    function setPresetValue(slug, key, value) {
+      if (key === "scale") {
+        presetStore.__globalScale = value;
+        savePresetStore();
+        return;
+      }
+
+      presetStore[slug] = {
+        ...getPreset(slug),
+        [key]: value
+      };
+      delete presetStore[slug].scale;
+      savePresetStore();
+    }
+
+    function ensureCurrentSlug() {
+      const eraList = groupedManifest.get(currentEra) || [];
+      if (!eraList.length) {
+        currentSlug = "";
+        return;
+      }
+
+      const exists = eraList.some((entry) => entry.slug === currentSlug);
+      if (!exists) {
+        currentSlug = eraList[0].slug;
+      }
+    }
+
+    function buildEraSelect() {
+      eraSelect.innerHTML = "";
+      for (const era of eraOrder) {
+        const items = groupedManifest.get(era);
+        if (!items || !items.length) {
+          continue;
+        }
+        const option = document.createElement("option");
+        option.value = era;
+        option.textContent = ERA_LABELS[era] || era;
+        eraSelect.appendChild(option);
+      }
+      eraSelect.value = currentEra;
+    }
+
+    function buildRiderSelect() {
+      riderSelect.innerHTML = "";
+      const eraList = groupedManifest.get(currentEra) || [];
+      for (const rider of eraList) {
+        const option = document.createElement("option");
+        option.value = rider.slug;
+        option.textContent = rider.name;
+        riderSelect.appendChild(option);
+      }
+      riderSelect.value = currentSlug;
+    }
+
+    function buildThumbGrid() {
+      thumbGrid.innerHTML = "";
+      const eraList = groupedManifest.get(currentEra) || [];
+
+      for (const rider of eraList) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "thumb" + (rider.slug === currentSlug ? " active" : "");
+        button.dataset.slug = rider.slug;
+        button.innerHTML = `
+          <img src="${rider.previewPath}" alt="${rider.name}" />
+          <span>${rider.name}</span>
+        `;
+        button.addEventListener("click", () => {
+          currentSlug = rider.slug;
+          buildRiderSelect();
+          buildThumbGrid();
+          buildControlSection();
+          renderCurrentRider();
+        });
+        thumbGrid.appendChild(button);
+      }
+    }
+
+    function buildControlSection() {
+      controlSection.innerHTML = "";
+      const preset = getPreset(currentSlug);
+
+      for (const control of CONTROLS) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "control";
+        wrapper.innerHTML = `
+          <div class="control-head">
+            <span>${control.label}</span>
+            <code>${control.key}</code>
+            <span class="value" id="value-${control.key}">${formatValue(control.key, preset[control.key])}</span>
+          </div>
+          <input
+            id="input-${control.key}"
+            type="range"
+            min="${control.min}"
+            max="${control.max}"
+            step="${control.step}"
+            value="${preset[control.key]}"
+          />
+        `;
+        controlSection.appendChild(wrapper);
+
+        const input = wrapper.querySelector(`#input-${control.key}`);
+        input.addEventListener("input", () => {
+          const nextValue = control.key === "scale" ? Number(input.value) : parseInt(input.value, 10);
+          setPresetValue(currentSlug, control.key, nextValue);
+          wrapper.querySelector(`#value-${control.key}`).textContent = formatValue(control.key, nextValue);
+          renderCurrentRider();
+        });
+      }
+    }
+
+    function formatValue(key, value) {
+      if (key === "scale") {
+        return Number(value).toFixed(2);
+      }
+      return String(value);
+    }
+
+    function getCurrentRider() {
+      return riderMap.get(currentSlug) || null;
+    }
+
+    function loadImageForRider(rider) {
+      if (!rider) {
+        return Promise.reject(new Error("missing rider"));
+      }
+
+      if (imageCache.has(rider.slug)) {
+        return Promise.resolve(imageCache.get(rider.slug));
+      }
+
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => {
+          imageCache.set(rider.slug, image);
+          resolve(image);
+        };
+        image.onerror = () => reject(new Error(`image load failed: ${rider.sourcePath}`));
+        image.src = rider.sourcePath;
+      });
+    }
+
+    function clearCanvas() {
+      previewCtx.clearRect(0, 0, 64, 64);
+      previewCtx.save();
+      previewCtx.fillStyle = "#0f141d";
+      previewCtx.fillRect(0, 0, 64, 64);
+      previewCtx.strokeStyle = "rgba(121, 192, 255, 0.12)";
+      previewCtx.lineWidth = 0.5;
+      for (let i = 0; i <= 64; i += 8) {
+        previewCtx.beginPath();
+        previewCtx.moveTo(i + 0.5, 0);
+        previewCtx.lineTo(i + 0.5, 64);
+        previewCtx.stroke();
+        previewCtx.beginPath();
+        previewCtx.moveTo(0, i + 0.5);
+        previewCtx.lineTo(64, i + 0.5);
+        previewCtx.stroke();
+      }
+      previewCtx.restore();
+    }
+
+    function drawRiderToCanvas(image, preset) {
+      clearCanvas();
+      previewCtx.imageSmoothingEnabled = false;
+
+      const finalScale = preset.scale;
+      const drawWidth = Math.max(1, Math.round(image.width * finalScale));
+      const drawHeight = Math.max(1, Math.round(image.height * finalScale));
+      const drawX = Math.round((64 - drawWidth) / 2 + preset.x);
+      const drawY = Math.round((64 - drawHeight) / 2 + preset.y);
+
+      previewCtx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+
+      return {
+        finalScale,
+        drawWidth,
+        drawHeight,
+        drawX,
+        drawY
+      };
+    }
+
+    function updateMeta(rider, image, preset, drawInfo) {
+      riderMeta.textContent = `${ERA_LABELS[rider.era] || rider.era} / ${rider.name}`;
+      imageMeta.textContent = `${image.width} × ${image.height}`;
+      scaleMeta.textContent = `${drawInfo.finalScale.toFixed(2)}x`;
+      positionMeta.textContent = `x=${preset.x} y=${preset.y} scale=${preset.scale.toFixed(2)}`;
+      processedImageEl.src = rider.sourcePath;
+      processedImageEl.alt = `${rider.name} 半身处理图`;
+      rawImageEl.src = rider.rawSourcePath;
+      rawImageEl.alt = `${rider.name} 官方原图`;
+      jsonOut.value = JSON.stringify({
+        slug: rider.slug,
+        name: rider.name,
+        era: rider.era,
+        x: preset.x,
+        y: preset.y,
+        scale: Number(preset.scale.toFixed(2))
+      }, null, 2);
+    }
+
+    async function renderCurrentRider() {
+      const rider = getCurrentRider();
+      if (!rider) {
+        clearCanvas();
+        loadStatus.textContent = "当前年代没有可用素材";
+        return;
+      }
+
+      const preset = getPreset(rider.slug);
+      loadStatus.textContent = `正在载入 ${rider.name} ...`;
+
+      try {
+        const image = await loadImageForRider(rider);
+        const drawInfo = drawRiderToCanvas(image, preset);
+        updateMeta(rider, image, preset, drawInfo);
+        loadStatus.textContent = `已载入 ${rider.name}，可以继续调 x / y / scale`;
+      } catch (error) {
+        clearCanvas();
+        loadStatus.textContent = `载入失败：${error.message}`;
+      }
+    }
+
+    function resetCurrentPreset() {
+      if (!currentSlug) {
+        return;
+      }
+      presetStore[currentSlug] = {
+        x: DEFAULT_PRESET.x,
+        y: DEFAULT_PRESET.y
+      };
+      presetStore.__globalScale = DEFAULT_PRESET.scale;
+      savePresetStore();
+      buildControlSection();
+      renderCurrentRider();
+    }
+
+    async function copyCurrentJson() {
+      try {
+        await navigator.clipboard.writeText(jsonOut.value);
+        copyBtn.textContent = "已复制";
+        setTimeout(() => {
+          copyBtn.textContent = "复制当前 JSON";
+        }, 1200);
+      } catch (error) {
+        copyBtn.textContent = "复制失败";
+        setTimeout(() => {
+          copyBtn.textContent = "复制当前 JSON";
+        }, 1200);
+      }
+    }
+
+    function bootstrap() {
+      ensureCurrentSlug();
+      buildEraSelect();
+      buildRiderSelect();
+      buildThumbGrid();
+      buildControlSection();
+      renderCurrentRider();
+    }
+
+    eraSelect.addEventListener("change", () => {
+      currentEra = eraSelect.value;
+      ensureCurrentSlug();
+      buildRiderSelect();
+      buildThumbGrid();
+      buildControlSection();
+      renderCurrentRider();
+    });
+
+    riderSelect.addEventListener("change", () => {
+      currentSlug = riderSelect.value;
+      buildThumbGrid();
+      buildControlSection();
+      renderCurrentRider();
+    });
+
+    resetBtn.addEventListener("click", resetCurrentPreset);
+    copyBtn.addEventListener("click", copyCurrentJson);
+
+    bootstrap();
+  </script>
+</body>
+</html>

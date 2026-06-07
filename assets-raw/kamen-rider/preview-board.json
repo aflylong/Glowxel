@@ -1,0 +1,261 @@
+[
+  {
+    "index": 0,
+    "era": "showa",
+    "name": "仮面ライダー1号",
+    "slug": "kamen-rider-1",
+    "previewPath": "preview-64/showa/kamen-rider-1.png"
+  },
+  {
+    "index": 1,
+    "era": "showa",
+    "name": "仮面ライダー2号",
+    "slug": "kamen-rider-2",
+    "previewPath": "preview-64/showa/kamen-rider-2.png"
+  },
+  {
+    "index": 2,
+    "era": "showa",
+    "name": "仮面ライダーV3",
+    "slug": "kamen-rider-v3",
+    "previewPath": "preview-64/showa/kamen-rider-v3.png"
+  },
+  {
+    "index": 3,
+    "era": "showa",
+    "name": "仮面ライダーX",
+    "slug": "kamen-rider-x",
+    "previewPath": "preview-64/showa/kamen-rider-x.png"
+  },
+  {
+    "index": 4,
+    "era": "showa",
+    "name": "仮面ライダーアマゾン",
+    "slug": "kamen-rider-amazon",
+    "previewPath": "preview-64/showa/kamen-rider-amazon.png"
+  },
+  {
+    "index": 5,
+    "era": "showa",
+    "name": "仮面ライダーストロンガー",
+    "slug": "kamen-rider-stronger",
+    "previewPath": "preview-64/showa/kamen-rider-stronger.png"
+  },
+  {
+    "index": 6,
+    "era": "showa",
+    "name": "スカイライダー",
+    "slug": "skyrider",
+    "previewPath": "preview-64/showa/skyrider.png"
+  },
+  {
+    "index": 7,
+    "era": "showa",
+    "name": "仮面ライダースーパー1",
+    "slug": "kamen-rider-super-1",
+    "previewPath": "preview-64/showa/kamen-rider-super-1.png"
+  },
+  {
+    "index": 8,
+    "era": "showa",
+    "name": "仮面ライダーZX",
+    "slug": "kamen-rider-zx",
+    "previewPath": "preview-64/showa/kamen-rider-zx.png"
+  },
+  {
+    "index": 9,
+    "era": "showa",
+    "name": "仮面ライダーBLACK",
+    "slug": "kamen-rider-black",
+    "previewPath": "preview-64/showa/kamen-rider-black.png"
+  },
+  {
+    "index": 10,
+    "era": "showa",
+    "name": "仮面ライダーBLACK RX",
+    "slug": "kamen-rider-black-rx",
+    "previewPath": "preview-64/showa/kamen-rider-black-rx.png"
+  },
+  {
+    "index": 11,
+    "era": "heisei-early",
+    "name": "仮面ライダークウガ",
+    "slug": "kamen-rider-kuuga",
+    "previewPath": "preview-64/heisei-early/kamen-rider-kuuga.png"
+  },
+  {
+    "index": 12,
+    "era": "heisei-early",
+    "name": "仮面ライダーアギト",
+    "slug": "kamen-rider-agito",
+    "previewPath": "preview-64/heisei-early/kamen-rider-agito.png"
+  },
+  {
+    "index": 13,
+    "era": "heisei-early",
+    "name": "仮面ライダー龍騎",
+    "slug": "kamen-rider-ryuki",
+    "previewPath": "preview-64/heisei-early/kamen-rider-ryuki.png"
+  },
+  {
+    "index": 14,
+    "era": "heisei-early",
+    "name": "仮面ライダーファイズ",
+    "slug": "kamen-rider-faiz",
+    "previewPath": "preview-64/heisei-early/kamen-rider-faiz.png"
+  },
+  {
+    "index": 15,
+    "era": "heisei-early",
+    "name": "仮面ライダーブレイド",
+    "slug": "kamen-rider-blade",
+    "previewPath": "preview-64/heisei-early/kamen-rider-blade.png"
+  },
+  {
+    "index": 16,
+    "era": "heisei-early",
+    "name": "仮面ライダー響鬼",
+    "slug": "kamen-rider-hibiki",
+    "previewPath": "preview-64/heisei-early/kamen-rider-hibiki.png"
+  },
+  {
+    "index": 17,
+    "era": "heisei-early",
+    "name": "仮面ライダーカブト",
+    "slug": "kamen-rider-kabuto",
+    "previewPath": "preview-64/heisei-early/kamen-rider-kabuto.png"
+  },
+  {
+    "index": 18,
+    "era": "heisei-early",
+    "name": "仮面ライダー電王",
+    "slug": "kamen-rider-den-o",
+    "previewPath": "preview-64/heisei-early/kamen-rider-den-o.png"
+  },
+  {
+    "index": 19,
+    "era": "heisei-early",
+    "name": "仮面ライダーキバ",
+    "slug": "kamen-rider-kiva",
+    "previewPath": "preview-64/heisei-early/kamen-rider-kiva.png"
+  },
+  {
+    "index": 20,
+    "era": "heisei-early",
+    "name": "仮面ライダーディケイド",
+    "slug": "kamen-rider-decade",
+    "previewPath": "preview-64/heisei-early/kamen-rider-decade.png"
+  },
+  {
+    "index": 21,
+    "era": "heisei-late",
+    "name": "仮面ライダーW",
+    "slug": "kamen-rider-w",
+    "previewPath": "preview-64/heisei-late/kamen-rider-w.png"
+  },
+  {
+    "index": 22,
+    "era": "heisei-late",
+    "name": "仮面ライダーオーズ",
+    "slug": "kamen-rider-ooo",
+    "previewPath": "preview-64/heisei-late/kamen-rider-ooo.png"
+  },
+  {
+    "index": 23,
+    "era": "heisei-late",
+    "name": "仮面ライダーフォーゼ",
+    "slug": "kamen-rider-fourze",
+    "previewPath": "preview-64/heisei-late/kamen-rider-fourze.png"
+  },
+  {
+    "index": 24,
+    "era": "heisei-late",
+    "name": "仮面ライダーウィザード",
+    "slug": "kamen-rider-wizard",
+    "previewPath": "preview-64/heisei-late/kamen-rider-wizard.png"
+  },
+  {
+    "index": 25,
+    "era": "heisei-late",
+    "name": "アーマードライダー鎧武",
+    "slug": "kamen-rider-gaim",
+    "previewPath": "preview-64/heisei-late/kamen-rider-gaim.png"
+  },
+  {
+    "index": 26,
+    "era": "heisei-late",
+    "name": "仮面ライダードライブ",
+    "slug": "kamen-rider-drive",
+    "previewPath": "preview-64/heisei-late/kamen-rider-drive.png"
+  },
+  {
+    "index": 27,
+    "era": "heisei-late",
+    "name": "仮面ライダーゴースト",
+    "slug": "kamen-rider-ghost",
+    "previewPath": "preview-64/heisei-late/kamen-rider-ghost.png"
+  },
+  {
+    "index": 28,
+    "era": "heisei-late",
+    "name": "仮面ライダーエグゼイド",
+    "slug": "kamen-rider-ex-aid",
+    "previewPath": "preview-64/heisei-late/kamen-rider-ex-aid.png"
+  },
+  {
+    "index": 29,
+    "era": "heisei-late",
+    "name": "仮面ライダービルド",
+    "slug": "kamen-rider-build",
+    "previewPath": "preview-64/heisei-late/kamen-rider-build.png"
+  },
+  {
+    "index": 30,
+    "era": "heisei-late",
+    "name": "仮面ライダージオウ",
+    "slug": "kamen-rider-zi-o",
+    "previewPath": "preview-64/heisei-late/kamen-rider-zi-o.png"
+  },
+  {
+    "index": 31,
+    "era": "reiwa",
+    "name": "仮面ライダーゼロワン",
+    "slug": "kamen-rider-zero-one",
+    "previewPath": "preview-64/reiwa/kamen-rider-zero-one.png"
+  },
+  {
+    "index": 32,
+    "era": "reiwa",
+    "name": "仮面ライダーセイバー",
+    "slug": "kamen-rider-saber",
+    "previewPath": "preview-64/reiwa/kamen-rider-saber.png"
+  },
+  {
+    "index": 33,
+    "era": "reiwa",
+    "name": "仮面ライダーリバイ",
+    "slug": "kamen-rider-revi",
+    "previewPath": "preview-64/reiwa/kamen-rider-revi.png"
+  },
+  {
+    "index": 34,
+    "era": "reiwa",
+    "name": "仮面ライダーギーツ",
+    "slug": "kamen-rider-geats",
+    "previewPath": "preview-64/reiwa/kamen-rider-geats.png"
+  },
+  {
+    "index": 35,
+    "era": "reiwa",
+    "name": "仮面ライダーガッチャード",
+    "slug": "kamen-rider-gotchard",
+    "previewPath": "preview-64/reiwa/kamen-rider-gotchard.png"
+  },
+  {
+    "index": 36,
+    "era": "reiwa",
+    "name": "仮面ライダーガヴ",
+    "slug": "kamen-rider-gavv",
+    "previewPath": "preview-64/reiwa/kamen-rider-gavv.png"
+  }
+]

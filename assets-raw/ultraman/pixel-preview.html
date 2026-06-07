@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>奥特曼半身像像素预览</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1018;
+      --panel: rgba(16, 22, 31, 0.96);
+      --panel-2: #161d29;
+      --line: #2a3344;
+      --line-soft: #1f2735;
+      --text: #edf3ff;
+      --muted: #98aac9;
+      --accent: #8be9fd;
+      --accent-2: #ffcc66;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(139, 233, 253, 0.12), transparent 34%),
+        linear-gradient(180deg, #0a0f15 0%, #121926 100%);
+      color: var(--text);
+      font: 14px/1.45 "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    .page { width: min(1480px, 100%); margin: 0 auto; padding: 24px; display: grid; gap: 20px; }
+    .hero { display: flex; justify-content: space-between; gap: 18px; align-items: flex-end; }
+    .hero h1 { margin: 0; font-size: 28px; line-height: 1.1; }
+    .hero p { margin: 8px 0 0; color: var(--muted); max-width: 760px; }
+    .action-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    button, select {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #151c28;
+      color: var(--text);
+      padding: 10px 14px;
+      font: inherit;
+    }
+    button { cursor: pointer; }
+    button.primary {
+      background: linear-gradient(180deg, #ffd98c 0%, #ffbd59 100%);
+      border-color: transparent;
+      color: #211600;
+      font-weight: 700;
+    }
+    .layout { display: grid; grid-template-columns: 560px minmax(420px, 1fr); gap: 20px; align-items: start; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line-soft);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 22px 60px rgba(0,0,0,0.32);
+    }
+    .card-head { padding: 16px 18px; border-bottom: 1px solid var(--line-soft); background: rgba(255,255,255,0.03); }
+    .card-head h2 { margin: 0; font-size: 16px; }
+    .card-head p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+    .preview-wrap { padding: 18px; display: grid; gap: 16px; }
+    .canvas-stage {
+      display: grid; place-items: center; padding: 22px; border-radius: 18px;
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 40%),
+        linear-gradient(180deg, #0e131b 0%, #141b26 100%);
+      border: 1px solid var(--line);
+    }
+    canvas {
+      width: 448px; height: 448px; image-rendering: pixelated; image-rendering: crisp-edges;
+      background:
+        linear-gradient(45deg, #0f141d 25%, transparent 25%),
+        linear-gradient(-45deg, #0f141d 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #0f141d 75%),
+        linear-gradient(-45deg, transparent 75%, #0f141d 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+      border: 1px solid #384356; border-radius: 12px;
+    }
+    .meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .meta-chip { padding: 12px; border-radius: 14px; background: var(--panel-2); border: 1px solid var(--line); }
+    .meta-chip strong { display: block; margin-bottom: 4px; color: var(--muted); font-size: 12px; }
+    .meta-chip span { font-family: Consolas, "SFMono-Regular", monospace; font-size: 13px; }
+    .source-preview { display: grid; gap: 10px; }
+    .source-frame {
+      min-height: 220px; display: grid; place-items: center; padding: 18px; border-radius: 16px;
+      background: #0e141d; border: 1px solid var(--line);
+    }
+    .source-frame img { max-width: 100%; max-height: 260px; display: block; }
+    .control-wrap { padding: 18px; display: grid; gap: 16px; max-height: calc(100vh - 130px); overflow: auto; }
+    .section { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: rgba(255,255,255,0.02); }
+    .section-title { padding: 12px 14px; font-weight: 700; border-bottom: 1px solid var(--line); background: rgba(255,255,255,0.04); }
+    .section-body { padding: 14px; display: grid; gap: 14px; }
+    .control { display: grid; gap: 8px; }
+    .control-head { display: flex; justify-content: space-between; gap: 10px; align-items: center; font-size: 13px; }
+    .control-head code { color: var(--muted); }
+    .value { color: var(--accent); font-family: Consolas, "SFMono-Regular", monospace; }
+    .control input[type="range"] { width: 100%; }
+    .picker-grid { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .picker-grid label { display: grid; gap: 6px; font-size: 12px; color: var(--muted); }
+    .thumb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; }
+    .thumb { border: 1px solid var(--line); border-radius: 14px; background: #141a24; padding: 8px; cursor: pointer; text-align: center; transition: transform 120ms ease, border-color 120ms ease; }
+    .thumb:hover { transform: translateY(-1px); border-color: var(--accent); }
+    .thumb.active { border-color: var(--accent-2); box-shadow: 0 0 0 1px rgba(255,204,102,0.35) inset; }
+    .thumb img { width: 64px; height: 64px; image-rendering: pixelated; image-rendering: crisp-edges; display: block; margin: 0 auto 6px; border-radius: 8px; background: #0d1117; }
+    .thumb span { display: block; font-size: 12px; line-height: 1.3; color: var(--text); word-break: break-word; }
+    textarea {
+      width: 100%; min-height: 180px; resize: vertical; border-radius: 14px; border: 1px solid var(--line);
+      background: #0f141c; color: var(--text); padding: 14px; font: 13px/1.45 Consolas, "SFMono-Regular", monospace;
+    }
+    .hint, .status { color: var(--muted); font-size: 12px; }
+    @media (max-width: 1180px) {
+      .layout { grid-template-columns: 1fr; }
+      .control-wrap { max-height: none; }
+    }
+    @media (max-width: 720px) {
+      .hero { flex-direction: column; align-items: flex-start; }
+      canvas { width: min(82vw, 448px); height: min(82vw, 448px); }
+      .meta-grid, .picker-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <div>
+        <h1>奥特曼半身像像素预览</h1>
+        <p>这版先拿圆谷官方角色页主视觉图试一批奥特曼。不是透明 PNG 资产，而是清晰官方角色图，先验证哪些角色缩到 64×64 后最立得住。</p>
+      </div>
+      <div class="action-row">
+        <button id="resetBtn">恢复当前默认</button>
+        <button id="copyBtn" class="primary">复制当前 JSON</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="card">
+        <div class="card-head">
+          <h2>64×64 预览</h2>
+          <p>先用官方大图验证头部、胸甲、眼灯和银红主色块在低像素下的成立程度。</p>
+        </div>
+        <div class="preview-wrap">
+          <div class="canvas-stage">
+            <canvas id="previewCanvas" width="64" height="64"></canvas>
+          </div>
+          <div class="meta-grid">
+            <div class="meta-chip"><strong>当前角色</strong><span id="heroMeta">-</span></div>
+            <div class="meta-chip"><strong>原图尺寸</strong><span id="imageMeta">-</span></div>
+            <div class="meta-chip"><strong>基准缩放</strong><span id="scaleMeta">-</span></div>
+            <div class="meta-chip"><strong>当前参数</strong><span id="positionMeta">x=0 y=0 scale=1.00</span></div>
+          </div>
+          <div class="source-preview">
+            <div class="source-frame"><img id="sourceImage" alt="当前奥特曼原图" /></div>
+            <div class="status" id="loadStatus">等待载入素材</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>选择与调节</h2>
+          <p>这版保持和骑士工位一致，先只保留 `x / y / scale` 三个关键控件，方便快速比较谁最适合正式主题。</p>
+        </div>
+        <div class="control-wrap">
+          <div class="section">
+            <div class="section-title">素材选择</div>
+            <div class="section-body">
+              <div class="picker-grid">
+                <label><span>分组</span><select id="eraSelect"></select></label>
+                <label><span>角色</span><select id="heroSelect"></select></label>
+              </div>
+              <div class="thumb-grid" id="thumbGrid"></div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">预览参数</div>
+            <div class="section-body" id="controlSection"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">参数导出</div>
+            <div class="section-body">
+              <textarea id="jsonOut" readonly></textarea>
+              <div class="hint">导出的字段是 `slug / x / y / scale`，后面可以继续扩展成正式主题参数。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./ultraman-manifest-page.js"></script>
+  <script>
+    const manifest = Array.isArray(window.ULTRAMAN_MANIFEST) ? window.ULTRAMAN_MANIFEST : [];
+    const previewCanvas = document.getElementById("previewCanvas");
+    const previewCtx = previewCanvas.getContext("2d", { alpha: true });
+    const sourceImageEl = document.getElementById("sourceImage");
+    const eraSelect = document.getElementById("eraSelect");
+    const heroSelect = document.getElementById("heroSelect");
+    const thumbGrid = document.getElementById("thumbGrid");
+    const controlSection = document.getElementById("controlSection");
+    const jsonOut = document.getElementById("jsonOut");
+    const resetBtn = document.getElementById("resetBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const heroMeta = document.getElementById("heroMeta");
+    const imageMeta = document.getElementById("imageMeta");
+    const scaleMeta = document.getElementById("scaleMeta");
+    const positionMeta = document.getElementById("positionMeta");
+    const loadStatus = document.getElementById("loadStatus");
+
+    const STORAGE_KEY = "glowxel-ultraman-preview-presets-v1";
+    const ERA_LABELS = { showa: "昭和", "new-generation": "新生代" };
+    const DEFAULT_PRESET = { x: 0, y: 2, scale: 1 };
+    const CONTROLS = [
+      { key: "x", label: "横向位置", min: -32, max: 32, step: 1 },
+      { key: "y", label: "纵向位置", min: -32, max: 32, step: 1 },
+      { key: "scale", label: "缩放比例", min: 0.4, max: 2.4, step: 0.02 }
+    ];
+    const eraOrder = ["showa", "new-generation"];
+    const groupedManifest = new Map();
+    const heroMap = new Map();
+    const presetStore = loadPresetStore();
+    const imageCache = new Map();
+
+    let currentEra = eraOrder.find((era) => manifest.some((entry) => entry.era === era)) || "";
+    let currentSlug = "";
+
+    for (const entry of manifest) {
+      heroMap.set(entry.slug, entry);
+      if (!groupedManifest.has(entry.era)) groupedManifest.set(entry.era, []);
+      groupedManifest.get(entry.era).push(entry);
+    }
+
+    function loadPresetStore() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch {
+        return {};
+      }
+    }
+    function savePresetStore() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(presetStore)); } catch {}
+    }
+    function getPreset(slug) { return { ...DEFAULT_PRESET, ...(presetStore[slug] || {}) }; }
+    function setPresetValue(slug, key, value) {
+      presetStore[slug] = { ...getPreset(slug), [key]: value };
+      savePresetStore();
+    }
+    function ensureCurrentSlug() {
+      const eraList = groupedManifest.get(currentEra) || [];
+      if (!eraList.length) { currentSlug = ""; return; }
+      if (!eraList.some((entry) => entry.slug === currentSlug)) currentSlug = eraList[0].slug;
+    }
+    function buildEraSelect() {
+      eraSelect.innerHTML = "";
+      for (const era of eraOrder) {
+        const items = groupedManifest.get(era);
+        if (!items || !items.length) continue;
+        const option = document.createElement("option");
+        option.value = era;
+        option.textContent = ERA_LABELS[era] || era;
+        eraSelect.appendChild(option);
+      }
+      eraSelect.value = currentEra;
+    }
+    function buildHeroSelect() {
+      heroSelect.innerHTML = "";
+      const eraList = groupedManifest.get(currentEra) || [];
+      for (const hero of eraList) {
+        const option = document.createElement("option");
+        option.value = hero.slug;
+        option.textContent = hero.name;
+        heroSelect.appendChild(option);
+      }
+      heroSelect.value = currentSlug;
+    }
+    function buildThumbGrid() {
+      thumbGrid.innerHTML = "";
+      const eraList = groupedManifest.get(currentEra) || [];
+      for (const hero of eraList) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "thumb" + (hero.slug === currentSlug ? " active" : "");
+        button.innerHTML = `<img src="${hero.previewPath}" alt="${hero.name}" /><span>${hero.name}</span>`;
+        button.addEventListener("click", () => {
+          currentSlug = hero.slug;
+          buildHeroSelect(); buildThumbGrid(); buildControlSection(); renderCurrentHero();
+        });
+        thumbGrid.appendChild(button);
+      }
+    }
+    function buildControlSection() {
+      controlSection.innerHTML = "";
+      const preset = getPreset(currentSlug);
+      for (const control of CONTROLS) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "control";
+        wrapper.innerHTML = `
+          <div class="control-head">
+            <span>${control.label}</span>
+            <code>${control.key}</code>
+            <span class="value" id="value-${control.key}">${formatValue(control.key, preset[control.key])}</span>
+          </div>
+          <input id="input-${control.key}" type="range" min="${control.min}" max="${control.max}" step="${control.step}" value="${preset[control.key]}" />
+        `;
+        controlSection.appendChild(wrapper);
+        const input = wrapper.querySelector(`#input-${control.key}`);
+        input.addEventListener("input", () => {
+          const nextValue = control.key === "scale" ? Number(input.value) : parseInt(input.value, 10);
+          setPresetValue(currentSlug, control.key, nextValue);
+          wrapper.querySelector(`#value-${control.key}`).textContent = formatValue(control.key, nextValue);
+          renderCurrentHero();
+        });
+      }
+    }
+    function formatValue(key, value) { return key === "scale" ? Number(value).toFixed(2) : String(value); }
+    function getCurrentHero() { return heroMap.get(currentSlug) || null; }
+    function loadImageForHero(hero) {
+      if (imageCache.has(hero.slug)) return Promise.resolve(imageCache.get(hero.slug));
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => { imageCache.set(hero.slug, image); resolve(image); };
+        image.onerror = () => reject(new Error(`image load failed: ${hero.sourcePath}`));
+        image.src = hero.sourcePath;
+      });
+    }
+    function clearCanvas() {
+      previewCtx.clearRect(0, 0, 64, 64);
+      previewCtx.save();
+      previewCtx.fillStyle = "#0f141d";
+      previewCtx.fillRect(0, 0, 64, 64);
+      previewCtx.strokeStyle = "rgba(139, 233, 253, 0.12)";
+      previewCtx.lineWidth = 0.5;
+      for (let i = 0; i <= 64; i += 8) {
+        previewCtx.beginPath(); previewCtx.moveTo(i + 0.5, 0); previewCtx.lineTo(i + 0.5, 64); previewCtx.stroke();
+        previewCtx.beginPath(); previewCtx.moveTo(0, i + 0.5); previewCtx.lineTo(64, i + 0.5); previewCtx.stroke();
+      }
+      previewCtx.restore();
+    }
+    function drawHeroToCanvas(image, preset) {
+      clearCanvas();
+      previewCtx.imageSmoothingEnabled = false;
+      const fitBoxW = 52;
+      const fitBoxH = 58;
+      const baseScale = Math.min(fitBoxW / image.width, fitBoxH / image.height);
+      const finalScale = baseScale * preset.scale;
+      const drawWidth = Math.max(1, Math.round(image.width * finalScale));
+      const drawHeight = Math.max(1, Math.round(image.height * finalScale));
+      const drawX = Math.round((64 - drawWidth) / 2 + preset.x);
+      const drawY = Math.round((64 - drawHeight) / 2 + preset.y);
+      previewCtx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+      return { baseScale, finalScale, drawWidth, drawHeight, drawX, drawY };
+    }
+    function updateMeta(hero, image, preset, drawInfo) {
+      heroMeta.textContent = `${ERA_LABELS[hero.era] || hero.era} / ${hero.name}`;
+      imageMeta.textContent = `${image.width} × ${image.height}`;
+      scaleMeta.textContent = `base=${drawInfo.baseScale.toFixed(3)} final=${drawInfo.finalScale.toFixed(3)}`;
+      positionMeta.textContent = `x=${preset.x} y=${preset.y} scale=${preset.scale.toFixed(2)}`;
+      sourceImageEl.src = hero.sourcePath;
+      sourceImageEl.alt = hero.name;
+      jsonOut.value = JSON.stringify({ slug: hero.slug, name: hero.name, era: hero.era, x: preset.x, y: preset.y, scale: Number(preset.scale.toFixed(2)) }, null, 2);
+    }
+    async function renderCurrentHero() {
+      const hero = getCurrentHero();
+      if (!hero) { clearCanvas(); loadStatus.textContent = "当前分组没有可用素材"; return; }
+      const preset = getPreset(hero.slug);
+      loadStatus.textContent = `正在载入 ${hero.name} ...`;
+      try {
+        const image = await loadImageForHero(hero);
+        const drawInfo = drawHeroToCanvas(image, preset);
+        updateMeta(hero, image, preset, drawInfo);
+        loadStatus.textContent = `已载入 ${hero.name}，可以继续调 x / y / scale`;
+      } catch (error) {
+        clearCanvas();
+        loadStatus.textContent = `载入失败：${error.message}`;
+      }
+    }
+    function resetCurrentPreset() {
+      if (!currentSlug) return;
+      presetStore[currentSlug] = { ...DEFAULT_PRESET };
+      savePresetStore();
+      buildControlSection();
+      renderCurrentHero();
+    }
+    async function copyCurrentJson() {
+      try {
+        await navigator.clipboard.writeText(jsonOut.value);
+        copyBtn.textContent = "已复制";
+        setTimeout(() => { copyBtn.textContent = "复制当前 JSON"; }, 1200);
+      } catch {
+        copyBtn.textContent = "复制失败";
+        setTimeout(() => { copyBtn.textContent = "复制当前 JSON"; }, 1200);
+      }
+    }
+    function bootstrap() {
+      ensureCurrentSlug();
+      buildEraSelect();
+      buildHeroSelect();
+      buildThumbGrid();
+      buildControlSection();
+      renderCurrentHero();
+    }
+    eraSelect.addEventListener("change", () => {
+      currentEra = eraSelect.value;
+      ensureCurrentSlug();
+      buildHeroSelect(); buildThumbGrid(); buildControlSection(); renderCurrentHero();
+    });
+    heroSelect.addEventListener("change", () => {
+      currentSlug = heroSelect.value;
+      buildThumbGrid(); buildControlSection(); renderCurrentHero();
+    });
+    resetBtn.addEventListener("click", resetCurrentPreset);
+    copyBtn.addEventListener("click", copyCurrentJson);
+    bootstrap();
+  </script>
+</body>
+</html>

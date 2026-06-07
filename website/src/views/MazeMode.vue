@@ -1,42 +1,84 @@
 <template>
-  <div class="glx-page-shell game-mode-page">
-    <section class="game-mode-layout">
-      <article class="glx-section-card glx-section-card--stack game-preview-card">
-        <div class="game-preview-card__head">
+  <div class="maze-page glx-page-shell game-mode-page">
+    <PcModeTopbar title="迷宫漫游" />
+
+    <section class="maze-layout game-mode-layout">
+      <article
+        class="glx-section-card glx-section-card--stack maze-preview-card game-preview-card"
+      >
+        <div class="maze-preview-card__head">
           <div>
-            <h1 class="game-page-title">迷宫漫游</h1>
-            <p class="game-page-meta">首屏直接显示 64×64 本地预览，颜色参数和发送 payload 同源。</p>
+            <p class="maze-preview-card__eyebrow">Device Mode</p>
+            <h2 class="maze-preview-card__title">迷宫漫游预览</h2>
           </div>
-          <span class="glx-chip" :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'">
-            {{ deviceStore.connected ? "已连接" : "未连接" }}
-          </span>
         </div>
 
-        <div class="game-preview-stage">
-          <DevicePixelBoard :pixels="displayPixels" :grid-visible="true" />
-          <DeviceSendingOverlay
-            :visible="isSending"
-            title="正在发送迷宫漫游"
-            description="发送期间锁定当前预览快照，等待设备完成迷宫参数事务提交。"
-          >
-            <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
-          </DeviceSendingOverlay>
-        </div>
-
-        <div class="game-preview-actions">
+        <div class="maze-preview-toolbar">
           <button
             type="button"
-            class="glx-button glx-button--primary"
+            class="glx-button glx-button--primary maze-send-button"
             :disabled="isSending"
             @click="handleSend"
           >
             {{ isSending ? "发送中..." : "发送到设备" }}
           </button>
+          <span
+            class="glx-chip"
+            :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
+          >
+            {{ deviceStore.connected ? "已连接" : "未连接" }}
+          </span>
+        </div>
+
+        <div class="maze-preview-stage game-preview-stage">
+          <div class="maze-preview-board">
+            <DevicePixelBoard :pixels="displayPixels" :grid-visible="true" />
+            <DeviceSendingOverlay
+              :visible="isSending"
+              title="正在发送迷宫漫游"
+              description="发送期间锁定当前预览快照，等待设备完成迷宫参数事务提交。"
+            >
+              <div class="maze-preview-sending">
+                <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
+              </div>
+            </DeviceSendingOverlay>
+          </div>
+        </div>
+
+        <div class="maze-summary-grid">
+          <article class="maze-summary-card">
+            <span class="maze-summary-card__label">背景</span>
+            <strong class="maze-summary-card__value">{{ config.panelBgColor }}</strong>
+            <span class="maze-summary-card__meta">边框 {{ config.borderColor }}</span>
+          </article>
+          <article class="maze-summary-card">
+            <span class="maze-summary-card__label">时间</span>
+            <strong class="maze-summary-card__value">{{ config.timeColor }}</strong>
+            <span class="maze-summary-card__meta">日期 {{ config.dateColor }}</span>
+          </article>
+          <article class="maze-summary-card">
+            <span class="maze-summary-card__label">路径</span>
+            <strong class="maze-summary-card__value">{{ config.generationPathColor }}</strong>
+            <span class="maze-summary-card__meta">
+              已搜 {{ config.searchVisitedColor }} / 待搜 {{ config.searchFrontierColor }}
+            </span>
+          </article>
         </div>
       </article>
 
-      <div class="game-mode-stack">
+      <div class="maze-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
+          <div class="glx-section-head">
+            <h2 class="glx-section-title">模式配置</h2>
+            <span class="glx-section-meta">信息框 / 寻路 / 完成路径</span>
+          </div>
+          <DeviceModeTabs v-model="currentTab" :items="tabItems" />
+        </article>
+
+        <article
+          v-if="currentTab === 'info'"
+          class="glx-section-card glx-section-card--stack"
+        >
           <div class="glx-section-head">
             <h2 class="glx-section-title">信息框</h2>
             <span class="glx-section-meta">背景 / 边框 / 时间 / 日期</span>
@@ -66,7 +108,10 @@
           </div>
         </article>
 
-        <article class="glx-section-card glx-section-card--stack">
+        <article
+          v-else-if="currentTab === 'path'"
+          class="glx-section-card glx-section-card--stack"
+        >
           <div class="glx-section-head">
             <h2 class="glx-section-title">生成与寻路</h2>
             <span class="glx-section-meta">生成阶段 / 已搜索 / 待搜索</span>
@@ -91,7 +136,7 @@
           </div>
         </article>
 
-        <article class="glx-section-card glx-section-card--stack">
+        <article v-else class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
             <h2 class="glx-section-title">完成路径</h2>
             <span class="glx-section-meta">首尾渐变</span>
@@ -118,9 +163,11 @@
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import DeviceSendingOverlay from "@/components/device/DeviceSendingOverlay.vue";
+import PcModeTopbar from "@/components/device/modes/PcModeTopbar.vue";
 import { useFeedback } from "@/composables/useFeedback.js";
 import { usePixelPreviewPlayer } from "@/composables/usePixelPreviewPlayer.js";
 import DevicePixelBoard from "@/components/device/modes/DevicePixelBoard.vue";
+import DeviceModeTabs from "@/components/device/modes/DeviceModeTabs.vue";
 import GameModeColorField from "@/components/device/modes/GameModeColorField.vue";
 import { useDeviceLegacyStore } from "@/stores/deviceLegacy.js";
 import { readStorageJson, writeStorageJson } from "@/utils/device-mode-core.js";
@@ -164,11 +211,17 @@ const stagePresetColors = Object.freeze([
   { hex: "#42bcff", name: "#42bcff" },
   { hex: "#ffd166", name: "#ffd166" },
 ]);
+const tabItems = Object.freeze([
+  { value: "info", label: "信息框" },
+  { value: "path", label: "寻路" },
+  { value: "finish", label: "完成路径" },
+]);
 
 const deviceStore = useDeviceLegacyStore();
 const feedback = useFeedback();
 const { currentPixels, playSequence, snapshot } = usePixelPreviewPlayer();
 
+const currentTab = ref("info");
 const config = reactive(loadMazeConfig());
 const isSending = ref(false);
 const sendingPixels = ref(new Map());
@@ -277,54 +330,108 @@ async function handleSend() {
   gap: 24px;
 }
 
-.game-mode-layout {
+.maze-page {
+  background: linear-gradient(180deg, #eef3ff 0%, #f7f4eb 100%);
+}
+
+.maze-layout {
   display: grid;
-  grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
 }
 
-.game-preview-card {
-  position: sticky;
-  top: 88px;
-  align-self: start;
-}
-
-.game-preview-card__head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+.maze-preview-card {
   gap: 16px;
 }
 
-.game-page-title {
+.maze-preview-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.maze-preview-card__eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--glx-text-muted);
+}
+
+.maze-preview-card__title {
   margin: 0;
   font-size: 28px;
   font-weight: 900;
+  color: #000000;
 }
 
-.game-page-meta {
-  margin: 8px 0 0;
-  color: var(--glx-text-muted);
-  font-size: 13px;
-  line-height: 1.6;
+.maze-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.game-preview-stage {
-  position: relative;
+.maze-send-button {
+  min-width: 188px;
+  min-height: 48px;
+}
+
+.maze-preview-stage {
   padding: 18px;
+}
+
+.maze-preview-board {
+  position: relative;
+  width: min(100%, 560px);
+  margin: 0 auto;
+}
+
+.maze-preview-board :deep(.device-pixel-board) {
+  box-shadow: none;
+}
+
+.maze-preview-sending {
+  width: 100%;
+  height: 100%;
+}
+
+.maze-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.maze-summary-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
   border: 2px solid #000000;
-  background: #000000;
+  background: #ffffff;
 }
 
-.game-preview-actions {
-  display: flex;
-  justify-content: flex-start;
+.maze-summary-card__label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--glx-text-muted);
 }
 
-.game-mode-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.maze-summary-card__value {
+  font-size: 16px;
+  font-weight: 900;
+  color: #000000;
+}
+
+.maze-summary-card__meta {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--glx-text-muted);
+}
+
+.maze-config-stack {
+  min-width: 0;
 }
 
 .game-fields {
@@ -334,12 +441,12 @@ async function handleSend() {
 }
 
 @media (max-width: 1080px) {
-  .game-mode-layout {
+  .maze-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .game-preview-card {
-    position: static;
+  .maze-summary-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 </style>

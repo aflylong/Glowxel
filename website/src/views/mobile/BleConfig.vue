@@ -1,9 +1,11 @@
 <!-- AUTO-CONVERTED FROM uniapp/pages/ble-config/ble-config.vue -->
 <template>
-  <div class="wifi-config-page glx-page-shell">
+  <div
+    class="wifi-config-page glx-device-shell glx-device-shell--desktop-stack glx-page-shell"
+  >
     
 
-    <div class="navbar glx-topbar glx-page-shell__fixed">
+    <div class="navbar glx-topbar glx-device-shell__topbar glx-page-shell__fixed">
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
@@ -12,9 +14,9 @@
 
     <div data-scroll-view
       scroll-y
-      class="content glx-scroll-region glx-page-shell__content"
+      class="content glx-device-shell__content glx-scroll-region"
     >
-      <div class="steps-card glx-panel-card">
+      <div class="steps-card glx-panel-card glx-device-shell__section">
         <div class="step-card">
           <div class="step-badge">1</div>
           <div class="step-body">
@@ -70,13 +72,6 @@ export default {
 </script>
 
 <style scoped>
-.wifi-config-page {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--nb-paper);
-}
-
 .navbar {
   height: 88rpx;
   display: flex;
@@ -104,7 +99,6 @@ export default {
 }
 
 .content {
-  flex: 1;
   padding: 32rpx 30rpx 44rpx;
   display: flex;
   flex-direction: column;
@@ -189,5 +183,42 @@ export default {
 .inline-strong {
   font-weight: 700;
   color: var(--nb-ink);
+}
+
+@media (min-width: 769px) {
+  .wifi-config-page .content {
+    padding: 0;
+  }
+
+  .wifi-config-page .steps-card {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .wifi-config-page .step-card {
+    min-height: 100%;
+    padding: 20px;
+    border-bottom: 0;
+    border-right: 2px solid rgba(0, 0, 0, 0.12);
+  }
+
+  .wifi-config-page .step-card:last-child {
+    border-right: 0;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 980px) {
+  .wifi-config-page .steps-card {
+    grid-template-columns: 1fr;
+  }
+
+  .wifi-config-page .step-card {
+    border-right: 0;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.12);
+  }
+
+  .wifi-config-page .step-card:last-child {
+    border-bottom: 0;
+  }
 }
 </style>

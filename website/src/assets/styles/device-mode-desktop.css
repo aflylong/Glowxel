@@ -1,0 +1,388 @@
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) {
+  overflow-y: auto;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-app-shell__content {
+  padding: 10px 16px 24px;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-page-shell {
+  width: 100%;
+  max-width: var(--glx-app-max-width);
+  min-height: auto;
+  height: auto !important;
+  padding: 12px 16px 26px;
+  gap: 14px;
+  overflow: visible !important;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-page-shell__hero {
+  padding: 14px 16px;
+  gap: 8px;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .device-home.glx-page-shell {
+  max-width: 1380px;
+  padding: 10px 14px 22px;
+  gap: 10px;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .device-home .glx-section-card,
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .device-home .glx-page-shell__hero {
+  box-shadow: var(--glx-shadow-card);
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-page-shell__title,
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .game-page-title {
+  font-size: clamp(22px, 2.2vw, 28px);
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-page-shell__desc,
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .game-page-meta {
+  max-width: 100%;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-hero-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-hero-metric {
+  min-height: 0;
+  padding: 9px 10px;
+  gap: 4px;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-hero-metric__value {
+  font-size: 16px;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-section-card,
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-panel-card,
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-preview-card {
+  padding: 14px;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-section-card--stack,
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-panel-card--stack {
+  gap: 10px;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-section-head {
+  margin-bottom: 8px;
+  gap: 10px;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-section-title {
+  font-size: 16px;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-inline-actions,
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .game-preview-actions {
+  gap: 8px;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .glx-button {
+  min-height: 36px;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .clock-editor-layout,
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .clock-theme-layout,
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .canvas-editor-layout,
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .device-mode-layout,
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .game-mode-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .clock-preview-card,
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .clock-theme-preview-card,
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .canvas-editor-preview-card,
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .device-preview-card,
+body.is-device-page:not(.is-mobile-device):not(.is-device-single-page) .game-preview-card {
+  position: sticky;
+  top: calc(var(--glx-app-topbar-height) + 10px);
+  align-self: start;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-preview-card__head,
+body.is-device-page:not(.is-mobile-device) .clock-theme-preview-card__head,
+body.is-device-page:not(.is-mobile-device) .canvas-editor-preview-card__head,
+body.is-device-page:not(.is-mobile-device) .device-preview-card__head,
+body.is-device-page:not(.is-mobile-device) .game-preview-card__head {
+  gap: 10px;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-preview-stage,
+body.is-device-page:not(.is-mobile-device) .clock-theme-stage,
+body.is-device-page:not(.is-mobile-device) .device-preview-stage,
+body.is-device-page:not(.is-mobile-device) .game-preview-stage {
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  max-height: 420px;
+  padding: 12px;
+  overflow: hidden;
+}
+
+body.is-device-page:not(.is-mobile-device) .canvas-editor-stage {
+  width: min(100%, 420px);
+  max-height: 420px;
+  margin: 0 auto;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-preview-stage > *,
+body.is-device-page:not(.is-mobile-device) .clock-theme-stage > *,
+body.is-device-page:not(.is-mobile-device) .device-preview-stage > *,
+body.is-device-page:not(.is-mobile-device) .game-preview-stage > * {
+  width: min(100%, 384px);
+  max-width: 384px;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-theme-stage__image {
+  width: min(100%, 380px);
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-preview-meta {
+  gap: 8px;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-theme-facts,
+body.is-device-page:not(.is-mobile-device) .clock-preview-meta__item {
+  gap: 8px;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-theme-facts__item,
+body.is-device-page:not(.is-mobile-device) .clock-preview-meta__item {
+  padding: 8px 10px;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-editor-stack,
+body.is-device-page:not(.is-mobile-device) .clock-theme-stack,
+body.is-device-page:not(.is-mobile-device) .canvas-editor-stack,
+body.is-device-page:not(.is-mobile-device) .device-mode-stack,
+body.is-device-page:not(.is-mobile-device) .game-mode-stack {
+  gap: 10px;
+}
+
+body.is-device-page:not(.is-mobile-device) .mode-grid,
+body.is-device-page:not(.is-mobile-device) .planet-grid,
+body.is-device-page:not(.is-mobile-device) .canvas-editor-action-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+body.is-device-page:not(.is-mobile-device) .mode-grid__item,
+body.is-device-page:not(.is-mobile-device) .planet-grid__item {
+  min-height: 58px;
+  padding: 9px;
+}
+
+body.is-device-page:not(.is-mobile-device) .mode-row,
+body.is-device-page:not(.is-mobile-device) .game-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+body.is-device-page:not(.is-mobile-device) .device-mode-stepper {
+  grid-template-columns: 36px minmax(44px, auto) 36px;
+}
+
+body.is-device-page:not(.is-mobile-device) .device-mode-stepper__btn,
+body.is-device-page:not(.is-mobile-device) .device-mode-stepper__value {
+  min-height: 36px;
+}
+
+body.is-device-page:not(.is-mobile-device) .device-mode-tabs {
+  gap: 8px;
+}
+
+body.is-device-page:not(.is-mobile-device) .device-mode-tabs__item {
+  min-height: 38px;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-editor-page,
+body.is-device-page:not(.is-mobile-device) .ambient-page,
+body.is-device-page:not(.is-mobile-device) .tetris-page {
+  height: auto !important;
+  min-height: auto;
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  grid-template-areas:
+    "topbar topbar"
+    "preview content"
+    "tabs tabs";
+  gap: 14px;
+  background: transparent;
+  overflow: visible !important;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-editor-page > .status-bar,
+body.is-device-page:not(.is-mobile-device) .ambient-page > .status-bar,
+body.is-device-page:not(.is-mobile-device) .tetris-page > .status-bar {
+  display: none;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-editor-page > .navbar,
+body.is-device-page:not(.is-mobile-device) .ambient-page > .navbar,
+body.is-device-page:not(.is-mobile-device) .tetris-page > .navbar {
+  position: static;
+  grid-area: topbar;
+  min-height: 54px;
+  border: var(--glx-shell-border-strong);
+  background: #ffffff;
+  box-shadow: var(--glx-shadow-card);
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-editor-page > .canvas-section,
+body.is-device-page:not(.is-mobile-device) .ambient-page > .canvas-section,
+body.is-device-page:not(.is-mobile-device) .tetris-page > .canvas-section {
+  position: sticky;
+  top: calc(var(--glx-app-topbar-height) + 10px);
+  grid-area: preview;
+  align-self: start;
+  border: var(--glx-shell-border-strong);
+  background: #000000;
+  box-shadow: var(--glx-shadow-card);
+  overflow: hidden;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-editor-page .preview-canvas-container,
+body.is-device-page:not(.is-mobile-device) .ambient-page .preview-canvas-container,
+body.is-device-page:not(.is-mobile-device) .tetris-page .preview-canvas-container {
+  width: 100% !important;
+  height: min(34vw, 420px) !important;
+  max-height: 420px;
+  min-height: 300px;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-editor-page > .content,
+body.is-device-page:not(.is-mobile-device) .ambient-page > .content,
+body.is-device-page:not(.is-mobile-device) .tetris-page > .content {
+  grid-area: content;
+  width: 100%;
+  height: auto !important;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  overflow: visible !important;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-editor-page .content-wrapper,
+body.is-device-page:not(.is-mobile-device) .ambient-page .content-wrapper,
+body.is-device-page:not(.is-mobile-device) .tetris-page .content-wrapper {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-editor-page .tab-panel,
+body.is-device-page:not(.is-mobile-device) .ambient-page .tab-panel,
+body.is-device-page:not(.is-mobile-device) .tetris-page .tab-panel {
+  display: grid;
+  gap: 12px;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-editor-page .card,
+body.is-device-page:not(.is-mobile-device) .ambient-page .card,
+body.is-device-page:not(.is-mobile-device) .tetris-page .card {
+  margin: 0;
+  padding: 14px;
+  border: var(--glx-shell-border-strong);
+  background: #ffffff;
+  box-shadow: var(--glx-shadow-card);
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-editor-page .bottom-tabs,
+body.is-device-page:not(.is-mobile-device) .tetris-page .bottom-tabs {
+  position: static;
+  grid-area: tabs;
+  width: 100%;
+  border: var(--glx-shell-border-strong);
+  background: #ffffff;
+  box-shadow: var(--glx-shadow-card);
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-editor-page .form-row,
+body.is-device-page:not(.is-mobile-device) .ambient-page .form-row,
+body.is-device-page:not(.is-mobile-device) .tetris-page .form-row,
+body.is-device-page:not(.is-mobile-device) .clock-editor-page .option-stack,
+body.is-device-page:not(.is-mobile-device) .ambient-page .option-stack,
+body.is-device-page:not(.is-mobile-device) .tetris-page .option-stack {
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-editor-page .option-row,
+body.is-device-page:not(.is-mobile-device) .ambient-page .option-row,
+body.is-device-page:not(.is-mobile-device) .tetris-page .option-row,
+body.is-device-page:not(.is-mobile-device) .clock-editor-page .option-row-double,
+body.is-device-page:not(.is-mobile-device) .ambient-page .option-row-double,
+body.is-device-page:not(.is-mobile-device) .tetris-page .option-row-double,
+body.is-device-page:not(.is-mobile-device) .clock-editor-page .option-row-triple,
+body.is-device-page:not(.is-mobile-device) .ambient-page .option-row-triple,
+body.is-device-page:not(.is-mobile-device) .tetris-page .option-row-triple,
+body.is-device-page:not(.is-mobile-device) .clock-editor-page .option-row-quad,
+body.is-device-page:not(.is-mobile-device) .ambient-page .option-row-quad,
+body.is-device-page:not(.is-mobile-device) .tetris-page .option-row-quad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+body.is-device-page:not(.is-mobile-device) .clock-editor-page .bottom-action-row,
+body.is-device-page:not(.is-mobile-device) .ambient-page .bottom-action-row,
+body.is-device-page:not(.is-mobile-device) .tetris-page .bottom-action-row {
+  gap: 8px;
+  margin: 8px 0;
+}
+
+body.is-device-page:not(.is-mobile-device) .ambient-page .scene-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+body.is-device-page:not(.is-mobile-device) .ambient-page .preview-caption,
+body.is-device-page:not(.is-mobile-device) .clock-editor-page .preview-caption,
+body.is-device-page:not(.is-mobile-device) .tetris-page .preview-caption {
+  padding: 10px 12px 12px;
+}
+
+@media (max-width: 1080px) {
+  body.is-device-page:not(.is-mobile-device) .clock-editor-layout,
+  body.is-device-page:not(.is-mobile-device) .clock-theme-layout,
+  body.is-device-page:not(.is-mobile-device) .canvas-editor-layout,
+  body.is-device-page:not(.is-mobile-device) .device-mode-layout,
+  body.is-device-page:not(.is-mobile-device) .game-mode-layout,
+  body.is-device-page:not(.is-mobile-device) .clock-editor-page,
+  body.is-device-page:not(.is-mobile-device) .ambient-page,
+  body.is-device-page:not(.is-mobile-device) .tetris-page {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "topbar"
+      "preview"
+      "content"
+      "tabs";
+  }
+
+  body.is-device-page:not(.is-mobile-device) .clock-preview-card,
+  body.is-device-page:not(.is-mobile-device) .clock-theme-preview-card,
+  body.is-device-page:not(.is-mobile-device) .canvas-editor-preview-card,
+  body.is-device-page:not(.is-mobile-device) .device-preview-card,
+  body.is-device-page:not(.is-mobile-device) .game-preview-card,
+  body.is-device-page:not(.is-mobile-device) .clock-editor-page > .canvas-section,
+  body.is-device-page:not(.is-mobile-device) .ambient-page > .canvas-section,
+  body.is-device-page:not(.is-mobile-device) .tetris-page > .canvas-section {
+    position: static;
+  }
+}

@@ -1,9 +1,11 @@
 <!-- AUTO-CONVERTED FROM uniapp/pages/device-params/device-params.vue -->
 <template>
-  <div class="device-params-page glx-page-shell">
+  <div
+    class="device-params-page glx-device-shell glx-device-shell--desktop-stack glx-page-shell"
+  >
     
 
-    <div class="navbar glx-topbar glx-page-shell__fixed">
+    <div class="navbar glx-topbar glx-device-shell__topbar glx-page-shell__fixed">
       <div class="nav-left" @click="goBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
@@ -12,9 +14,9 @@
 
     <div data-scroll-view
       scroll-y
-      class="content glx-scroll-region glx-page-shell__content"
+      class="content glx-device-shell__content glx-scroll-region"
     >
-      <div class="section-block">
+      <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
           <span class="section-title glx-section-title">特殊LED</span>
           <span class="section-meta">旋转、色彩、反转相位</span>
@@ -69,7 +71,7 @@
         </div>
       </div>
 
-      <div class="section-block">
+      <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
           <span class="section-title glx-section-title">日夜亮度</span>
           <span class="section-meta">按设备当前值回显</span>
@@ -154,7 +156,7 @@
         </div>
       </div>
 
-      <div class="section-block">
+      <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
           <span class="section-title glx-section-title">驱动参数</span>
           <span class="section-meta">面板驱动相关配置</span>
@@ -211,7 +213,7 @@
         </div>
       </div>
 
-      <div class="section-block">
+      <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
           <span class="section-title glx-section-title">网络参数</span>
           <span class="section-meta">国内优先 NTP</span>
@@ -252,7 +254,7 @@
         </div>
       </div>
 
-      <div class="section-block">
+      <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
           <span class="section-title glx-section-title">设备信息</span>
           <span class="section-meta">只读</span>
@@ -290,7 +292,7 @@
         </div>
       </div>
 
-      <div class="section-block">
+      <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
           <span class="section-title glx-section-title">应用操作</span>
           <span class="section-meta">逐项下发到设备</span>
@@ -321,7 +323,7 @@
         </div>
       </div>
 
-      <div class="section-block">
+      <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
           <span class="section-title glx-section-title">高级</span>
           <span class="section-meta">危险操作请谨慎</span>
@@ -341,7 +343,7 @@
         </div>
       </div>
 
-      <div style="height: 120rpx"></div>
+      <div class="glx-device-shell__spacer"></div>
     </div>
 
     <ConfirmDialogHost />
@@ -1014,23 +1016,13 @@ export default {
 </script>
 
 <style scoped>
-.device-params-page {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--nb-paper);
-  overflow: hidden;
-}
-
 .navbar {
   background: var(--nb-surface);
   border-bottom: 2rpx solid var(--nb-ink);
 }
 
 .content {
-  flex: 1;
   padding: 16rpx 20rpx 0;
-  box-sizing: border-box;
   overflow-y: scroll;
 }
 
@@ -1267,5 +1259,74 @@ export default {
   justify-content: center;
   box-sizing: border-box;
   text-align: center;
+}
+
+@media (min-width: 769px) {
+  .device-params-page .param-card {
+    padding: 0 20px;
+  }
+
+  .device-params-page .param-row {
+    gap: 16px;
+    padding: 20px 0;
+  }
+
+  .device-params-page .param-stack,
+  .device-params-page .param-tip-box {
+    padding: 20px 0;
+  }
+
+  .device-params-page .panel-card {
+    border-radius: 0;
+  }
+
+  .device-params-page .param-picker,
+  .device-params-page .param-picker-wide {
+    width: 180px;
+    min-width: 180px;
+    min-height: 48px;
+    padding: 0 14px;
+  }
+
+  .device-params-page .param-picker-wide {
+    width: 210px;
+    min-width: 210px;
+  }
+
+  .device-params-page .number-input,
+  .device-params-page .value-box {
+    min-height: 48px;
+    height: 48px;
+  }
+
+  .device-params-page .number-input {
+    width: 104px;
+    padding: 0 12px;
+  }
+
+  .device-params-page .text-input {
+    min-height: 52px;
+    padding: 0 14px;
+  }
+
+  .device-params-page .panel-action {
+    min-height: 108px;
+    padding: 20px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 980px) {
+  .device-params-page .param-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .device-params-page .param-picker,
+  .device-params-page .param-picker-wide,
+  .device-params-page .number-input,
+  .device-params-page .value-box {
+    width: 100%;
+    min-width: 0;
+  }
 }
 </style>

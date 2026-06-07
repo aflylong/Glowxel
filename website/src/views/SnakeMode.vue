@@ -1,44 +1,75 @@
 <template>
-  <div class="glx-page-shell game-mode-page">
-    <section class="game-mode-layout">
-      <article class="glx-section-card glx-section-card--stack game-preview-card">
-        <div class="game-preview-card__head">
+  <div class="snake-page glx-page-shell game-mode-page">
+    <PcModeTopbar title="贪吃蛇" />
+
+    <section class="snake-layout game-mode-layout">
+      <article
+        class="glx-section-card glx-section-card--stack snake-preview-card game-preview-card"
+      >
+        <div class="snake-preview-card__head">
           <div>
-            <h1 class="game-page-title">贪吃蛇</h1>
-            <p class="game-page-meta">预览、随机蛇色、字体和发送都按 uniapp 同一组参数驱动。</p>
+            <p class="snake-preview-card__eyebrow">Device Mode</p>
+            <h2 class="snake-preview-card__title">贪吃蛇预览</h2>
           </div>
-          <span class="glx-chip" :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'">
-            {{ deviceStore.connected ? "已连接" : "未连接" }}
-          </span>
         </div>
 
-        <div class="game-preview-stage">
-          <DevicePixelBoard :pixels="displayPixels" :grid-visible="true" />
-          <DeviceSendingOverlay
-            :visible="isSending"
-            title="正在发送贪吃蛇"
-            description="发送期间锁定当前预览快照，等待设备完成贪吃蛇参数事务提交。"
-          >
-            <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
-          </DeviceSendingOverlay>
-        </div>
-
-        <div class="game-preview-actions">
+        <div class="snake-preview-toolbar">
           <button
             type="button"
-            class="glx-button glx-button--primary"
+            class="glx-button glx-button--primary snake-send-button"
             :disabled="isSending"
             @click="handleSend"
           >
             {{ isSending ? "发送中..." : "发送到设备" }}
           </button>
+          <span
+            class="glx-chip"
+            :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
+          >
+            {{ deviceStore.connected ? "已连接" : "未连接" }}
+          </span>
+        </div>
+
+        <div class="snake-preview-stage game-preview-stage">
+          <div class="snake-preview-board">
+            <DevicePixelBoard :pixels="displayPixels" :grid-visible="true" />
+            <DeviceSendingOverlay
+              :visible="isSending"
+              title="正在发送贪吃蛇"
+              description="发送期间锁定当前预览快照，等待设备完成贪吃蛇参数事务提交。"
+            >
+              <div class="snake-preview-sending">
+                <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
+              </div>
+            </DeviceSendingOverlay>
+          </div>
+        </div>
+
+        <div class="snake-summary-grid">
+          <article class="snake-summary-card">
+            <span class="snake-summary-card__label">皮肤</span>
+            <strong class="snake-summary-card__value">{{ selectedSkinLabel }}</strong>
+            <span class="snake-summary-card__meta">{{ config.snakeColor }}</span>
+          </article>
+          <article class="snake-summary-card">
+            <span class="snake-summary-card__label">字体</span>
+            <strong class="snake-summary-card__value">{{ selectedFontLabel }}</strong>
+            <span class="snake-summary-card__meta">
+              {{ config.showSeconds ? "显示秒钟" : "隐藏秒钟" }}
+            </span>
+          </article>
+          <article class="snake-summary-card">
+            <span class="snake-summary-card__label">参数</span>
+            <strong class="snake-summary-card__value">速度 {{ config.speed }}</strong>
+            <span class="snake-summary-card__meta">蛇宽 {{ config.snakeWidth }}</span>
+          </article>
         </div>
       </article>
 
-      <div class="game-mode-stack">
+      <div class="snake-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">分组</h2>
+            <h2 class="glx-section-title">模式配置</h2>
             <span class="glx-section-meta">外观 / 参数</span>
           </div>
           <DeviceModeTabs v-model="currentTab" :items="tabItems" />
@@ -105,6 +136,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import DeviceSendingOverlay from "@/components/device/DeviceSendingOverlay.vue";
+import PcModeTopbar from "@/components/device/modes/PcModeTopbar.vue";
 import { useFeedback } from "@/composables/useFeedback.js";
 import { usePixelPreviewPlayer } from "@/composables/usePixelPreviewPlayer.js";
 import GameModeColorField from "@/components/device/modes/GameModeColorField.vue";
@@ -158,6 +190,16 @@ const displayPixels = computed(() => {
     return sendingPixels.value;
   }
   return currentPixels.value;
+});
+
+const selectedSkinLabel = computed(() => {
+  const matched = snakeSkinOptions.find((item) => item.value === config.snakeSkin);
+  return matched === undefined ? "--" : matched.label;
+});
+
+const selectedFontLabel = computed(() => {
+  const matched = fontOptions.find((item) => item.id === config.font);
+  return matched === undefined ? "--" : matched.name;
 });
 
 watch(
@@ -345,57 +387,111 @@ async function handleSend() {
   gap: 24px;
 }
 
-.game-mode-layout {
+.snake-page {
+  background: linear-gradient(180deg, #eef3ff 0%, #f7f4eb 100%);
+}
+
+.snake-layout {
   display: grid;
-  grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
 }
 
-.game-preview-card {
-  position: sticky;
-  top: 88px;
-  align-self: start;
-}
-
-.game-preview-card__head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+.snake-preview-card {
   gap: 16px;
 }
 
-.game-page-title {
+.snake-preview-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.snake-preview-card__eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--glx-text-muted);
+}
+
+.snake-preview-card__title {
   margin: 0;
   font-size: 28px;
   font-weight: 900;
+  color: #000000;
 }
 
-.game-page-meta {
-  margin: 8px 0 0;
-  color: var(--glx-text-muted);
-  font-size: 13px;
-  line-height: 1.6;
+.snake-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.game-preview-stage {
-  position: relative;
+.snake-send-button {
+  min-width: 188px;
+  min-height: 48px;
+}
+
+.snake-preview-stage {
   padding: 18px;
+}
+
+.snake-preview-board {
+  position: relative;
+  width: min(100%, 560px);
+  margin: 0 auto;
+}
+
+.snake-preview-board :deep(.device-pixel-board) {
+  box-shadow: none;
+}
+
+.snake-preview-sending {
+  width: 100%;
+  height: 100%;
+}
+
+.snake-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.snake-summary-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
   border: 2px solid #000000;
-  background: #000000;
+  background: #ffffff;
 }
 
-.game-preview-actions {
-  display: flex;
-  justify-content: flex-start;
+.snake-summary-card__label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--glx-text-muted);
 }
 
-.game-mode-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.snake-summary-card__value {
+  font-size: 16px;
+  font-weight: 900;
+  color: #000000;
 }
 
-.game-inline-actions {
+.snake-summary-card__meta {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--glx-text-muted);
+}
+
+.snake-config-stack {
+  min-width: 0;
+}
+
+.snake-inline-actions {
   display: flex;
   justify-content: flex-start;
 }
@@ -413,12 +509,12 @@ async function handleSend() {
 }
 
 @media (max-width: 1080px) {
-  .game-mode-layout {
+  .snake-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .game-preview-card {
-    position: static;
+  .snake-summary-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

@@ -129,7 +129,7 @@
         >
           <div class="device-home__mode-icon-shell">
             <div class="device-home__mode-icon-core">
-              <Icon unit="px" :name="entry.icon" :size="44" />
+              <Icon unit="px" :name="entry.icon" :size="40" />
             </div>
           </div>
           <strong class="device-home__mode-name">{{ entry.name }}</strong>
@@ -242,7 +242,7 @@ const pageDirectoryGroups = devicePageGroups.filter((group) => {
 });
 
 const modeCatalog = [
-  { key: "eyes", name: "桌面宠物", icon: "smile", variantClass: "device-home__mode-card--pink", action: "switch" },
+  { key: "eyes", name: "桌面宠物", icon: "smile", variantClass: "device-home__mode-card--pink", action: "open", to: "/spirit-screen" },
   { key: "clock", name: "静态时钟", icon: "time", variantClass: "device-home__mode-card--cyan", action: "open", to: "/clock" },
   { key: "animation", name: "动态时钟", icon: "dynamic-filling", variantClass: "device-home__mode-card--teal", action: "open", to: "/animation-clock" },
   { key: "theme", name: "主题模式", icon: "picture", variantClass: "device-home__mode-card--purple", action: "open", to: "/theme-clock" },
@@ -251,10 +251,8 @@ const modeCatalog = [
   { key: "tetris_clock", name: "俄罗斯方块时钟", icon: "clock-filling", variantClass: "device-home__mode-card--gold", action: "open", to: "/tetris-clock-settings" },
   { key: "maze", name: "迷宫漫游", icon: "map", variantClass: "device-home__mode-card--orange", action: "open", to: "/maze-mode" },
   { key: "snake", name: "贪吃蛇", icon: "move", variantClass: "device-home__mode-card--green", action: "open", to: "/snake-mode" },
-  { key: "led_matrix_showcase", name: "矩阵流光", icon: "column-4", variantClass: "device-home__mode-card--azure", action: "open", to: "/led-matrix" },
-  { key: "gif_player", name: "GIF 播放器", icon: "play-filling", variantClass: "device-home__mode-card--rose", action: "open", to: "/gif-player" },
   { key: "water_world", name: "水世界", icon: "layers", variantClass: "device-home__mode-card--blue", action: "open", to: "/water-world" },
-  { key: "planet_screensaver", name: "星球屏保", icon: "navigation", variantClass: "device-home__mode-card--slate", action: "switch" },
+  { key: "planet_screensaver", name: "星球屏保", icon: "navigation", variantClass: "device-home__mode-card--slate", action: "open", to: "/planet-screensaver" },
   { key: "rick_morty_portal", name: "传送门", icon: "refresh", variantClass: "device-home__mode-card--mint", action: "open", to: "/rick-morty-portal" },
   { key: "terraria_clock", name: "泰拉瑞亚时钟", icon: "layers", variantClass: "device-home__mode-card--copper", action: "open", to: "/terraria-clock" },
   { key: "adventure_island", name: "冒险岛", icon: "navigation", variantClass: "device-home__mode-card--orange", action: "open", to: "/adventure-island" },
@@ -438,12 +436,12 @@ function resolveErrorMessage(error) {
 
 <style scoped>
 .device-home {
-  gap: 20px;
+  gap: 14px;
 }
 
 .device-home__summary {
-  gap: 18px;
-  padding: 24px;
+  gap: 14px;
+  padding: 20px;
   background: #ffffff;
 }
 
@@ -471,25 +469,25 @@ function resolveErrorMessage(error) {
 
 .device-home__summary-body {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(360px, 0.8fr);
-  gap: 20px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: 16px;
   align-items: start;
 }
 
 .device-home__brand {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 18px;
+  gap: 14px;
   align-items: start;
 }
 
 .device-home__brand-logo {
-  width: 92px;
-  height: 92px;
-  padding: 14px;
+  width: 84px;
+  height: 84px;
+  padding: 12px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 6px;
   border: var(--glx-shell-border);
   background: #ffffff;
   box-shadow: var(--glx-shadow-soft);
@@ -506,30 +504,30 @@ function resolveErrorMessage(error) {
 
 .device-home__brand-copy {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .device-home__title {
   color: var(--nb-ink);
-  font-size: clamp(30px, 4vw, 42px);
-  line-height: 1.02;
+  font-size: clamp(28px, 3vw, 36px);
+  line-height: 1;
   font-weight: 900;
 }
 
 .device-home__desc {
   color: var(--nb-text-secondary);
-  font-size: 15px;
-  line-height: 1.8;
+  font-size: 14px;
+  line-height: 1.65;
 }
 
 .device-home__inline-error {
   width: fit-content;
   max-width: 100%;
-  padding: 10px 12px;
+  padding: 8px 10px;
   border: var(--glx-shell-border);
   background: #ffe2e2;
   color: var(--nb-ink);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   line-height: 1.6;
 }
@@ -541,16 +539,16 @@ function resolveErrorMessage(error) {
 .device-home__connect-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 12px;
 }
 
 .device-home__entry-card,
 .device-home__tool-card {
-  min-height: 118px;
-  padding: 16px 18px;
+  min-height: 100px;
+  padding: 14px 16px;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 14px;
+  gap: 12px;
   align-items: center;
   border: var(--glx-shell-border);
   background: #ffffff;
@@ -567,8 +565,8 @@ function resolveErrorMessage(error) {
 
 .device-home__entry-icon,
 .device-home__tool-icon {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -640,20 +638,20 @@ function resolveErrorMessage(error) {
 .device-home__entry-title,
 .device-home__tool-title {
   color: var(--nb-ink);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 900;
 }
 
 .device-home__entry-desc,
 .device-home__tool-desc {
   color: var(--nb-text-secondary);
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .device-home__disconnect-entry {
-  min-height: 54px;
-  padding: 12px 18px;
+  min-height: 48px;
+  padding: 10px 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -669,8 +667,8 @@ function resolveErrorMessage(error) {
 
 .device-home__tool-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .device-home__tool-card {
@@ -679,7 +677,7 @@ function resolveErrorMessage(error) {
 
 .device-home__tool-cta {
   color: var(--nb-ink);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 900;
   white-space: nowrap;
 }
@@ -687,7 +685,7 @@ function resolveErrorMessage(error) {
 .device-home__mode-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 16px;
+  gap: 12px;
 }
 
 .device-home__directory-grid {
@@ -697,12 +695,12 @@ function resolveErrorMessage(error) {
 }
 
 .device-home__mode-card {
-  min-height: 168px;
-  padding: 18px 14px 14px;
+  min-height: 132px;
+  padding: 14px 10px 12px;
   display: grid;
   justify-items: center;
   align-content: start;
-  gap: 12px;
+  gap: 10px;
   border: var(--glx-shell-border);
   background: #ffffff;
   box-shadow: var(--glx-shadow-soft);
@@ -716,9 +714,9 @@ function resolveErrorMessage(error) {
 }
 
 .device-home__mode-icon-shell {
-  width: 80px;
-  height: 80px;
-  padding: 8px;
+  width: 68px;
+  height: 68px;
+  padding: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -739,21 +737,21 @@ function resolveErrorMessage(error) {
 
 .device-home__mode-name {
   color: var(--nb-ink);
-  font-size: 14px;
-  line-height: 1.35;
+  font-size: 13px;
+  line-height: 1.3;
   font-weight: 900;
 }
 
 .device-home__mode-meta {
   color: var(--nb-text-secondary);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
 }
 
 .device-home__section-note {
   color: var(--nb-text-secondary);
-  font-size: 13px;
-  line-height: 1.7;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .device-home__mode-card.is-active {
@@ -844,11 +842,11 @@ function resolveErrorMessage(error) {
 @media (max-width: 1024px) {
   .device-home__connect-grid,
   .device-home__tool-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .device-home__mode-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
   .device-home__directory-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));

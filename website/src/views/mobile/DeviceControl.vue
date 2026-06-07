@@ -1,19 +1,23 @@
 <!-- AUTO-CONVERTED FROM uniapp/pages/control/control.vue -->
 <template>
-  <div class="control-page glx-page-shell">
-    
-    <div class="header glx-topbar glx-page-shell__fixed">
+  <div
+    class="control-page glx-device-shell glx-device-shell--desktop-stack glx-page-shell"
+  >
+    <div
+      class="header glx-topbar glx-device-shell__topbar glx-page-shell__fixed"
+    >
       <div class="header-content">
         <div class="header-placeholder"></div>
         <span class="header-title glx-topbar__title">光格像素工坊</span>
         <div class="header-placeholder"></div>
       </div>
     </div>
-    <div data-scroll-view
+    <div
+      data-scroll-view
       scroll-y
-      class="content glx-scroll-region glx-page-shell__content"
+      class="content glx-device-shell__content glx-scroll-region"
     >
-      <div class="console-card glx-panel-card">
+      <div class="console-card glx-panel-card glx-device-shell__section">
         <div class="console-card-header">
           <div class="device-summary">
             <div class="device-logo">
@@ -32,7 +36,8 @@
                 <span
                   v-if="isDeviceConnected && deviceIp"
                   class="device-status-ip"
-                  >{{ deviceIp }}</span>
+                  >{{ deviceIp }}</span
+                >
               </div>
             </div>
           </div>
@@ -55,7 +60,8 @@
             <div class="connect-entry-text">
               <span class="connect-entry-label">热点配网</span>
               <span class="connect-entry-desc"
-                >首次使用请连接设备热点完成配网</span>
+                >首次使用请连接设备热点完成配网</span
+              >
             </div>
           </div>
         </div>
@@ -70,7 +76,7 @@
         </div>
       </div>
 
-      <div class="section-block">
+      <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
           <span class="section-title glx-section-title">模式入口</span>
           <span class="section-meta">{{ modeCatalog.length }} 个入口</span>
@@ -85,10 +91,7 @@
           >
             <div class="mode-badge-icon-shell">
               <div class="mode-badge-icon-core">
-                <div
-                  v-if="entry.iconType === 'canvas'"
-                  class="mode-pixel-icon"
-                >
+                <div v-if="entry.iconType === 'canvas'" class="mode-pixel-icon">
                   <div
                     v-for="index in 9"
                     :key="index"
@@ -108,7 +111,7 @@
         </div>
       </div>
 
-      <div class="section-block">
+      <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
           <span class="section-title glx-section-title">设备工具</span>
         </div>
@@ -120,26 +123,25 @@
             <div class="panel-action-text">
               <span class="panel-action-label">设备参数</span>
               <span class="panel-action-desc"
-                >调整亮度、方向、颜色、重置网络</span>
+                >调整亮度、方向、颜色、重置网络</span
+              >
             </div>
             <Icon name="direction-right" :size="28" color="var(--nb-ink)" />
           </div>
-          <div class="panel-divider"></div>
           <div class="panel-action" @click="openDeviceFlash">
             <div class="panel-action-icon warm">
               <Icon name="upload" :size="32" color="var(--nb-ink)" />
             </div>
             <div class="panel-action-text">
               <span class="panel-action-label">设备烧录</span>
-              <span class="panel-action-desc"
-                >USB Web Serial 写入固件，不是 WiFi / WS 连接</span>
+              <span class="panel-action-desc">USB Web Serial 写入固件</span>
             </div>
             <Icon name="direction-right" :size="28" color="var(--nb-ink)" />
           </div>
         </div>
       </div>
 
-      <div style="height: 120rpx"></div>
+      <div class="page-spacer glx-device-shell__spacer"></div>
     </div>
     <Toast ref="toastRef" />
     <ConnectModal
@@ -682,17 +684,13 @@ export default {
                   typeof entry[0] !== "string" ||
                   typeof entry[1] !== "string"
                 ) {
-                  throw new Error(
-                    `第 ${index + 1} 个图片像素格式无效`,
-                  );
+                  throw new Error(`第 ${index + 1} 个图片像素格式无效`);
                 }
                 const [xText, yText] = entry[0].split(",");
                 const x = Number(xText);
                 const y = Number(yText);
                 if (!Number.isInteger(x) || !Number.isInteger(y)) {
-                  throw new Error(
-                    `第 ${index + 1} 个图片像素坐标无效`,
-                  );
+                  throw new Error(`第 ${index + 1} 个图片像素坐标无效`);
                 }
                 const rgb = this.hexToRgb(entry[1]);
                 return {
@@ -760,14 +758,6 @@ export default {
 </script>
 
 <style scoped>
-.control-page {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--nb-paper);
-  overflow: hidden;
-}
-
 .header {
   background: var(--nb-surface);
   border-bottom: 2rpx solid var(--nb-ink);
@@ -788,10 +778,12 @@ export default {
 }
 
 .content {
-  flex: 1;
   padding: 16rpx 20rpx 0;
-  box-sizing: border-box;
   overflow-y: scroll;
+}
+
+.page-spacer {
+  height: 120rpx;
 }
 
 .console-card {
@@ -1222,15 +1214,68 @@ export default {
   background: #ffffff;
 }
 
-.panel-divider {
-  height: 2rpx;
-  background: rgba(0, 0, 0, 0.12);
-  margin: 0 24rpx;
-}
-
 @media (max-width: 720px) {
   .mode-badge-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 769px) {
+  .control-page .console-card {
+    margin-bottom: 0;
+    padding: 20px;
+  }
+
+  .control-page .device-summary {
+    align-items: flex-start;
+  }
+
+  .control-page .device-summary-text {
+    gap: 10rpx;
+  }
+
+  .control-page .connect-entry-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .control-page .mode-badge-grid {
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+    gap: 14px;
+  }
+
+  .control-page .mode-badge {
+    min-height: 150px;
+    padding: 16px 10px 14px;
+    gap: 12px;
+  }
+
+  .control-page .mode-badge-name {
+    white-space: normal;
+  }
+
+  .control-page .panel-card {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .control-page .panel-action {
+    min-height: 120px;
+    padding: 20px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1180px) {
+  .control-page .mode-badge-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 769px) and (max-width: 980px) {
+  .control-page .connect-entry-grid,
+  .control-page .panel-card {
+    grid-template-columns: 1fr;
   }
 }
 </style>

@@ -715,4 +715,5 @@ export default {
   background: #ffffff;
   border: 0;
 }
+
 </style>

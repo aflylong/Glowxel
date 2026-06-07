@@ -1,39 +1,76 @@
 <template>
-  <div class="glx-page-shell game-mode-page">
-    <section class="game-mode-layout">
-      <article class="glx-section-card glx-section-card--stack game-preview-card">
-        <div class="game-preview-card__head">
+  <div class="water-page glx-page-shell game-mode-page">
+    <PcModeTopbar title="水世界" />
+    <section class="water-layout game-mode-layout">
+      <article
+        class="glx-section-card glx-section-card--stack water-preview-card game-preview-card"
+      >
+        <div class="water-preview-card__head">
           <div>
-            <h1 class="game-page-title">水世界</h1>
-            <p class="game-page-meta">海面波浪、深海海流和海底焦散都在网站端先做首屏预览，再按同一组配置发送到设备。</p>
+            <p class="water-preview-card__eyebrow">Device Mode</p>
+            <h2 class="water-preview-card__title">水世界预览</h2>
           </div>
-          <span class="glx-chip" :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'">
+        </div>
+
+        <div class="water-preview-toolbar">
+          <button
+            type="button"
+            class="glx-button glx-button--primary water-send-button"
+            :disabled="isSending"
+            @click="handleSend"
+          >
+            {{ isSending ? "发送中..." : "发送到设备" }}
+          </button>
+          <span
+            class="glx-chip"
+            :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
+          >
             {{ deviceStore.connected ? "已连接" : "未连接" }}
           </span>
         </div>
 
-        <div class="game-preview-stage">
-          <DevicePixelBoard :pixels="currentPreviewPixels" :grid-visible="false" />
-          <DeviceSendingOverlay
-            :visible="isSending"
-            title="正在发送水世界"
-            description="发送期间锁定当前预览快照，等待设备完成水世界场景与时钟配置事务提交。"
-          >
-            <DevicePixelBoard :pixels="sendingPixels" :grid-visible="false" />
-          </DeviceSendingOverlay>
+        <div class="water-preview-stage game-preview-stage">
+          <div class="water-preview-board">
+            <DevicePixelBoard :pixels="currentPreviewPixels" :grid-visible="false" />
+            <DeviceSendingOverlay
+              :visible="isSending"
+              title="正在发送水世界"
+              description="发送期间锁定当前预览快照，等待设备完成水世界场景与时钟配置事务提交。"
+            >
+              <div class="water-preview-sending">
+                <DevicePixelBoard :pixels="sendingPixels" :grid-visible="false" />
+              </div>
+            </DeviceSendingOverlay>
+          </div>
         </div>
 
-        <div class="game-preview-actions">
-          <button type="button" class="glx-button glx-button--primary" :disabled="isSending" @click="handleSend">
-            {{ isSending ? "发送中..." : "发送到设备" }}
-          </button>
+        <div class="water-summary-grid">
+          <article class="water-summary-card">
+            <span class="water-summary-card__label">场景</span>
+            <strong class="water-summary-card__value">{{ selectedPresetLabel }}</strong>
+            <span class="water-summary-card__meta">{{ colorThemeLabel }}</span>
+          </article>
+          <article class="water-summary-card">
+            <span class="water-summary-card__label">时间</span>
+            <strong class="water-summary-card__value">
+              {{ clockConfig.showSeconds ? "显示秒钟" : "隐藏秒钟" }}
+            </strong>
+            <span class="water-summary-card__meta">
+              字号 {{ clockConfig.time.fontSize }} / {{ clockConfig.hourFormat }} 小时制
+            </span>
+          </article>
+          <article class="water-summary-card">
+            <span class="water-summary-card__label">字体</span>
+            <strong class="water-summary-card__value">{{ selectedFontLabel }}</strong>
+            <span class="water-summary-card__meta">{{ clockConfig.time.color }}</span>
+          </article>
         </div>
       </article>
 
-      <div class="game-mode-stack">
+      <div class="water-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">分组</h2>
+            <h2 class="glx-section-title">模式配置</h2>
             <span class="glx-section-meta">场景 / 时间 / 字体</span>
           </div>
           <DeviceModeTabs v-model="currentTab" :items="tabItems" />
@@ -127,27 +164,36 @@ import DeviceSendingOverlay from "@/components/device/DeviceSendingOverlay.vue";
 import DeviceModeTabs from "@/components/device/modes/DeviceModeTabs.vue";
 import DevicePixelBoard from "@/components/device/modes/DevicePixelBoard.vue";
 import GameModeFontSelector from "@/components/device/modes/GameModeFontSelector.vue";
+import PcModeTopbar from "@/components/device/modes/PcModeTopbar.vue";
 import { useFeedback } from "@/composables/useFeedback.js";
 import { useDeviceLegacyStore } from "@/stores/deviceLegacy.js";
 import { buildDeviceClockPayload, getDeviceClockFontOptions } from "@/utils/device-clock-core.js";
 import {
-  buildWaterWorldPreviewPixels,
+  drawClockTextToPixels,
+  getClockTextHeight,
+  getClockTextWidth,
+  getCurrentTimeText,
+} from "@/utils/clockCanvas.js";
+import {
   buildWaterWorldSendPlan,
   createDefaultWaterWorldClockConfig,
   createDefaultWaterWorldConfig,
-  createWaterWorldPreviewState,
-  DEFAULT_WATER_WORLD_COLOR_THEME_ID,
   normalizeWaterWorldClockConfig,
   normalizeWaterWorldConfig,
-  pickRandomWaterWorldColorThemeId,
-  stepWaterWorldPreviewState,
   WATER_WORLD_CLOCK_CONFIG_KEY,
-  WATER_WORLD_COLOR_THEME_OPTIONS,
   WATER_WORLD_CONFIG_KEY,
   WATER_WORLD_OPTIONS,
   WATER_WORLD_PRESET_COLORS,
 } from "@/utils/device-mode-water-world.js";
 import { readStorageJson, writeStorageJson } from "@/utils/device-mode-core.js";
+import {
+  buildWaterWorldColorThemePayload,
+  createWaterWorldPreviewState,
+  DEFAULT_WATER_WORLD_COLOR_THEME_ID,
+  renderWaterWorldPreviewState,
+  stepWaterWorldPreviewState,
+  WATER_WORLD_COLOR_THEME_OPTIONS,
+} from "@/utils/waterWorldPreview.js";
 
 const WATER_WORLD_THEME_KEY = "water_world_preview_theme_id";
 
@@ -185,6 +231,23 @@ const timeSection = computed(() => {
     color: clockConfig.time.color,
     align: clockConfig.time.align,
   };
+});
+
+const selectedPresetLabel = computed(() => {
+  const matched = WATER_WORLD_OPTIONS.find((item) => item.preset === config.preset);
+  return matched === undefined ? "--" : matched.label;
+});
+
+const colorThemeLabel = computed(() => {
+  const matched = WATER_WORLD_COLOR_THEME_OPTIONS.find(
+    (item) => item.id === colorThemeId.value,
+  );
+  return matched === undefined ? "--" : matched.label;
+});
+
+const selectedFontLabel = computed(() => {
+  const matched = fontOptions.find((item) => item.id === clockConfig.font);
+  return matched === undefined ? "--" : matched.name;
 });
 
 watch(
@@ -244,26 +307,110 @@ function persistState() {
 
 function rebuildPreview() {
   previewState.value = createWaterWorldPreviewState(config, colorThemeId.value);
-  currentPreviewPixels.value = buildWaterWorldPreviewPixels(previewState.value, clockConfig);
+  currentPreviewPixels.value = buildPreviewPixels();
 }
 
 function startPreviewLoop() {
   stopPreviewLoop();
-  previewTimerId = window.setInterval(() => {
+  const playNextFrame = () => {
+    if (!previewState.value) {
+      return;
+    }
     stepWaterWorldPreviewState(previewState.value);
-    currentPreviewPixels.value = buildWaterWorldPreviewPixels(previewState.value, clockConfig);
-  }, 120);
+    currentPreviewPixels.value = buildPreviewPixels();
+    previewTimerId = window.setTimeout(
+      playNextFrame,
+      Math.max(40, Number(previewState.value.frameDelay) || 120),
+    );
+  };
+  previewTimerId = window.setTimeout(playNextFrame, 120);
 }
 
 function stopPreviewLoop() {
   if (previewTimerId !== null) {
-    window.clearInterval(previewTimerId);
+    window.clearTimeout(previewTimerId);
     previewTimerId = null;
   }
 }
 
+function buildEffectiveClockConfig() {
+  return {
+    ...clockConfig,
+    time: {
+      ...clockConfig.time,
+      show: true,
+    },
+  };
+}
+
+function buildPreviewPixels() {
+  if (!previewState.value) {
+    return new Map();
+  }
+  const pixels = new Map(renderWaterWorldPreviewState(previewState.value));
+  const effectiveClockConfig = buildEffectiveClockConfig();
+  const timeText = getCurrentTimeText(
+    effectiveClockConfig.showSeconds,
+    effectiveClockConfig.hourFormat,
+  );
+  const placement = resolveWaterWorldTimePlacement(
+    timeText,
+    effectiveClockConfig,
+  );
+
+  drawClockTextToPixels(
+    timeText,
+    placement.x,
+    placement.y,
+    effectiveClockConfig.time.color,
+    pixels,
+    effectiveClockConfig.font,
+    placement.fontSize,
+    "left",
+  );
+  return pixels;
+}
+
+function resolveWaterWorldTimePlacement(timeText, nextClockConfig) {
+  const fontSize = Math.max(
+    1,
+    Math.min(3, Number(nextClockConfig.time.fontSize) || 1),
+  );
+  const width = getClockTextWidth(timeText, nextClockConfig.font, fontSize);
+  const height = getClockTextHeight(nextClockConfig.font, fontSize);
+  const maxX = Math.max(0, 64 - width);
+  const maxY = Math.max(0, 64 - height);
+  let x = Number(nextClockConfig.time.x);
+  let y = Number(nextClockConfig.time.y);
+
+  if (nextClockConfig.time.align === "center") {
+    x -= Math.floor(width / 2);
+  } else if (nextClockConfig.time.align === "right") {
+    x -= width;
+  }
+
+  if (!Number.isFinite(x)) {
+    x = 0;
+  }
+  if (!Number.isFinite(y)) {
+    y = 0;
+  }
+
+  return {
+    x: Math.max(0, Math.min(maxX, Math.round(x))),
+    y: Math.max(0, Math.min(maxY, Math.round(y))),
+    fontSize,
+  };
+}
+
 function randomizeColorTheme() {
-  colorThemeId.value = pickRandomWaterWorldColorThemeId(colorThemeId.value);
+  const options = WATER_WORLD_COLOR_THEME_OPTIONS.filter(
+    (item) => item.id !== colorThemeId.value,
+  );
+  const pool =
+    options.length > 0 ? options : WATER_WORLD_COLOR_THEME_OPTIONS;
+  const nextTheme = pool[Math.floor(Math.random() * pool.length)];
+  colorThemeId.value = nextTheme.id;
 }
 
 function toggleTimeShow() {
@@ -315,13 +462,17 @@ async function handleSend() {
   feedback.showBlocking("发送水世界", "正在把当前水世界配置发送到设备。");
   try {
     const sendPlan = buildWaterWorldSendPlan(config.preset);
+    sendPlan.command.colorTheme = buildWaterWorldColorThemePayload(
+      colorThemeId.value,
+    );
     await deviceStore.setAmbientEffect(
+      sendPlan.command,
       {
-        preset: sendPlan.command.preset,
-        speed: sendPlan.command.speed,
-        loop: sendPlan.command.loop,
+        clockConfig: buildDeviceClockPayload(
+          buildEffectiveClockConfig(),
+          new Date(),
+        ),
       },
-      { clockConfig: buildDeviceClockPayload(clockConfig, new Date()) },
     );
     persistState();
     feedback.success("发送成功", "水世界已发送到设备。");
@@ -343,54 +494,114 @@ async function handleSend() {
   gap: 24px;
 }
 
-.game-mode-layout {
+.water-page {
+  background: linear-gradient(180deg, #eef3ff 0%, #f7f4eb 100%);
+}
+
+.water-layout {
   display: grid;
-  grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
 }
 
-.game-preview-card {
-  position: sticky;
-  top: 88px;
-  align-self: start;
+.water-preview-card {
+  gap: 18px;
 }
 
-.game-preview-card__head {
+.water-preview-card__head {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 16px;
 }
 
-.game-page-title {
+.water-preview-card__eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--glx-text-muted);
+}
+
+.water-preview-card__title {
   margin: 0;
   font-size: 28px;
   font-weight: 900;
+  color: #000000;
 }
 
-.game-page-meta {
-  margin: 8px 0 0;
-  color: var(--glx-text-muted);
-  font-size: 13px;
-  line-height: 1.6;
+.water-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
 }
 
-.game-preview-stage {
+.water-send-button {
+  min-width: 196px;
+  min-height: 50px;
+}
+
+.water-preview-stage {
+  padding: 20px;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+}
+
+.water-preview-board {
   position: relative;
-  padding: 18px;
+  width: min(100%, 620px);
+  margin: 0 auto;
+}
+
+.water-preview-board :deep(.device-pixel-board) {
+  box-shadow: none;
+}
+
+.water-preview-sending {
+  width: 100%;
+  height: 100%;
+}
+
+.water-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.water-summary-card {
+  display: grid;
+  gap: 6px;
+  min-height: 112px;
+  padding: 16px;
   border: 2px solid #000000;
-  background: #000000;
+  background: #ffffff;
 }
 
-.game-preview-actions {
-  display: flex;
-  justify-content: flex-start;
+.water-summary-card__label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--glx-text-muted);
 }
 
-.game-mode-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.water-summary-card__value {
+  font-size: 16px;
+  font-weight: 900;
+  color: #000000;
+}
+
+.water-summary-card__meta {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--glx-text-muted);
+}
+
+.water-config-stack {
+  min-width: 0;
+  display: grid;
+  gap: 18px;
 }
 
 .game-inline-actions {
@@ -410,7 +621,8 @@ async function handleSend() {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 12px;
+  min-height: 108px;
+  padding: 14px;
   border: 2px solid #000000;
   background: #ffffff;
   cursor: pointer;
@@ -433,12 +645,12 @@ async function handleSend() {
 }
 
 @media (max-width: 1080px) {
-  .game-mode-layout {
+  .water-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .game-preview-card {
-    position: static;
+  .water-summary-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

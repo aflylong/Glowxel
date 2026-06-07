@@ -315,7 +315,7 @@ export function createInitialState() {
       landing: 0,
       fairyT: 0,
       stumbleT: 0,    // 磕到滑板的停顿帧 (>0 时显示 stumble sprite)
-      skateJumpOverCount: 0, // 滑板态下成功跳过的障碍物计数; >=15 时下一颗石头必撞
+      skateJumpOverCount: 0, // 滑板态下成功跳过的障碍物计数; >=5 时下一颗石头必撞
     },
     entities: [],
     axes: [],
@@ -473,7 +473,7 @@ export function tickScene(state, params = {}) {
         ch.fairyT = 0;
         continue;
       }
-      // 滑板撞到石头(15% 不跳的那次, 或达 15 次必栽): 被石头顶起到障碍物高度 → 自由落体, 显示 stumble
+      // 滑板撞到石头(达到阈值后强制不跳): 被石头顶起到障碍物高度 → 自由落体, 显示 stumble
       // 必须角色还在地面 (jumpY 接近 0) 才算撞到 — 跳起来时 Y 高于石头, 算跳过
       if (e.type === 'obs' && e.sub === 'rock' && ch.type === 'skateboard' && ch.jumpY < 4) {
         ch.type = 'run';            // 滑板没了
@@ -628,13 +628,13 @@ export function tickScene(state, params = {}) {
       
       if (distToChar > triggerStart && distToChar < triggerEnd) {
         if ((needJumpOver || needJumpForFruit) && !ch.jumping) {
-          // 滑板 + 石头障碍: 默认 15% 概率故意不跳, 模拟"磕到脚"丢滑板
-          // 若 skateJumpOverCount >= 15, 则强制不跳 (必撞), 防止角色一直滑板态
-          // (e.failOnce 标记本次已掷骰, 不重复)
+          // 滑板 + 石头障碍: 跳过足够多障碍后强制不跳, 防止角色一直滑板态
+          // 若 skateJumpOverCount >= 5, 则强制不跳 (必撞)
+          // (e.failChecked 标记本次已检查, 不重复)
           if (ch.type === 'skateboard' && e.type === 'obs' && e.sub === 'rock' && !e.failChecked) {
             e.failChecked = true;
-            const forceWipeout = (ch.skateJumpOverCount || 0) >= 15;
-            if (forceWipeout || Math.random() < 0.15) {
+            const forceWipeout = (ch.skateJumpOverCount || 0) >= 5;
+            if (forceWipeout) {
               // 这次不跳, 让石头撞上来 (碰撞段会掉滑板)
             } else {
               triggerJump(ch, jumpHeight);

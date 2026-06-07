@@ -9,9 +9,11 @@ import router from './router'
 import App from './App.vue'
 import './assets/styles/main.css'
 import './assets/styles/glx-app.css'
+import './assets/styles/device-mode-desktop.css'
 import './assets/styles/editor.css'
 import './assets/styles/mobile-shell.css'
 import './assets/styles/mobile-neubrutalism.css'
+import './assets/styles/device-page-responsive.css'
 
 // 把 router 实例注入 uni-shim, 让 uni.navigateTo 等映射到 vue-router
 uni._setRouter(router)

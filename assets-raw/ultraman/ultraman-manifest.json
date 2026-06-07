@@ -1,0 +1,72 @@
+[
+  {
+    "id": "ultraman",
+    "era": "showa",
+    "series": "ウルトラマン",
+    "name": "ウルトラマン",
+    "slug": "ultraman",
+    "pageUrl": "https://m-78.jp/character/ultraman",
+    "imageUrl": "https://m-78.jp/wp-content/uploads/2017/09/ultraman_kv_3.jpg",
+    "sourceExt": ".jpg"
+  },
+  {
+    "id": "zoffy",
+    "era": "showa",
+    "series": "ウルトラマン",
+    "name": "ゾフィー",
+    "slug": "zoffy",
+    "pageUrl": "https://m-78.jp/character/zoffy",
+    "imageUrl": "https://m-78.jp/wp-content/uploads/2017/09/zoffy_kv_5.jpg",
+    "sourceExt": ".jpg"
+  },
+  {
+    "id": "ultraseven",
+    "era": "showa",
+    "series": "ウルトラセブン",
+    "name": "ウルトラセブン",
+    "slug": "ultraseven",
+    "pageUrl": "https://m-78.jp/character/ultraseven/",
+    "imageUrl": "https://m-78.jp/wp-content/uploads/2017/09/ultraseven_kv_4.jpg",
+    "sourceExt": ".jpg"
+  },
+  {
+    "id": "ultraman-zero",
+    "era": "new-generation",
+    "series": "ウルトラマンゼロ",
+    "name": "ウルトラマンゼロ",
+    "slug": "zero",
+    "pageUrl": "https://m-78.jp/character/zero/",
+    "imageUrl": "https://m-78.jp/wp-content/uploads/2017/09/zero_kv_3.jpg",
+    "sourceExt": ".jpg"
+  },
+  {
+    "id": "ultraman-decker",
+    "era": "new-generation",
+    "series": "ウルトラマンデッカー",
+    "name": "ウルトラマンデッカー",
+    "slug": "decker",
+    "pageUrl": "https://m-78.jp/character/decker",
+    "imageUrl": "https://m-78.jp/wp-content/uploads/2022/03/decker_kv_3.jpg",
+    "sourceExt": ".jpg"
+  },
+  {
+    "id": "ultraman-blazar",
+    "era": "new-generation",
+    "series": "ウルトラマンブレーザー",
+    "name": "ウルトラマンブレーザー",
+    "slug": "ultraman-blazar",
+    "pageUrl": "https://m-78.jp/character/ultraman_blazar",
+    "imageUrl": "https://m-78.jp/wp-content/uploads/2023/04/post-6006-blazar-announce-03.jpg",
+    "sourceExt": ".jpg"
+  },
+  {
+    "id": "ultraman-arc",
+    "era": "new-generation",
+    "series": "ウルトラマンアーク",
+    "name": "ウルトラマンアーク",
+    "slug": "ultraman-arc",
+    "pageUrl": "https://m-78.jp/character/ultraman_arc/",
+    "imageUrl": "https://m-78.jp/wp-content/uploads/2024/04/ウルトラマンアーク_プロフィール.png",
+    "sourceExt": ".png"
+  }
+]
