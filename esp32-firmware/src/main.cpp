@@ -47,10 +47,35 @@ bool gRuntimeInteractiveSettingsMode = false;
 bool gDeferredRuntimeModulesInitialized = false;
 bool gRuntimeDisplayOutputPaused = false;
 
+const char* bootPhaseLabel(BootPhase phase) {
+  switch (phase) {
+    case BootPhase::BOOT_MINIMAL:
+      return "BOOT_MINIMAL";
+    case BootPhase::STA_CONNECTING:
+      return "STA_CONNECTING";
+    case BootPhase::PORTAL_ACTIVE:
+      return "PORTAL_ACTIVE";
+    case BootPhase::RESTART_PENDING:
+      return "RESTART_PENDING";
+    case BootPhase::RUNTIME_STARTING:
+      return "RUNTIME_STARTING";
+    case BootPhase::RUNTIME_ACTIVE:
+      return "RUNTIME_ACTIVE";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 void setBootPhase(BootPhase nextPhase, const char* reason) {
   if (gBootPhase == nextPhase) {
     return;
   }
+  Serial.printf(
+    "[BOOT] phase %s -> %s (%s)\n",
+    bootPhaseLabel(gBootPhase),
+    bootPhaseLabel(nextPhase),
+    reason == nullptr ? "no-reason" : reason
+  );
   gBootPhase = nextPhase;
 }
 
@@ -172,9 +197,19 @@ void finishClockRestoreIfReady() {
 }
 
 void printPortalReadyBanner() {
+  Serial.printf(
+    "[BOOT] config portal ready ssid=\"%s\" ip=%s\n",
+    WiFiManager::getConfigPortalSSID().c_str(),
+    WiFiManager::getConfigPortalIP().c_str()
+  );
 }
 
 void printRuntimeReadyBanner() {
+  Serial.printf(
+    "[BOOT] runtime ready ip=%s ssid=\"%s\"\n",
+    WiFiManager::getDeviceIP().c_str(),
+    WiFiManager::getConnectedSSID().c_str()
+  );
 }
 
 void startPortalIfNeeded() {

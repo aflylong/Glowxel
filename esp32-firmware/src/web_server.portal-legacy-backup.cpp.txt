@@ -1,4 +1,4 @@
-﻿#include "web_server.h"
+#include "web_server.h"
 #include "websocket_handler.h"
 #include "wifi_manager.h"
 #include "display_manager.h"
@@ -642,17 +642,6 @@ String buildWifiConfigPortalPage() {
       font-size: 12px;
       line-height: 1.6;
     }
-    .submit-status {
-      display: none;
-      margin: 12px 0 0;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid #cde9d2;
-      background: #f3fcf5;
-      color: #1e6b3a;
-      font-size: 13px;
-      line-height: 1.5;
-    }
   </style>
 </head>
 <body>
@@ -665,7 +654,7 @@ String buildWifiConfigPortalPage() {
     html += R"HTML(</strong><br>配网页地址：<strong>)HTML";
     html += escapeHtml(portalIp);
     html += R"HTML(</strong></div>
-      <form id="config-form" method="post" action="/configure-wifi">
+      <form method="post" action="/configure-wifi">
         <div class="field">
           <div class="row">
             <label for="ssid-select">扫描结果</label>
@@ -698,8 +687,7 @@ String buildWifiConfigPortalPage() {
           <label for="password-input">WiFi 密码</label>
           <input id="password-input" name="password" maxlength="64" type="password" autocomplete="off" placeholder="输入 WiFi 密码，开放网络可留空">
         </div>
-        <button class="btn btn-primary" id="submit-btn" type="submit">保存并连接</button>
-        <p class="submit-status" id="submit-status">配置已提交，设备将保存 WiFi 并重启连接。请稍候。</p>
+        <button class="btn btn-primary" type="submit">保存并连接</button>
       </form>
       <p class="hint">仅支持 2.4GHz WiFi。扫描只是辅助，也可以不扫描直接手动输入。连接失败后，设备会自动回到热点模式。</p>
     </div>
@@ -710,9 +698,6 @@ String buildWifiConfigPortalPage() {
       var scanStatus = document.getElementById("scan-status");
       var ssidSelect = document.getElementById("ssid-select");
       var ssidInput = document.getElementById("ssid-input");
-      var configForm = document.getElementById("config-form");
-      var submitBtn = document.getElementById("submit-btn");
-      var submitStatus = document.getElementById("submit-status");
       var scanPollTimer = 0;
       var scanPollAttempts = 0;
       var maxScanPollAttempts = 6;
@@ -888,15 +873,6 @@ String buildWifiConfigPortalPage() {
         fetchScanSnapshot("POST");
       });
 
-      if (configForm != null && submitBtn != null && submitStatus != null) {
-        configForm.addEventListener("submit", function () {
-          submitBtn.disabled = true;
-          submitBtn.classList.add("btn-disabled");
-          submitBtn.textContent = "已提交，正在保存...";
-          submitStatus.style.display = "block";
-        });
-      }
-
       if (scanBtn.disabled) {
         scheduleScanPoll();
       }
@@ -907,6 +883,274 @@ String buildWifiConfigPortalPage() {
 
     return html;
   }
+  String portalSsid = WiFiManager::getConfigPortalSSID();
+  String portalIp = WiFiManager::getConfigPortalIP();
+  String networkOptionsHtml = buildWifiScanSelectOptionsHtml();
+  String scanStatusText = buildWifiScanStatusText();
+  const char* scanStatusClassName = buildWifiScanStatusClassName();
+  bool scanRunning = WiFiManager::isNetworkScanRunning();
+  String scanButtonText = scanRunning
+    ? "正在扫描..."
+    : (WiFiManager::getScannedNetworkCount() > 0
+    ? "重新扫描 WiFi"
+    : "扫描 WiFi");
+
+  String html;
+  html.reserve(15000);
+  html += R"HTML(<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Glowxel PixelBoard WiFi 配网</title>
+)HTML";
+  html += R"HTML(
+  <style>
+    body { margin: 0; padding: 18px; background: #f4f7fb; color: #142033; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+    .wrap { max-width: 420px; margin: 0 auto; }
+    .card { background: #fff; border: 1px solid #d7e3f2; border-radius: 16px; padding: 20px; box-shadow: 0 10px 24px rgba(20, 32, 51, 0.08); }
+    h1 { margin: 0 0 10px; font-size: 24px; text-align: center; }
+    .sub { margin: 0 0 16px; color: #5c6c84; font-size: 14px; text-align: center; line-height: 1.6; }
+    .meta { margin-bottom: 16px; padding: 12px 14px; border-radius: 12px; background: #f8fbff; border: 1px solid #dce7f5; font-size: 13px; color: #50627d; }
+    .meta strong { color: #142033; word-break: break-all; }
+    .notice { margin-bottom: 16px; padding: 12px 14px; border-radius: 12px; background: #fff7e8; border: 1px solid #ffd89a; color: #7d5412; font-size: 13px; line-height: 1.6; }
+    .section-title { margin: 18px 0 10px; font-size: 15px; font-weight: 700; }
+    .scan-box { margin-bottom: 14px; }
+    .scan-status { margin: 10px 0 0; padding: 12px 14px; border-radius: 12px; font-size: 13px; line-height: 1.6; border: 1px solid #dce7f5; background: #f8fbff; color: #50627d; }
+    .status-busy { border-color: #bfd5ff; background: #eef4ff; color: #184fb6; }
+    .status-ready { border-color: #cde9d2; background: #f3fcf5; color: #1e6b3a; }
+    .status-empty { border-color: #dce7f5; background: #f8fbff; color: #50627d; }
+    label { display: block; margin: 12px 0 8px; color: #50627d; font-size: 13px; font-weight: 600; }
+    input, select { width: 100%; box-sizing: border-box; padding: 13px 14px; border: 1px solid #cfdced; border-radius: 12px; background: #fff; color: #142033; font-size: 14px; }
+    .actions { margin-top: 14px; }
+    .btn { width: 100%; box-sizing: border-box; display: block; padding: 13px 16px; border-radius: 12px; border: 1px solid #1e5eff; background: #1e5eff; color: #fff; text-align: center; text-decoration: none; font-size: 14px; font-weight: 700; }
+    .btn-secondary { margin-bottom: 10px; background: #eef4ff; color: #1e5eff; }
+    .btn-disabled { border-color: #d8e1ef; background: #f3f6fb; color: #7e8ea5; pointer-events: none; }
+    .hint { margin-top: 14px; color: #5c6c84; font-size: 12px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Glowxel PixelBoard WiFi 配网</h1>
+      <p class="sub">连上设备热点后，在这里选择你的 2.4GHz WiFi 并保存。</p>
+      <div class="meta">设备热点：<strong>)HTML";
+  html += escapeHtml(portalSsid);
+  html += R"HTML(</strong><br>配网页地址：<strong>)HTML";
+  html += escapeHtml(portalIp);
+  html += R"HTML(</strong></div>
+      <div class="notice">仅支持 2.4GHz WiFi。为保证系统登录页稳定打开，设备不会在热点刚启动时立刻扫描，请手动点一次扫描。</div>
+      <div class="section-title">附近 WiFi</div>
+      <div class="scan-box">
+        <label for="ssid-select">扫描结果</label>
+        <select id="ssid-select">)HTML";
+  html += networkOptionsHtml;
+  html += R"HTML(</select>
+        <p class=")HTML";
+  html += scanStatusClassName;
+  html += R"HTML(" id="scan-status">)HTML";
+  html += escapeHtml(scanStatusText);
+  html += R"HTML(</p>
+      </div>
+      <form method="post" action="/configure-wifi">
+        <label for="ssid-input">WiFi 名称 (SSID)</label>
+        <input id="ssid-input" name="ssid" maxlength="32" autocomplete="off" required placeholder="输入 2.4GHz WiFi 名称">
+        <label for="password-input">WiFi 密码</label>
+        <input id="password-input" name="password" maxlength="64" type="password" autocomplete="off" placeholder="输入 WiFi 密码，开放网络可留空">
+        <div class="actions">
+          <button class="btn btn-secondary )HTML";
+  if (scanRunning) {
+    html += R"HTML(btn-disabled)HTML";
+  }
+  html += R"HTML(" id="scan-btn" type="button")HTML";
+  if (scanRunning) {
+    html += R"HTML( disabled)HTML";
+  }
+  html += R"HTML(>)HTML";
+  html += scanButtonText;
+  html += R"HTML(</button>
+          <button class="btn" type="submit">保存并连接</button>
+        </div>
+      </form>
+      <p class="hint">保存后设备会自动重启。如果密码错误，设备会重新回到热点配网模式，你可以再次连接 <code>)HTML";
+  html += escapeHtml(portalSsid);
+  html += R"HTML(</code> 重新配置。</p>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var scanBtn = document.getElementById("scan-btn");
+      var scanStatus = document.getElementById("scan-status");
+      var ssidSelect = document.getElementById("ssid-select");
+      var ssidInput = document.getElementById("ssid-input");
+      var scanPollTimer = 0;
+
+      if (scanBtn == null || scanStatus == null || ssidSelect == null || ssidInput == null) {
+        return;
+      }
+
+      function clearScanPollTimer() {
+        if (scanPollTimer !== 0) {
+          window.clearTimeout(scanPollTimer);
+          scanPollTimer = 0;
+        }
+      }
+
+      function setScanButtonState(scanPhase, networkCount) {
+        var busy = scanPhase === "requested" || scanPhase === "running";
+        scanBtn.disabled = busy;
+        if (busy) {
+          scanBtn.classList.add("btn-disabled");
+          scanBtn.textContent = "正在扫描...";
+          return;
+        }
+
+        scanBtn.classList.remove("btn-disabled");
+        if (networkCount > 0) {
+          scanBtn.textContent = "重新扫描 WiFi";
+          return;
+        }
+
+        scanBtn.textContent = "扫描 WiFi";
+      }
+
+      function setScanStatus(scanPhase, networkCount) {
+        scanStatus.className = "scan-status";
+
+        if (scanPhase === "requested" || scanPhase === "running") {
+          scanStatus.classList.add("status-busy");
+          scanStatus.textContent = "正在扫描附近 WiFi，请稍候 3-6 秒。";
+          return;
+        }
+
+        if (networkCount > 0) {
+          scanStatus.classList.add("status-ready");
+          scanStatus.textContent = "已扫描到 " + networkCount + " 个 WiFi，请从下拉框选择，也可以直接手动输入。";
+          return;
+        }
+
+        scanStatus.classList.add("status-empty");
+        scanStatus.textContent = "尚未扫描到 WiFi。请点击“扫描 WiFi”，也可以直接手动输入 SSID。";
+      }
+
+      function renderNetworkOptions(networks) {
+        var currentInputValue = ssidInput.value;
+        var placeholderText = "请先点击扫描 WiFi";
+
+        if (networks.length > 0) {
+          placeholderText = "请选择扫描到的 WiFi";
+        }
+
+        while (ssidSelect.options.length > 0) {
+          ssidSelect.remove(0);
+        }
+
+        var placeholderOption = document.createElement("option");
+        placeholderOption.value = "";
+        placeholderOption.textContent = placeholderText;
+        ssidSelect.appendChild(placeholderOption);
+
+        for (var i = 0; i < networks.length; i++) {
+          var network = networks[i];
+          var option = document.createElement("option");
+          option.value = network.ssid;
+          option.textContent = network.ssid + " · " + (network.secure ? "加密网络" : "开放网络") + " · " + network.rssi + " dBm";
+          if (currentInputValue === network.ssid) {
+            option.selected = true;
+          }
+          ssidSelect.appendChild(option);
+        }
+      }
+
+      function scheduleScanPoll() {
+        clearScanPollTimer();
+        scanPollTimer = window.setTimeout(function () {
+          fetchScanSnapshot("GET");
+        }, 1000);
+      }
+
+      function applyScanSnapshot(snapshot) {
+        if (snapshot == null || typeof snapshot !== "object") {
+          return;
+        }
+        if (snapshot.scanPhase !== "idle" &&
+            snapshot.scanPhase !== "requested" &&
+            snapshot.scanPhase !== "running") {
+          return;
+        }
+        if (!Array.isArray(snapshot.networks)) {
+          return;
+        }
+
+        renderNetworkOptions(snapshot.networks);
+        setScanStatus(snapshot.scanPhase, snapshot.networks.length);
+        setScanButtonState(snapshot.scanPhase, snapshot.networks.length);
+
+        if (snapshot.scanPhase === "requested" || snapshot.scanPhase === "running") {
+          scheduleScanPoll();
+          return;
+        }
+
+        clearScanPollTimer();
+      }
+
+      function fetchScanSnapshot(method) {
+        fetch("/scan-wifi", {
+          method: method,
+          cache: "no-store"
+        })
+          .then(function (response) {
+            if (!response.ok) {
+              throw new Error("scan request failed");
+            }
+            return response.json();
+          })
+          .then(function (snapshot) {
+            applyScanSnapshot(snapshot);
+          })
+          .catch(function () {
+            clearScanPollTimer();
+            scanStatus.className = "scan-status status-empty";
+            scanStatus.textContent = "扫描状态获取失败，请重试。";
+            setScanButtonState("idle", ssidSelect.options.length > 1 ? ssidSelect.options.length - 1 : 0);
+          });
+      }
+
+      ssidSelect.addEventListener("change", function () {
+        if (ssidSelect.value.length > 0) {
+          ssidInput.value = ssidSelect.value;
+          ssidInput.focus();
+        }
+      });
+
+      ssidInput.addEventListener("input", function () {
+        var matchedIndex = 0;
+        for (var i = 1; i < ssidSelect.options.length; i++) {
+          if (ssidSelect.options[i].value === ssidInput.value) {
+            matchedIndex = i;
+            break;
+          }
+        }
+        ssidSelect.selectedIndex = matchedIndex;
+      });
+
+      scanBtn.addEventListener("click", function () {
+        if (scanBtn.disabled) {
+          return;
+        }
+        fetchScanSnapshot("POST");
+      });
+
+      fetchScanSnapshot("GET");
+      if (scanBtn.disabled) {
+        scheduleScanPoll();
+      }
+    })();
+  </script>
+</body>
+</html>)HTML";
+
+  return html;
 }
 
 String buildWifiConfigSuccessPage(const String& ssid) {
@@ -3591,19 +3835,8 @@ void sendSyncResponse(
   client.println("Cache-Control: no-store");
   client.println("Connection: close");
   client.println();
-  const char* bodyData = body.c_str();
-  size_t sent = 0;
-  while (sent < body.length() && client.connected()) {
-    size_t toSend = body.length() - sent;
-    if (toSend > 512) {
-      toSend = 512;
-    }
-    client.write(reinterpret_cast<const uint8_t*>(bodyData + sent), toSend);
-    sent += toSend;
-    delay(1);
-  }
+  client.print(body);
   client.flush();
-  client.stop();
 }
 
 // PROGMEM 版本：直接从 Flash 流式发送，不在 RAM 里组装 String
@@ -3634,10 +3867,7 @@ void sendSyncResponseProgmem(
     memcpy_P(chunk, pgmBody + sent, toSend);
     client.write(reinterpret_cast<const uint8_t*>(chunk), toSend);
     sent += toSend;
-    delay(1);
   }
-  client.flush();
-  client.stop();
 }
 
 void sendSyncRedirect(WiFiClient& client, const String& location) {
@@ -3650,8 +3880,6 @@ void sendSyncRedirect(WiFiClient& client, const String& location) {
   client.println("Cache-Control: no-store");
   client.println("Connection: close");
   client.println();
-  client.flush();
-  client.stop();
 }
 
 String buildErrorJson(const char* message) {
@@ -4214,4 +4442,3 @@ void WebServer::handleLoop() {
   delay(1);
   client.stop();
 }
-

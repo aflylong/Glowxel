@@ -28,44 +28,52 @@
                 <span class="param-label">旋转</span>
                 <span class="param-desc">画面侧着时在这里切换</span>
               </div>
-              <picker
-                class="param-picker"
-                mode="selector"
-                :range="rotationLabels"
-                :value="rotationIndex"
+              <select
+                class="param-picker-field"
+                :value="String(params.displayRotation)"
                 @change="handleRotationChange"
               >
-                <div class="param-picker-text">{{
-                  rotationLabels[rotationIndex]
-                }}</div>
-              </picker>
+                <option
+                  v-for="option in ROTATION_OPTIONS"
+                  :key="option.value"
+                  :value="String(option.value)"
+                >
+                  {{ option.label }}
+                </option>
+              </select>
             </div>
             <div class="param-row">
               <div class="param-copy">
                 <span class="param-label">色彩</span>
                 <span class="param-desc">颜色不对时在这里切换</span>
               </div>
-              <picker
-                class="param-picker"
-                mode="selector"
-                :range="colorOrderLabels"
-                :value="colorOrderIndex"
+              <select
+                class="param-picker-field"
+                :value="String(colorOrderIndex)"
                 @change="handleColorOrderChange"
               >
-                <div class="param-picker-text">{{
-                  colorOrderLabels[colorOrderIndex]
-                }}</div>
-              </picker>
+                <option
+                  v-for="(option, index) in COLOR_ORDER_OPTIONS"
+                  :key="option.label"
+                  :value="String(index)"
+                >
+                  {{ option.label }}
+                </option>
+              </select>
             </div>
             <div class="param-row">
               <div class="param-copy">
                 <span class="param-label">反转相位</span>
                 <span class="param-desc">残影、分裂、左右错位时切换</span>
               </div>
-              <GlxSwitch
-                :checked="params.clkphase"
-                @change="handleSwitchChange('clkphase', $event)"
-              />
+              <select
+                class="param-picker-field"
+                :value="params.clkphase ? '1' : '0'"
+                @change="handleClkphaseChange"
+              >
+                <option value="0">关闭</option>
+                <option value="1">开启</option>
+              </select>
             </div>
           </div>
         </div>
@@ -783,15 +791,17 @@ export default {
     handleBrightnessNightChange(e) {
       this.brightnessNight = this.clampBrightnessValue(e.detail.value);
     },
-    handleRotationChange(e) {
-      const index = Number(e.detail.value);
-      this.params.displayRotation = ROTATION_OPTIONS[index].value;
+    handleRotationChange(event) {
+      this.params.displayRotation = Number(event.target.value);
     },
-    handleColorOrderChange(e) {
-      const index = Number(e.detail.value);
+    handleColorOrderChange(event) {
+      const index = Number(event.target.value);
       const option = COLOR_ORDER_OPTIONS[index];
       this.params.swapBlueGreen = option.swapBlueGreen;
       this.params.swapBlueRed = option.swapBlueRed;
+    },
+    handleClkphaseChange(event) {
+      this.params.clkphase = event.target.value === "1";
     },
     handleDriverChange(e) {
       const index = Number(e.detail.value);
@@ -1208,6 +1218,24 @@ export default {
   box-shadow: none !important;
 }
 
+.param-picker-field {
+  width: 196rpx;
+  min-width: 196rpx;
+  min-height: 72rpx;
+  padding: 0 20rpx;
+  border: 2rpx solid var(--nb-ink);
+  border-radius: 0;
+  background: var(--nb-surface);
+  box-shadow: var(--nb-shadow-soft);
+  box-sizing: border-box;
+  flex-shrink: 0;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #111827;
+  text-align: center;
+  appearance: none;
+}
+
 .number-input {
   width: 136rpx;
   height: 82rpx;
@@ -1288,6 +1316,13 @@ export default {
     padding: 0 14px;
   }
 
+  .device-params-page .param-picker-field {
+    width: 180px;
+    min-width: 180px;
+    min-height: 48px;
+    padding: 0 14px;
+  }
+
   .device-params-page .param-picker-wide {
     width: 210px;
     min-width: 210px;
@@ -1323,6 +1358,7 @@ export default {
 
   .device-params-page .param-picker,
   .device-params-page .param-picker-wide,
+  .device-params-page .param-picker-field,
   .device-params-page .number-input,
   .device-params-page .value-box {
     width: 100%;

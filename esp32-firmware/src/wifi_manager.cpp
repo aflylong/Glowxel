@@ -11,6 +11,7 @@ const long kGmtOffsetSec = 8 * 3600;
 const int kDaylightOffsetSec = 0;
 const unsigned long kStaConnectTimeoutMs = 20000;
 const unsigned long kStaReconnectDelayMs = 1500;
+const unsigned long kPortalScanCooldownMs = 4000;
 const unsigned long kRuntimeSettingsWindowDefaultHoldMs = 120000;
 const unsigned long kNtpFirstRetryIntervalMs = 20000;
 const unsigned long kNtpRetryIntervalMs = 20000;
@@ -245,6 +246,7 @@ String WiFiManager::saved_password = "";
 String WiFiManager::config_portal_ssid = "";
 unsigned long WiFiManager::last_ntp_retry_at = 0;
 unsigned long WiFiManager::portal_restart_at = 0;
+unsigned long WiFiManager::portal_scan_allowed_at = 0;
 unsigned long WiFiManager::sta_connect_started_at = 0;
 unsigned long WiFiManager::sta_connect_deadline_at = 0;
 unsigned long WiFiManager::sta_reconnect_due_at = 0;
@@ -296,6 +298,7 @@ void WiFiManager::beginStationConnect() {
   sta_connecting = true;
   sta_reconnect_pending = false;
   portal_restart_at = 0;
+  portal_scan_allowed_at = 0;
   sta_connect_started_at = millis();
   sta_connect_deadline_at = sta_connect_started_at + kStaConnectTimeoutMs;
   sta_reconnect_due_at = 0;
@@ -313,6 +316,7 @@ void WiFiManager::beginStationConnect() {
   delay(50);
   disableStationPowerSave("beginStationConnect()");
   applyStationRadioTuning("beginStationConnect()", false);
+  Serial.printf("[WiFi] begin STA connect ssid=\"%s\"\n", saved_ssid.c_str());
   WiFi.begin(saved_ssid.c_str(), saved_password.c_str());
 }
 
@@ -337,6 +341,7 @@ void WiFiManager::finalizeStationConnected() {
   time_synced_once = false;
 
   String ip = WiFi.localIP().toString();
+  Serial.printf("[WiFi] STA connected ssid=\"%s\" ip=%s\n", WiFi.SSID().c_str(), ip.c_str());
   disableStationPowerSave("finalizeStationConnected()");
   applyStationRadioTuning("finalizeStationConnected()", true);
   showWiFiConnectedScreen(ip);
@@ -354,6 +359,7 @@ void WiFiManager::setupWiFi() {
   sta_connect_deadline_at = 0;
   sta_reconnect_due_at = 0;
   portal_restart_at = 0;
+  portal_scan_allowed_at = 0;
   last_ntp_retry_at = 0;
   ntp_sync_logged = false;
   time_synced_once = false;
@@ -362,10 +368,12 @@ void WiFiManager::setupWiFi() {
   resetScanState();
 
   if (saved_ssid.length() == 0) {
+    Serial.println("[WiFi] no saved credentials, entering config portal");
     startConfigPortal();
     return;
   }
 
+  Serial.printf("[WiFi] saved credentials found ssid=\"%s\"\n", saved_ssid.c_str());
   beginStationConnect();
 }
 
@@ -374,6 +382,7 @@ void WiFiManager::startConfigPortal() {
   sta_connecting = false;
   sta_reconnect_pending = false;
   portal_restart_at = 0;
+  portal_scan_allowed_at = 0;
   last_ntp_retry_at = 0;
   ntp_sync_logged = false;
   time_synced_once = false;
@@ -383,6 +392,7 @@ void WiFiManager::startConfigPortal() {
   runtime_settings_window_until = 0;
   runtime_access_ap_started = false;
   config_portal_ssid = buildConfigPortalSSID();
+  portal_scan_allowed_at = millis() + kPortalScanCooldownMs;
   resetNtpRetrySchedule();
 
   stopWifiScanDriverIfNeeded("启动配网页前");
@@ -391,12 +401,21 @@ void WiFiManager::startConfigPortal() {
   WiFi.mode(WIFI_AP_STA);
   WiFi.softAPConfig(kConfigPortalIp, kConfigPortalGateway, kConfigPortalSubnet);
   bool started = WiFi.softAP(config_portal_ssid.c_str());
+  if (started) {
+    Serial.printf(
+      "[WiFi] config portal AP started ssid=\"%s\" ap_ip=%s mode=%d\n",
+      config_portal_ssid.c_str(),
+      WiFi.softAPIP().toString().c_str(),
+      static_cast<int>(WiFi.getMode())
+    );
+  }
   if (!started) {
     Serial.println("[WiFi] 热点启动失败");
   }
 
   dns_server.stop();
   dns_server.start(53, "*", kConfigPortalIp);
+  Serial.printf("[WiFi] config portal DNS started target=%s\n", kConfigPortalIp.toString().c_str());
   WiFi.scanDelete();
 
   if (DisplayManager::dma_display != nullptr) {
@@ -410,8 +429,10 @@ void WiFiManager::startConfigPortal() {
 }
 
 void WiFiManager::stopConfigPortal() {
+  Serial.println("[WiFi] stopping config portal");
   config_mode = false;
   portal_restart_at = 0;
+  portal_scan_allowed_at = 0;
   dns_server.stop();
   resetScanState();
   stopWifiScanDriverIfNeeded("关闭配网页前");
@@ -441,6 +462,14 @@ void WiFiManager::ensureRuntimeSettingsAccessPoint() {
 
 void WiFiManager::scanNearbyNetworks() {
   if (!config_mode) {
+    return;
+  }
+
+  if (portal_restart_at != 0) {
+    return;
+  }
+
+  if (isPortalScanCooldownActive()) {
     return;
   }
 
@@ -534,6 +563,10 @@ void WiFiManager::handleWiFiEvent(arduino_event_t* event) {
   }
 
   if (event->event_id == ARDUINO_EVENT_WIFI_AP_STACONNECTED) {
+    if (config_mode) {
+      portal_scan_allowed_at = millis() + kPortalScanCooldownMs;
+      return;
+    }
     if (!config_mode) {
       startRuntimeSettingsWindow(kRuntimeSettingsWindowDefaultHoldMs);
     }
@@ -541,6 +574,11 @@ void WiFiManager::handleWiFiEvent(arduino_event_t* event) {
   }
 
   if (event->event_id == ARDUINO_EVENT_WIFI_AP_STADISCONNECTED) {
+    if (config_mode && scan_phase != WifiScanPhase::IDLE) {
+      stopWifiScanDriverIfNeeded("配网客户端断开，停止扫描");
+      resetScanState();
+      WiFi.scanDelete();
+    }
     return;
   }
 
@@ -589,6 +627,7 @@ void WiFiManager::saveConfigPortalCredentials(const String& ssid, const String& 
 
 void WiFiManager::schedulePortalRestart(unsigned long delayMs) {
   portal_restart_at = millis() + delayMs;
+  portal_scan_allowed_at = 0;
 
   if (DisplayManager::dma_display == nullptr) {
     return;
@@ -669,6 +708,18 @@ String WiFiManager::getConfigPortalIP() {
   return kConfigPortalIp.toString();
 }
 
+bool WiFiManager::isPortalScanCooldownActive() {
+  return portal_scan_allowed_at != 0 &&
+         static_cast<long>(portal_scan_allowed_at - millis()) > 0;
+}
+
+unsigned long WiFiManager::getPortalScanCooldownRemainingMs() {
+  if (!isPortalScanCooldownActive()) {
+    return 0;
+  }
+  return portal_scan_allowed_at - millis();
+}
+
 size_t WiFiManager::getScannedNetworkCount() {
   return scanned_network_count;
 }
@@ -729,6 +780,12 @@ void WiFiManager::tick() {
     ntp_sync_logged = false;
     time_synced_once = false;
     resetNtpRetrySchedule();
+
+    if (portal_restart_at != 0 && scan_phase != WifiScanPhase::IDLE) {
+      stopWifiScanDriverIfNeeded("重启前停止扫描");
+      resetScanState();
+      WiFi.scanDelete();
+    }
 
     if (scan_phase == WifiScanPhase::REQUESTED) {
       setScanPhase(WifiScanPhase::RUNNING, "开始底层异步扫描");

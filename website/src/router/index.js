@@ -86,6 +86,15 @@ function resolveDeviceModeComponent(viewName) {
   };
 }
 
+function resolveResponsiveComponent(pcLoader, mobileLoader) {
+  return () => {
+    if (getDeviceType() === "mobile") {
+      return mobileLoader();
+    }
+    return pcLoader();
+  };
+}
+
 const routes = [
   {
     path: "/",
@@ -282,7 +291,10 @@ const routes = [
   {
     path: "/device-params",
     name: "DeviceParams",
-    component: () => import("@/views/mobile/DeviceParams.vue"),
+    component: resolveResponsiveComponent(
+      () => import("@/views/DeviceParams.vue"),
+      () => import("@/views/mobile/DeviceParams.vue"),
+    ),
     meta: { shell: "app" },
   },
   {

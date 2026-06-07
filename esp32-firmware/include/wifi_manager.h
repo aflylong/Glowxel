@@ -43,6 +43,8 @@ public:
   static String getConnectedSSID();
   static String getConfigPortalSSID();
   static String getConfigPortalIP();
+  static bool isPortalScanCooldownActive();
+  static unsigned long getPortalScanCooldownRemainingMs();
   static size_t getScannedNetworkCount();
   static WiFiScanResultItem getScannedNetwork(size_t index);
   static bool isNetworkScanRunning();
@@ -60,6 +62,7 @@ private:
   static String config_portal_ssid;
   static unsigned long last_ntp_retry_at;
   static unsigned long portal_restart_at;
+  static unsigned long portal_scan_allowed_at;
   static unsigned long sta_connect_started_at;
   static unsigned long sta_connect_deadline_at;
   static unsigned long sta_reconnect_due_at;
