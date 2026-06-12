@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-09T01:06:50.922345+00:00",
+  "run_dir": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\run",
+  "spritesheet": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\run\\final\\spritesheet.webp",
+  "validation": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\run\\final\\validation.json",
+  "contact_sheet": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\run\\qa\\contact-sheet.png",
+  "review": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\run\\qa\\review.json",
+  "package": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\run\\package\\sponge-bob-duo"
+}

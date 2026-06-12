@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "method": "local deterministic restyle from prepared SpongeBob and Patrick frame data",
+  "notes": [
+    "Patrick dance5 is not used.",
+    "Dance is represented in the standard Codex jumping row and as qa/previews/dance.gif.",
+    "Sleeping is exported as a non-looping preview that holds the final frame; the standard 9-row atlas has no separate sleeping row."
+  ],
+  "warnings": []
+}

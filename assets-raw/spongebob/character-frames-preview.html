@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpongeBob 64x64 Theme Preview</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101010;
+      --panel: #1b1b1b;
+      --panel-2: #252525;
+      --line: #3a3a3a;
+      --text: #f2f2f2;
+      --muted: #a6a6a6;
+      --accent: #ffd45a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 14px/1.45 "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    .page {
+      width: min(1280px, 100%);
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 520px minmax(360px, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .card-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .card-head h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .card-head p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .card-body {
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .canvas-stage {
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0a0a0a;
+    }
+
+    canvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      background: #000;
+    }
+
+    #themeCanvas {
+      width: 512px;
+      height: 512px;
+      border: 1px solid #444;
+    }
+
+    #inspectCanvas,
+    #stripCanvas {
+      border: 1px solid #444;
+    }
+
+    .controls {
+      display: grid;
+      gap: 12px;
+    }
+
+    .control {
+      display: grid;
+      gap: 6px;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+    }
+
+    .control-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .value,
+    .meta span {
+      color: var(--accent);
+      font-family: Consolas, "SFMono-Regular", monospace;
+    }
+
+    select,
+    input[type="range"] {
+      width: 100%;
+    }
+
+    select {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #111;
+      color: var(--text);
+      padding: 9px 10px;
+      font: inherit;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #303030;
+      color: var(--text);
+      padding: 9px 12px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button.primary {
+      border-color: transparent;
+      background: var(--accent);
+      color: #171717;
+      font-weight: 700;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .meta {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+    }
+
+    .meta strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      #themeCanvas {
+        width: min(82vw, 512px);
+        height: min(82vw, 512px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <div>
+        <h1>海绵宝宝 64x64 主题预览</h1>
+        <p>真实面板尺寸预览。画布固定 64x64，页面只是放大显示；角色必须在这个区域里完成左右站位和动作串场。</p>
+      </div>
+      <div class="row">
+        <button id="themePlayBtn" class="primary">播放</button>
+        <button id="themePauseBtn">暂停</button>
+        <button id="themeStepBtn">下一段</button>
+        <button id="themeResetBtn">重置</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="card">
+        <div class="card-head">
+          <h2>64x64 LED 预览</h2>
+          <p>这里就是主题开发要看的最终区域，不画额外背景。</p>
+        </div>
+        <div class="card-body">
+          <div class="canvas-stage">
+            <canvas id="themeCanvas" width="64" height="64"></canvas>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta">
+              <strong>当前段落</strong>
+              <span id="segmentMeta">-</span>
+            </div>
+            <div class="meta">
+              <strong>帧间隔</strong>
+              <span id="themeSpeedMeta">-</span>
+            </div>
+            <div class="meta">
+              <strong>左侧</strong>
+              <span id="leftMeta">-</span>
+            </div>
+            <div class="meta">
+              <strong>右侧</strong>
+              <span id="rightMeta">-</span>
+            </div>
+          </div>
+
+          <div class="status" id="themeStatusText">等待加载数据</div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <div class="card-head">
+            <h2>主题参数</h2>
+            <p>这些参数只服务 64x64 预览，用来调左右站位、角色缩放和串场节奏。</p>
+          </div>
+          <div class="card-body">
+            <div class="controls">
+              <div class="control">
+                <div class="control-head">
+                  <label for="themeModeSelect">流程</label>
+                </div>
+                <select id="themeModeSelect">
+                  <option value="recommended">左右串场</option>
+                  <option value="dance">双舞蹈</option>
+                  <option value="sleep">午休/夜晚</option>
+                </select>
+              </div>
+
+              <div class="control">
+                <div class="control-head">
+                  <label for="scaleInput">角色缩放</label>
+                  <span class="value" id="scaleValue">70%</span>
+                </div>
+                <input id="scaleInput" type="range" min="45" max="100" step="1" value="70" />
+              </div>
+
+              <div class="control">
+                <div class="control-head">
+                  <label for="leftXInput">左角色 X</label>
+                  <span class="value" id="leftXValue">20</span>
+                </div>
+                <input id="leftXInput" type="range" min="0" max="63" step="1" value="20" />
+              </div>
+
+              <div class="control">
+                <div class="control-head">
+                  <label for="rightXInput">右角色 X</label>
+                  <span class="value" id="rightXValue">45</span>
+                </div>
+                <input id="rightXInput" type="range" min="0" max="63" step="1" value="45" />
+              </div>
+
+              <div class="control">
+                <div class="control-head">
+                  <label for="floorYInput">脚底 Y</label>
+                  <span class="value" id="floorYValue">62</span>
+                </div>
+                <input id="floorYInput" type="range" min="36" max="63" step="1" value="62" />
+              </div>
+
+              <div class="control">
+                <div class="control-head">
+                  <label for="themeSpeedInput">播放间隔</label>
+                  <span class="value" id="themeSpeedValue">180 ms</span>
+                </div>
+                <input id="themeSpeedInput" type="range" min="80" max="500" step="20" value="180" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>单动作检查</h2>
+            <p>用于继续看单帧、对齐和残留像素。</p>
+          </div>
+          <div class="card-body">
+            <div class="controls">
+              <div class="control">
+                <div class="control-head">
+                  <label for="characterSelect">角色</label>
+                </div>
+                <select id="characterSelect"></select>
+              </div>
+
+              <div class="control">
+                <div class="control-head">
+                  <label for="actionSelect">动作</label>
+                </div>
+                <select id="actionSelect"></select>
+              </div>
+
+              <div class="control">
+                <div class="control-head">
+                  <label for="frameInput">帧</label>
+                  <span class="value" id="frameValue">1 / 1</span>
+                </div>
+                <input id="frameInput" type="range" min="1" max="1" step="1" value="1" />
+              </div>
+
+              <div class="row">
+                <button id="inspectPlayBtn" class="primary">播放</button>
+                <button id="inspectPauseBtn">暂停</button>
+              </div>
+            </div>
+
+            <div class="canvas-stage">
+              <canvas id="inspectCanvas" width="96" height="96"></canvas>
+            </div>
+            <canvas id="stripCanvas" width="320" height="80"></canvas>
+            <div class="status" id="inspectStatusText">等待加载数据</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./character-frame-pixels.js"></script>
+  <script>
+    const PANEL_W = 64;
+    const PANEL_H = 64;
+    const data = window.SPONGEBOB_CHARACTER_FRAMES;
+
+    const themeCanvas = document.getElementById("themeCanvas");
+    const themeCtx = themeCanvas.getContext("2d", { alpha: true });
+    const themeModeSelect = document.getElementById("themeModeSelect");
+    const scaleInput = document.getElementById("scaleInput");
+    const leftXInput = document.getElementById("leftXInput");
+    const rightXInput = document.getElementById("rightXInput");
+    const floorYInput = document.getElementById("floorYInput");
+    const themeSpeedInput = document.getElementById("themeSpeedInput");
+    const scaleValue = document.getElementById("scaleValue");
+    const leftXValue = document.getElementById("leftXValue");
+    const rightXValue = document.getElementById("rightXValue");
+    const floorYValue = document.getElementById("floorYValue");
+    const themeSpeedValue = document.getElementById("themeSpeedValue");
+    const themeSpeedMeta = document.getElementById("themeSpeedMeta");
+    const themePlayBtn = document.getElementById("themePlayBtn");
+    const themePauseBtn = document.getElementById("themePauseBtn");
+    const themeStepBtn = document.getElementById("themeStepBtn");
+    const themeResetBtn = document.getElementById("themeResetBtn");
+    const themeStatusText = document.getElementById("themeStatusText");
+    const segmentMeta = document.getElementById("segmentMeta");
+    const leftMeta = document.getElementById("leftMeta");
+    const rightMeta = document.getElementById("rightMeta");
+
+    const characterSelect = document.getElementById("characterSelect");
+    const actionSelect = document.getElementById("actionSelect");
+    const frameInput = document.getElementById("frameInput");
+    const frameValue = document.getElementById("frameValue");
+    const inspectPlayBtn = document.getElementById("inspectPlayBtn");
+    const inspectPauseBtn = document.getElementById("inspectPauseBtn");
+    const inspectStatusText = document.getElementById("inspectStatusText");
+    const inspectCanvas = document.getElementById("inspectCanvas");
+    const inspectCtx = inspectCanvas.getContext("2d", { alpha: true });
+    const stripCanvas = document.getElementById("stripCanvas");
+    const stripCtx = stripCanvas.getContext("2d", { alpha: true });
+
+    const frameCanvasCache = new WeakMap();
+    const frameMetricsCache = new WeakMap();
+    let themeTimerId = null;
+    let inspectTimerId = null;
+
+    const presets = {
+      recommended: [
+        segment("双待机", lane("spongebob", ["ldle"], 2), lane("patrick", ["ldle"], 2)),
+        segment("海绵宝宝动作", lane("spongebob", ["walk", "jump", "cheering"], 1), lane("patrick", ["ldle"], 0)),
+        segment("派大星动作", lane("spongebob", ["ldle"], 0), lane("patrick", ["walk", "drink", "cheering"], 1)),
+        segment("双舞蹈", lane("spongebob", ["dance", "dance3", "dance4", "dance5"], 1), lane("patrick", ["dance1", "dance2", "dance3", "dance4", "dance5", "dance6"], 1)),
+        segment("收尾待机", lane("spongebob", ["ldle"], 2), lane("patrick", ["ldle"], 2))
+      ],
+      dance: [
+        segment("站定", lane("spongebob", ["ldle"], 1), lane("patrick", ["ldle"], 1)),
+        segment("双舞蹈", lane("spongebob", ["dance", "dance3", "dance4", "dance5"], 1), lane("patrick", ["dance1", "dance2", "dance3", "dance4", "dance5", "dance6"], 1)),
+        segment("欢呼", lane("spongebob", ["cheering"], 1), lane("patrick", ["cheering"], 1))
+      ],
+      sleep: [
+        segment("午休前", lane("spongebob", ["walk", "ldle"], 1), lane("patrick", ["walk", "ldle"], 1)),
+        segment("一起睡", lane("spongebob", ["sleeping"], 2), lane("patrick", ["sleeping"], 2))
+      ]
+    };
+
+    const themeState = {
+      presetKey: "recommended",
+      segmentIndex: 0,
+      left: null,
+      right: null
+    };
+
+    function lane(character, actions, passesNeeded) {
+      return { character, actions, passesNeeded };
+    }
+
+    function segment(label, left, right) {
+      return { label, left, right };
+    }
+
+    function createLaneState(spec) {
+      return {
+        character: spec.character,
+        actions: spec.actions.slice(),
+        passesNeeded: spec.passesNeeded,
+        completedPasses: 0,
+        actionIndex: 0,
+        frameIndex: 0
+      };
+    }
+
+    function getCharacter(character) {
+      const item = data.characters[character];
+      if (!item) {
+        throw new Error(`缺少角色数据: ${character}`);
+      }
+      return item;
+    }
+
+    function getFrames(character, action) {
+      const item = getCharacter(character);
+      const actionData = item.actions[action];
+      if (!actionData) {
+        throw new Error(`缺少动作数据: ${character}/${action}`);
+      }
+      return actionData.frames;
+    }
+
+    function getLaneActionName(laneState) {
+      return laneState.actions[Math.min(laneState.actionIndex, laneState.actions.length - 1)];
+    }
+
+    function getLaneFrames(laneState) {
+      return getFrames(laneState.character, getLaneActionName(laneState));
+    }
+
+    function getLaneFrame(laneState) {
+      const frames = getLaneFrames(laneState);
+      return frames[Math.min(laneState.frameIndex, frames.length - 1)];
+    }
+
+    function frameToCanvas(frame) {
+      if (frameCanvasCache.has(frame)) {
+        return frameCanvasCache.get(frame);
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = frame.w;
+      canvas.height = frame.h;
+      const ctx = canvas.getContext("2d", { alpha: true });
+      const imageData = ctx.createImageData(frame.w, frame.h);
+
+      for (let i = 0; i < frame.p.length; i += 1) {
+        const colorIndex = frame.p[i];
+        const offset = i * 4;
+        if (colorIndex === data.transparent) {
+          imageData.data[offset + 3] = 0;
+          continue;
+        }
+        const hex = data.palette[colorIndex];
+        imageData.data[offset] = Number.parseInt(hex.slice(1, 3), 16);
+        imageData.data[offset + 1] = Number.parseInt(hex.slice(3, 5), 16);
+        imageData.data[offset + 2] = Number.parseInt(hex.slice(5, 7), 16);
+        imageData.data[offset + 3] = 255;
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      frameCanvasCache.set(frame, canvas);
+      return canvas;
+    }
+
+    function getMetrics(frame) {
+      if (frameMetricsCache.has(frame)) {
+        return frameMetricsCache.get(frame);
+      }
+
+      let minX = frame.w;
+      let minY = frame.h;
+      let maxX = -1;
+      let maxY = -1;
+      for (let y = 0; y < frame.h; y += 1) {
+        for (let x = 0; x < frame.w; x += 1) {
+          if (frame.p[y * frame.w + x] === data.transparent) {
+            continue;
+          }
+          minX = Math.min(minX, x);
+          minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x);
+          maxY = Math.max(maxY, y);
+        }
+      }
+
+      const bodyY0 = Math.floor(minY + (maxY - minY + 1) * 0.28);
+      const bodyY1 = Math.floor(minY + (maxY - minY + 1) * 0.82);
+      const samples = [];
+      for (let y = bodyY0; y <= bodyY1; y += 1) {
+        const row = [];
+        for (let x = minX; x <= maxX; x += 1) {
+          if (frame.p[y * frame.w + x] !== data.transparent) {
+            row.push(x);
+          }
+        }
+        if (row.length < 3) {
+          continue;
+        }
+        const start = Math.floor(row.length * 0.35);
+        const end = Math.ceil(row.length * 0.65);
+        for (let i = start; i < end; i += 1) {
+          samples.push(row[i]);
+        }
+      }
+      samples.sort((a, b) => a - b);
+
+      const metrics = {
+        anchorX: samples.length ? samples[Math.floor(samples.length / 2)] : Math.round((minX + maxX) / 2),
+        footY: maxY
+      };
+      frameMetricsCache.set(frame, metrics);
+      return metrics;
+    }
+
+    function clearThemeTimer() {
+      if (themeTimerId !== null) {
+        window.clearInterval(themeTimerId);
+        themeTimerId = null;
+      }
+    }
+
+    function clearInspectTimer() {
+      if (inspectTimerId !== null) {
+        window.clearInterval(inspectTimerId);
+        inspectTimerId = null;
+      }
+    }
+
+    function loadSegment() {
+      const preset = presets[themeState.presetKey];
+      const current = preset[themeState.segmentIndex % preset.length];
+      themeState.left = createLaneState(current.left);
+      themeState.right = createLaneState(current.right);
+      renderTheme();
+    }
+
+    function advanceLane(laneState) {
+      const frames = getLaneFrames(laneState);
+      laneState.frameIndex += 1;
+      if (laneState.frameIndex < frames.length) {
+        return;
+      }
+
+      laneState.frameIndex = 0;
+      laneState.actionIndex += 1;
+      if (laneState.actionIndex >= laneState.actions.length) {
+        laneState.actionIndex = 0;
+        laneState.completedPasses += 1;
+      }
+    }
+
+    function laneDone(laneState) {
+      return laneState.passesNeeded <= 0 || laneState.completedPasses >= laneState.passesNeeded;
+    }
+
+    function advanceTheme() {
+      advanceLane(themeState.left);
+      advanceLane(themeState.right);
+
+      if (laneDone(themeState.left) && laneDone(themeState.right)) {
+        themeState.segmentIndex = (themeState.segmentIndex + 1) % presets[themeState.presetKey].length;
+        loadSegment();
+        return;
+      }
+
+      renderTheme();
+    }
+
+    function drawPanelBase() {
+      themeCtx.fillStyle = "#000";
+      themeCtx.fillRect(0, 0, PANEL_W, PANEL_H);
+    }
+
+    function drawCharacter(frame, x, floorY, scale) {
+      const metrics = getMetrics(frame);
+      const source = frameToCanvas(frame);
+      const w = Math.max(1, Math.round(frame.w * scale));
+      const h = Math.max(1, Math.round(frame.h * scale));
+      const dx = Math.round(x - metrics.anchorX * scale);
+      const dy = Math.round(floorY - metrics.footY * scale);
+      themeCtx.drawImage(source, dx, dy, w, h);
+    }
+
+    function renderTheme() {
+      const scale = Number(scaleInput.value) / 100;
+      const leftX = Number(leftXInput.value);
+      const rightX = Number(rightXInput.value);
+      const floorY = Number(floorYInput.value);
+      const segment = presets[themeState.presetKey][themeState.segmentIndex % presets[themeState.presetKey].length];
+
+      themeCtx.imageSmoothingEnabled = false;
+      drawPanelBase();
+      drawCharacter(getLaneFrame(themeState.left), leftX, floorY, scale);
+      drawCharacter(getLaneFrame(themeState.right), rightX, floorY, scale);
+
+      scaleValue.textContent = `${scaleInput.value}%`;
+      leftXValue.textContent = leftXInput.value;
+      rightXValue.textContent = rightXInput.value;
+      floorYValue.textContent = floorYInput.value;
+      themeSpeedValue.textContent = `${themeSpeedInput.value} ms`;
+      themeSpeedMeta.textContent = `${themeSpeedInput.value} ms`;
+      segmentMeta.textContent = segment.label;
+      leftMeta.textContent = `${themeState.left.character}/${getLaneActionName(themeState.left)}`;
+      rightMeta.textContent = `${themeState.right.character}/${getLaneActionName(themeState.right)}`;
+      themeStatusText.textContent = `64x64 preview: ${segment.label}`;
+    }
+
+    function playTheme() {
+      clearThemeTimer();
+      themeTimerId = window.setInterval(advanceTheme, Number(themeSpeedInput.value));
+    }
+
+    function resetTheme() {
+      clearThemeTimer();
+      themeState.presetKey = themeModeSelect.value;
+      themeState.segmentIndex = 0;
+      loadSegment();
+    }
+
+    function fillInspectorOptions() {
+      characterSelect.innerHTML = Object.keys(data.characters)
+        .map((name) => `<option value="${name}">${name}</option>`)
+        .join("");
+      rebuildActionOptions();
+    }
+
+    function rebuildActionOptions() {
+      const character = getCharacter(characterSelect.value);
+      actionSelect.innerHTML = character.actionOrder
+        .map((name) => `<option value="${name}">${name}</option>`)
+        .join("");
+      syncFrameInput();
+    }
+
+    function syncFrameInput() {
+      const frames = getFrames(characterSelect.value, actionSelect.value);
+      frameInput.min = "1";
+      frameInput.max = String(frames.length);
+      frameInput.value = "1";
+      renderInspector();
+    }
+
+    function renderInspector() {
+      const frames = getFrames(characterSelect.value, actionSelect.value);
+      const index = Math.max(0, Number(frameInput.value) - 1);
+      const frame = frames[Math.min(index, frames.length - 1)];
+      const source = frameToCanvas(frame);
+
+      inspectCanvas.width = 96;
+      inspectCanvas.height = 96;
+      inspectCtx.clearRect(0, 0, 96, 96);
+      inspectCtx.imageSmoothingEnabled = false;
+      const scale = Math.max(1, Math.floor(Math.min(88 / frame.w, 88 / frame.h)));
+      const w = frame.w * scale;
+      const h = frame.h * scale;
+      inspectCtx.drawImage(source, Math.floor((96 - w) / 2), Math.floor((96 - h) / 2), w, h);
+
+      stripCanvas.width = Math.max(320, frames.length * 54);
+      stripCanvas.height = 80;
+      stripCtx.clearRect(0, 0, stripCanvas.width, stripCanvas.height);
+      stripCtx.imageSmoothingEnabled = false;
+      frames.forEach((item, i) => {
+        const x = i * 54;
+        stripCtx.fillStyle = i === index ? "rgba(255,212,90,0.22)" : "rgba(255,255,255,0.05)";
+        stripCtx.fillRect(x, 0, 50, 78);
+        stripCtx.drawImage(frameToCanvas(item), x + 4, 5);
+        stripCtx.fillStyle = "#ddd";
+        stripCtx.font = "10px Consolas, monospace";
+        stripCtx.fillText(item.name, x + 4, 66);
+      });
+
+      frameValue.textContent = `${index + 1} / ${frames.length}`;
+      inspectStatusText.textContent = `${characterSelect.value}/${actionSelect.value}/${frame.name}  ${frame.w}x${frame.h}`;
+    }
+
+    function playInspector() {
+      clearInspectTimer();
+      inspectTimerId = window.setInterval(() => {
+        const frames = getFrames(characterSelect.value, actionSelect.value);
+        const next = Number(frameInput.value) >= frames.length ? 1 : Number(frameInput.value) + 1;
+        frameInput.value = String(next);
+        renderInspector();
+      }, 180);
+    }
+
+    fillInspectorOptions();
+    resetTheme();
+
+    themeModeSelect.addEventListener("change", resetTheme);
+    scaleInput.addEventListener("input", renderTheme);
+    leftXInput.addEventListener("input", renderTheme);
+    rightXInput.addEventListener("input", renderTheme);
+    floorYInput.addEventListener("input", renderTheme);
+    themeSpeedInput.addEventListener("input", () => {
+      renderTheme();
+      if (themeTimerId !== null) {
+        playTheme();
+      }
+    });
+    themePlayBtn.addEventListener("click", playTheme);
+    themePauseBtn.addEventListener("click", clearThemeTimer);
+    themeStepBtn.addEventListener("click", () => {
+      clearThemeTimer();
+      themeState.segmentIndex = (themeState.segmentIndex + 1) % presets[themeState.presetKey].length;
+      loadSegment();
+    });
+    themeResetBtn.addEventListener("click", resetTheme);
+
+    characterSelect.addEventListener("change", rebuildActionOptions);
+    actionSelect.addEventListener("change", syncFrameInput);
+    frameInput.addEventListener("input", renderInspector);
+    inspectPlayBtn.addEventListener("click", playInspector);
+    inspectPauseBtn.addEventListener("click", clearInspectTimer);
+  </script>
+</body>
+</html>

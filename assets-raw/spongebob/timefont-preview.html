@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpongeBob Timefont Preview</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #09111a;
+      --panel: #111c28;
+      --panel-2: #182636;
+      --line: #29415a;
+      --text: #eef5ff;
+      --muted: #9eb4ca;
+      --accent: #ffd24d;
+      --accent-2: #58c7ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(88, 199, 255, 0.12), transparent 34%),
+        linear-gradient(180deg, #071019 0%, #0d1825 100%);
+      color: var(--text);
+      font: 14px/1.45 "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    .page {
+      width: min(1280px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 920px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(360px, 520px) minmax(420px, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: rgba(17, 28, 40, 0.96);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+    }
+
+    .card-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .card-head h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .card-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .card-body {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .preview-shell {
+      display: grid;
+      gap: 14px;
+    }
+
+    .preview-box {
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(45deg, #0d1520 25%, transparent 25%),
+        linear-gradient(-45deg, #0d1520 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #0d1520 75%),
+        linear-gradient(-45deg, transparent 75%, #0d1520 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+      overflow: auto;
+    }
+
+    .canvas-frame {
+      display: inline-block;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    canvas {
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .meta {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+    }
+
+    .meta strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .meta span {
+      font-family: Consolas, "SFMono-Regular", monospace;
+      font-size: 13px;
+    }
+
+    .controls {
+      display: grid;
+      gap: 14px;
+    }
+
+    .control {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      display: grid;
+      gap: 8px;
+    }
+
+    .control-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .value {
+      color: var(--accent);
+      font-family: Consolas, "SFMono-Regular", monospace;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0c141d;
+      color: var(--text);
+      padding: 10px 12px;
+      font: inherit;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #172331;
+      color: var(--text);
+      padding: 10px 12px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button.primary {
+      background: linear-gradient(180deg, #ffe18e 0%, #ffc83d 100%);
+      border-color: transparent;
+      color: #261800;
+      font-weight: 700;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <h1>海绵宝宝时间字体预览</h1>
+      <p>这个页面直接读取 <code>timefont-pixels.js</code> 里的原始像素数据，不再碰原始大图。先确认字模提取是否正确，再决定怎么缩放和上屏。</p>
+    </div>
+
+    <div class="layout">
+      <div class="card">
+        <div class="card-head">
+          <h2>预览</h2>
+          <p>上面是当前文本，下面是 `0123456789` 全数字排览。大尺寸只是观察用，底层数据仍然是原始字模。</p>
+        </div>
+        <div class="card-body">
+          <div class="preview-shell">
+            <div class="preview-box">
+              <div class="canvas-frame">
+                <canvas id="textCanvas" width="320" height="80"></canvas>
+              </div>
+            </div>
+            <div class="preview-box">
+              <div class="canvas-frame">
+                <canvas id="digitsCanvas" width="320" height="80"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta">
+              <strong>字模来源</strong>
+              <span>timefont-pixels.js</span>
+            </div>
+            <div class="meta">
+              <strong>调色板颜色数</strong>
+              <span id="paletteMeta">-</span>
+            </div>
+            <div class="meta">
+              <strong>当前文本宽高</strong>
+              <span id="textMeta">-</span>
+            </div>
+            <div class="meta">
+              <strong>当前缩放高度</strong>
+              <span id="heightMeta">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>控制</h2>
+          <p>这里的缩放只是预览参数。原始字模数据不改，你看着合适再决定后续目标高度。</p>
+        </div>
+        <div class="card-body">
+          <div class="controls">
+            <div class="control">
+              <div class="control-head">
+                <label for="textInput">预览文本</label>
+              </div>
+              <input id="textInput" type="text" value="13:44" maxlength="8" />
+              <div class="hint">允许字符：`0-9`、`:`、空格</div>
+            </div>
+
+            <div class="control">
+              <div class="control-head">
+                <label for="heightInput">预览高度</label>
+                <span class="value" id="heightValue">10 px</span>
+              </div>
+              <input id="heightInput" type="range" min="6" max="40" step="1" value="10" />
+            </div>
+
+            <div class="control">
+              <div class="control-head">
+                <label for="spacingInput">字间距</label>
+                <span class="value" id="spacingValue">1 px</span>
+              </div>
+              <input id="spacingInput" type="range" min="0" max="8" step="1" value="1" />
+            </div>
+
+            <div class="control">
+              <div class="control-head">
+                <label for="zoomInput">画布观察缩放</label>
+                <span class="value" id="zoomValue">8 x</span>
+              </div>
+              <input id="zoomInput" type="range" min="2" max="20" step="1" value="8" />
+            </div>
+
+            <div class="row">
+              <button id="nowBtn" class="primary">当前时间</button>
+              <button id="digitsBtn">显示 0123456789</button>
+            </div>
+
+            <div class="status" id="statusText">等待渲染</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./timefont-pixels.js"></script>
+  <script>
+    const data = window.SPONGEBOB_TIMEFONT;
+    const textCanvas = document.getElementById("textCanvas");
+    const digitsCanvas = document.getElementById("digitsCanvas");
+    const textCtx = textCanvas.getContext("2d", { alpha: true });
+    const digitsCtx = digitsCanvas.getContext("2d", { alpha: true });
+    const textInput = document.getElementById("textInput");
+    const heightInput = document.getElementById("heightInput");
+    const spacingInput = document.getElementById("spacingInput");
+    const zoomInput = document.getElementById("zoomInput");
+    const heightValue = document.getElementById("heightValue");
+    const spacingValue = document.getElementById("spacingValue");
+    const zoomValue = document.getElementById("zoomValue");
+    const paletteMeta = document.getElementById("paletteMeta");
+    const textMeta = document.getElementById("textMeta");
+    const heightMeta = document.getElementById("heightMeta");
+    const statusText = document.getElementById("statusText");
+    const nowBtn = document.getElementById("nowBtn");
+    const digitsBtn = document.getElementById("digitsBtn");
+
+    const transparentSymbol = data.transparent;
+    const symbolToColor = new Map();
+
+    for (const [symbol, color] of Object.entries(data.paletteMap || {})) {
+      symbolToColor.set(symbol, color);
+    }
+
+    const glyphCanvasMap = new Map();
+
+    function sanitizeText(value) {
+      return value.replace(/[^0-9: ]/g, "").slice(0, 8);
+    }
+
+    function buildGlyphCanvas(rows) {
+      const h = rows.length;
+      const w = rows[0].length;
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d", { alpha: true });
+      ctx.clearRect(0, 0, w, h);
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const symbol = rows[y][x];
+          if (symbol === transparentSymbol) {
+            continue;
+          }
+          const color = symbolToColor.get(symbol);
+          if (!color) {
+            continue;
+          }
+          ctx.fillStyle = color;
+          ctx.fillRect(x, y, 1, 1);
+        }
+      }
+
+      return canvas;
+    }
+
+    function buildColonCanvas() {
+      const rows = [
+        "...",
+        ".D.",
+        ".Y.",
+        ".L.",
+        "...",
+        ".D.",
+        ".Y.",
+        ".L."
+      ];
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 3;
+      canvas.height = 8;
+      const ctx = canvas.getContext("2d", { alpha: true });
+      for (let y = 0; y < rows.length; y++) {
+        for (let x = 0; x < rows[y].length; x++) {
+          const symbol = rows[y][x];
+          if (symbol === ".") {
+            continue;
+          }
+          const color = symbolToColor.get(symbol);
+          if (!color) {
+            continue;
+          }
+          ctx.fillStyle = color;
+          ctx.fillRect(x, y, 1, 1);
+        }
+      }
+
+      return canvas;
+    }
+
+    function ensureGlyphCanvases() {
+      for (const digit of data.order) {
+        const glyph = data.digits[digit];
+        glyphCanvasMap.set(digit, buildGlyphCanvas(glyph.rows));
+      }
+      glyphCanvasMap.set(":", buildColonCanvas());
+    }
+
+    function measureLayout(text, targetHeight, spacing) {
+      let width = 0;
+      let maxHeight = 0;
+
+      for (const char of text) {
+        if (char === " ") {
+          width += Math.max(2, Math.round(targetHeight * 0.4)) + spacing;
+          maxHeight = Math.max(maxHeight, targetHeight);
+          continue;
+        }
+
+        const glyphCanvas = glyphCanvasMap.get(char);
+        if (!glyphCanvas) {
+          continue;
+        }
+
+        const drawWidth = Math.max(1, Math.round(glyphCanvas.width * targetHeight / glyphCanvas.height));
+        width += drawWidth + spacing;
+        maxHeight = Math.max(maxHeight, targetHeight);
+      }
+
+      if (width > 0) {
+        width -= spacing;
+      }
+
+      return {
+        width: Math.max(1, width),
+        height: Math.max(1, maxHeight)
+      };
+    }
+
+    function renderLine(ctx, canvas, text, targetHeight, spacing) {
+      const layout = measureLayout(text, targetHeight, spacing);
+      const padX = 4;
+      const padY = 4;
+      canvas.width = layout.width + padX * 2;
+      canvas.height = layout.height + padY * 2;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.imageSmoothingEnabled = false;
+
+      let cursorX = padX;
+
+      for (const char of text) {
+        if (char === " ") {
+          cursorX += Math.max(2, Math.round(targetHeight * 0.4)) + spacing;
+          continue;
+        }
+
+        const glyphCanvas = glyphCanvasMap.get(char);
+        if (!glyphCanvas) {
+          continue;
+        }
+
+        const drawWidth = Math.max(1, Math.round(glyphCanvas.width * targetHeight / glyphCanvas.height));
+        ctx.drawImage(glyphCanvas, cursorX, padY, drawWidth, targetHeight);
+        cursorX += drawWidth + spacing;
+      }
+
+      return layout;
+    }
+
+    function applyZoom() {
+      const zoom = Number(zoomInput.value);
+      textCanvas.style.width = `${textCanvas.width * zoom}px`;
+      textCanvas.style.height = `${textCanvas.height * zoom}px`;
+      digitsCanvas.style.width = `${digitsCanvas.width * zoom}px`;
+      digitsCanvas.style.height = `${digitsCanvas.height * zoom}px`;
+      zoomValue.textContent = `${zoom} x`;
+    }
+
+    function render() {
+      if (!data || !data.digits) {
+        statusText.textContent = "timefont-pixels.js 未加载成功";
+        return;
+      }
+
+      const text = sanitizeText(textInput.value);
+      const targetHeight = Number(heightInput.value);
+      const spacing = Number(spacingInput.value);
+      textInput.value = text;
+
+      const textLayout = renderLine(textCtx, textCanvas, text, targetHeight, spacing);
+      renderLine(digitsCtx, digitsCanvas, "0123456789", targetHeight, spacing);
+      applyZoom();
+
+      heightValue.textContent = `${targetHeight} px`;
+      spacingValue.textContent = `${spacing} px`;
+      paletteMeta.textContent = `${Object.keys(data.paletteMap || {}).length}`;
+      textMeta.textContent = `${textLayout.width} x ${textLayout.height}`;
+      heightMeta.textContent = `${targetHeight} px`;
+      statusText.textContent = `已基于像素数据渲染: "${text}"`;
+    }
+
+    function setCurrentTime() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      textInput.value = `${hh}:${mm}`;
+      render();
+    }
+
+    ensureGlyphCanvases();
+    render();
+
+    textInput.addEventListener("input", render);
+    heightInput.addEventListener("input", render);
+    spacingInput.addEventListener("input", render);
+    zoomInput.addEventListener("input", applyZoom);
+    nowBtn.addEventListener("click", setCurrentTime);
+    digitsBtn.addEventListener("click", () => {
+      textInput.value = "0123456789";
+      render();
+    });
+  </script>
+</body>
+</html>

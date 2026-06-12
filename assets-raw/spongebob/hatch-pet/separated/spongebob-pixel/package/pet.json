@@ -1,0 +1,6 @@
+{
+  "id": "spongebob-pixel",
+  "displayName": "SpongeBob Pixel",
+  "description": "A retro pixel Codex desktop pet inspired by SpongeBob, rebuilt as a separate stable single-character sprite.",
+  "spritesheetPath": "spritesheet.webp"
+}

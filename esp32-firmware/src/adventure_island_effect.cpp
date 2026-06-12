@@ -149,6 +149,7 @@ struct Character {
   uint8_t  throwT;
   uint8_t  landing;
   uint16_t fairyT;
+  bool     pendingSkateWipeout;
   uint8_t  stumbleT;    // 磕到滑板的停顿帧 (>0 显示 stumble)
   uint8_t  skateJumpOverCount; // 滑板态下成功跳过的障碍物计数; >=5 时下一颗石头必撞
 };
@@ -165,6 +166,9 @@ struct SceneState {
   uint16_t  eggCooldown;
   bool      firstAxeSpawned;
   uint8_t   eggSeq;
+  uint8_t   lastSpawnType;
+  uint8_t   lastSpawnSub;
+  bool      hasLastSpawn;
 };
 
 // ============ 模块状态 ============
@@ -479,6 +483,24 @@ inline int rndi(int hi) { return (int)random(0, hi); }
 inline int rndRange(int lo, int hi) { return lo + (int)random(0, hi - lo); }
 inline float rndf() { return (float)random(0, 10000) / 10000.0f; }
 
+uint8_t chooseObstacleSub() {
+  uint8_t sub = (rndi(100) >= 50) ? OS_ROCK : OS_FIRE;
+  if (s_state.hasLastSpawn && s_state.lastSpawnType == ET_OBS && sub == s_state.lastSpawnSub) {
+    sub = (sub == OS_ROCK) ? OS_FIRE : OS_ROCK;
+  }
+  return sub;
+}
+
+uint8_t chooseEnemySub() {
+  static const uint8_t types[4] = { ES_SNAIL, ES_CROW, ES_BOAR, ES_SNAKE };
+  uint8_t idx = (uint8_t)rndi(4);
+  uint8_t sub = types[idx];
+  if (s_state.hasLastSpawn && s_state.lastSpawnType == ET_ENEMY && sub == s_state.lastSpawnSub) {
+    sub = types[(idx + 1 + rndi(3)) % 4];
+  }
+  return sub;
+}
+
 void resetSceneState() {
   memset(&s_state, 0, sizeof(s_state));
   s_state.spawnCooldown = 60;          // 开局 2 秒就出斧蛋
@@ -493,6 +515,9 @@ void spawnEnemy(uint8_t sub) {
   e.type = ET_ENEMY;
   e.sub  = sub;
   e.x    = SCREEN_W;
+  s_state.lastSpawnType = ET_ENEMY;
+  s_state.lastSpawnSub = sub;
+  s_state.hasLastSpawn = true;
 }
 
 void spawnObstacle(uint8_t sub) {
@@ -502,6 +527,9 @@ void spawnObstacle(uint8_t sub) {
   e.type = ET_OBS;
   e.sub  = sub;
   e.x    = SCREEN_W;
+  s_state.lastSpawnType = ET_OBS;
+  s_state.lastSpawnSub = sub;
+  s_state.hasLastSpawn = true;
 }
 
 void spawnFruit() {
@@ -509,8 +537,15 @@ void spawnFruit() {
   Entity& e = s_state.entities[s_state.entityCount++];
   memset(&e, 0, sizeof(e));
   e.type = ET_FRUIT;
-  e.sub  = (uint8_t)rndi(5);
+  uint8_t sub = (uint8_t)rndi(5);
+  if (s_state.hasLastSpawn && s_state.lastSpawnType == ET_FRUIT && sub == s_state.lastSpawnSub) {
+    sub = (uint8_t)((sub + 1 + rndi(4)) % 5);
+  }
+  e.sub  = sub;
   e.x    = SCREEN_W;
+  s_state.lastSpawnType = ET_FRUIT;
+  s_state.lastSpawnSub = sub;
+  s_state.hasLastSpawn = true;
 }
 
 void spawnEgg(uint8_t contains) {
@@ -521,6 +556,9 @@ void spawnEgg(uint8_t contains) {
   e.sub   = contains;
   e.x     = SCREEN_W;
   e.stage = STG_ROLLING;
+  s_state.lastSpawnType = ET_EGG;
+  s_state.lastSpawnSub = contains;
+  s_state.hasLastSpawn = true;
 }
 
 void triggerJump() {
@@ -613,10 +651,11 @@ void tickScene() {
     const float eRight = e.x + 16.0f;
 
     // 滑板态下: 障碍物越过角色右侧, 计 +1 (用于 15 次必栽阈值)
-    if (ch.type == 1 && e.type == ET_OBS && !e.passedByChar) {
+    if (ch.type == 1 && ch.fairyT == 0 && e.type == ET_OBS && !e.passedByChar) {
       if (eRight <= (float)kCharX) {
         e.passedByChar = true;
         if (ch.skateJumpOverCount < 250) ch.skateJumpOverCount++;
+        if (ch.skateJumpOverCount >= kSkateForceWipeoutAt) ch.pendingSkateWipeout = true;
       }
     }
 
@@ -646,7 +685,11 @@ void tickScene() {
         if (eRight > kCharX && e.x < kCharX + kCharHitW) {
           if (e.sub == EGG_AXE) ch.hasAxe = true;
           else if (e.sub == EGG_FAIRY) ch.fairyT = 900;
-          else if (e.sub == EGG_SKATEBOARD) { ch.type = 1; ch.skateJumpOverCount = 0; }
+          else if (e.sub == EGG_SKATEBOARD) {
+            ch.type = 1;
+            ch.skateJumpOverCount = 0;
+            ch.pendingSkateWipeout = false;
+          }
           removeEntityAt((uint8_t)i);
           continue;
         }
@@ -673,9 +716,11 @@ void tickScene() {
       }
       // 滑板撞石头(达到阈值后强制不跳): 角色被弹起 + stumble + 滑板掉
       // 必须角色基本贴地才算撞到 (jumpY < 4); 跳起来过 X 不算撞
-      if (e.type == ET_OBS && e.sub == OS_ROCK && ch.type == 1 && ch.jumpY < 4.0f) {
+      if (e.type == ET_OBS && e.sub == OS_ROCK && ch.type == 1 &&
+          (ch.jumpY < 4.0f || (ch.pendingSkateWipeout && ch.fairyT == 0))) {
         ch.type = 0;            // 滑板没了
         ch.skateJumpOverCount = 0;
+        ch.pendingSkateWipeout = false;
         ch.stumbleT = kStumbleFrames;
         ch.jumping = true;
         ch.jumpY   = (float)kStumbleHoist;   // 弹起到障碍物高度
@@ -748,14 +793,14 @@ void tickScene() {
       }
     } else {
       // 抽签: 水果 25 / 障碍 25 / 敌人 30 / 蛋 20 (无 skip)
+      const uint8_t entityCountBeforeSpawn = s_state.entityCount;
       int r = rndi(100);
       if (r < 25 && !rightAirBusy) {
         spawnFruit();
       } else if (r < 50 && !rightGroundBusy) {
-        spawnObstacle((rndi(100) >= 50) ? OS_ROCK : OS_FIRE);
+        spawnObstacle(chooseObstacleSub());
       } else if (r < 80) {
-        uint8_t types[4] = { ES_SNAIL, ES_CROW, ES_BOAR, ES_SNAKE };
-        uint8_t sub = types[rndi(4)];
+        uint8_t sub = chooseEnemySub();
         bool isAir = (sub == ES_CROW);
         if ((isAir && !rightAirBusy) || (!isAir && !rightGroundBusy)) {
           spawnEnemy(sub);
@@ -782,7 +827,14 @@ void tickScene() {
           s_state.eggCooldown = kEggCooldownFrames;
         }
       }
-      s_state.spawnCooldown = kSpawnInterval;
+      if (s_state.entityCount == entityCountBeforeSpawn) {
+        if (!rightGroundBusy) {
+          spawnObstacle(chooseObstacleSub());
+        } else if (!rightAirBusy) {
+          spawnFruit();
+        }
+      }
+      s_state.spawnCooldown = (s_state.entityCount == entityCountBeforeSpawn) ? 1 : kSpawnInterval;
     }
   }
 
@@ -813,7 +865,7 @@ void tickScene() {
         // 若 skateJumpOverCount 达阈值, 则强制不跳 (必撞)
         if (ch.type == 1 && e.type == ET_OBS && e.sub == OS_ROCK && !e.failChecked) {
           e.failChecked = true;
-          bool forceWipeout = (ch.skateJumpOverCount >= kSkateForceWipeoutAt);
+          bool forceWipeout = ch.pendingSkateWipeout && (ch.fairyT == 0);
           if (forceWipeout) {
             // 不跳, 走碰撞分支
           } else {

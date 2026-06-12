@@ -1,0 +1,2270 @@
+[
+    {
+        "Character":  "spongebob",
+        "Action":  "attack",
+        "ExpectedFrames":  2,
+        "ComponentCount":  6,
+        "ActualFrames":  2,
+        "Gaps":  [
+                     {
+                         "Index":  4,
+                         "Gap":  8
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  99,
+                           "Height":  43,
+                           "Left":  0,
+                           "Right":  98,
+                           "Top":  0,
+                           "Bottom":  42,
+                           "ComponentCount":  5
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  12,
+                           "Height":  28,
+                           "Left":  79,
+                           "Right":  90,
+                           "Top":  7,
+                           "Bottom":  34,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "beingdumb",
+        "ExpectedFrames":  3,
+        "ComponentCount":  3,
+        "ActualFrames":  3,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  3
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  4
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  29,
+                           "Height":  39,
+                           "Left":  0,
+                           "Right":  28,
+                           "Top":  0,
+                           "Bottom":  38,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  29,
+                           "Height":  39,
+                           "Left":  30,
+                           "Right":  58,
+                           "Top":  0,
+                           "Bottom":  38,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  29,
+                           "Height":  39,
+                           "Left":  61,
+                           "Right":  89,
+                           "Top":  0,
+                           "Bottom":  38,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "buttstomp",
+        "ExpectedFrames":  2,
+        "ComponentCount":  2,
+        "ActualFrames":  2,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  1
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  45,
+                           "Height":  49,
+                           "Left":  0,
+                           "Right":  44,
+                           "Top":  5,
+                           "Bottom":  53,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  45,
+                           "Height":  46,
+                           "Left":  44,
+                           "Right":  88,
+                           "Top":  7,
+                           "Bottom":  52,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "cheering",
+        "ExpectedFrames":  4,
+        "ComponentCount":  4,
+        "ActualFrames":  4,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  2
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  2
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  2
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  54,
+                           "Height":  38,
+                           "Left":  0,
+                           "Right":  53,
+                           "Top":  4,
+                           "Bottom":  41,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  59,
+                           "Height":  38,
+                           "Left":  54,
+                           "Right":  112,
+                           "Top":  4,
+                           "Bottom":  41,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  54,
+                           "Height":  38,
+                           "Left":  113,
+                           "Right":  166,
+                           "Top":  4,
+                           "Bottom":  41,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  47,
+                           "Height":  38,
+                           "Left":  167,
+                           "Right":  213,
+                           "Top":  4,
+                           "Bottom":  41,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "dance",
+        "ExpectedFrames":  5,
+        "ComponentCount":  5,
+        "ActualFrames":  5,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  6
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  5
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  5
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  2
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  33,
+                           "Height":  39,
+                           "Left":  0,
+                           "Right":  32,
+                           "Top":  2,
+                           "Bottom":  40,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  29,
+                           "Height":  39,
+                           "Left":  37,
+                           "Right":  65,
+                           "Top":  2,
+                           "Bottom":  40,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  31,
+                           "Height":  39,
+                           "Left":  69,
+                           "Right":  99,
+                           "Top":  2,
+                           "Bottom":  40,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  32,
+                           "Height":  39,
+                           "Left":  103,
+                           "Right":  134,
+                           "Top":  2,
+                           "Bottom":  40,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "05.png",
+                           "Width":  31,
+                           "Height":  39,
+                           "Left":  135,
+                           "Right":  165,
+                           "Top":  2,
+                           "Bottom":  40,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "dance3",
+        "ExpectedFrames":  6,
+        "ComponentCount":  6,
+        "ActualFrames":  6,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  3
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  2
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  3
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  2
+                     },
+                     {
+                         "Index":  4,
+                         "Gap":  2
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  44,
+                           "Height":  43,
+                           "Left":  0,
+                           "Right":  43,
+                           "Top":  3,
+                           "Bottom":  45,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  45,
+                           "Height":  45,
+                           "Left":  45,
+                           "Right":  89,
+                           "Top":  1,
+                           "Bottom":  45,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  44,
+                           "Height":  43,
+                           "Left":  90,
+                           "Right":  133,
+                           "Top":  3,
+                           "Bottom":  45,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  41,
+                           "Height":  40,
+                           "Left":  135,
+                           "Right":  175,
+                           "Top":  6,
+                           "Bottom":  45,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "05.png",
+                           "Width":  48,
+                           "Height":  45,
+                           "Left":  176,
+                           "Right":  223,
+                           "Top":  1,
+                           "Bottom":  45,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "06.png",
+                           "Width":  41,
+                           "Height":  40,
+                           "Left":  224,
+                           "Right":  264,
+                           "Top":  6,
+                           "Bottom":  45,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "dance4",
+        "ExpectedFrames":  8,
+        "ComponentCount":  8,
+        "ActualFrames":  8,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  5
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  4
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  4
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  7
+                     },
+                     {
+                         "Index":  4,
+                         "Gap":  10
+                     },
+                     {
+                         "Index":  5,
+                         "Gap":  4
+                     },
+                     {
+                         "Index":  6,
+                         "Gap":  -1
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  44,
+                           "Height":  39,
+                           "Left":  0,
+                           "Right":  43,
+                           "Top":  6,
+                           "Bottom":  44,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  41,
+                           "Height":  42,
+                           "Left":  47,
+                           "Right":  87,
+                           "Top":  3,
+                           "Bottom":  44,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  40,
+                           "Height":  42,
+                           "Left":  90,
+                           "Right":  129,
+                           "Top":  4,
+                           "Bottom":  45,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  45,
+                           "Height":  38,
+                           "Left":  132,
+                           "Right":  176,
+                           "Top":  8,
+                           "Bottom":  45,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "05.png",
+                           "Width":  44,
+                           "Height":  38,
+                           "Left":  182,
+                           "Right":  225,
+                           "Top":  8,
+                           "Bottom":  45,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "06.png",
+                           "Width":  41,
+                           "Height":  41,
+                           "Left":  234,
+                           "Right":  274,
+                           "Top":  5,
+                           "Bottom":  45,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "07.png",
+                           "Width":  40,
+                           "Height":  41,
+                           "Left":  277,
+                           "Right":  316,
+                           "Top":  5,
+                           "Bottom":  45,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "08.png",
+                           "Width":  45,
+                           "Height":  38,
+                           "Left":  314,
+                           "Right":  358,
+                           "Top":  8,
+                           "Bottom":  45,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "dance5",
+        "ExpectedFrames":  7,
+        "ComponentCount":  7,
+        "ActualFrames":  7,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  2
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  1
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  2
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  4
+                     },
+                     {
+                         "Index":  4,
+                         "Gap":  2
+                     },
+                     {
+                         "Index":  5,
+                         "Gap":  3
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  48,
+                           "Height":  41,
+                           "Left":  0,
+                           "Right":  47,
+                           "Top":  4,
+                           "Bottom":  44,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  46,
+                           "Height":  41,
+                           "Left":  48,
+                           "Right":  93,
+                           "Top":  4,
+                           "Bottom":  44,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  48,
+                           "Height":  41,
+                           "Left":  93,
+                           "Right":  140,
+                           "Top":  5,
+                           "Bottom":  45,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  47,
+                           "Height":  41,
+                           "Left":  141,
+                           "Right":  187,
+                           "Top":  4,
+                           "Bottom":  44,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "05.png",
+                           "Width":  53,
+                           "Height":  41,
+                           "Left":  190,
+                           "Right":  242,
+                           "Top":  3,
+                           "Bottom":  43,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "06.png",
+                           "Width":  49,
+                           "Height":  41,
+                           "Left":  243,
+                           "Right":  291,
+                           "Top":  3,
+                           "Bottom":  43,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "07.png",
+                           "Width":  53,
+                           "Height":  41,
+                           "Left":  293,
+                           "Right":  345,
+                           "Top":  3,
+                           "Bottom":  43,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "fail",
+        "ExpectedFrames":  3,
+        "ComponentCount":  5,
+        "ActualFrames":  3,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  5
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  9
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  30,
+                           "Height":  39,
+                           "Left":  0,
+                           "Right":  29,
+                           "Top":  0,
+                           "Bottom":  38,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  36,
+                           "Height":  37,
+                           "Left":  33,
+                           "Right":  68,
+                           "Top":  2,
+                           "Bottom":  38,
+                           "ComponentCount":  3
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  38,
+                           "Height":  13,
+                           "Left":  69,
+                           "Right":  106,
+                           "Top":  26,
+                           "Bottom":  38,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "jump",
+        "ExpectedFrames":  4,
+        "ComponentCount":  4,
+        "ActualFrames":  4,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  10
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  8
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  1
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  29,
+                           "Height":  51,
+                           "Left":  0,
+                           "Right":  28,
+                           "Top":  3,
+                           "Bottom":  53,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  35,
+                           "Height":  52,
+                           "Left":  37,
+                           "Right":  71,
+                           "Top":  3,
+                           "Bottom":  54,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  39,
+                           "Height":  52,
+                           "Left":  78,
+                           "Right":  116,
+                           "Top":  3,
+                           "Bottom":  54,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  43,
+                           "Height":  42,
+                           "Left":  116,
+                           "Right":  158,
+                           "Top":  12,
+                           "Bottom":  53,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "ldle",
+        "ExpectedFrames":  5,
+        "ComponentCount":  5,
+        "ActualFrames":  5,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  5
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  6
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  5
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  4
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  29,
+                           "Height":  39,
+                           "Left":  0,
+                           "Right":  28,
+                           "Top":  3,
+                           "Bottom":  41,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  30,
+                           "Height":  39,
+                           "Left":  32,
+                           "Right":  61,
+                           "Top":  2,
+                           "Bottom":  40,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  29,
+                           "Height":  40,
+                           "Left":  66,
+                           "Right":  94,
+                           "Top":  1,
+                           "Bottom":  40,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  29,
+                           "Height":  40,
+                           "Left":  98,
+                           "Right":  126,
+                           "Top":  0,
+                           "Bottom":  39,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "05.png",
+                           "Width":  29,
+                           "Height":  39,
+                           "Left":  129,
+                           "Right":  157,
+                           "Top":  2,
+                           "Bottom":  40,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "miss",
+        "ExpectedFrames":  2,
+        "ComponentCount":  3,
+        "ActualFrames":  2,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  6
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  29,
+                           "Height":  40,
+                           "Left":  1,
+                           "Right":  29,
+                           "Top":  9,
+                           "Bottom":  48,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  40,
+                           "Height":  48,
+                           "Left":  34,
+                           "Right":  73,
+                           "Top":  1,
+                           "Bottom":  48,
+                           "ComponentCount":  2
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "sleeping",
+        "ExpectedFrames":  7,
+        "ComponentCount":  7,
+        "ActualFrames":  7,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  2
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  2
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  2
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  2
+                     },
+                     {
+                         "Index":  4,
+                         "Gap":  2
+                     },
+                     {
+                         "Index":  5,
+                         "Gap":  2
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  39,
+                           "Height":  39,
+                           "Left":  0,
+                           "Right":  38,
+                           "Top":  12,
+                           "Bottom":  50,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  43,
+                           "Height":  51,
+                           "Left":  39,
+                           "Right":  81,
+                           "Top":  0,
+                           "Bottom":  50,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  38,
+                           "Height":  44,
+                           "Left":  82,
+                           "Right":  119,
+                           "Top":  7,
+                           "Bottom":  50,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  34,
+                           "Height":  44,
+                           "Left":  120,
+                           "Right":  153,
+                           "Top":  7,
+                           "Bottom":  50,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "05.png",
+                           "Width":  38,
+                           "Height":  41,
+                           "Left":  154,
+                           "Right":  191,
+                           "Top":  10,
+                           "Bottom":  50,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "06.png",
+                           "Width":  45,
+                           "Height":  30,
+                           "Left":  192,
+                           "Right":  236,
+                           "Top":  21,
+                           "Bottom":  50,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "07.png",
+                           "Width":  43,
+                           "Height":  25,
+                           "Left":  237,
+                           "Right":  279,
+                           "Top":  26,
+                           "Bottom":  50,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "walk",
+        "ExpectedFrames":  6,
+        "ComponentCount":  6,
+        "ActualFrames":  6,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  3
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  4
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  3
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  4
+                     },
+                     {
+                         "Index":  4,
+                         "Gap":  3
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  40,
+                           "Height":  38,
+                           "Left":  0,
+                           "Right":  39,
+                           "Top":  5,
+                           "Bottom":  42,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  40,
+                           "Height":  38,
+                           "Left":  41,
+                           "Right":  80,
+                           "Top":  3,
+                           "Bottom":  40,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  40,
+                           "Height":  39,
+                           "Left":  83,
+                           "Right":  122,
+                           "Top":  3,
+                           "Bottom":  41,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  40,
+                           "Height":  38,
+                           "Left":  124,
+                           "Right":  163,
+                           "Top":  5,
+                           "Bottom":  42,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "05.png",
+                           "Width":  40,
+                           "Height":  38,
+                           "Left":  166,
+                           "Right":  205,
+                           "Top":  1,
+                           "Bottom":  38,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "06.png",
+                           "Width":  40,
+                           "Height":  39,
+                           "Left":  207,
+                           "Right":  246,
+                           "Top":  1,
+                           "Bottom":  39,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "windows",
+        "ExpectedFrames":  5,
+        "ComponentCount":  5,
+        "ActualFrames":  5,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  3
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  3
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  3
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  3
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  50,
+                           "Height":  50,
+                           "Left":  7,
+                           "Right":  56,
+                           "Top":  2,
+                           "Bottom":  51,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  50,
+                           "Height":  50,
+                           "Left":  58,
+                           "Right":  107,
+                           "Top":  2,
+                           "Bottom":  51,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  50,
+                           "Height":  50,
+                           "Left":  109,
+                           "Right":  158,
+                           "Top":  2,
+                           "Bottom":  51,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  50,
+                           "Height":  51,
+                           "Left":  160,
+                           "Right":  209,
+                           "Top":  1,
+                           "Bottom":  51,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "05.png",
+                           "Width":  66,
+                           "Height":  51,
+                           "Left":  211,
+                           "Right":  276,
+                           "Top":  1,
+                           "Bottom":  51,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "attack",
+        "ExpectedFrames":  4,
+        "ComponentCount":  4,
+        "ActualFrames":  4,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  3
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  6
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  3
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  36,
+                           "Height":  57,
+                           "Left":  1,
+                           "Right":  36,
+                           "Top":  1,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  56,
+                           "Height":  57,
+                           "Left":  38,
+                           "Right":  93,
+                           "Top":  1,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  57,
+                           "Height":  57,
+                           "Left":  98,
+                           "Right":  154,
+                           "Top":  1,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  37,
+                           "Height":  57,
+                           "Left":  156,
+                           "Right":  192,
+                           "Top":  1,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "beingdumb",
+        "ExpectedFrames":  3,
+        "ComponentCount":  3,
+        "ActualFrames":  3,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  11
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  7
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  35,
+                           "Height":  58,
+                           "Left":  0,
+                           "Right":  34,
+                           "Top":  0,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  35,
+                           "Height":  58,
+                           "Left":  44,
+                           "Right":  78,
+                           "Top":  0,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  35,
+                           "Height":  58,
+                           "Left":  84,
+                           "Right":  118,
+                           "Top":  0,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "buttstomp",
+        "ExpectedFrames":  2,
+        "ComponentCount":  2,
+        "ActualFrames":  2,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  7
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  39,
+                           "Height":  54,
+                           "Left":  13,
+                           "Right":  51,
+                           "Top":  1,
+                           "Bottom":  54,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  39,
+                           "Height":  54,
+                           "Left":  57,
+                           "Right":  95,
+                           "Top":  1,
+                           "Bottom":  54,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "cheering",
+        "ExpectedFrames":  3,
+        "ComponentCount":  3,
+        "ActualFrames":  3,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  15
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  21
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  39,
+                           "Height":  58,
+                           "Left":  5,
+                           "Right":  43,
+                           "Top":  0,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  39,
+                           "Height":  57,
+                           "Left":  57,
+                           "Right":  95,
+                           "Top":  1,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  39,
+                           "Height":  55,
+                           "Left":  115,
+                           "Right":  153,
+                           "Top":  3,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "dance1",
+        "ExpectedFrames":  4,
+        "ComponentCount":  4,
+        "ActualFrames":  4,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  14
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  12
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  7
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  29,
+                           "Height":  57,
+                           "Left":  15,
+                           "Right":  43,
+                           "Top":  1,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  28,
+                           "Height":  57,
+                           "Left":  56,
+                           "Right":  83,
+                           "Top":  1,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  37,
+                           "Height":  58,
+                           "Left":  94,
+                           "Right":  130,
+                           "Top":  0,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  41,
+                           "Height":  58,
+                           "Left":  136,
+                           "Right":  176,
+                           "Top":  0,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "dance2",
+        "ExpectedFrames":  4,
+        "ComponentCount":  4,
+        "ActualFrames":  4,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  7
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  7
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  4
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  41,
+                           "Height":  49,
+                           "Left":  3,
+                           "Right":  43,
+                           "Top":  5,
+                           "Bottom":  53,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  39,
+                           "Height":  50,
+                           "Left":  49,
+                           "Right":  87,
+                           "Top":  4,
+                           "Bottom":  53,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  33,
+                           "Height":  55,
+                           "Left":  93,
+                           "Right":  125,
+                           "Top":  0,
+                           "Bottom":  54,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  35,
+                           "Height":  55,
+                           "Left":  128,
+                           "Right":  162,
+                           "Top":  0,
+                           "Bottom":  54,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "dance3",
+        "ExpectedFrames":  6,
+        "ComponentCount":  6,
+        "ActualFrames":  6,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  17
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  11
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  9
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  6
+                     },
+                     {
+                         "Index":  4,
+                         "Gap":  7
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  33,
+                           "Height":  55,
+                           "Left":  5,
+                           "Right":  37,
+                           "Top":  2,
+                           "Bottom":  56,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  32,
+                           "Height":  55,
+                           "Left":  53,
+                           "Right":  84,
+                           "Top":  1,
+                           "Bottom":  55,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  34,
+                           "Height":  55,
+                           "Left":  94,
+                           "Right":  127,
+                           "Top":  2,
+                           "Bottom":  56,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  33,
+                           "Height":  55,
+                           "Left":  135,
+                           "Right":  167,
+                           "Top":  1,
+                           "Bottom":  55,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "05.png",
+                           "Width":  33,
+                           "Height":  55,
+                           "Left":  172,
+                           "Right":  204,
+                           "Top":  2,
+                           "Bottom":  56,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "06.png",
+                           "Width":  33,
+                           "Height":  56,
+                           "Left":  210,
+                           "Right":  242,
+                           "Top":  2,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "dance4",
+        "ExpectedFrames":  3,
+        "ComponentCount":  3,
+        "ActualFrames":  3,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  5
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  10
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  47,
+                           "Height":  58,
+                           "Left":  5,
+                           "Right":  51,
+                           "Top":  2,
+                           "Bottom":  59,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  51,
+                           "Height":  58,
+                           "Left":  55,
+                           "Right":  105,
+                           "Top":  2,
+                           "Bottom":  59,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  47,
+                           "Height":  58,
+                           "Left":  114,
+                           "Right":  160,
+                           "Top":  1,
+                           "Bottom":  58,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "dance5",
+        "ExpectedFrames":  3,
+        "ComponentCount":  3,
+        "ActualFrames":  3,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  20
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  22
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  37,
+                           "Height":  63,
+                           "Left":  8,
+                           "Right":  44,
+                           "Top":  2,
+                           "Bottom":  64,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  38,
+                           "Height":  60,
+                           "Left":  63,
+                           "Right":  100,
+                           "Top":  2,
+                           "Bottom":  61,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  38,
+                           "Height":  63,
+                           "Left":  121,
+                           "Right":  158,
+                           "Top":  1,
+                           "Bottom":  63,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "dance6",
+        "ExpectedFrames":  4,
+        "ComponentCount":  4,
+        "ActualFrames":  4,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  20
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  15
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  7
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  41,
+                           "Height":  58,
+                           "Left":  7,
+                           "Right":  47,
+                           "Top":  2,
+                           "Bottom":  59,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  44,
+                           "Height":  53,
+                           "Left":  66,
+                           "Right":  109,
+                           "Top":  7,
+                           "Bottom":  59,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  44,
+                           "Height":  60,
+                           "Left":  123,
+                           "Right":  166,
+                           "Top":  0,
+                           "Bottom":  59,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  43,
+                           "Height":  56,
+                           "Left":  172,
+                           "Right":  214,
+                           "Top":  4,
+                           "Bottom":  59,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "drink",
+        "ExpectedFrames":  8,
+        "ComponentCount":  10,
+        "ActualFrames":  8,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  1
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  2
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  1
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  1
+                     },
+                     {
+                         "Index":  4,
+                         "Gap":  1
+                     },
+                     {
+                         "Index":  5,
+                         "Gap":  0
+                     },
+                     {
+                         "Index":  7,
+                         "Gap":  29
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  47,
+                           "Height":  58,
+                           "Left":  1,
+                           "Right":  47,
+                           "Top":  0,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  43,
+                           "Height":  58,
+                           "Left":  47,
+                           "Right":  89,
+                           "Top":  0,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  43,
+                           "Height":  58,
+                           "Left":  90,
+                           "Right":  132,
+                           "Top":  0,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  43,
+                           "Height":  58,
+                           "Left":  132,
+                           "Right":  174,
+                           "Top":  0,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "05.png",
+                           "Width":  42,
+                           "Height":  58,
+                           "Left":  174,
+                           "Right":  215,
+                           "Top":  0,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "06.png",
+                           "Width":  43,
+                           "Height":  58,
+                           "Left":  215,
+                           "Right":  257,
+                           "Top":  0,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "07.png",
+                           "Width":  49,
+                           "Height":  58,
+                           "Left":  256,
+                           "Right":  304,
+                           "Top":  0,
+                           "Bottom":  57,
+                           "ComponentCount":  2
+                       },
+                       {
+                           "File":  "08.png",
+                           "Width":  48,
+                           "Height":  57,
+                           "Left":  303,
+                           "Right":  350,
+                           "Top":  0,
+                           "Bottom":  56,
+                           "ComponentCount":  2
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "fail",
+        "ExpectedFrames":  3,
+        "ComponentCount":  3,
+        "ActualFrames":  3,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  11
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  3
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  29,
+                           "Height":  55,
+                           "Left":  12,
+                           "Right":  40,
+                           "Top":  1,
+                           "Bottom":  55,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  41,
+                           "Height":  35,
+                           "Left":  50,
+                           "Right":  90,
+                           "Top":  21,
+                           "Bottom":  55,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  46,
+                           "Height":  17,
+                           "Left":  92,
+                           "Right":  137,
+                           "Top":  39,
+                           "Bottom":  55,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "jump",
+        "ExpectedFrames":  4,
+        "ComponentCount":  6,
+        "ActualFrames":  4,
+        "Gaps":  [
+                     {
+                         "Index":  1,
+                         "Gap":  18
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  6
+                     },
+                     {
+                         "Index":  4,
+                         "Gap":  1
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  43,
+                           "Height":  57,
+                           "Left":  0,
+                           "Right":  42,
+                           "Top":  0,
+                           "Bottom":  56,
+                           "ComponentCount":  2
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  39,
+                           "Height":  57,
+                           "Left":  45,
+                           "Right":  83,
+                           "Top":  0,
+                           "Bottom":  56,
+                           "ComponentCount":  2
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  39,
+                           "Height":  57,
+                           "Left":  83,
+                           "Right":  121,
+                           "Top":  0,
+                           "Bottom":  56,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  38,
+                           "Height":  52,
+                           "Left":  121,
+                           "Right":  158,
+                           "Top":  5,
+                           "Bottom":  56,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "ldle",
+        "ExpectedFrames":  5,
+        "ComponentCount":  5,
+        "ActualFrames":  5,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  2
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  3
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  2
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  2
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  36,
+                           "Height":  58,
+                           "Left":  4,
+                           "Right":  39,
+                           "Top":  1,
+                           "Bottom":  58,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  36,
+                           "Height":  57,
+                           "Left":  40,
+                           "Right":  75,
+                           "Top":  2,
+                           "Bottom":  58,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  36,
+                           "Height":  56,
+                           "Left":  77,
+                           "Right":  112,
+                           "Top":  3,
+                           "Bottom":  58,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  36,
+                           "Height":  57,
+                           "Left":  113,
+                           "Right":  148,
+                           "Top":  2,
+                           "Bottom":  58,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "05.png",
+                           "Width":  36,
+                           "Height":  57,
+                           "Left":  149,
+                           "Right":  184,
+                           "Top":  2,
+                           "Bottom":  58,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "miss",
+        "ExpectedFrames":  2,
+        "ComponentCount":  3,
+        "ActualFrames":  2,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  9
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  29,
+                           "Height":  58,
+                           "Left":  10,
+                           "Right":  38,
+                           "Top":  4,
+                           "Bottom":  61,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  37,
+                           "Height":  58,
+                           "Left":  46,
+                           "Right":  82,
+                           "Top":  4,
+                           "Bottom":  61,
+                           "ComponentCount":  2
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "scared",
+        "ExpectedFrames":  2,
+        "ComponentCount":  2,
+        "ActualFrames":  2,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  10
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  34,
+                           "Height":  59,
+                           "Left":  4,
+                           "Right":  37,
+                           "Top":  1,
+                           "Bottom":  59,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  34,
+                           "Height":  60,
+                           "Left":  46,
+                           "Right":  79,
+                           "Top":  0,
+                           "Bottom":  59,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "sleeping",
+        "ExpectedFrames":  5,
+        "ComponentCount":  5,
+        "ActualFrames":  5,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  1
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  1
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  1
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  0
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  36,
+                           "Height":  54,
+                           "Left":  1,
+                           "Right":  36,
+                           "Top":  1,
+                           "Bottom":  54,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  40,
+                           "Height":  50,
+                           "Left":  36,
+                           "Right":  75,
+                           "Top":  5,
+                           "Bottom":  54,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  40,
+                           "Height":  49,
+                           "Left":  75,
+                           "Right":  114,
+                           "Top":  6,
+                           "Bottom":  54,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  40,
+                           "Height":  48,
+                           "Left":  114,
+                           "Right":  153,
+                           "Top":  7,
+                           "Bottom":  54,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "05.png",
+                           "Width":  40,
+                           "Height":  49,
+                           "Left":  152,
+                           "Right":  191,
+                           "Top":  6,
+                           "Bottom":  54,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "walk",
+        "ExpectedFrames":  6,
+        "ComponentCount":  6,
+        "ActualFrames":  6,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  1
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  1
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  1
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  1
+                     },
+                     {
+                         "Index":  4,
+                         "Gap":  4
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  28,
+                           "Height":  57,
+                           "Left":  4,
+                           "Right":  31,
+                           "Top":  0,
+                           "Bottom":  56,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  44,
+                           "Height":  56,
+                           "Left":  31,
+                           "Right":  74,
+                           "Top":  0,
+                           "Bottom":  55,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  44,
+                           "Height":  57,
+                           "Left":  74,
+                           "Right":  117,
+                           "Top":  0,
+                           "Bottom":  56,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  35,
+                           "Height":  57,
+                           "Left":  117,
+                           "Right":  151,
+                           "Top":  0,
+                           "Bottom":  56,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "05.png",
+                           "Width":  29,
+                           "Height":  56,
+                           "Left":  151,
+                           "Right":  179,
+                           "Top":  0,
+                           "Bottom":  55,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "06.png",
+                           "Width":  29,
+                           "Height":  57,
+                           "Left":  182,
+                           "Right":  210,
+                           "Top":  0,
+                           "Bottom":  56,
+                           "ComponentCount":  1
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "windows",
+        "ExpectedFrames":  5,
+        "ComponentCount":  5,
+        "ActualFrames":  5,
+        "Gaps":  [
+                     {
+                         "Index":  0,
+                         "Gap":  4
+                     },
+                     {
+                         "Index":  1,
+                         "Gap":  3
+                     },
+                     {
+                         "Index":  2,
+                         "Gap":  4
+                     },
+                     {
+                         "Index":  3,
+                         "Gap":  3
+                     }
+                 ],
+        "Frames":  [
+                       {
+                           "File":  "01.png",
+                           "Width":  50,
+                           "Height":  51,
+                           "Left":  5,
+                           "Right":  54,
+                           "Top":  7,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "02.png",
+                           "Width":  50,
+                           "Height":  51,
+                           "Left":  57,
+                           "Right":  106,
+                           "Top":  7,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "03.png",
+                           "Width":  50,
+                           "Height":  51,
+                           "Left":  108,
+                           "Right":  157,
+                           "Top":  7,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "04.png",
+                           "Width":  50,
+                           "Height":  52,
+                           "Left":  160,
+                           "Right":  209,
+                           "Top":  6,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       },
+                       {
+                           "File":  "05.png",
+                           "Width":  62,
+                           "Height":  52,
+                           "Left":  211,
+                           "Right":  272,
+                           "Top":  6,
+                           "Bottom":  57,
+                           "ComponentCount":  1
+                       }
+                   ]
+    }
+]

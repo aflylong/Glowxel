@@ -1,0 +1,978 @@
+[
+    {
+        "Character":  "spongebob",
+        "Action":  "attack",
+        "FrameCount":  2,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  36,
+                           "Height":  39,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  58,
+                           "Height":  43,
+                           "File":  "02.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "beingdumb",
+        "FrameCount":  3,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  29,
+                           "Height":  39,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  29,
+                           "Height":  39,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  29,
+                           "Height":  39,
+                           "File":  "03.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "buttstomp",
+        "FrameCount":  1,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  89,
+                           "Height":  49,
+                           "File":  "01.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "cheering",
+        "FrameCount":  4,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  54,
+                           "Height":  38,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  59,
+                           "Height":  38,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  54,
+                           "Height":  38,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  47,
+                           "Height":  38,
+                           "File":  "04.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "dance",
+        "FrameCount":  5,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  33,
+                           "Height":  39,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  29,
+                           "Height":  39,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  31,
+                           "Height":  39,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  32,
+                           "Height":  39,
+                           "File":  "04.png"
+                       },
+                       {
+                           "Index":  5,
+                           "Width":  31,
+                           "Height":  39,
+                           "File":  "05.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "dance3",
+        "FrameCount":  6,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  44,
+                           "Height":  43,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  45,
+                           "Height":  45,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  44,
+                           "Height":  43,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  41,
+                           "Height":  40,
+                           "File":  "04.png"
+                       },
+                       {
+                           "Index":  5,
+                           "Width":  48,
+                           "Height":  45,
+                           "File":  "05.png"
+                       },
+                       {
+                           "Index":  6,
+                           "Width":  41,
+                           "Height":  40,
+                           "File":  "06.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "dance4",
+        "FrameCount":  7,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  44,
+                           "Height":  39,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  41,
+                           "Height":  42,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  40,
+                           "Height":  42,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  45,
+                           "Height":  38,
+                           "File":  "04.png"
+                       },
+                       {
+                           "Index":  5,
+                           "Width":  44,
+                           "Height":  38,
+                           "File":  "05.png"
+                       },
+                       {
+                           "Index":  6,
+                           "Width":  41,
+                           "Height":  41,
+                           "File":  "06.png"
+                       },
+                       {
+                           "Index":  7,
+                           "Width":  82,
+                           "Height":  41,
+                           "File":  "07.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "dance5",
+        "FrameCount":  4,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  48,
+                           "Height":  41,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  93,
+                           "Height":  42,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  47,
+                           "Height":  41,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  160,
+                           "Height":  41,
+                           "File":  "04.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "fail",
+        "FrameCount":  3,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  30,
+                           "Height":  39,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  36,
+                           "Height":  37,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  38,
+                           "Height":  13,
+                           "File":  "03.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "jump",
+        "FrameCount":  3,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  31,
+                           "Height":  54,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  35,
+                           "Height":  52,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  81,
+                           "Height":  55,
+                           "File":  "03.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "ldle",
+        "FrameCount":  5,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  29,
+                           "Height":  39,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  30,
+                           "Height":  39,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  29,
+                           "Height":  40,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  29,
+                           "Height":  40,
+                           "File":  "04.png"
+                       },
+                       {
+                           "Index":  5,
+                           "Width":  29,
+                           "Height":  39,
+                           "File":  "05.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "miss",
+        "FrameCount":  2,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  29,
+                           "Height":  40,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  40,
+                           "Height":  49,
+                           "File":  "02.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "sleeping",
+        "FrameCount":  7,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  39,
+                           "Height":  39,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  43,
+                           "Height":  51,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  38,
+                           "Height":  44,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  34,
+                           "Height":  44,
+                           "File":  "04.png"
+                       },
+                       {
+                           "Index":  5,
+                           "Width":  38,
+                           "Height":  41,
+                           "File":  "05.png"
+                       },
+                       {
+                           "Index":  6,
+                           "Width":  45,
+                           "Height":  30,
+                           "File":  "06.png"
+                       },
+                       {
+                           "Index":  7,
+                           "Width":  43,
+                           "Height":  25,
+                           "File":  "07.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "walk",
+        "FrameCount":  6,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  40,
+                           "Height":  38,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  40,
+                           "Height":  38,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  40,
+                           "Height":  39,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  40,
+                           "Height":  38,
+                           "File":  "04.png"
+                       },
+                       {
+                           "Index":  5,
+                           "Width":  40,
+                           "Height":  38,
+                           "File":  "05.png"
+                       },
+                       {
+                           "Index":  6,
+                           "Width":  40,
+                           "Height":  39,
+                           "File":  "06.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "spongebob",
+        "Action":  "windows",
+        "FrameCount":  5,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  50,
+                           "Height":  50,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  50,
+                           "Height":  50,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  50,
+                           "Height":  50,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  50,
+                           "Height":  51,
+                           "File":  "04.png"
+                       },
+                       {
+                           "Index":  5,
+                           "Width":  66,
+                           "Height":  51,
+                           "File":  "05.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "attack",
+        "FrameCount":  4,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  36,
+                           "Height":  57,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  56,
+                           "Height":  57,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  57,
+                           "Height":  57,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  37,
+                           "Height":  57,
+                           "File":  "04.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "beingdumb",
+        "FrameCount":  3,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  35,
+                           "Height":  58,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  35,
+                           "Height":  58,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  35,
+                           "Height":  58,
+                           "File":  "03.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "buttstomp",
+        "FrameCount":  2,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  39,
+                           "Height":  54,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  39,
+                           "Height":  54,
+                           "File":  "02.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "cheering",
+        "FrameCount":  3,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  39,
+                           "Height":  58,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  39,
+                           "Height":  57,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  39,
+                           "Height":  55,
+                           "File":  "03.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "dance1",
+        "FrameCount":  4,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  29,
+                           "Height":  57,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  28,
+                           "Height":  57,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  37,
+                           "Height":  58,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  41,
+                           "Height":  58,
+                           "File":  "04.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "dance2",
+        "FrameCount":  4,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  41,
+                           "Height":  49,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  39,
+                           "Height":  50,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  33,
+                           "Height":  55,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  35,
+                           "Height":  55,
+                           "File":  "04.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "dance3",
+        "FrameCount":  6,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  33,
+                           "Height":  55,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  32,
+                           "Height":  55,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  34,
+                           "Height":  55,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  33,
+                           "Height":  55,
+                           "File":  "04.png"
+                       },
+                       {
+                           "Index":  5,
+                           "Width":  33,
+                           "Height":  55,
+                           "File":  "05.png"
+                       },
+                       {
+                           "Index":  6,
+                           "Width":  33,
+                           "Height":  56,
+                           "File":  "06.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "dance4",
+        "FrameCount":  3,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  47,
+                           "Height":  58,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  51,
+                           "Height":  58,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  47,
+                           "Height":  58,
+                           "File":  "03.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "dance5",
+        "FrameCount":  3,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  37,
+                           "Height":  63,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  38,
+                           "Height":  60,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  38,
+                           "Height":  63,
+                           "File":  "03.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "dance6",
+        "FrameCount":  4,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  41,
+                           "Height":  58,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  44,
+                           "Height":  53,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  44,
+                           "Height":  60,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  43,
+                           "Height":  56,
+                           "File":  "04.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "drink",
+        "FrameCount":  2,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  89,
+                           "Height":  58,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  261,
+                           "Height":  58,
+                           "File":  "02.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "fail",
+        "FrameCount":  3,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  29,
+                           "Height":  55,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  41,
+                           "Height":  35,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  46,
+                           "Height":  17,
+                           "File":  "03.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "jump",
+        "FrameCount":  2,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  43,
+                           "Height":  57,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  114,
+                           "Height":  57,
+                           "File":  "02.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "ldle",
+        "FrameCount":  5,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  36,
+                           "Height":  58,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  36,
+                           "Height":  57,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  36,
+                           "Height":  56,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  36,
+                           "Height":  57,
+                           "File":  "04.png"
+                       },
+                       {
+                           "Index":  5,
+                           "Width":  36,
+                           "Height":  57,
+                           "File":  "05.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "miss",
+        "FrameCount":  2,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  29,
+                           "Height":  58,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  37,
+                           "Height":  58,
+                           "File":  "02.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "scared",
+        "FrameCount":  2,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  34,
+                           "Height":  59,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  34,
+                           "Height":  60,
+                           "File":  "02.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "sleeping",
+        "FrameCount":  1,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  191,
+                           "Height":  54,
+                           "File":  "01.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "walk",
+        "FrameCount":  2,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  176,
+                           "Height":  57,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  29,
+                           "Height":  57,
+                           "File":  "02.png"
+                       }
+                   ]
+    },
+    {
+        "Character":  "patrick",
+        "Action":  "windows",
+        "FrameCount":  5,
+        "Frames":  [
+                       {
+                           "Index":  1,
+                           "Width":  50,
+                           "Height":  51,
+                           "File":  "01.png"
+                       },
+                       {
+                           "Index":  2,
+                           "Width":  50,
+                           "Height":  51,
+                           "File":  "02.png"
+                       },
+                       {
+                           "Index":  3,
+                           "Width":  50,
+                           "Height":  51,
+                           "File":  "03.png"
+                       },
+                       {
+                           "Index":  4,
+                           "Width":  50,
+                           "Height":  52,
+                           "File":  "04.png"
+                       },
+                       {
+                           "Index":  5,
+                           "Width":  62,
+                           "Height":  52,
+                           "File":  "05.png"
+                       }
+                   ]
+    }
+]

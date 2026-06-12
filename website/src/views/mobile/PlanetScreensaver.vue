@@ -371,7 +371,6 @@ import {
   getCurrentTimeText,
 } from "@/utils/clockCanvas.js";
 import {
-  PLANET_DEFAULT_COLOR_SEED,
   PLANET_REFERENCE_DEFAULT_COLOR_SEED,
   PLANET_SCREEN_PRESETS,
   PLANET_PREVIEW_MIN_SPEED,
@@ -443,7 +442,7 @@ function createDefaultPlanetAutoRotateConfig() {
   return {
     enabled: false,
     randomPlanet: true,
-    randomColor: true,
+    randomColor: false,
     interval: 60,
   };
 }
@@ -1234,12 +1233,18 @@ export default {
         return;
       }
       if (this.config.preset === presetId) {
+        if (this.config.colorSeed !== PLANET_REFERENCE_DEFAULT_COLOR_SEED) {
+          const progress = this.getCurrentPreviewProgress();
+          this.disableAutoRotateForManualEdit();
+          this.config.colorSeed = PLANET_REFERENCE_DEFAULT_COLOR_SEED;
+          this.schedulePreviewRefresh(progress);
+        }
         return;
       }
       const progress = this.getCurrentPreviewProgress();
       this.disableAutoRotateForManualEdit();
       this.config.preset = presetId;
-      this.config.colorSeed = PLANET_DEFAULT_COLOR_SEED;
+      this.config.colorSeed = PLANET_REFERENCE_DEFAULT_COLOR_SEED;
       this.schedulePreviewRefresh(progress);
     },
     handlePortalColorSelect(presetId) {

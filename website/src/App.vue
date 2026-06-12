@@ -68,6 +68,7 @@ function isDevicePath(p) {
     p.startsWith('/rick-morty-') ||
     p.startsWith('/terraria-') ||
     p.startsWith('/adventure-') ||
+    p.startsWith('/spongebob-') ||
     p.startsWith('/kof') ||
     p === '/clock' || p === '/animation-clock' || p === '/theme-clock'
 }

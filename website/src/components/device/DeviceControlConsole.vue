@@ -257,6 +257,7 @@ const modeCatalog = [
   { key: "terraria_clock", name: "泰拉瑞亚时钟", icon: "layers", variantClass: "device-home__mode-card--copper", action: "open", to: "/terraria-clock" },
   { key: "adventure_island", name: "冒险岛", icon: "navigation", variantClass: "device-home__mode-card--orange", action: "open", to: "/adventure-island" },
   { key: "kof97", name: "拳皇 97", icon: "modular", variantClass: "device-home__mode-card--copper", action: "open", to: "/kof97" },
+  { key: "spongebob_clock", name: "海绵宝宝时钟", icon: "time", variantClass: "device-home__mode-card--gold", action: "open", to: "/spongebob-clock" },
 ];
 
 const isDeviceConnected = computed(() => deviceStore.connected === true);

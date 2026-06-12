@@ -1,0 +1,130 @@
+{
+  "ok": true,
+  "errors": [],
+  "warnings": [],
+  "skipped": [
+    "dance5",
+    "jump"
+  ],
+  "actions": [
+    {
+      "id": "attack",
+      "frameCount": 4,
+      "loops": false,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\attack.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\attack.gif"
+    },
+    {
+      "id": "beingdumb",
+      "frameCount": 3,
+      "loops": true,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\beingdumb.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\beingdumb.gif"
+    },
+    {
+      "id": "buttstomp",
+      "frameCount": 2,
+      "loops": false,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\buttstomp.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\buttstomp.gif"
+    },
+    {
+      "id": "cheering",
+      "frameCount": 3,
+      "loops": true,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\cheering.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\cheering.gif"
+    },
+    {
+      "id": "dance1",
+      "frameCount": 4,
+      "loops": true,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\dance1.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\dance1.gif"
+    },
+    {
+      "id": "dance2",
+      "frameCount": 4,
+      "loops": true,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\dance2.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\dance2.gif"
+    },
+    {
+      "id": "dance3",
+      "frameCount": 6,
+      "loops": true,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\dance3.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\dance3.gif"
+    },
+    {
+      "id": "dance4",
+      "frameCount": 3,
+      "loops": true,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\dance4.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\dance4.gif"
+    },
+    {
+      "id": "dance6",
+      "frameCount": 4,
+      "loops": true,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\dance6.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\dance6.gif"
+    },
+    {
+      "id": "drink",
+      "frameCount": 8,
+      "loops": true,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\drink.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\drink.gif"
+    },
+    {
+      "id": "fail",
+      "frameCount": 3,
+      "loops": false,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\fail.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\fail.gif"
+    },
+    {
+      "id": "ldle",
+      "frameCount": 5,
+      "loops": true,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\ldle.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\ldle.gif"
+    },
+    {
+      "id": "miss",
+      "frameCount": 2,
+      "loops": false,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\miss.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\miss.gif"
+    },
+    {
+      "id": "scared",
+      "frameCount": 2,
+      "loops": false,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\scared.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\scared.gif"
+    },
+    {
+      "id": "sleeping",
+      "frameCount": 5,
+      "loops": false,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\sleeping.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\sleeping.gif"
+    },
+    {
+      "id": "walk",
+      "frameCount": 6,
+      "loops": true,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\walk.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\walk.gif"
+    },
+    {
+      "id": "windows",
+      "frameCount": 5,
+      "loops": true,
+      "webp": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\animations\\windows.webp",
+      "gif": "D:\\project\\Glowxel\\assets-raw\\spongebob\\hatch-pet\\extended\\patrick-pixel\\previews\\windows.gif"
+    }
+  ]
+}

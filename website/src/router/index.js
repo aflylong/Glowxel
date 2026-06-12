@@ -63,6 +63,10 @@ const deviceModeViewLoaders = Object.freeze({
     pc: () => import("@/views/Kof97.vue"),
     mobile: () => import("@/views/mobile/Kof97.vue"),
   },
+  SpongeBobClock: {
+    pc: () => import("@/views/mobile/SpongeBobClock.vue"),
+    mobile: () => import("@/views/mobile/SpongeBobClock.vue"),
+  },
   Clock: {
     pc: () => import("@/views/Clock.vue"),
     mobile: () => import("@/views/mobile/Clock.vue"),
@@ -388,6 +392,12 @@ const routes = [
     meta: { shell: "app" },
   },
   {
+    path: "/spongebob-clock",
+    name: "SpongeBobClock",
+    component: resolveDeviceModeComponent("SpongeBobClock"),
+    meta: { shell: "app" },
+  },
+  {
     path: "/clock",
     name: "Clock",
     component: resolveDeviceModeComponent("Clock"),
@@ -445,6 +455,7 @@ router.afterEach((to) => {
       to.path.startsWith("/rick-morty-") ||
       to.path.startsWith("/terraria-") ||
       to.path.startsWith("/adventure-") ||
+      to.path.startsWith("/spongebob-") ||
       to.path === "/kof97" ||
       to.path === "/clock" ||
       to.path === "/animation-clock" ||

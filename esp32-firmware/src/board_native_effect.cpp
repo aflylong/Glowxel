@@ -29,7 +29,6 @@ TextDisplayNativeConfig s_textConfig = {
   36
 };
 
-constexpr uint32_t kPlanetDefaultColorSeed = 33521UL;
 constexpr uint32_t kPlanetReferenceDefaultColorSeed = 20260415UL;
 
 PlanetScreensaverNativeConfig s_planetConfig = {
@@ -38,7 +37,7 @@ PlanetScreensaverNativeConfig s_planetConfig = {
   "right",
   3,
   20260415UL,
-  kPlanetDefaultColorSeed,
+  kPlanetReferenceDefaultColorSeed,
   32,
   32,
   CLOCK_FONT_CLASSIC_5X7,
@@ -46,7 +45,7 @@ PlanetScreensaverNativeConfig s_planetConfig = {
   {
     false,
     true,
-    true,
+    false,
     60
   },
   {

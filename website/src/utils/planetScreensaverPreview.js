@@ -3,7 +3,6 @@ const CANVAS_SIZE = 64;
 const PREVIEW_DIAMETER = 52;
 const PREVIEW_CENTER = CANVAS_SIZE * 0.5;
 const TWO_PI = Math.PI * 2;
-const PLANET_DEFAULT_COLOR_SEED = 33521;
 const PLANET_REFERENCE_DEFAULT_COLOR_SEED = 20260415;
 
 const PLANET_PREVIEW_MIN_PIXELS = 12;
@@ -317,7 +316,7 @@ function createDefaultPlanetPreviewConfig() {
     pixels: 100,
     size: "medium",
     seed: 20260415,
-    colorSeed: PLANET_DEFAULT_COLOR_SEED,
+    colorSeed: PLANET_REFERENCE_DEFAULT_COLOR_SEED,
     planetX: 32,
     planetY: 32,
     direction: "right",
@@ -2942,7 +2941,6 @@ function buildPlanetScreensaverPreviewSequence(config) {
 
 export {
   FRAME_COUNT,
-  PLANET_DEFAULT_COLOR_SEED,
   PLANET_REFERENCE_DEFAULT_COLOR_SEED,
   PLANET_SCREEN_PRESETS,
   PLANET_PREVIEW_MAX_PIXELS,

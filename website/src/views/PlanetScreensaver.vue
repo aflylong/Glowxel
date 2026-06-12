@@ -263,7 +263,6 @@ import {
   createRandomPlanetColorSeed,
   createRandomPlanetPreviewSeed,
   getPlanetPreviewCycleDuration,
-  PLANET_DEFAULT_COLOR_SEED,
   PLANET_DIRECTION_OPTIONS,
   PLANET_PREVIEW_MAX_SPEED,
   PLANET_PREVIEW_MIN_SPEED,
@@ -509,7 +508,7 @@ function createDefaultPlanetAutoRotateConfig() {
   return {
     enabled: false,
     randomPlanet: true,
-    randomColor: true,
+    randomColor: false,
     interval: 60,
   };
 }
@@ -818,11 +817,16 @@ function disableAutoRotateForManualEdit() {
 
 function handlePresetSelect(presetId) {
   if (config.preset === presetId) {
+    if (config.colorSeed !== PLANET_REFERENCE_DEFAULT_COLOR_SEED) {
+      disableAutoRotateForManualEdit();
+      config.colorSeed = PLANET_REFERENCE_DEFAULT_COLOR_SEED;
+      restartPreviewPlayback();
+    }
     return;
   }
   disableAutoRotateForManualEdit();
   config.preset = presetId;
-  config.colorSeed = PLANET_DEFAULT_COLOR_SEED;
+  config.colorSeed = PLANET_REFERENCE_DEFAULT_COLOR_SEED;
   restartPreviewPlayback();
 }
 

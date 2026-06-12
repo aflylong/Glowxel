@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "generatedAt": "2026-06-09T01:24:11.993458+00:00",
+  "pets": {
+    "spongebob-pixel": {
+      "ok": true,
+      "actionCount": 13,
+      "warnings": [],
+      "skipped": [
+        "jump"
+      ]
+    },
+    "patrick-pixel": {
+      "ok": true,
+      "actionCount": 17,
+      "warnings": [],
+      "skipped": [
+        "dance5",
+        "jump"
+      ]
+    }
+  }
+}

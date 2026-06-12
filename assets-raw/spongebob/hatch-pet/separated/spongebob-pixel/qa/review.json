@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "method": "separate deterministic single-character atlas from prepared local action frames",
+  "notes": [
+    "This pet is separated from the other character to avoid mutual pose, scale, and baseline influence.",
+    "Dance is represented in the standard Codex jumping row and as qa/previews/dance.gif.",
+    "Sleeping is exported as a non-looping preview that holds the final frame; the standard 9-row atlas has no separate sleeping row."
+  ],
+  "warnings": []
+}

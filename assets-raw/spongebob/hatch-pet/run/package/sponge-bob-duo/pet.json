@@ -1,0 +1,6 @@
+{
+  "id": "sponge-bob-duo",
+  "displayName": "SpongeBob Duo",
+  "description": "A retro pixel two-character Codex desktop pet inspired by SpongeBob and Patrick, rebuilt from prepared local action frames with stable scale and baseline.",
+  "spritesheetPath": "spritesheet.webp"
+}

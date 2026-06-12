@@ -355,6 +355,14 @@ export default {
           type: "mode",
           bucket: "secondary",
         },
+        {
+          key: "spongebob_clock",
+          name: "海绵宝宝时钟",
+          icon: "time",
+          variant: "gold",
+          type: "mode",
+          bucket: "secondary",
+        },
       ];
     },
   },
@@ -447,6 +455,8 @@ export default {
         this.openAdventureIsland();
       } else if (mode === "kof97") {
         this.openKof97();
+      } else if (mode === "spongebob_clock") {
+        this.openSpongeBobClock();
       } else if (mode === "ambient_effect" || mode === "led_matrix_showcase") {
         this.openLedMatrixShowcase();
       } else if (mode === "tetris") {
@@ -493,6 +503,12 @@ export default {
     openKof97() {
       uni.navigateTo({
         url: "/pages/kof97/kof97",
+      });
+    },
+
+    openSpongeBobClock() {
+      uni.navigateTo({
+        url: "/pages/spongebob-clock/spongebob-clock",
       });
     },
 
