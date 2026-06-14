@@ -40,6 +40,10 @@
       </div>
       <div class="preview-caption">
         <div class="preview-caption-info">
+          <span
+            class="portal-rotate-badge"
+            :class="config.autoRotate.enabled ? 'portal-rotate-badge--on' : 'portal-rotate-badge--off'"
+          >{{ autoRotateStatusText }}</span>
           <span class="preview-caption-title">预览效果</span>
         </div>
         <div class="preview-actions">
@@ -79,13 +83,16 @@
                 }}</span>
               </div>
             </div>
+            <span class="portal-rotate-note">
+              {{ config.autoRotate.enabled ? `当前按 ${autoRotateIntervalLabel} 随机切换三种颜色` : "当前固定显示手动选择的颜色" }}
+            </span>
           </div>
 
           <div class="card glx-panel-card glx-editor-card">
             <div class="card-title-section glx-panel-head">
               <span class="glx-panel-title">参数</span>
             </div>
-
+<!-- 
             <div class="form-row">
               <span class="form-label">水平位置 {{ config.portalX }}</span>
               <GlxStepper
@@ -117,7 +124,7 @@
                 <Icon name="target" :size="32" color="var(--nb-ink)" />
                 <span>快速居中</span>
               </div>
-            </div>
+            </div> -->
 
             <div class="option-stack">
               <span class="form-label">传送门大小</span>
@@ -132,6 +139,43 @@
                   <span class="glx-feature-option__label">{{
                     option.label
                   }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="option-stack portal-rotate-panel">
+              <div class="portal-rotate-panel__head">
+                <span class="form-label">随机轮播</span>
+                <span
+                  class="portal-rotate-badge"
+                  :class="config.autoRotate.enabled ? 'portal-rotate-badge--on' : 'portal-rotate-badge--off'"
+                >{{ autoRotateStatusText }}</span>
+              </div>
+              <div class="option-row option-row-double">
+                <div
+                  class="option-btn glx-feature-option"
+                  :class="{ active: config.autoRotate.enabled }"
+                  @click="setAutoRotateEnabled(true)"
+                >
+                  <span class="glx-feature-option__label">开启</span>
+                </div>
+                <div
+                  class="option-btn glx-feature-option"
+                  :class="{ active: !config.autoRotate.enabled }"
+                  @click="setAutoRotateEnabled(false)"
+                >
+                  <span class="glx-feature-option__label">关闭</span>
+                </div>
+              </div>
+              <div class="option-row option-row-rotate">
+                <div
+                  v-for="option in rotateIntervalOptions"
+                  :key="option.value"
+                  class="option-btn glx-feature-option"
+                  :class="{ active: config.autoRotate.interval === option.value }"
+                  @click="setAutoRotateInterval(option.value)"
+                >
+                  <span class="glx-feature-option__label">{{ option.label }}</span>
                 </div>
               </div>
             </div>
@@ -232,12 +276,15 @@ import {
   PORTAL_COLOR_OPTIONS,
   PORTAL_SIZE_OPTIONS,
   PORTAL_TIME_COLOR_OPTIONS,
+  PORTAL_ROTATE_INTERVAL_OPTIONS,
   PORTAL_PREVIEW_PLAYBACK_INTERVAL_MS,
   createDefaultPortalPreviewConfig,
   createDefaultPortalClockConfig,
   normalizePortalPageState,
+  isPortalRotateIntervalValue,
   buildPortalPreviewFrame,
   buildPortalPreviewSequence,
+  resolvePortalPresetForPreview,
 } from "@/utils/rickMortyPortalPreview.js";
 
 const PORTAL_TIME_FONT_OPTIONS = getClockFontOptions();
@@ -280,13 +327,14 @@ export default {
       previewRefreshTimer: null,
       colorOptions: PORTAL_COLOR_OPTIONS,
       sizeOptions: PORTAL_SIZE_OPTIONS,
+      rotateIntervalOptions: PORTAL_ROTATE_INTERVAL_OPTIONS,
       clockConfig: createDefaultPortalClockConfig(),
       timeFontOptions: PORTAL_TIME_FONT_OPTIONS,
       timeColorOptions: PORTAL_TIME_COLOR_OPTIONS,
       currentTab: 0,
       tabDefinitions: [
-        { index: 0, label: "传送门", icon: "refresh" },
-        { index: 1, label: "时间", icon: "time" },
+        // { index: 0, label: "传送门", icon: "refresh" },
+        // { index: 1, label: "时间", icon: "time" },
         // { index: 2, label: "字体", icon: "text" },
       ],
       config,
@@ -310,6 +358,15 @@ export default {
         return false;
       }
       return this.deviceStore.isConnected;
+    },
+    autoRotateStatusText() {
+      return this.config.autoRotate.enabled ? "轮播已开启" : "轮播已关闭";
+    },
+    autoRotateIntervalLabel() {
+      const matched = this.rotateIntervalOptions.find(
+        (item) => item.value === this.config.autoRotate.interval,
+      );
+      return matched.label;
     },
   },
   watch: {
@@ -380,6 +437,10 @@ export default {
           size: this.config.size,
           portalX: this.config.portalX,
           portalY: this.config.portalY,
+          autoRotate: {
+            enabled: this.config.autoRotate.enabled,
+            interval: this.config.autoRotate.interval,
+          },
         },
         clockConfig: {
           font: this.clockConfig.font,
@@ -454,6 +515,7 @@ export default {
         font,
         showSeconds,
         time,
+        autoRotate,
       } = status;
       if (businessMode !== "rick_morty_portal") {
         return;
@@ -481,6 +543,15 @@ export default {
       const portalY = Number(rawPortalY);
       if (Number.isFinite(portalY)) {
         this.config.portalY = Math.max(0, Math.min(63, Math.round(portalY)));
+      }
+      if (autoRotate && typeof autoRotate === "object") {
+        if (autoRotate.enabled === true || autoRotate.enabled === false) {
+          this.config.autoRotate.enabled = autoRotate.enabled;
+        }
+        const interval = Number(autoRotate.interval);
+        if (isPortalRotateIntervalValue(interval)) {
+          this.config.autoRotate.interval = interval;
+        }
       }
 
       if (PORTAL_TIME_FONT_IDS.has(font)) {
@@ -590,7 +661,11 @@ export default {
       });
     },
     renderPreviewFrame(progress) {
-      const frameMap = buildPortalPreviewFrame(this.config, progress);
+      const previewConfig = {
+        ...this.config,
+        preset: resolvePortalPresetForPreview(this.config),
+      };
+      const frameMap = buildPortalPreviewFrame(previewConfig, progress);
       if (frameMap && this.clockConfig.time.show) {
         const text = this.getPortalTimeText();
         const placement = this.resolveBoardTimePlacement(text);
@@ -676,6 +751,7 @@ export default {
         return;
       }
       const progress = this.getCurrentPreviewProgress();
+      this.config.autoRotate.enabled = false;
       this.config.preset = presetId;
       this.schedulePreviewRefresh(progress);
     },
@@ -688,6 +764,25 @@ export default {
       }
       const progress = this.getCurrentPreviewProgress();
       this.config.size = sizeId;
+      this.schedulePreviewRefresh(progress);
+    },
+    setAutoRotateEnabled(enabled) {
+      if (this.config.autoRotate.enabled === enabled) {
+        return;
+      }
+      const progress = this.getCurrentPreviewProgress();
+      this.config.autoRotate.enabled = enabled;
+      this.schedulePreviewRefresh(progress);
+    },
+    setAutoRotateInterval(interval) {
+      if (!isPortalRotateIntervalValue(interval)) {
+        return;
+      }
+      if (this.config.autoRotate.interval === interval) {
+        return;
+      }
+      const progress = this.getCurrentPreviewProgress();
+      this.config.autoRotate.interval = interval;
       this.schedulePreviewRefresh(progress);
     },
     handlePortalXChange(event) {
@@ -799,6 +894,10 @@ export default {
         size: this.config.size,
         portalX: this.config.portalX,
         portalY: this.config.portalY,
+        autoRotate: {
+          enabled: this.config.autoRotate.enabled,
+          interval: this.config.autoRotate.interval,
+        },
         font: this.clockConfig.font,
         showSeconds: this.clockConfig.showSeconds,
         time: {
@@ -872,6 +971,13 @@ export default {
   color: var(--text-primary);
 }
 
+.preview-caption-info {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
 .card {
   background: transparent !important;
   border: 0 !important;
@@ -898,8 +1004,56 @@ export default {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.option-row-double {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .option-row-quad {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.option-row-rotate {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.portal-rotate-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+}
+
+.portal-rotate-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36rpx;
+  padding: 4rpx 12rpx;
+  border: 2rpx solid var(--nb-ink);
+  font-size: 20rpx;
+  line-height: 1;
+  font-weight: 900;
+  color: var(--nb-ink);
+  background: var(--bg-elevated);
+  box-shadow: var(--nb-shadow-soft);
+}
+
+.portal-rotate-badge--on {
+  background: var(--nb-yellow);
+}
+
+.portal-rotate-badge--off {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+}
+
+.portal-rotate-note {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 22rpx;
+  line-height: 1.4;
+  font-weight: 700;
+  color: var(--text-secondary);
 }
 
 .option-btn.glx-feature-option {

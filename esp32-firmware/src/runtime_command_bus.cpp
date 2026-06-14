@@ -1537,6 +1537,7 @@ bool preparePortalTransaction(JsonObject params, const char*& reason) {
       !params.containsKey("size") ||
       !params.containsKey("portalX") ||
       !params.containsKey("portalY") ||
+      !params.containsKey("autoRotate") ||
       !params.containsKey("font") ||
       !params.containsKey("showSeconds") ||
       !params.containsKey("time")) {
@@ -1580,6 +1581,23 @@ bool preparePortalTransaction(JsonObject params, const char*& reason) {
     return false;
   }
 
+  JsonObject autoRotate = params["autoRotate"].as<JsonObject>();
+  if (autoRotate.isNull() ||
+      !autoRotate.containsKey("enabled") ||
+      !autoRotate.containsKey("interval")) {
+    reason = "portal autoRotate invalid";
+    return false;
+  }
+  int autoRotateInterval = autoRotate["interval"].as<int>();
+  if (autoRotateInterval != 60 &&
+      autoRotateInterval != 300 &&
+      autoRotateInterval != 600 &&
+      autoRotateInterval != 1800 &&
+      autoRotateInterval != 3600) {
+    reason = "portal autoRotate interval invalid";
+    return false;
+  }
+
   resetPreparedCommand(gWebSocketTransactionSession.preparedCommand);
   RuntimeCommandBus::RuntimeCommand& command = gWebSocketTransactionSession.preparedCommand;
   command.type = RuntimeCommandBus::RuntimeCommandType::RICK_MORTY_PORTAL;
@@ -1589,6 +1607,8 @@ bool preparePortalTransaction(JsonObject params, const char*& reason) {
     static_cast<uint8_t>(wsClampInt(params["portalX"].as<int>(), 0, 63));
   command.portalConfig.portalY =
     static_cast<uint8_t>(wsClampInt(params["portalY"].as<int>(), 0, 63));
+  command.portalConfig.autoRotate.enabled = autoRotate["enabled"].as<bool>();
+  command.portalConfig.autoRotate.interval = static_cast<uint16_t>(autoRotateInterval);
   command.portalConfig.font = fontId;
   command.portalConfig.showSeconds = params["showSeconds"].as<bool>();
   command.portalConfig.time.show = time["show"].as<bool>();

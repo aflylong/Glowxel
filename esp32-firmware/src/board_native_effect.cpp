@@ -5,6 +5,7 @@
 #include <string.h>
 #include "clock_font_renderer.h"
 #include "display_manager.h"
+#include "mode_tags.h"
 
 namespace {
 BoardNativeMode s_mode = BOARD_NATIVE_NONE;
@@ -67,6 +68,10 @@ RickMortyPortalNativeConfig s_portalConfig = {
   "medium",
   32,
   32,
+  {
+    false,
+    300
+  },
   CLOCK_FONT_CLASSIC_5X7,
   false,
   {
@@ -107,12 +112,15 @@ constexpr int kPlanetPreviewPixels = 100;
 constexpr unsigned long kPlanetPreviewFrameCount = 48UL;
 constexpr unsigned long kPlanetRenderTickMs = 16UL;  // 16ms实现62.5 FPS，平衡性能和质量
 constexpr int kPlanetDirectColorCacheSize = 32;
+constexpr uint16_t kPlanetRenderYieldInterval = 128;
 
 float* s_planetPreviewBuffer = nullptr;
+uint16_t s_planetRenderYieldCounter = 0;
 
 static unsigned long s_portalSyncBaseMillis = 0;  // 记录同步时的millis()值
 static int s_portalSyncBaseSecond = 0;            // 记录同步时真实时钟的秒数（0-59）
 static bool s_portalTimeSynced = false;           // 是否已同步
+static uint32_t s_portalAutoRotateLastSlot = 0xFFFFFFFFUL;
 
 struct PlanetBufferColor {
   float r;
@@ -169,6 +177,15 @@ constexpr float kPlanetStarBlobTilePeriod = 2.0f;
 void releasePlanetRuntimeBuffers();
 uint8_t quantizePlanetTileValue(float value, float maxValue);
 float decodePlanetTileValue(uint8_t value, float maxValue);
+void yieldPlanetRenderControl() {
+  s_planetRenderYieldCounter += 1;
+  if (s_planetRenderYieldCounter < kPlanetRenderYieldInterval) {
+    return;
+  }
+  s_planetRenderYieldCounter = 0;
+  yield();
+}
+
 float samplePlanetTileBilinear(
   const uint8_t* tile,
   int width,
@@ -642,6 +659,10 @@ PlanetRgb hsvToPlanetRgb(float hue, float saturation, float value);
 bool shouldDrawPlanetDirectPixel(int x, int y, float alpha);
 void spherifyPlanetUv(float x, float y, float& outX, float& outY);
 bool planetPresetEqualsValue(const char* left, const char* right);
+bool planetScreensaverConfigsEqual(
+  const PlanetScreensaverNativeConfig& left,
+  const PlanetScreensaverNativeConfig& right
+);
 
 PlanetRgb makePlanetRgbRaw(uint8_t r, uint8_t g, uint8_t b) {
   PlanetRgb color = { r, g, b };
@@ -1024,6 +1045,86 @@ uint32_t createPlanetAutoRotateSeed(unsigned long now, const char* key, uint32_t
   return state;
 }
 
+bool isPortalAutoRotateIntervalValue(uint16_t interval) {
+  return interval == 60 ||
+         interval == 300 ||
+         interval == 600 ||
+         interval == 1800 ||
+         interval == 3600;
+}
+
+uint32_t resolvePortalAutoRotateSlot(unsigned long now) {
+  uint32_t elapsedSeconds = (uint32_t)(now / 1000UL);
+  time_t currentTime = time(nullptr);
+  if (currentTime >= 1700000000) {
+    elapsedSeconds = (uint32_t)currentTime;
+  }
+  return elapsedSeconds / (uint32_t)s_portalConfig.autoRotate.interval;
+}
+
+const char* resolvePortalAutoRotatePreset(uint32_t slot) {
+  static const char* presets[] = {
+    "portal_green",
+    "portal_blue",
+    "portal_yellow",
+  };
+  uint32_t state = hashPlanet(slot ^ 0x6d2b79f5UL);
+  return presets[state % 3UL];
+}
+
+PlanetScreensaverNativeConfig buildPortalPlanetConfigForRuntime(
+  const RickMortyPortalNativeConfig& portal
+) {
+  PlanetScreensaverNativeConfig planet = {};
+  snprintf(planet.preset, sizeof(planet.preset), "%s", portal.preset);
+  snprintf(planet.size, sizeof(planet.size), "%s", portal.size);
+  snprintf(planet.direction, sizeof(planet.direction), "%s", "right");
+  planet.speed = 3;
+  planet.seed = 0UL;
+  planet.colorSeed = kPlanetReferenceDefaultColorSeed;
+  planet.planetX = portal.portalX;
+  planet.planetY = portal.portalY;
+  planet.font = portal.font;
+  planet.showSeconds = portal.showSeconds;
+  planet.time.show = portal.time.show;
+  planet.time.fontSize = portal.time.fontSize;
+  planet.time.x = portal.time.x;
+  planet.time.y = portal.time.y;
+  planet.time.r = portal.time.r;
+  planet.time.g = portal.time.g;
+  planet.time.b = portal.time.b;
+  return planet;
+}
+
+void applyPortalAutoRotateIfDue(unsigned long now) {
+  if (!s_portalConfig.autoRotate.enabled) {
+    s_portalAutoRotateLastSlot = 0xFFFFFFFFUL;
+    return;
+  }
+  if (!isPortalAutoRotateIntervalValue(s_portalConfig.autoRotate.interval)) {
+    return;
+  }
+
+  uint32_t slot = resolvePortalAutoRotateSlot(now);
+  if (slot == s_portalAutoRotateLastSlot) {
+    return;
+  }
+
+  const char* preset = resolvePortalAutoRotatePreset(slot);
+  snprintf(s_portalConfig.preset, sizeof(s_portalConfig.preset), "%s", preset);
+  PlanetScreensaverNativeConfig nextConfig = buildPortalPlanetConfigForRuntime(s_portalConfig);
+  if (!planetScreensaverConfigsEqual(s_planetConfig, nextConfig)) {
+    s_planetPhase = resolvePlanetPlaybackPhase(now);
+    s_planetPhaseBaseAt = now;
+    releasePlanetRuntimeBuffers();
+    s_planetConfig = nextConfig;
+    refreshPlanetColorVariant();
+    s_planetDirty = true;
+    s_planetForceFullRefresh = true;
+  }
+  s_portalAutoRotateLastSlot = slot;
+}
+
 void applyPlanetAutoRotateIfDue(unsigned long now) {
   if (!s_planetConfig.autoRotate.enabled) {
     s_planetAutoRotateLastAt = now;
@@ -1216,6 +1317,7 @@ void drawPlanetPixel(MatrixPanel_I2S_DMA* display, int x, int y, const PlanetRgb
     output = applyPlanetDirectColorVariant(color);
   }
   display->drawPixel(x, y, planetColor565(output));
+  yieldPlanetRenderControl();
 }
 
 String toSafeAscii(const String& text, size_t maxLength) {
@@ -6889,6 +6991,7 @@ uint16_t resolvePlanetDirectColor565(const PlanetBufferColor& color) {
 
 void drawPlanetDirectBufferColor(MatrixPanel_I2S_DMA* display, int x, int y, const PlanetBufferColor& color) {
   display->drawPixel(x, y, resolvePlanetDirectColor565(color));
+  yieldPlanetRenderControl();
 }
 
 void drawPlanetDirectBlockColor(
@@ -6912,6 +7015,7 @@ void drawPlanetDirectBlockColor(
       display->drawPixel(px, py, color565);
     }
   }
+  yieldPlanetRenderControl();
 }
 
 int resolvePlanetDirectRenderStep(const PlanetRenderFrame& frame) {
@@ -6932,6 +7036,8 @@ void resolvePlanetDirectSamplePoint(
   int& sampleX,
   int& sampleY
 ) {
+  yieldPlanetRenderControl();
+
   if (sampleStep <= 1) {
     sampleX = x;
     sampleY = y;
@@ -9721,7 +9827,11 @@ void update() {
   if (s_mode == BOARD_NATIVE_PLANET) {
     ensurePlanetPerfWindowStarted(now);
     s_planetPerfStats.updateCalls += 1UL;
-    applyPlanetAutoRotateIfDue(now);
+    if (DisplayManager::currentBusinessModeTag == ModeTags::RICK_MORTY_PORTAL) {
+      applyPortalAutoRotateIfDue(now);
+    } else {
+      applyPlanetAutoRotateIfDue(now);
+    }
     unsigned long tickMs = resolvePlanetTickMs();
     if (s_lastTickAt == 0) {
       s_lastTickAt = now;
@@ -9855,11 +9965,13 @@ PlanetScreensaverNativeConfig translatePortalToPlanetConfig(
 
 void setRickMortyPortalConfig(const RickMortyPortalNativeConfig& config) {
   s_portalConfig = config;
+  s_portalAutoRotateLastSlot = 0xFFFFFFFFUL;
   setPlanetScreensaverConfig(translatePortalToPlanetConfig(config));
 }
 
 void applyRickMortyPortalConfig(const RickMortyPortalNativeConfig& config) {
   s_portalConfig = config;
+  s_portalAutoRotateLastSlot = 0xFFFFFFFFUL;
   applyPlanetScreensaverConfig(translatePortalToPlanetConfig(config));
 }
 

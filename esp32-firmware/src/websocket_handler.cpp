@@ -20,7 +20,11 @@ constexpr uint8_t kWebSocketTcpKeepAliveProbeCount = 3;
 constexpr size_t kImmediateWsCommandMaxLen = 128;
 constexpr size_t kImmediateWsCommandJsonCapacity = 192;
 constexpr size_t kQueuedWsCommandProbeJsonCapacity = 128;
-constexpr size_t kQueuedWsCommandBaseJsonCapacity = 2048;
+constexpr size_t kQueuedWsCommandSmallJsonCapacity = 512;
+constexpr size_t kQueuedWsCommandMediumJsonCapacity = 1024;
+constexpr size_t kQueuedWsCommandLargeJsonCapacity = 2048;
+constexpr size_t kQueuedWsCommandMediumPayloadThreshold = 512;
+constexpr size_t kQueuedWsCommandLargePayloadThreshold = 1024;
 
 struct ClientTextMessageState {
   uint32_t clientId;
@@ -398,6 +402,23 @@ bool tryHandleImmediateWsCommand(
     return true;
   }
 
+  if (strcmp(cmd, "status") == 0) {
+    StaticJsonDocument<RuntimeStatusBuilder::kCompactStatusJsonCapacity> response;
+    RuntimeStatusBuilder::fillCompactStatus(response);
+
+    char responseBuffer[RuntimeStatusBuilder::kCompactStatusMessageBufferSize] = {};
+    size_t responseLen = measureJson(response);
+    if (responseLen >= sizeof(responseBuffer)) {
+      client->text("{\"status\":\"error\",\"message\":\"status response too large\"}");
+      return true;
+    }
+
+    serializeJson(response, responseBuffer, sizeof(responseBuffer));
+    bool sent = client->text(responseBuffer);
+    logClientTextSendResult("status_response_fast", client, responseLen, sent);
+    return true;
+  }
+
   return false;
 }
 
@@ -426,10 +447,19 @@ bool queuedWsCommandNeedsExpandedJsonCapacity(const char* payload, size_t len) {
     return false;
   }
 
-  return strcmp(cmd, "image") == 0 ||
-         strcmp(cmd, "image_sparse") == 0 ||
-         strcmp(cmd, "image_chunk") == 0 ||
-         strcmp(cmd, "set_gif_animation") == 0;
+  if (strcmp(cmd, "image") == 0) {
+    return true;
+  }
+  if (strcmp(cmd, "image_sparse") == 0) {
+    return true;
+  }
+  if (strcmp(cmd, "image_chunk") == 0) {
+    return true;
+  }
+  if (strcmp(cmd, "set_gif_animation") == 0) {
+    return true;
+  }
+  return false;
 }
 
 size_t resolveQueuedWsCommandJsonCapacity(
@@ -437,17 +467,21 @@ size_t resolveQueuedWsCommandJsonCapacity(
   size_t len,
   size_t freeHeap
 ) {
-  size_t capacity = kQueuedWsCommandBaseJsonCapacity;
+  size_t capacity = kQueuedWsCommandSmallJsonCapacity;
   if (queuedWsCommandNeedsExpandedJsonCapacity(payload, len)) {
-    capacity = len * 8 + kQueuedWsCommandBaseJsonCapacity;
+    capacity = len * 8 + kQueuedWsCommandLargeJsonCapacity;
+  } else if (len > kQueuedWsCommandLargePayloadThreshold) {
+    capacity = kQueuedWsCommandLargeJsonCapacity;
+  } else if (len > kQueuedWsCommandMediumPayloadThreshold) {
+    capacity = kQueuedWsCommandMediumJsonCapacity;
   }
 
   size_t heapLimit = static_cast<size_t>(freeHeap * 0.7);
   if (capacity > heapLimit) {
     capacity = heapLimit;
   }
-  if (capacity < kQueuedWsCommandBaseJsonCapacity) {
-    capacity = kQueuedWsCommandBaseJsonCapacity;
+  if (capacity < kQueuedWsCommandSmallJsonCapacity) {
+    capacity = kQueuedWsCommandSmallJsonCapacity;
   }
   return capacity;
 }

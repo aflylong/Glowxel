@@ -1830,6 +1830,7 @@ class WebSocket {
         size: config.size,
         portalX: config.portalX,
         portalY: config.portalY,
+        autoRotate: config.autoRotate,
         font: config.font,
         showSeconds: config.showSeconds,
         time: config.time,

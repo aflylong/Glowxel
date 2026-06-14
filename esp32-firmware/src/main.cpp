@@ -402,6 +402,11 @@ void loop() {
                 DisplayManager::currentBusinessModeTag == ModeTags::PLANET_SCREENSAVER ||
                 DisplayManager::currentBusinessModeTag == ModeTags::RICK_MORTY_PORTAL) &&
                BoardNativeEffect::isActive()) {
+      if (DisplayManager::currentBusinessModeTag == ModeTags::PLANET_SCREENSAVER &&
+          WebSocketHandler::ws.count() > 0) {
+        WebSocketHandler::ws.cleanupClients();
+        yield();
+      }
       BoardNativeEffect::update();
       BoardNativeEffect::render();
     } else if (DisplayManager::currentBusinessModeTag == ModeTags::TETRIS_CLOCK &&

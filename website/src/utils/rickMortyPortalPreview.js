@@ -52,6 +52,18 @@ export const PORTAL_PREVIEW_PLAYBACK_INTERVAL_MS = PLANET_PREVIEW_PLAYBACK_INTER
 
 const PORTAL_PRESET_IDS = PORTAL_COLOR_OPTIONS.map((item) => item.id);
 const PORTAL_SIZE_IDS = PORTAL_SIZE_OPTIONS.map((item) => item.id);
+export const PORTAL_ROTATE_INTERVAL_OPTIONS = Object.freeze([
+  { value: 60, label: "1分钟" },
+  { value: 300, label: "5分钟" },
+  { value: 600, label: "10分钟" },
+  { value: 1800, label: "30分钟" },
+  { value: 3600, label: "60分钟" },
+]);
+const PORTAL_ROTATE_INTERVAL_VALUES = PORTAL_ROTATE_INTERVAL_OPTIONS.map((item) => item.value);
+
+export function isPortalRotateIntervalValue(value) {
+  return PORTAL_ROTATE_INTERVAL_VALUES.includes(Number(value));
+}
 
 export function createDefaultPortalPreviewConfig() {
   return {
@@ -59,18 +71,22 @@ export function createDefaultPortalPreviewConfig() {
     size: "medium",
     portalX: 32,
     portalY: 32,
+    autoRotate: {
+      enabled: false,
+      interval: 300,
+    },
   };
 }
 
 export function createDefaultPortalClockConfig() {
   return {
-    font: "classic_5x7",
+    font: "minimal_3x5",
     showSeconds: false,
     time: {
       show: true,
       fontSize: 1,
       x: 32,
-      y: 5,
+      y: 2,
       color: "#ffffff",
       align: "center",
     },
@@ -117,6 +133,18 @@ export function normalizePortalPageState(saved) {
     }
     config.portalX = clampInt(state.config.portalX, 0, 63, config.portalX);
     config.portalY = clampInt(state.config.portalY, 0, 63, config.portalY);
+    if (state.config.autoRotate && typeof state.config.autoRotate === "object") {
+      if (
+        state.config.autoRotate.enabled === true ||
+        state.config.autoRotate.enabled === false
+      ) {
+        config.autoRotate.enabled = state.config.autoRotate.enabled;
+      }
+      const interval = Number(state.config.autoRotate.interval);
+      if (PORTAL_ROTATE_INTERVAL_VALUES.includes(interval)) {
+        config.autoRotate.interval = interval;
+      }
+    }
   }
 
   if (state.clockConfig && typeof state.clockConfig === "object") {
@@ -174,12 +202,47 @@ export function buildPortalPreviewSequence(config) {
   return buildPlanetScreensaverPreviewSequence(toPortalPlanetConfig(config));
 }
 
+function resolvePortalRotateSlotAt(nowMs, intervalSeconds) {
+  const slotDurationMs = intervalSeconds * 1000;
+  return Math.floor(nowMs / slotDurationMs);
+}
+
+function hashPortalRotateSlot(slot) {
+  let value = (slot ^ 0x6d2b79f5) >>> 0;
+  value ^= value >>> 16;
+  value = Math.imul(value, 0x7feb352d) >>> 0;
+  value ^= value >>> 15;
+  value = Math.imul(value, 0x846ca68b) >>> 0;
+  value ^= value >>> 16;
+  return value >>> 0;
+}
+
+export function resolvePortalPresetForPreview(config, nowMs = Date.now()) {
+  if (config.autoRotate.enabled !== true) {
+    return config.preset;
+  }
+  const interval = Number(config.autoRotate.interval);
+  if (!isPortalRotateIntervalValue(interval)) {
+    throw new Error("invalid portal autoRotate interval");
+  }
+  const slot = resolvePortalRotateSlotAt(nowMs, interval);
+  const index = hashPortalRotateSlot(slot) % PORTAL_PRESET_IDS.length;
+  return PORTAL_PRESET_IDS[index];
+}
+
 export function buildPortalSendPayload(config, clockConfig) {
+  if (!isPortalRotateIntervalValue(config.autoRotate.interval)) {
+    throw new Error("invalid portal autoRotate interval");
+  }
   return {
     preset: config.preset,
     size: config.size,
     portalX: clampInt(config.portalX, 0, 63, 32),
     portalY: clampInt(config.portalY, 0, 63, 32),
+    autoRotate: {
+      enabled: config.autoRotate.enabled === true,
+      interval: Number(config.autoRotate.interval),
+    },
     font: clockConfig.font,
     showSeconds: clockConfig.showSeconds === true,
     time: {

@@ -60,6 +60,10 @@ struct RickMortyPortalNativeConfig {
   char size[12];     // small / medium / large
   uint8_t portalX;
   uint8_t portalY;
+  struct {
+    bool enabled;
+    uint16_t interval;
+  } autoRotate;
   uint8_t font;
   bool showSeconds;
   struct {

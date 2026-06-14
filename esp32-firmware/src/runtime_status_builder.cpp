@@ -180,6 +180,9 @@ void fillBoardNativeStatus(JsonDocument& doc) {
     doc["portalY"] = config.portalY;
     doc["font"] = clockFontNameFromId(config.font);
     doc["showSeconds"] = config.showSeconds;
+    JsonObject autoRotate = doc["autoRotate"].to<JsonObject>();
+    autoRotate["enabled"] = config.autoRotate.enabled;
+    autoRotate["interval"] = config.autoRotate.interval;
     JsonObject time = doc["time"].to<JsonObject>();
     time["show"] = config.time.show;
     time["fontSize"] = config.time.fontSize;
@@ -232,6 +235,9 @@ void fillCompactRickMortyPortalStatus(JsonDocument& doc) {
   doc["portalY"] = config.portalY;
   doc["font"] = clockFontNameFromId(config.font);
   doc["showSeconds"] = config.showSeconds;
+  JsonObject autoRotate = doc.createNestedObject("autoRotate");
+  autoRotate["enabled"] = config.autoRotate.enabled;
+  autoRotate["interval"] = config.autoRotate.interval;
   JsonObject time = doc.createNestedObject("time");
   time["show"] = config.time.show;
   time["fontSize"] = config.time.fontSize;
