@@ -63,8 +63,6 @@ export const KOF_CHAR_KEYS = [
   'orochi',
 ];
 
-const EMPTY_STANCES = Object.freeze({});
-
 const TV = {
   bg: TV_FRAME.bg,
   shellBlack: TV_FRAME.tvBlack,
@@ -80,8 +78,6 @@ const CHARACTER_LAYOUT = {
   p1X: TV_FRAME.charXLeft,
   p2X: TV_FRAME.charXRight,
   footY: TV_FRAME.charY,
-  charFrameInterval: 4,
-  selectInterval: 1,
 };
 
 const FONT_3X5 = {
@@ -196,22 +192,26 @@ function expandPackedFrameData(frameData, palette) {
   };
 }
 
-export async function loadKof97Stances() {
-  const response = await fetch(`${import.meta.env.BASE_URL}kof97/stances.json`, {
+async function loadKof97CoverFrame(charKey) {
+  const response = await fetch(`${import.meta.env.BASE_URL}kof97/cover/${charKey}.json`, {
     cache: 'no-store',
   });
   if (!response.ok) {
-    throw new Error(`Failed to load KOF97 stance data: ${response.status}`);
+    throw new Error(`Failed to load KOF97 cover frame: ${charKey} ${response.status}`);
   }
   const payload = await response.json();
   const palette = Array.isArray(payload.palette) ? payload.palette : [];
-  const characters = payload.characters ?? {};
+  return expandPackedFrameData(payload.frame, palette);
+}
+
+export async function loadKof97CoverStances(charKeys) {
   const stances = {};
-
-  for (const [key, frameData] of Object.entries(characters)) {
-    stances[key] = expandPackedFrameData(frameData, palette);
-  }
-
+  const uniqueCharKeys = Array.from(new Set(charKeys));
+  await Promise.all(
+    uniqueCharKeys.map(async (charKey) => {
+      stances[charKey] = await loadKof97CoverFrame(charKey);
+    })
+  );
   return stances;
 }
 
@@ -607,59 +607,24 @@ export function createInitialState() {
     frame: 0,
     selectP1: 0,
     selectP2: 5,
-    selectTimer: 0,
     charFrame: 0,
-    charTimer: 0,
     timeText: formatTime(),
   };
 }
 
-function getFrameCount(stances, key) {
-  const data = stances[key];
-  if (!data) {
-    return 1;
+export function assignRandomKofPair(state) {
+  let nextP1 = Math.floor(Math.random() * KOF_CHAR_KEYS.length);
+  let nextP2 = Math.floor(Math.random() * KOF_CHAR_KEYS.length);
+  while (nextP2 === nextP1) {
+    nextP2 = Math.floor(Math.random() * KOF_CHAR_KEYS.length);
   }
-  return 1 + data.deltas.length;
+  state.selectP1 = nextP1;
+  state.selectP2 = nextP2;
+  state.charFrame = 0;
 }
 
-export function tickScene(state, stances = EMPTY_STANCES) {
-  state.frame += 1;
-  state.selectTimer += 1;
-  state.charTimer += 1;
-
-  const p1Key = KOF_CHAR_KEYS[state.selectP1];
-  const p2Key = KOF_CHAR_KEYS[state.selectP2];
-  const totalFrames = Math.max(getFrameCount(stances, p1Key), getFrameCount(stances, p2Key));
-  let cycleWrapped = false;
-
-  if (state.frame % 30 === 0) {
-    state.timeText = formatTime();
-  }
-
-  if (state.charTimer >= CHARACTER_LAYOUT.charFrameInterval) {
-    state.charTimer = 0;
-    state.charFrame += 1;
-    if (state.charFrame >= totalFrames) {
-      state.charFrame = 0;
-      cycleWrapped = true;
-    }
-  }
-
-  if (cycleWrapped && state.selectTimer >= CHARACTER_LAYOUT.selectInterval) {
-    state.selectTimer = 0;
-    let nextP1 = Math.floor(Math.random() * KOF_CHAR_KEYS.length);
-    while (nextP1 === state.selectP1) {
-      nextP1 = Math.floor(Math.random() * KOF_CHAR_KEYS.length);
-    }
-    let nextP2 = Math.floor(Math.random() * KOF_CHAR_KEYS.length);
-    while (nextP2 === state.selectP2 || nextP2 === nextP1) {
-      nextP2 = Math.floor(Math.random() * KOF_CHAR_KEYS.length);
-    }
-    state.selectP1 = nextP1;
-    state.selectP2 = nextP2;
-    state.charFrame = 0;
-    state.charTimer = 0;
-  }
+export function refreshKof97Time(state) {
+  state.timeText = formatTime();
 }
 
 export function renderKof97Scene(state, renderOptions = {}) {

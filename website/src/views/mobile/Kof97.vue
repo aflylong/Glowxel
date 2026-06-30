@@ -117,16 +117,17 @@ import Toast from '@/components/uni/Toast.vue';
 import GlxInlineLoader from '@/components/uni/GlxInlineLoader.vue';
 import PixelPreviewBoard from '@/components/uni/PixelPreviewBoard.vue';
 import {
+  assignRandomKofPair,
   KOF_CHAR_KEYS,
   KOF97_DEFAULT_CHAR_Y,
   KOF97_SCREEN_RECT,
   createInitialState,
-  loadKof97Stances,
+  loadKof97CoverStances,
+  refreshKof97Time,
   renderKof97Scene,
-  tickScene,
 } from '@/utils/kof97Renderer.js';
 
-const FRAME_INTERVAL_MS = 1000 / 30;
+const TIME_REFRESH_INTERVAL_MS = 1000;
 const DEFAULT_PREVIEW_SCALE = 0.225;
 const PREVIEW_SCALE_MIN = 0.1;
 const PREVIEW_SCALE_MAX = 0.3;
@@ -207,7 +208,7 @@ export default {
       previewZoom: 4,
       previewOffset: { x: 16, y: 16 },
       previewContainerSize: { width: 320, height: 320 },
-      animHandle: null,
+      timeHandle: null,
       isLoading: true,
       p1Scale: DEFAULT_PREVIEW_SCALE,
       p2Scale: DEFAULT_PREVIEW_SCALE,
@@ -265,18 +266,23 @@ export default {
         this.toast.setToastInstance(this.$refs.toastRef);
       }
       this.sceneState = createInitialState();
+      assignRandomKofPair(this.sceneState);
       this.previewCanvasReady = true;
       this.initPreviewCanvas();
 
       try {
+        const selectedCharKeys = [
+          KOF_CHAR_KEYS[this.sceneState.selectP1],
+          KOF_CHAR_KEYS[this.sceneState.selectP2],
+        ];
         const [stances, screenBackgroundPixels] = await Promise.all([
-          loadKof97Stances(),
+          loadKof97CoverStances(selectedCharKeys),
           loadKof97ScreenBackgroundPixels(),
         ]);
         this.stances = stances;
         this.screenBackgroundPixels = screenBackgroundPixels;
         this.renderPreview();
-        this.startLoop();
+        this.startClock();
       } catch (error) {
         console.error('[kof97] load failed', error);
         this.showSendFailure(error);
@@ -286,10 +292,10 @@ export default {
     });
   },
   beforeUnmount() {
-    this.stopLoop();
+    this.stopClock();
   },
   beforeDestroy() {
-    this.stopLoop();
+    this.stopClock();
   },
   methods: {
     handleBack() {
@@ -333,22 +339,20 @@ export default {
       });
       this.previewTick += 1;
     },
-    startLoop() {
-      this.stopLoop();
-      const tick = () => {
-        if (!this.sceneState || !this.stances || !Array.isArray(this.screenBackgroundPixels)) {
+    startClock() {
+      this.stopClock();
+      this.timeHandle = setInterval(() => {
+        if (!this.sceneState) {
           return;
         }
-        tickScene(this.sceneState, this.stances);
+        refreshKof97Time(this.sceneState);
         this.renderPreview();
-        this.animHandle = setTimeout(tick, FRAME_INTERVAL_MS);
-      };
-      this.animHandle = setTimeout(tick, FRAME_INTERVAL_MS);
+      }, TIME_REFRESH_INTERVAL_MS);
     },
-    stopLoop() {
-      if (this.animHandle) {
-        clearTimeout(this.animHandle);
-        this.animHandle = null;
+    stopClock() {
+      if (this.timeHandle) {
+        clearInterval(this.timeHandle);
+        this.timeHandle = null;
       }
     },
     async sendToDevice() {
