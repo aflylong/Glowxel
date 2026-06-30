@@ -413,8 +413,8 @@ export default {
         { index: 3, label: "角色", icon: "user" },
         { index: 4, label: "地形", icon: "map" },
         { index: 5, label: "轮播", icon: "refresh" },
-        { index: 1, label: "时间", icon: "time" },
-        { index: 2, label: "字体", icon: "text" },
+        // { index: 1, label: "时间", icon: "time" },
+        // { index: 2, label: "字体", icon: "text" },
       ],
 
       characterList: Object.keys(CHARACTERS).map(id => ({

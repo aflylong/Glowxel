@@ -267,8 +267,6 @@ const blinkLevel = ref(levelFromInterval(eyesConfig.behavior.blinkIntervalMs));
 const lookLevel = ref(levelFromInterval(eyesConfig.behavior.lookIntervalMs));
 
 let previewTimerId = null;
-let nextBlinkAt = Date.now() + eyesConfig.behavior.blinkIntervalMs;
-let nextLookAt = Date.now() + eyesConfig.behavior.lookIntervalMs;
 
 const expressionMode = computed({
   get() {
@@ -315,7 +313,6 @@ watch(
     blinkLevel.value = levelFromInterval(eyesConfig.behavior.blinkIntervalMs);
     lookLevel.value = levelFromInterval(eyesConfig.behavior.lookIntervalMs);
     persistSpiritState();
-    resetPreviewTimers();
     refreshPreview();
   },
   { deep: true },
@@ -388,31 +385,12 @@ function intervalFromLevel(level) {
   return 5600 - Math.max(1, Math.min(10, Number(level))) * 400;
 }
 
-function resetPreviewTimers() {
-  nextBlinkAt = Date.now() + eyesConfig.behavior.blinkIntervalMs;
-  nextLookAt = Date.now() + eyesConfig.behavior.lookIntervalMs;
-}
-
 function startPreviewLoop() {
   stopPreviewLoop();
   previewTimerId = window.setInterval(() => {
-    const now = Date.now();
     stepSpiritPreview(runtime.value, eyesConfig, selectedExpression.value);
-
-    if (now >= nextBlinkAt) {
-      triggerSpiritPreviewAction(runtime.value, "blink");
-      nextBlinkAt = now + eyesConfig.behavior.blinkIntervalMs;
-    }
-
-    if (now >= nextLookAt) {
-      const actions = ["look_left", "look_center", "look_right"];
-      const nextAction = actions[Math.floor(Math.random() * actions.length)];
-      triggerSpiritPreviewAction(runtime.value, nextAction);
-      nextLookAt = now + eyesConfig.behavior.lookIntervalMs;
-    }
-
     refreshPreview();
-  }, 120);
+  }, 33);
 }
 
 function stopPreviewLoop() {

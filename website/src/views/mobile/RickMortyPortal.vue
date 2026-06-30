@@ -126,7 +126,7 @@
               </div>
             </div> -->
 
-            <div class="option-stack">
+            <!-- <div class="option-stack">
               <span class="form-label">传送门大小</span>
               <div class="option-row option-row-triple">
                 <div
@@ -141,7 +141,7 @@
                   }}</span>
                 </div>
               </div>
-            </div>
+            </div> -->
 
             <div class="option-stack portal-rotate-panel">
               <div class="portal-rotate-panel__head">

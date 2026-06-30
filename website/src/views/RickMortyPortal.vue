@@ -96,7 +96,7 @@
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
             <h2 class="glx-section-title">模式配置</h2>
-            <span class="glx-section-meta">传送门 / 时间 / 字体</span>
+            <span class="glx-section-meta">传送门 / 时间</span>
           </div>
           <DeviceModeTabs v-model="currentTab" :items="tabItems" />
         </article>
@@ -162,7 +162,7 @@
               快速居中
             </button>
 
-            <div class="portal-block">
+            <!-- <div class="portal-block">
               <span class="portal-block__label">传送门大小</span>
               <div class="portal-option-grid">
                 <button
@@ -176,7 +176,7 @@
                   <strong>{{ option.label }}</strong>
                 </button>
               </div>
-            </div>
+            </div> -->
 
             <div class="portal-block portal-rotate-panel">
               <div class="portal-rotate-panel__head">
@@ -358,8 +358,8 @@ export default {
       currentTab: 0,
       tabItems: [
         { value: 0, label: "传送门" },
-        { value: 1, label: "时间" },
-        { value: 2, label: "字体" },
+        // { value: 1, label: "时间" },
+        // { value: 2, label: "字体" },
       ],
       config,
     };
