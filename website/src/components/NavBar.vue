@@ -18,7 +18,7 @@
       </div>
 
       <div class="nav-actions">
-        <router-link to="/create" class="btn-create" @click="closeMobileMenu">
+        <router-link to="/create" class="btn-create" @click="closeMobileMenu" style="display: none;">
           <svg
             width="14"
             height="14"
@@ -37,6 +37,7 @@
           to="/login"
           class="btn-login"
           @click="closeMobileMenu"
+          style="display: none;"
         >
           登录
         </router-link>
@@ -45,6 +46,7 @@
           to="/profile"
           class="btn-login"
           @click="closeMobileMenu"
+          style="display: none;"
         >
           我的
         </router-link>
@@ -98,12 +100,12 @@ const mobileMenuOpen = ref(false);
 const isLoggedIn = computed(() => !!localStorage.getItem("auth_token"));
 const navItems = [
   { key: "home", label: "首页", to: "/" },
-  { key: "workspace", label: "工作台", to: "/workspace" },
+  // { key: "workspace", label: "工作台", to: "/workspace" },
   { key: "device", label: "设备", to: "/device-control" },
-  { key: "community", label: "社区", to: "/community" },
-  { key: "templates", label: "控件库", to: "/templates" },
-  { key: "challenges", label: "边框", to: "/challenges" },
-  { key: "workbench", label: "拼豆", to: "/pattern-workbench" },
+  // { key: "community", label: "社区", to: "/community" },
+  // { key: "templates", label: "控件库", to: "/templates" },
+  // { key: "challenges", label: "边框", to: "/challenges" },
+  // { key: "workbench", label: "拼豆", to: "/pattern-workbench" },
 ];
 
 const activeNavKey = computed(() => {

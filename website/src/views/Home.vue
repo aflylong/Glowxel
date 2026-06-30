@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <section class="hero">
+    <section class="hero"  style="display: none;">
       <div class="container">
         <h1 class="hero-title">光格像素工坊</h1>
         <p class="hero-subtitle">像素内容创作与设备连接平台</p>
@@ -18,7 +18,7 @@
       </div>
     </section>
 
-    <section class="features">
+    <section class="features"  style="display: none;">
       <div class="container">
         <h2 class="section-title">核心功能</h2>
         <div class="feature-grid">
@@ -31,7 +31,7 @@
       </div>
     </section>
 
-    <section class="showcase" v-if="artworks.length">
+    <section class="showcase" v-if="artworks.length" style="display: none;">
       <div class="container">
         <h2 class="section-title">精选作品</h2>
         <div class="artwork-grid">
@@ -85,7 +85,7 @@
           <router-link to="/device-control" class="btn btn-primary"
             >连接设备</router-link
           >
-          <router-link to="/pattern-workbench" class="btn btn-outline"
+          <router-link to="/pattern-workbench" class="btn btn-outline"  style="display: none;"
             >拼豆工作台</router-link
           >
         </div>
