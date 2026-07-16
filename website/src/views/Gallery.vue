@@ -1,11 +1,10 @@
-<template>
+﻿<template>
   <div class="glx-page-shell">
     <section class="glx-page-shell__hero">
       <span class="glx-page-shell__eyebrow">Gallery</span>
       <h1 class="glx-page-shell__title">{{ pageTitle }}</h1>
       <p class="glx-page-shell__desc">
-        这里统一承接作品、模板和挑战集合页，Web 端不再把同一类列表拆成多套壳子。
-      </p>
+        杩欓噷缁熶竴鎵挎帴浣滃搧銆佹ā鏉垮拰鎸戞垬闆嗗悎椤碉紝Web 绔笉鍐嶆妸鍚屼竴绫诲垪琛ㄦ媶鎴愬濂楀３瀛愩€?      </p>
     </section>
 
     <section class="glx-section-card glx-section-card--stack">
@@ -23,11 +22,11 @@
       </div>
       <div class="glx-form-grid glx-form-grid--two">
         <label class="glx-field">
-          <span class="glx-field__label">搜索</span>
-          <input v-model="searchTerm" class="glx-input" placeholder="输入标题或作者" />
+          <span class="glx-field__label">鎼滅储</span>
+          <input v-model="searchTerm" class="glx-input" placeholder="杈撳叆鏍囬鎴栦綔鑰?" /">"
         </label>
         <label class="glx-field">
-          <span class="glx-field__label">每页数量</span>
+          <span class="glx-field__label">姣忛〉鏁伴噺</span>
           <select v-model.number="limit" class="glx-select">
             <option :value="12">12</option>
             <option :value="20">20</option>
@@ -56,8 +55,8 @@
           style="display:block;width:100%;aspect-ratio:1;border:2px solid #111111;object-fit:cover;"
         />
         <div v-else class="glx-empty-card">
-          <strong class="glx-section-title">暂无封面</strong>
-          <p class="glx-page-shell__desc">当前条目没有可展示的封面图。</p>
+          <strong class="glx-section-title">鏆傛棤灏侀潰</strong>
+          <p class="glx-page-shell__desc">褰撳墠鏉＄洰娌℃湁鍙睍绀虹殑灏侀潰鍥俱€?</p>
         </div>
         <strong class="glx-section-title" style="font-size:18px;">{{ resolveTitle(item) }}</strong>
         <p class="glx-page-shell__desc">{{ resolveMeta(item) }}</p>
@@ -67,28 +66,28 @@
             :to="`/artwork/${item.id}`"
             class="glx-button glx-button--ghost"
           >
-            查看详情
+            鏌ョ湅璇︽儏
           </router-link>
           <router-link
             v-if="pageType === 'templates'"
             to="/create"
             class="glx-button glx-button--ghost"
           >
-            使用模板
+            浣跨敤妯℃澘
           </router-link>
           <router-link
             v-if="pageType === 'challenges'"
             :to="`/challenge/${item.id}`"
             class="glx-button glx-button--ghost"
           >
-            查看挑战
+            鏌ョ湅鎸戞垬
           </router-link>
         </div>
       </article>
     </section>
 
     <section class="glx-inline-actions">
-      <button type="button" class="glx-button glx-button--ghost" @click="loadMore">加载更多</button>
+      <button type="button" class="glx-button glx-button--ghost" @click="loadMore">鍔犺浇鏇村</button>
     </section>
   </div>
 </template>
@@ -110,19 +109,19 @@ const limit = ref(12);
 const loading = ref(false);
 
 const typeTabs = [
-  { label: "作品", value: "artworks" },
-  { label: "模板", value: "templates" },
-  { label: "挑战", value: "challenges" },
+  { label: "浣滃搧", value: "artworks" },
+  { label: "妯℃澘", value: "templates" },
+  { label: "鎸戞垬", value: "challenges" },
 ];
 
 const pageTitle = computed(() => {
   if (pageType.value === "templates") {
-    return "模板库";
+    return "妯℃澘搴?";"
   }
   if (pageType.value === "challenges") {
-    return "挑战库";
+    return "鎸戞垬搴?";"
   }
-  return "作品库";
+  return "浣滃搧搴?";"
 });
 
 const filteredItems = computed(() => {
@@ -163,7 +162,7 @@ function resolveTitle(item) {
   if (typeof item.name === "string" && item.name.length > 0) {
     return item.name;
   }
-  return "未命名";
+  return "鏈懡鍚?";"
 }
 
 function resolveMeta(item) {
@@ -171,18 +170,18 @@ function resolveMeta(item) {
     if (typeof item.category === "string" && item.category.length > 0) {
       return item.category;
     }
-    return "模板";
+    return "妯℃澘";
   }
   if (pageType.value === "challenges") {
     if (typeof item.description === "string" && item.description.length > 0) {
       return item.description;
     }
-    return "挑战";
+    return "鎸戞垬";
   }
   if (typeof item.author_name === "string" && item.author_name.length > 0) {
     return item.author_name;
   }
-  return "社区作品";
+  return "绀惧尯浣滃搧";
 }
 
 function resolveCover(item) {

@@ -1,43 +1,43 @@
-<template>
+﻿<template>
   <div v-if="visible" class="wizard-mask">
     <div class="wizard-shell">
       <div class="wizard-head">
         <button class="nav-btn" type="button" @click="handleBack">
-          {{ step === 0 ? '关闭' : '返回' }}
+          {{ step === 0 ? '鍏抽棴' : '杩斿洖' }}
         </button>
-        <h2>{{ mode === 'image' ? '图片生成' : '空白画板' }}</h2>
-        <span class="step-mark">步骤 {{ step + 1 }}</span>
+        <h2>{{ mode === 'image' ? '鍥剧墖鐢熸垚' : '绌虹櫧鐢绘澘' }}</h2>
+        <span class="step-mark">姝ラ {{ step + 1 }}</span>
       </div>
 
       <div class="wizard-body">
         <div v-if="step === 0" class="step-content">
           <div class="field-panel">
-            <label class="field-label">画布名称</label>
+            <label class="field-label">鐢诲竷鍚嶇О</label>
             <input
               v-model="name"
               type="text"
               class="text-input"
-              placeholder="例如：2026新年快乐"
+              placeholder="渚嬪锛?026鏂板勾蹇箰"
             >
           </div>
-          <p class="step-hint">先给这次创建起个名字，和 uniapp 一样从名称开始。</p>
+          <p class="step-hint">鍏堢粰杩欐鍒涘缓璧蜂釜鍚嶅瓧锛屽拰 uniapp 涓€鏍蜂粠鍚嶇О寮€濮嬨€?</p>
         </div>
 
         <div v-else-if="step === 1" class="step-content">
           <template v-if="mode === 'image'">
             <div class="field-panel">
               <div v-if="!previewUrl" class="upload-area" @click="chooseImage">
-                <div class="upload-icon">上传</div>
-                <strong>点击上传图片</strong>
-                <span>支持 JPG、JPEG、PNG、WEBP</span>
+                <div class="upload-icon">涓婁紶</div>
+                <strong>鐐瑰嚮涓婁紶鍥剧墖</strong>
+                <span>鏀寔 JPG銆丣PEG銆丳NG銆乄EBP</span>
               </div>
 
               <div v-else class="preview-area">
-                <img :src="previewUrl" alt="预览图片" class="preview-image">
+                <img :src="previewUrl" alt="棰勮鍥剧墖" class="preview-image">
                 <div class="preview-actions">
-                  <button class="secondary-btn" type="button" @click="chooseImage">更换图片</button>
-                  <button class="secondary-btn" type="button" @click="openCropper">重新裁剪</button>
-                  <button class="ghost-btn" type="button" @click="clearImage">删除</button>
+                  <button class="secondary-btn" type="button" @click="chooseImage">鏇存崲鍥剧墖</button>
+                  <button class="secondary-btn" type="button" @click="openCropper">閲嶆柊瑁佸壀</button>
+                  <button class="ghost-btn" type="button" @click="clearImage">鍒犻櫎</button>
                 </div>
               </div>
             </div>
@@ -48,23 +48,23 @@
               type="button"
               @click="applyRecommendedSize"
             >
-              检测到内容尺寸，推荐 {{ recommendedSize.width }} × {{ recommendedSize.height }}
+              妫€娴嬪埌鍐呭灏哄锛屾帹鑽?{{ recommendedSize.width }} 脳 {{ recommendedSize.height }}
             </button>
           </template>
 
           <div class="field-panel">
             <div class="size-header">
-              <h3>{{ mode === 'image' ? '目标尺寸（像素化）' : '画布尺寸' }}</h3>
+              <h3>{{ mode === 'image' ? '鐩爣灏哄锛堝儚绱犲寲锛? : '鐢诲竷灏哄' }}</h3>
               <span v-if="contentRatio">{{ contentRatio.w }}:{{ contentRatio.h }}</span>
             </div>
 
             <div class="size-inputs">
               <label class="size-field">
-                <span>宽度</span>
+                <span>瀹藉害</span>
                 <input v-model.number="customWidth" type="number" min="1" :max="PATTERN_MAX_DIMENSION" @input="handleSizeInput">
               </label>
               <label class="size-field">
-                <span>高度</span>
+                <span>楂樺害</span>
                 <input v-model.number="customHeight" type="number" min="1" :max="PATTERN_MAX_DIMENSION" @input="handleSizeInput">
               </label>
             </div>
@@ -78,17 +78,17 @@
                 type="button"
                 @click="selectPresetSize(preset.width, preset.height)"
               >
-                {{ preset.width }} × {{ preset.height }}
+                {{ preset.width }} 脳 {{ preset.height }}
               </button>
             </div>
 
             <div class="stats-box">
               <div class="stat-row">
-                <span>板子布局</span>
-                <strong>{{ boardsX }} × {{ boardsY }}（{{ totalBoards }}块）</strong>
+                <span>鏉垮瓙甯冨眬</span>
+                <strong>{{ boardsX }} 脳 {{ boardsY }}锛坽{ totalBoards }}鍧楋級</strong>
               </div>
               <div class="stat-row">
-                <span>总像素数</span>
+                <span>鎬诲儚绱犳暟</span>
                 <strong>{{ (customWidth * customHeight).toLocaleString() }}</strong>
               </div>
             </div>
@@ -97,7 +97,7 @@
 
         <div v-else-if="step === 2" class="step-content">
           <div class="field-panel">
-            <h3>选择 Artkal 拼豆套装</h3>
+            <h3>閫夋嫨 Artkal 鎷艰眴濂楄</h3>
             <div class="preset-card-grid">
               <button
                 v-for="preset in ARTKAL_PRESETS"
@@ -108,17 +108,17 @@
                 @click="selectedPreset = preset.key"
               >
                 <strong>{{ preset.name }}</strong>
-                <span>{{ preset.count }} 种颜色</span>
+                <span>{{ preset.count }} 绉嶉鑹?</span>
               </button>
             </div>
             <div class="stats-box">
               <div class="stat-row">
-                <span>已选择套装</span>
-                <strong>{{ selectedColorCodes.length }} 种颜色</strong>
+                <span>宸查€夋嫨濂楄</span>
+                <strong>{{ selectedColorCodes.length }} 绉嶉鑹?</strong>
               </div>
               <div class="stat-row">
-                <span>当前模式</span>
-                <strong>{{ mode === 'image' ? '图片生成' : '空白画板' }}</strong>
+                <span>褰撳墠妯″紡</span>
+                <strong>{{ mode === 'image' ? '鍥剧墖鐢熸垚' : '绌虹櫧鐢绘澘' }}</strong>
               </div>
             </div>
           </div>
@@ -127,11 +127,11 @@
         <div v-else class="step-content">
           <div class="field-panel">
             <div class="size-header">
-              <h3>预览效果</h3>
-              <span>确认后进入工作台</span>
+              <h3>棰勮鏁堟灉</h3>
+              <span>纭鍚庤繘鍏ュ伐浣滃彴</span>
             </div>
 
-            <div v-if="previewLoading" class="status-box">正在生成预览...</div>
+            <div v-if="previewLoading" class="status-box">姝ｅ湪鐢熸垚棰勮...</div>
 
             <div v-else-if="previewDocument" class="preview-grid-shell">
               <div
@@ -147,13 +147,13 @@
               </div>
             </div>
 
-            <div v-else class="status-box">先生成预览再确认。</div>
+            <div v-else class="status-box">鍏堢敓鎴愰瑙堝啀纭銆?</div>
           </div>
 
           <div v-if="usedColors.length" class="field-panel">
             <div class="size-header">
-              <h3>使用的颜色</h3>
-              <span>共 {{ usedColors.reduce((sum, item) => sum + item.count, 0) }} 个</span>
+              <h3>浣跨敤鐨勯鑹?</h3>
+              <span>鍏?{{ usedColors.reduce((sum, item) => sum + item.count, 0) }} 涓?</span>
             </div>
             <div class="used-colors-grid">
               <div v-for="color in usedColors" :key="color.code" class="used-color-item">
@@ -509,21 +509,21 @@ const canProceed = computed(() => {
 
 const buttonText = computed(() => {
   if (step.value === 0) {
-    return '下一步'
+    return '涓嬩竴姝?
   }
 
   if (step.value === 1) {
-    return '选择颜色'
+    return '閫夋嫨棰滆壊'
   }
 
   if (step.value === 2) {
     if (props.mode === 'image') {
-      return props.previewLoading ? '正在生成中...' : '生成预览'
+      return props.previewLoading ? '姝ｅ湪鐢熸垚涓?..' : '鐢熸垚棰勮'
     }
-    return '创建画板'
+    return '鍒涘缓鐢绘澘'
   }
 
-  return props.previewLoading ? '生成中...' : '确认创建'
+  return props.previewLoading ? '鐢熸垚涓?..' : '纭鍒涘缓'
 })
 
 const previewReady = computed(() => {

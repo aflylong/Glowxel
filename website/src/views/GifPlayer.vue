@@ -1,43 +1,23 @@
-<template>
-  <div class="glx-page-shell device-mode-page">
-    <section class="glx-page-shell__hero">
-      <span class="glx-page-shell__eyebrow">GIF Player</span>
-      <h1 class="glx-page-shell__title">GIF 播放器</h1>
-      <p class="glx-page-shell__desc">
-        网页端复刻 `uniapp/gif-player` 的离线素材播放器，当前提供内置场景预览、参数调整和 GIF 动画事务发送。
-      </p>
-      <div class="glx-hero-metrics">
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">当前素材</span>
-          <strong class="glx-hero-metric__value">{{ selectedSceneLabel }}</strong>
-        </article>
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">速度</span>
-          <strong class="glx-hero-metric__value">{{ config.speed }}</strong>
-        </article>
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">强度</span>
-          <strong class="glx-hero-metric__value">{{ config.intensity }}</strong>
-        </article>
-      </div>
-    </section>
+﻿<template>
+  <div class="glx-page-shell device-mode-page game-mode-page">
+    <PcModeTopbar title="GIF 播放器" />
 
-    <section class="device-mode-layout">
-      <article class="glx-section-card glx-section-card--stack device-preview-card">
+    <section class="device-mode-layout game-mode-layout">
+      <article class="glx-section-card glx-section-card--stack device-preview-card game-preview-card">
         <div class="device-preview-card__head">
           <div>
-            <h2 class="glx-section-title">预览效果</h2>
-            <p class="device-preview-card__desc">内置场景预览和 GIF 二进制发送使用同一套帧数据。</p>
+            <h2 class="glx-section-title">棰勮鏁堟灉</h2>
+            <p class="device-preview-card__desc">鍐呯疆鍦烘櫙棰勮鍜?GIF 浜岃繘鍒跺彂閫佷娇鐢ㄥ悓涓€濂楀抚鏁版嵁銆?</p>
           </div>
           <span class="glx-chip glx-chip--green">{{ selectedSceneLabel }}</span>
         </div>
 
-        <div class="device-preview-stage">
+        <div class="device-preview-stage game-preview-stage">
           <DevicePixelBoard :pixels="currentPixels" :grid-visible="true" />
           <DeviceSendingOverlay
             :visible="isSending"
-            title="正在发送 GIF 动画"
-            description="发送期间锁定当前预览快照，等待设备完成动画事务写入。"
+            title="姝ｅ湪鍙戦€?GIF 鍔ㄧ敾"
+            description="发送期间锁定当前预览快照，等待设备完成动画写入。"
           >
             <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
           </DeviceSendingOverlay>
@@ -45,17 +25,17 @@
 
         <div class="glx-inline-actions">
           <button type="button" class="glx-button glx-button--primary" :disabled="isSending" @click="handleSend">
-            {{ isSending ? "发送中..." : "发送到设备" }}
+            {{ isSending ? "鍙戦€佷腑..." : "鍙戦€佸埌璁惧" }}
           </button>
-          <button type="button" class="glx-button glx-button--ghost" @click="refreshPreview">刷新预览</button>
+          <button type="button" class="glx-button glx-button--ghost" @click="refreshPreview">鍒锋柊棰勮</button>
         </div>
       </article>
 
-      <div class="device-mode-stack">
+      <div class="device-mode-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">离线素材</h2>
-            <span class="glx-section-meta">{{ sceneItems.length }} 组</span>
+            <h2 class="glx-section-title">绂荤嚎绱犳潗</h2>
+            <span class="glx-section-meta">{{ sceneItems.length }} 缁?</span>
           </div>
           <div class="mode-grid">
             <button
@@ -74,17 +54,17 @@
 
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">参数</h2>
-            <span class="glx-section-meta">本地缓存恢复</span>
+            <h2 class="glx-section-title">鍙傛暟</h2>
+            <span class="glx-section-meta">鏈湴缂撳瓨鎭㈠</span>
           </div>
 
-          <div class="mode-row">
-            <span class="mode-row__label">速度</span>
+          <div class="mode-row game-row">
+            <span class="mode-row__label">閫熷害</span>
             <DeviceModeStepper v-model="config.speed" :min="1" :max="10" />
           </div>
 
-          <div class="mode-row">
-            <span class="mode-row__label">强度</span>
+          <div class="mode-row game-row">
+            <span class="mode-row__label">寮哄害</span>
             <DeviceModeStepper v-model="config.intensity" :min="10" :max="100" />
           </div>
         </article>
@@ -100,6 +80,7 @@ import { useFeedback } from "@/composables/useFeedback.js";
 import { usePixelPreviewPlayer } from "@/composables/usePixelPreviewPlayer.js";
 import DeviceModeStepper from "@/components/device/modes/DeviceModeStepper.vue";
 import DevicePixelBoard from "@/components/device/modes/DevicePixelBoard.vue";
+import PcModeTopbar from "@/components/device/modes/PcModeTopbar.vue";
 import { useDeviceLegacyStore } from "@/stores/deviceLegacy.js";
 import { readStorageJson, writeStorageJson } from "@/utils/device-mode-core.js";
 import {

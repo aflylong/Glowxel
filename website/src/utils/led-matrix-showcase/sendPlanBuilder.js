@@ -1,4 +1,4 @@
-import { normalizeIntensity, normalizeSpeed } from "../led-matrix-demos/common.js";
+﻿import { normalizeIntensity, normalizeSpeed } from "../led-matrix-demos/common.js";
 import { resolveDemoById } from "./demoCatalog.js";
 
 function normalizeDensity(value) {
@@ -11,11 +11,11 @@ function normalizeDensity(value) {
 
 function normalizeHexColor(value) {
   if (typeof value !== "string") {
-    throw new Error("颜色值无效");
+    throw new Error("棰滆壊鍊兼棤鏁?")";"
   }
   const body = value.trim().replace(/^#/, "");
   if (!/^[0-9a-fA-F]{6}$/.test(body)) {
-    throw new Error("颜色值无效");
+    throw new Error("棰滆壊鍊兼棤鏁?")";"
   }
   return `#${body.toLowerCase()}`;
 }
@@ -33,7 +33,7 @@ function buildLedMatrixSendPlan(options) {
   const safeOptions = options || {};
   const demo = resolveDemoById(safeOptions.demoId);
   if (!demo) {
-    throw new Error("未找到对应演示");
+    throw new Error("鏈壘鍒板搴旀紨绀?")";"
   }
 
   const speed = normalizeSpeed(safeOptions.speed);
@@ -69,7 +69,7 @@ function buildLedMatrixSendPlan(options) {
     };
   }
 
-  throw new Error(`未支持的板载命令场景：${demo.id}`);
+  throw new Error(`鏈敮鎸佺殑鏉胯浇鍛戒护鍦烘櫙锛?{demo.id}`);
 }
 
 export { buildLedMatrixSendPlan };

@@ -1,51 +1,48 @@
-<template>
+﻿<template>
   <div class="pattern-workbench">
     <section class="workbench-header">
       <div>
-        <p class="eyebrow">图片与图纸生成</p>
-        <h1 class="title">先选一种导入方式</h1>
+        <p class="eyebrow">鍥剧墖涓庡浘绾哥敓鎴?</p>
+        <h1 class="title">鍏堥€変竴绉嶅鍏ユ柟寮?</h1>
         <p class="desc">
-          先走你当前需要的流程，生成完成后再进入编辑和检查，不把复杂操作一开始全堆出来。
-        </p>
+          鍏堣蛋浣犲綋鍓嶉渶瑕佺殑娴佺▼锛岀敓鎴愬畬鎴愬悗鍐嶈繘鍏ョ紪杈戝拰妫€鏌ワ紝涓嶆妸澶嶆潅鎿嶄綔涓€寮€濮嬪叏鍫嗗嚭鏉ャ€?        </p>
       </div>
       <div v-if="!showStarterHub" class="header-actions">
         <button class="secondary-btn" type="button" @click="triggerFilePick('numbered-sheet-image')">
-          上传拼豆图纸
+          涓婁紶鎷艰眴鍥剧焊
         </button>
         <button class="secondary-btn" type="button" @click="$router.push('/editor')">
-          打开基础编辑器
-        </button>
+          鎵撳紑鍩虹缂栬緫鍣?        </button>
         <button class="primary-btn" type="button" @click="openCreateWizard('image')">
-          图片生成
+          鍥剧墖鐢熸垚
         </button>
       </div>
     </section>
 
     <section v-if="showStarterHub" class="starter-hub">
       <article class="starter-card">
-        <span class="starter-tag">空白开始</span>
-        <h2>空白画板</h2>
-        <p>适合从零开始绘制，直接进入画板创作。</p>
+        <span class="starter-tag">绌虹櫧寮€濮?</span>
+        <h2>绌虹櫧鐢绘澘</h2>
+        <p>閫傚悎浠庨浂寮€濮嬬粯鍒讹紝鐩存帴杩涘叆鐢绘澘鍒涗綔銆?</p>
         <button class="primary-btn" type="button" @click="openCreateWizard('blank')">
-          开始新建
-        </button>
+          寮€濮嬫柊寤?        </button>
       </article>
 
       <article class="starter-card">
-        <span class="starter-tag">快速生成</span>
-        <h2>图片生成</h2>
-        <p>上传图片后按步骤处理：裁剪、尺寸、预览、确认。</p>
+        <span class="starter-tag">蹇€熺敓鎴?</span>
+        <h2>鍥剧墖鐢熸垚</h2>
+        <p>涓婁紶鍥剧墖鍚庢寜姝ラ澶勭悊锛氳鍓€佸昂瀵搞€侀瑙堛€佺‘璁ゃ€?</p>
         <button class="primary-btn" type="button" @click="openCreateWizard('image')">
-          选择图片
+          閫夋嫨鍥剧墖
         </button>
       </article>
 
       <article class="starter-card">
-        <span class="starter-tag">图纸处理</span>
-        <h2>拼豆图纸生成</h2>
-        <p>适合带编号的拼豆图纸，按图纸步骤识别并确认颜色。</p>
+        <span class="starter-tag">鍥剧焊澶勭悊</span>
+        <h2>鎷艰眴鍥剧焊鐢熸垚</h2>
+        <p>閫傚悎甯︾紪鍙风殑鎷艰眴鍥剧焊锛屾寜鍥剧焊姝ラ璇嗗埆骞剁‘璁ら鑹层€?</p>
         <button class="primary-btn" type="button" @click="triggerFilePick('numbered-sheet-image')">
-          上传图纸
+          涓婁紶鍥剧焊
         </button>
       </article>
     </section>
@@ -80,36 +77,36 @@
 
         <div class="panel-block">
           <div class="panel-head">
-            <h2>保真重点</h2>
-            <span>只保留关键项</span>
+            <h2>淇濈湡閲嶇偣</h2>
+            <span>鍙繚鐣欏叧閿」</span>
           </div>
           <ul class="todo-list">
-            <li>优先保证主体轮廓、颜色块和关键细节不要跑偏</li>
-            <li>如果实物颜色有偏差，再上传实拍图做保真校正</li>
-            <li>标准化替换只负责把明显偏色收回到更稳定的色号</li>
+            <li>浼樺厛淇濊瘉涓讳綋杞粨銆侀鑹插潡鍜屽叧閿粏鑺備笉瑕佽窇鍋?/li>
+            <li>濡傛灉瀹炵墿棰滆壊鏈夊亸宸紝鍐嶄笂浼犲疄鎷嶅浘鍋氫繚鐪熸牎姝?/li>
+            <li>鏍囧噯鍖栨浛鎹㈠彧璐熻矗鎶婃槑鏄惧亸鑹叉敹鍥炲埌鏇寸ǔ瀹氱殑鑹插彿</li>
           </ul>
         </div>
 
         <div class="panel-block">
           <div class="panel-head">
-            <h2>当前统计</h2>
-            <span>{{ usedColors.length }} 种颜色</span>
+            <h2>褰撳墠缁熻</h2>
+            <span>{{ usedColors.length }} 绉嶉鑹?</span>
           </div>
           <div class="stats-grid">
             <div class="stat-card">
-              <span>问题数</span>
+              <span>闂鏁?</span>
               <strong>{{ issues.length }}</strong>
             </div>
             <div class="stat-card">
-              <span>缺失点</span>
+              <span>缂哄け鐐?</span>
               <strong>{{ diffResult.missing.length }}</strong>
             </div>
             <div class="stat-card">
-              <span>多余点</span>
+              <span>澶氫綑鐐?</span>
               <strong>{{ diffResult.extra.length }}</strong>
             </div>
             <div class="stat-card">
-              <span>颜色偏差</span>
+              <span>棰滆壊鍋忓樊</span>
               <strong>{{ diffResult.changed.length }}</strong>
             </div>
           </div>
@@ -142,10 +139,10 @@
             </button>
             </div>
             <div class="canvas-actions">
-              <button class="toolbar-btn" type="button" @click="adjustStagePixelSize(-2)">缩小</button>
-              <button class="toolbar-btn" type="button" @click="adjustStagePixelSize(2)">放大</button>
+              <button class="toolbar-btn" type="button" @click="adjustStagePixelSize(-2)">缂╁皬</button>
+              <button class="toolbar-btn" type="button" @click="adjustStagePixelSize(2)">鏀惧ぇ</button>
               <button class="toolbar-btn" type="button" @click="toggleMagnifier">
-                {{ showMagnifier ? '关闭放大' : '打开放大' }}
+                {{ showMagnifier ? '鍏抽棴鏀惧ぇ' : '鎵撳紑鏀惧ぇ' }}
               </button>
             </div>
           </div>
@@ -161,14 +158,14 @@
                 v-for="cell in stageCells"
                 :key="cell.key"
                 class="stage-pixel real"
-                :class="[
+                :class="["
                   cell.variant,
                   {
                     selected: cell.key === selectedPositionKey,
                     'region-selected': selectionKeySet.has(cell.key),
                     'draw-preview': drawStrokeKeys.includes(cell.key),
                   },
-                ]"
+                ]""
                 :style="{ background: cell.color }"
                 @mousedown.prevent="beginSelection(cell)"
                 @mouseenter="handleStageCellHover(cell)"
@@ -177,40 +174,39 @@
             </div>
             <div class="stage-focus">
               <div class="focus-row">
-                <span>当前焦点</span>
+                <span>褰撳墠鐒︾偣</span>
                 <strong>{{ selectedPositionText }}</strong>
               </div>
               <div class="focus-row">
-                <span>当前颜色</span>
+                <span>褰撳墠棰滆壊</span>
                 <strong>{{ selectedPixelContext.currentCode }}</strong>
               </div>
               <div class="focus-row">
-                <span>参考颜色</span>
+                <span>鍙傝€冮鑹?</span>
                 <strong>{{ selectedPixelContext.referenceCode }}</strong>
               </div>
               <div class="focus-row">
-                <span>区域框选</span>
-                <strong>{{ selectedRegionCount }} 点</strong>
+                <span>鍖哄煙妗嗛€?</span>
+                <strong>{{ selectedRegionCount }} 鐐?</strong>
               </div>
             </div>
           </div>
 
           <div class="stage-sidecars">
             <div class="stage-card ghost">
-              <span class="stage-label">转换说明</span>
+              <span class="stage-label">杞崲璇存槑</span>
               <div class="placeholder-text">
-                这里先看图片转像素后的结果，保真校正只在你上传实拍图后才会介入，不会默认塞很多复杂工具。
-              </div>
+                杩欓噷鍏堢湅鍥剧墖杞儚绱犲悗鐨勭粨鏋滐紝淇濈湡鏍℃鍙湪浣犱笂浼犲疄鎷嶅浘鍚庢墠浼氫粙鍏ワ紝涓嶄細榛樿濉炲緢澶氬鏉傚伐鍏枫€?              </div>
               <ul class="diff-list">
-                <li>图纸尺寸：{{ document.width }} × {{ document.height }}</li>
-                <li>颜色数：{{ usedColors.length }}</li>
-                <li>问题项：{{ issues.length }}</li>
-                <li>实拍一致率：{{ captureReviewSummary ? `${Math.round(captureReviewSummary.matchRatio * 100)}%` : '未校验' }}</li>
+                <li>鍥剧焊灏哄锛歿{ document.width }} 脳 {{ document.height }}</li>
+                <li>棰滆壊鏁帮細{{ usedColors.length }}</li>
+                <li>闂椤癸細{{ issues.length }}</li>
+                <li>瀹炴媿涓€鑷寸巼锛歿{ captureReviewSummary ? `${Math.round(captureReviewSummary.matchRatio * 100)}%` : '鏈牎楠? }}</li>
               </ul>
             </div>
 
             <div class="stage-card ghost">
-              <span class="stage-label">实拍规整图</span>
+              <span class="stage-label">瀹炴媿瑙勬暣鍥?</span>
               <div
                 v-if="captureReviewDocument"
                 class="stage-grid side-grid"
@@ -224,14 +220,13 @@
                 ></span>
               </div>
               <div v-else class="placeholder-text">
-                上传拼豆实拍图后，这里会显示算法规整后的标准图纸结果。
-              </div>
+                涓婁紶鎷艰眴瀹炴媿鍥惧悗锛岃繖閲屼細鏄剧ず绠楁硶瑙勬暣鍚庣殑鏍囧噯鍥剧焊缁撴灉銆?              </div>
             </div>
 
             <div v-if="showMagnifier" class="stage-card ghost">
-              <span class="stage-label">局部放大</span>
+              <span class="stage-label">灞€閮ㄦ斁澶?</span>
               <div class="focus-row magnifier-meta">
-                <span>观察点</span>
+                <span>瑙傚療鐐?</span>
                 <strong>{{ focusPositionText }}</strong>
               </div>
               <div
@@ -249,9 +244,9 @@
             </div>
 
             <div v-if="compareDiffCellsBundle" class="stage-card ghost">
-              <span class="stage-label">版本差异预览</span>
+              <span class="stage-label">鐗堟湰宸紓棰勮</span>
               <div class="focus-row magnifier-meta">
-                <span>对比对象</span>
+                <span>瀵规瘮瀵硅薄</span>
                 <strong>{{ compareSnapshot.label }}</strong>
               </div>
               <div
@@ -327,38 +322,37 @@
           <div v-else class="panel-stack">
             <div class="panel-block">
               <div class="panel-head">
-                <h2>实拍校验</h2>
-                <span>{{ captureReviewSummary ? `${Math.round(captureReviewSummary.matchRatio * 100)}% 一致` : '未开始' }}</span>
+                <h2>瀹炴媿鏍￠獙</h2>
+                <span>{{ captureReviewSummary ? `${Math.round(captureReviewSummary.matchRatio * 100)}% 涓€鑷碻 : '鏈紑濮? }}</span>
               </div>
               <div v-if="captureReviewSummary" class="compare-summary">
                 <div class="compare-row">
-                  <span>实拍图</span>
+                  <span>瀹炴媿鍥?</span>
                   <strong>{{ captureReviewDocument.name }}</strong>
                 </div>
                 <div class="compare-row">
-                  <span>一致点</span>
+                  <span>涓€鑷寸偣</span>
                   <strong>{{ captureReviewSummary.matchedCount }}</strong>
                 </div>
                 <div class="compare-row">
-                  <span>不一致点</span>
+                  <span>涓嶄竴鑷寸偣</span>
                   <strong>{{ captureReviewSummary.mismatchCount }}</strong>
                 </div>
                 <div class="compare-row">
-                  <span>缺失</span>
+                  <span>缂哄け</span>
                   <strong>{{ captureReviewDiffResult.missing.length }}</strong>
                 </div>
                 <div class="compare-row">
-                  <span>多余</span>
+                  <span>澶氫綑</span>
                   <strong>{{ captureReviewDiffResult.extra.length }}</strong>
                 </div>
                 <div class="compare-row">
-                  <span>颜色变化</span>
+                  <span>棰滆壊鍙樺寲</span>
                   <strong>{{ captureReviewDiffResult.changed.length }}</strong>
                 </div>
               </div>
               <div v-else class="empty-side-note">
-                上传实拍图后，系统会自动规整并给出一致率，用户可以直接判断成品是否和图纸一致。
-              </div>
+                涓婁紶瀹炴媿鍥惧悗锛岀郴缁熶細鑷姩瑙勬暣骞剁粰鍑轰竴鑷寸巼锛岀敤鎴峰彲浠ョ洿鎺ュ垽鏂垚鍝佹槸鍚﹀拰鍥剧焊涓€鑷淬€?              </div>
             </div>
             <div class="panel-block">
               <PatternStandardizePanel
@@ -423,7 +417,7 @@
     >
 
     <div v-if="loading || error" class="floating-status" :class="{ error: !!error }">
-      {{ error || "正在导入与分析..." }}
+      {{ error || "姝ｅ湪瀵煎叆涓庡垎鏋?.." }}
     </div>
 
     <PatternSheetImportDialog
@@ -470,9 +464,9 @@ import { createPatternDocument, deserializePatternDocument } from '@/modules/pat
 import { diffPatternDocuments } from '@/modules/pattern-workbench/core/diff/patternDiff.js'
 
 const viewOptions = [
-  { value: 'current', label: '当前图纸' },
-  { value: 'diff', label: '差异图' },
-  { value: 'overlay', label: '叠加预览' },
+  { value: 'current', label: '褰撳墠鍥剧焊' },
+  { value: 'diff', label: '宸紓鍥? },
+  { value: 'overlay', label: '鍙犲姞棰勮' },
 ]
 
 const workbenchStore = usePatternWorkbenchStore()
@@ -685,12 +679,12 @@ const showStarterHub = computed(() => {
 
 const stageTitle = computed(() => {
   if (activeView.value === 'diff') {
-    return '差异图'
+    return '宸紓鍥?
   }
   if (activeView.value === 'overlay') {
-    return '叠加图'
+    return '鍙犲姞鍥?
   }
-  return '当前图纸'
+  return '褰撳墠鍥剧焊'
 })
 
 const stageWidth = computed(() => {
@@ -768,10 +762,10 @@ const selectedPositionKey = computed(() => {
 
 const selectedPositionText = computed(() => {
   if (!selectedIssue.value) {
-    return '未选中'
+    return '鏈€変腑'
   }
   if (!selectedIssue.value.position) {
-    return '未提供'
+    return '鏈彁渚?
   }
   return `(${selectedIssue.value.position.x}, ${selectedIssue.value.position.y})`
 })
@@ -779,16 +773,16 @@ const selectedPositionText = computed(() => {
 const selectedPixelContext = computed(() => {
   if (!selectedIssue.value) {
     return {
-      currentCode: '无',
-      referenceCode: '无',
+      currentCode: '鏃?,
+      referenceCode: '鏃?,
     }
   }
 
   const position = selectedIssue.value.position
   if (!position) {
     return {
-      currentCode: '无',
-      referenceCode: '无',
+      currentCode: '鏃?,
+      referenceCode: '鏃?,
     }
   }
 
@@ -796,8 +790,8 @@ const selectedPixelContext = computed(() => {
   const referenceCode = getDocumentCode(referenceDocument.value, position.x, position.y)
 
   return {
-    currentCode: currentCode ? currentCode : '空',
-    referenceCode: referenceCode ? referenceCode : '空',
+    currentCode: currentCode ? currentCode : '绌?,
+    referenceCode: referenceCode ? referenceCode : '绌?,
   }
 })
 
@@ -879,32 +873,32 @@ const colorConfirmGroups = computed(() => {
 const overviewCards = computed(() => {
   const matchRatioText = captureReviewSummary.value
     ? `${Math.round(captureReviewSummary.value.matchRatio * 100)}%`
-    : '未校验'
+    : '鏈牎楠?
 
   return [
     {
-      label: '当前图纸',
-      value: `${document.value.width} × ${document.value.height}`,
-      note: `${usedColors.value.length} 种颜色正在使用`,
+      label: '褰撳墠鍥剧焊',
+      value: `${document.value.width} 脳 ${document.value.height}`,
+      note: `${usedColors.value.length} 绉嶉鑹叉鍦ㄤ娇鐢╜,
     },
     {
-      label: '待处理问题',
+      label: '寰呭鐞嗛棶棰?,
       value: `${issues.value.length}`,
-      note: `${filteredIssues.value.length} 项正在显示`,
+      note: `${filteredIssues.value.length} 椤规鍦ㄦ樉绀篳,
     },
     {
-      label: '实拍一致率',
+      label: '瀹炴媿涓€鑷寸巼',
       value: matchRatioText,
       note: captureReviewSummary.value
-        ? `${captureReviewSummary.value.mismatchCount} 处待校正`
-        : '上传实拍图后自动计算',
+        ? `${captureReviewSummary.value.mismatchCount} 澶勫緟鏍℃`
+        : '涓婁紶瀹炴媿鍥惧悗鑷姩璁＄畻',
     },
     {
-      label: '标准化建议',
+      label: '鏍囧噯鍖栧缓璁?,
       value: `${captureReviewChangeGroups.value.length}`,
       note: captureReviewChangeGroups.value.length
-        ? '可直接应用颜色替换'
-        : '暂无颜色偏差聚合',
+        ? '鍙洿鎺ュ簲鐢ㄩ鑹叉浛鎹?
+        : '鏆傛棤棰滆壊鍋忓樊鑱氬悎',
     },
   ]
 })
@@ -912,17 +906,17 @@ const overviewCards = computed(() => {
 const rightPanelTabs = computed(() => [
   {
     value: 'confirm',
-    label: '颜色确认',
+    label: '棰滆壊纭',
     badge: `${colorConfirmGroups.value.length}`,
   },
   {
     value: 'edit',
-    label: '手动调整',
-    badge: toolMode.value === 'paint' ? '画笔' : toolMode.value === 'erase' ? '橡皮' : toolMode.value === 'select' ? '框选' : '查看',
+    label: '鎵嬪姩璋冩暣',
+    badge: toolMode.value === 'paint' ? '鐢荤瑪' : toolMode.value === 'erase' ? '姗＄毊' : toolMode.value === 'select' ? '妗嗛€? : '鏌ョ湅',
   },
   {
     value: 'review',
-    label: '实拍校验',
+    label: '瀹炴媿鏍￠獙',
     badge: captureReviewSummary.value ? `${Math.round(captureReviewSummary.value.matchRatio * 100)}%` : '--',
   },
 ])
@@ -1385,13 +1379,13 @@ async function handleNumberedSheetImportConfirm(payload) {
 
     workbenchStore.applyGeneratedResult(
       result,
-      `${payload.mode === 'sheet' ? '图纸生成' : '图片生成'} ${result.document.name}`,
+      `${payload.mode === 'sheet' ? '鍥剧焊鐢熸垚' : '鍥剧墖鐢熸垚'} ${result.document.name}`,
       'generated',
     )
     rightPanelTab.value = 'confirm'
     closeNumberedSheetImportDialog()
   } catch (importError) {
-    console.error('编号图纸识别失败:', importError)
+    console.error('缂栧彿鍥剧焊璇嗗埆澶辫触:', importError)
   } finally {
     previewGenerating.value = false
   }
@@ -1414,7 +1408,7 @@ async function handleCreateWizardPreview(payload) {
     previewGeneratedDocument.value = result.document
     previewGeneratedReport.value = result.report
   } catch (previewError) {
-    console.error('生成预览失败:', previewError)
+    console.error('鐢熸垚棰勮澶辫触:', previewError)
   } finally {
     previewGenerating.value = false
   }
@@ -1436,7 +1430,7 @@ async function handleCreateWizardConfirm(payload) {
     })
 
     workbenchStore.lastImportReport = null
-    workbenchStore.applyCurrentDocument(nextDocument, `新建空白画板 ${payload.name}`, 'created')
+    workbenchStore.applyCurrentDocument(nextDocument, `鏂板缓绌虹櫧鐢绘澘 ${payload.name}`, 'created')
     rightPanelTab.value = 'confirm'
     closeCreateWizard()
     return
@@ -1463,13 +1457,13 @@ async function handleCreateWizardConfirm(payload) {
 
     workbenchStore.applyGeneratedResult(
       result,
-      `图片生成 ${payload.name}`,
+      `鍥剧墖鐢熸垚 ${payload.name}`,
       'generated',
     )
     rightPanelTab.value = 'confirm'
     closeCreateWizard()
   } catch (confirmError) {
-    console.error('图片生成失败:', confirmError)
+    console.error('鍥剧墖鐢熸垚澶辫触:', confirmError)
   } finally {
     previewGenerating.value = false
   }
@@ -1500,7 +1494,7 @@ async function handleImportPreview(payload) {
     previewGeneratedDocument.value = result.document
     previewGeneratedReport.value = result.report
   } catch (previewError) {
-    console.error('生成预览失败:', previewError)
+    console.error('鐢熸垚棰勮澶辫触:', previewError)
   } finally {
     previewGenerating.value = false
   }
@@ -1542,7 +1536,7 @@ async function handleFileChange(event, type) {
       }
     }
   } catch (importError) {
-    console.error('导入失败:', importError)
+    console.error('瀵煎叆澶辫触:', importError)
   } finally {
     target.value = ''
   }

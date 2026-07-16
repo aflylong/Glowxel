@@ -1,4 +1,4 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/water-world/water-world.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/water-world/water-world.vue -->
 <template>
   <div class="clock-editor-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
@@ -7,7 +7,7 @@
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
-      <span class="nav-title glx-topbar__title">水世界</span>
+      <span class="nav-title glx-topbar__title">姘翠笘鐣?</span>
       <div class="nav-right"></div>
     </div>
 
@@ -39,7 +39,7 @@
       </div>
       <div class="preview-caption">
         <div class="preview-caption-info">
-          <span class="preview-caption-title">预览效果</span>
+          <span class="preview-caption-title">棰勮鏁堟灉</span>
         </div>
         <div class="preview-actions">
           <div
@@ -48,7 +48,7 @@
             @click="handleSend"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
@@ -74,14 +74,14 @@
               </div>
             </div>
             <div class="water-toolbar">
-              <span class="water-toolbar-label">海水颜色</span>
+              <span class="water-toolbar-label">娴锋按棰滆壊</span>
               <div
                 class="action-btn-sm glx-secondary-action water-random-btn"
                 :class="{ disabled: isSending }"
                 @click="handleRandomColorTheme"
               >
                 <Icon name="palette" :size="32" color="var(--nb-ink)" />
-                <span>随机海色</span>
+                <span>闅忔満娴疯壊</span>
               </div>
             </div>
             <div class="color-theme-grid">
@@ -109,7 +109,7 @@
         <ClockTextSettingsCard
           v-show="currentTab === 2"
           icon-name="time"
-          title="时间显示"
+          title="鏃堕棿鏄剧ず"
           :section="effectiveTimeSection"
           :preset-colors="presetColors"
           :show-font-size="true"
@@ -178,6 +178,7 @@
 </template>
 
 <script>
+import { getStorage, setStorage, getSystemInfo, createDomQuery, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
 import { useDeviceStore } from "@/stores/device.js";
@@ -208,22 +209,22 @@ import {
 const WATER_WORLD_CONFIG_KEY = "water_world_preview_config";
 const WATER_WORLD_CLOCK_CONFIG_KEY = "water_world_preview_clock_config";
 const WATER_WORLD_OPTIONS = Object.freeze([
-  { preset: "surface", label: "海面波浪" },
-  { preset: "current", label: "深海海流" },
-  { preset: "caustics", label: "海底焦散" },
+  { preset: "surface", label: "娴烽潰娉㈡氮" },
+  { preset: "current", label: "娣辨捣娴锋祦" },
+  { preset: "caustics", label: "娴峰簳鐒︽暎" },
 ]);
 const WATER_WORLD_FONT_OPTIONS = getClockFontOptions();
 const WATER_WORLD_FONT_IDS = Object.freeze(
   WATER_WORLD_FONT_OPTIONS.map((item) => item.id),
 );
 const PRESET_COLORS = Object.freeze([
-  { name: "青色", hex: "#64c8ff" },
-  { name: "绿色", hex: "#00ff9d" },
-  { name: "黄色", hex: "#ffdc00" },
-  { name: "橙色", hex: "#ffa500" },
-  { name: "红色", hex: "#ff6464" },
-  { name: "紫色", hex: "#c864ff" },
-  { name: "白色", hex: "#ffffff" },
+  { name: "闈掕壊", hex: "#64c8ff" },
+  { name: "缁胯壊", hex: "#00ff9d" },
+  { name: "榛勮壊", hex: "#ffdc00" },
+  { name: "姗欒壊", hex: "#ffa500" },
+  { name: "绾㈣壊", hex: "#ff6464" },
+  { name: "绱壊", hex: "#c864ff" },
+  { name: "鐧借壊", hex: "#ffffff" },
 ]);
 const WATER_WORLD_SEND_MODE = "led_matrix_showcase";
 const WATER_WORLD_BOARD_COMMANDS = Object.freeze({
@@ -253,7 +254,7 @@ function isBoardReadyPreset(preset) {
 
 function buildWaterWorldSendPlan(preset) {
   if (!isBoardReadyPreset(preset)) {
-    throw new Error("当前路线暂未接入设备");
+    throw new Error("褰撳墠璺嚎鏆傛湭鎺ュ叆璁惧");
   }
   const command = WATER_WORLD_BOARD_COMMANDS[preset];
   return {
@@ -549,9 +550,9 @@ export default {
       fontOptions: WATER_WORLD_FONT_OPTIONS,
       currentTab: 1,
       tabDefinitions: [
-        { index: 1, label: "水世界", icon: "prompt" },
-        { index: 2, label: "时间", icon: "time" },
-        { index: 3, label: "字体", icon: "text" },
+        { index: 1, label: "姘翠笘鐣?", icon: "prompt"" },"
+        { index: 2, label: "鏃堕棿", icon: "time" },
+        { index: 3, label: "瀛椾綋", icon: "text" },
       ],
       presetColors: PRESET_COLORS,
     };
@@ -596,11 +597,11 @@ export default {
     this.deviceStore.init();
     this.toast = useToast();
     const savedConfig = normalizeSavedConfig(
-      uni.getStorageSync(WATER_WORLD_CONFIG_KEY),
+      getStorage(WATER_WORLD_CONFIG_KEY),
     );
     this.config = savedConfig;
     this.clockConfig = normalizeSavedClockConfig(
-      uni.getStorageSync(WATER_WORLD_CLOCK_CONFIG_KEY),
+      getStorage(WATER_WORLD_CLOCK_CONFIG_KEY),
     );
   },
   onReady() {
@@ -639,15 +640,15 @@ export default {
       deviceSendUxMixin.methods.endSendUi.call(this);
     },
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
     initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
+      const systemInfo = getSystemInfo();
       const statusBarHeight = systemInfo.statusBarHeight || 0;
 
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query.select(".canvas-section").boundingClientRect((sectionRect) => {
             if (!sectionRect || !sectionRect.height) {
               return;
@@ -685,10 +686,10 @@ export default {
       });
     },
     persistLocalState() {
-      uni.setStorageSync(WATER_WORLD_CONFIG_KEY, {
+      setStorage(WATER_WORLD_CONFIG_KEY, {
         preset: this.config.preset,
       });
-      uni.setStorageSync(WATER_WORLD_CLOCK_CONFIG_KEY, {
+      setStorage(WATER_WORLD_CLOCK_CONFIG_KEY, {
         font: this.clockConfig.font,
         showSeconds: this.clockConfig.showSeconds,
         hourFormat: this.clockConfig.hourFormat,
@@ -949,8 +950,7 @@ export default {
         const sendPlan = buildWaterWorldSendPlan(this.config.preset);
         expectedMode = sendPlan.deviceMode;
         const ws = this.deviceStore.getWebSocket();
-        // 把当前选中的色板（含 rainbow-flow 等动态主题）一并传给板载
-        sendPlan.command.colorTheme = buildWaterWorldColorThemePayload(this.colorThemeId);
+        // 鎶婂綋鍓嶉€変腑鐨勮壊鏉匡紙鍚?rainbow-flow 绛夊姩鎬佷富棰橈級涓€骞朵紶缁欐澘杞?        sendPlan.command.colorTheme = buildWaterWorldColorThemePayload(this.colorThemeId);
         await ws.setAmbientEffect(sendPlan.command, {
           clockConfig: this.buildClockConfigPayload(),
         });

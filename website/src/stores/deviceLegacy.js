@@ -1,5 +1,6 @@
-import { defineStore } from "pinia";
+﻿import { defineStore } from "pinia";
 import { DeviceWebSocket } from "@/utils/webSocket.js";
+import { DEVICE_BUSINESS_MODES, isDeviceBusinessMode } from "@/utils/device-mode-catalog.js";
 
 const DEVICE_IP_KEY = "device_ip";
 const DEVICE_SETTINGS_KEY = "device_ws_settings";
@@ -73,20 +74,7 @@ const MAZE_COLOR_FIELDS = Object.freeze([
   "solvedPathEndColor",
 ]);
 
-const VALID_BUSINESS_MODES = Object.freeze([
-  "clock",
-  "animation",
-  "theme",
-  "canvas",
-  "gif_player",
-  "led_matrix_showcase",
-  "maze",
-  "snake",
-  "tetris",
-  "tetris_clock",
-  "planet_screensaver",
-  "eyes",
-]);
+const VALID_BUSINESS_MODES = DEVICE_BUSINESS_MODES;
 
 function getLocalStorageRef() {
   if (typeof globalThis === "undefined") {
@@ -137,7 +125,7 @@ function writeStorageJson(key, value) {
 }
 
 function isPersistedBusinessMode(mode) {
-  return typeof mode === "string" && VALID_BUSINESS_MODES.includes(mode);
+  return isDeviceBusinessMode(mode);
 }
 
 function normalizeHexColorText(value) {
@@ -524,7 +512,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
       });
 
       this.socket.onError((error) => {
-        this.error = toError(error, "设备连接异常");
+        this.error = toError(error, "璁惧杩炴帴寮傚父");
       });
 
       this.socket.onMessage((data) => {
@@ -596,7 +584,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
         this.applyDeviceStatus(status);
         return status;
       } catch (error) {
-        this.error = toError(error, "同步设备状态失败");
+        this.error = toError(error, "鍚屾璁惧鐘舵€佸け璐?")";"
         throw this.error;
       } finally {
         this.statusSyncInFlight = false;
@@ -650,7 +638,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
         }
         return true;
       } catch (error) {
-        this.error = toError(error, "恢复上一次模式失败");
+        this.error = toError(error, "鎭㈠涓婁竴娆℃ā寮忓け璐?")";"
         return false;
       }
     },
@@ -661,17 +649,17 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
       }
 
       if (!connection || typeof connection !== "object") {
-        throw new Error("连接参数无效");
+        throw new Error("杩炴帴鍙傛暟鏃犳晥");
       }
 
       const cleanHost = this.socket.normalizeHostInput(connection.host);
       if (cleanHost.length === 0) {
-        throw new Error("请输入设备 IP 或域名");
+        throw new Error("璇疯緭鍏ヨ澶?IP 鎴栧煙鍚?")";"
       }
 
       const parsedPort = Number(connection.port);
       if (!Number.isInteger(parsedPort) || parsedPort <= 0 || parsedPort > 65535) {
-        throw new Error("端口范围应为 1-65535");
+        throw new Error("绔彛鑼冨洿搴斾负 1-65535");
       }
 
       const secure = connection.secure === true;
@@ -720,12 +708,12 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
             });
 
             if (status === null) {
-              throw new Error("WebSocket 已连接，但设备状态同步失败");
+              throw new Error("WebSocket 宸茶繛鎺ワ紝浣嗚澶囩姸鎬佸悓姝ュけ璐?")";"
             }
 
             return { success: true, status };
           } catch (error) {
-            lastError = toError(error, "设备连接失败");
+            lastError = toError(error, "璁惧杩炴帴澶辫触");
             this.socket.disconnect();
             this.connected = false;
             if (attempt < INITIAL_CONNECT_MAX_ATTEMPTS) {
@@ -734,7 +722,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
           }
         }
 
-        throw lastError === null ? new Error("设备连接失败") : lastError;
+        throw lastError === null ? new Error("璁惧杩炴帴澶辫触") : lastError;
       } finally {
         this.connecting = false;
       }
@@ -789,28 +777,28 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async send(payload) {
       if (this.socket === null) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
       return this.socket.send(payload);
     },
 
     async sendBinary(payload) {
       if (this.socket === null) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
       return this.socket.sendBinary(payload);
     },
 
     async sendAndWait(payload, timeout = 15000, matcher = null, options = {}) {
       if (this.socket === null) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
       return this.socket.sendAndWait(payload, timeout, matcher, options);
     },
 
     async waitForMessage(predicate, options = {}) {
       if (this.socket === null) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const timeout =
@@ -822,7 +810,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async requestStatus() {
       if (this.socket === null) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const response = await this.socket.getStatus();
@@ -834,21 +822,21 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async getInfo() {
       if (this.socket === null) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
       return this.socket.getInfo();
     },
 
     async runModeTransaction(options = {}) {
       if (this.socket === null) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
       return this.socket.runModeTransaction(options);
     },
 
     async setMode(mode, options = {}) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const response = await this.socket.setMode(mode, options);
@@ -860,14 +848,14 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async setClockConfig(clockMode, config) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
       return this.socket.setClockConfig(clockMode, config);
     },
 
     async applyClockMode(mode, config, binary = null, options = {}) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const response = await this.socket.applyClockMode(mode, config, binary, options);
@@ -877,12 +865,12 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
       return response;
     },
 
-    async applyThemeMode(config, themeId, options = {}) {
+    async applyThemeMode(themeId, options = {}) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
-      const response = await this.socket.applyThemeMode(config, themeId, options);
+      const response = await this.socket.applyThemeMode(themeId, options);
       writeStorageText(CLOCK_DEVICE_THEME_ID_KEY, themeId);
       this.applyResolvedBusinessMode("theme");
       return response;
@@ -890,7 +878,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async ensureCanvasMode(options = {}) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const response = await this.socket.ensureCanvasMode(options);
@@ -900,7 +888,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async setThemeConfig(themeId, options = {}) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const response = await this.socket.setThemeConfig(themeId, options);
@@ -911,7 +899,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async setEyesConfig(config) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const response = await this.socket.setEyesConfig(config);
@@ -921,7 +909,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async setAmbientEffect(config, options = {}) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const response = await this.socket.setAmbientEffect(config, options);
@@ -931,7 +919,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async startMaze(config, options = {}) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const response = await this.socket.startMaze(config, options);
@@ -941,7 +929,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async startSnake(config, options = {}) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const response = await this.socket.startSnake(config, options);
@@ -951,7 +939,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async startTetris(config, options = {}) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const response = await this.socket.startTetris(config, options);
@@ -961,7 +949,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async startTetrisClock(config, options = {}) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const response = await this.socket.startTetrisClock(config, options);
@@ -971,7 +959,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async setPlanetScreensaver(config, options = {}) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const response = await this.socket.setPlanetScreensaver(config, options);
@@ -981,7 +969,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async setGifAnimation(animationData) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const response = await this.socket.setGifAnimation(animationData);
@@ -993,7 +981,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async showImage(pixels, width, height) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const response = await this.socket.showImage(pixels, width, height);
@@ -1007,7 +995,7 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async showSparseImage(sparsePixels, width, height) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const response = await this.socket.showSparseImage(sparsePixels, width, height);
@@ -1021,12 +1009,12 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async setBrightness(value) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       const brightness = Number(value);
       if (!Number.isFinite(brightness)) {
-        throw new Error("亮度值无效");
+        throw new Error("浜害鍊兼棤鏁?")";"
       }
 
       const boundedValue = Math.max(0, Math.min(178, Math.round(brightness)));
@@ -1037,28 +1025,28 @@ export const useDeviceLegacyStore = defineStore('deviceLegacy', {
 
     async getDeviceParams() {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
       return this.socket.getDeviceParams();
     },
 
     async setDeviceParam(key, value) {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
       return this.socket.setDeviceParam(key, value);
     },
 
     async clearWifiConfig() {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
       return this.socket.clearWifiConfig();
     },
 
     async clear() {
       if (this.socket === null || !this.connected) {
-        throw new Error("设备未连接");
+        throw new Error("璁惧鏈繛鎺?")";"
       }
 
       await this.socket.clear();

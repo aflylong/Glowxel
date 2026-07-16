@@ -1,0 +1,1 @@
+import{P as s,O as t}from"./index-DvLGkGAL.js";const a=o=>s(`/api/follow/${o}/toggle`),e=(o,l)=>t(`/api/follow/${o}/followers`,l),w=(o,l)=>t(`/api/follow/${o}/following`,l);export{w as a,e as g,a as t};

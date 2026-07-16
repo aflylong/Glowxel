@@ -1,4 +1,4 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/canvas-editor/canvas-editor.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/canvas-editor/canvas-editor.vue -->
 <template>
   <div class="canvas-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
@@ -11,7 +11,7 @@
           color="var(--nb-ink)"
         />
       </div>
-      <span class="nav-title glx-topbar__title">画板模式</span>
+      <span class="nav-title glx-topbar__title">鐢绘澘妯″紡</span>
       <div class="nav-right"></div>
     </div>
 
@@ -51,7 +51,7 @@
 
       <div class="preview-caption glx-preview-panel">
         <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-caption-title">预览效果</span>
+          <span class="preview-caption-title">棰勮鏁堟灉</span>
         </div>
         <div class="preview-actions">
           <div
@@ -60,7 +60,7 @@
             @click="publishCanvas"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
@@ -75,7 +75,7 @@
             @click="handleUndo"
           >
             <Icon name="back" :size="36" />
-            <span>撤销</span>
+            <span>鎾ら攢</span>
           </div>
           <div
             class="panel-btn glx-action-tile"
@@ -83,28 +83,28 @@
             @click="handleRedo"
           >
             <Icon name="forward" :size="36" />
-            <span>重做</span>
+            <span>閲嶅仛</span>
           </div>
           <div class="panel-btn glx-action-tile" @click="handleZoom(-1)">
             <Icon name="zoom-out" :size="36" />
-            <span>缩小</span>
+            <span>缂╁皬</span>
           </div>
           <div class="panel-btn glx-action-tile" @click="handleZoom(1)">
             <Icon name="zoom-in" :size="36" />
-            <span>放大</span>
+            <span>鏀惧ぇ</span>
           </div>
           <div class="panel-btn glx-action-tile" @click="handleFit">
             <Icon name="fullscreen-expand" :size="36" />
-            <span>适配</span>
+            <span>閫傞厤</span>
           </div>
           <div class="panel-btn danger glx-action-tile" @click="clearCanvas">
             <Icon name="delete" :size="36" />
-            <span>清空</span>
+            <span>娓呯┖</span>
           </div>
         </div>
         <div class="card glx-panel-card glx-editor-card canvas-section-card">
           <div class="card-title-section glx-panel-head">
-            <span class="card-title glx-panel-title">绘制工具</span>
+            <span class="card-title glx-panel-title">缁樺埗宸ュ叿</span>
           </div>
 
           <div class="tool-grid">
@@ -114,7 +114,7 @@
               @click="setTool('move')"
             >
               <Icon name="move" :size="40" />
-              <span class="tool-card-label">拖动</span>
+              <span class="tool-card-label">鎷栧姩</span>
             </div>
             <div
               class="tool-card glx-tool-tile"
@@ -122,7 +122,7 @@
               @click="setTool('pencil')"
             >
               <Icon name="edit" :size="40" />
-              <span class="tool-card-label">绘画</span>
+              <span class="tool-card-label">缁樼敾</span>
             </div>
             <div
               class="tool-card eraser glx-tool-tile"
@@ -130,13 +130,13 @@
               @click="setTool('eraser')"
             >
               <Icon name="delete" :size="40" />
-              <span class="tool-card-label">擦除</span>
+              <span class="tool-card-label">鎿﹂櫎</span>
             </div>
           </div>
         </div>
         <div v-if="currentTool !== 'move'" class="card glx-panel-card glx-editor-card canvas-section-card">
           <div class="card-title-section glx-panel-head">
-            <span class="card-title glx-panel-title">笔触大小</span>
+            <span class="card-title glx-panel-title">绗旇Е澶у皬</span>
           </div>
           <div class="option-row">
             <div
@@ -153,12 +153,12 @@
 
         <div v-if="currentTool !== 'move'" class="card glx-panel-card glx-editor-card canvas-section-card">
           <div class="card-title-section glx-panel-head">
-            <span class="card-title glx-panel-title">画笔颜色</span>
+            <span class="card-title glx-panel-title">鐢荤瑪棰滆壊</span>
           </div>
           <div class="color-panel-wrap">
             <ColorPanelPicker
               :value="selectedColor"
-              label="画笔颜色"
+              label="鐢荤瑪棰滆壊"
               :preset-colors="[]"
               @input="handleColorSelect"
             />
@@ -192,6 +192,7 @@
 </template>
 
 <script>
+import { getStorage, setStorage, getSystemInfo, createDomQuery, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
@@ -273,14 +274,14 @@ export default {
     },
 
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
 
     initCanvas() {
       setTimeout(() => {
-        const systemInfo = uni.getSystemInfoSync();
+        const systemInfo = getSystemInfo();
         const statusBarHeight = systemInfo.statusBarHeight || 0;
-        const query = uni.createSelectorQuery().in(this);
+        const query = createDomQuery().in(this);
 
         query.select(".canvas-section").boundingClientRect((sectionRect) => {
           if (!sectionRect || !sectionRect.height) {
@@ -320,7 +321,7 @@ export default {
     },
 
     loadPixels() {
-      const savedPixels = uni.getStorageSync(CANVAS_PIXELS_KEY);
+      const savedPixels = getStorage(CANVAS_PIXELS_KEY);
       if (Array.isArray(savedPixels)) {
         this.pixels = new Map(savedPixels);
       } else {
@@ -331,7 +332,7 @@ export default {
     },
 
     persistPixels() {
-      uni.setStorageSync(CANVAS_PIXELS_KEY, Array.from(this.pixels.entries()));
+      setStorage(CANVAS_PIXELS_KEY, Array.from(this.pixels.entries()));
     },
 
     pushHistory(newPixels) {
@@ -508,7 +509,7 @@ export default {
         await this.deviceStore.rollbackBusinessMode(previousMode, {
           expectedMode: "canvas",
         });
-        console.error("画板发送失败:", err);
+        console.error("鐢绘澘鍙戦€佸け璐?", err);
         this.showSendFailure(err);
       } finally {
         this.endSendUi();

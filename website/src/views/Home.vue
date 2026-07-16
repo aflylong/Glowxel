@@ -1,18 +1,18 @@
-<template>
+﻿<template>
   <div class="home">
     <section class="hero"  style="display: none;">
       <div class="container">
-        <h1 class="hero-title">光格像素工坊</h1>
-        <p class="hero-subtitle">像素内容创作与设备连接平台</p>
+        <h1 class="hero-title">鍏夋牸鍍忕礌宸ュ潑</h1>
+        <p class="hero-subtitle">鍍忕礌鍐呭鍒涗綔涓庤澶囪繛鎺ュ钩鍙?</p>
         <p class="hero-desc">
-          提供像素内容编辑、图片生成、社区展示与设备连接能力，用户完成连接后即可直接使用设备功能
+          鎻愪緵鍍忕礌鍐呭缂栬緫銆佸浘鐗囩敓鎴愩€佺ぞ鍖哄睍绀轰笌璁惧杩炴帴鑳藉姏锛岀敤鎴峰畬鎴愯繛鎺ュ悗鍗冲彲鐩存帴浣跨敤璁惧鍔熻兘
         </p>
         <div class="hero-actions">
           <router-link to="/create" class="btn btn-primary"
-            >开始创作</router-link
+            >寮€濮嬪垱浣?/router-link
           >
           <router-link to="/community" class="btn btn-outline"
-            >浏览社区</router-link
+            >娴忚绀惧尯</router-link
           >
         </div>
       </div>
@@ -20,7 +20,7 @@
 
     <section class="features"  style="display: none;">
       <div class="container">
-        <h2 class="section-title">核心功能</h2>
+        <h2 class="section-title">鏍稿績鍔熻兘</h2>
         <div class="feature-grid">
           <div class="feature-card" v-for="f in features" :key="f.title">
             <div class="feature-icon" v-html="f.icon"></div>
@@ -33,26 +33,26 @@
 
     <section class="showcase" v-if="artworks.length" style="display: none;">
       <div class="container">
-        <h2 class="section-title">精选作品</h2>
+        <h2 class="section-title">绮鹃€変綔鍝?</h2>
         <div class="artwork-grid">
           <div class="artwork-card" v-for="item in artworks" :key="item.id" @click="$router.push(`/artwork/${item.id}`)">
             <div
               class="artwork-img"
-              :style="item.cover_url
+              :style="item.cover_url"
                 ? `background-image:url(${item.cover_url});background-size:cover;background-position:center;background-color:#f5f5f5`
-                : 'background:#f5f5f5'"
+                : 'background:#f5f5f5'""
             ></div>
             <div class="artwork-info">
               <span class="artwork-title">{{
-                item.title || "未命名作品"
+                item.title || "鏈懡鍚嶄綔鍝?"
               }}</span>
-              <span class="artwork-author">{{ item.author_name || "匿名" }}</span>
+              <span class="artwork-author">{{ item.author_name || "鍖垮悕" }}</span>
             </div>
           </div>
         </div>
         <div class="center">
           <router-link to="/community" class="btn btn-outline"
-            >查看更多</router-link
+            >鏌ョ湅鏇村</router-link
           >
         </div>
       </div>
@@ -60,10 +60,9 @@
 
     <section class="hardware">
       <div class="container">
-        <h2 class="section-title">设备连接与使用</h2>
+        <h2 class="section-title">璁惧杩炴帴涓庝娇鐢?</h2>
         <p class="section-desc">
-          设备由我们完成整机设计与调试，用户只需要连接设备、选择内容并同步显示
-        </p>
+          璁惧鐢辨垜浠畬鎴愭暣鏈鸿璁′笌璋冭瘯锛岀敤鎴峰彧闇€瑕佽繛鎺ヨ澶囥€侀€夋嫨鍐呭骞跺悓姝ユ樉绀?        </p>
         <div class="hardware-grid">
           <div
             class="hardware-card"
@@ -83,10 +82,10 @@
         </div>
         <div class="center">
           <router-link to="/device-control" class="btn btn-primary"
-            >连接设备</router-link
+            >杩炴帴璁惧</router-link
           >
           <router-link to="/pattern-workbench" class="btn btn-outline"  style="display: none;"
-            >拼豆工作台</router-link
+            >鎷艰眴宸ヤ綔鍙?/router-link
           >
         </div>
       </div>
@@ -94,11 +93,9 @@
 
     <section class="about">
       <div class="container">
-        <h2 class="section-title">关于光格像素工坊</h2>
+        <h2 class="section-title">鍏充簬鍏夋牸鍍忕礌宸ュ潑</h2>
         <p class="about-text">
-          光格像素工坊面向用户提供内容编辑、图片生成、社区浏览、设备连接与常用控制能力。
-          设备本身由我们完成整机方案设计与实现，用户无需了解组装过程，连接后即可直接使用。
-        </p>
+          鍏夋牸鍍忕礌宸ュ潑闈㈠悜鐢ㄦ埛鎻愪緵鍐呭缂栬緫銆佸浘鐗囩敓鎴愩€佺ぞ鍖烘祻瑙堛€佽澶囪繛鎺ヤ笌甯哥敤鎺у埗鑳藉姏銆?          璁惧鏈韩鐢辨垜浠畬鎴愭暣鏈烘柟妗堣璁′笌瀹炵幇锛岀敤鎴锋棤闇€浜嗚В缁勮杩囩▼锛岃繛鎺ュ悗鍗冲彲鐩存帴浣跨敤銆?        </p>
       </div>
     </section>
   </div>
@@ -111,33 +108,33 @@ import { artworkAPI } from "@/api/index.js";
 const features = [
   {
     icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>`,
-    title: "像素编辑器",
-    desc: "64×64 画布，支持画笔、橡皮擦、填充、图片导入",
+    title: "鍍忕礌缂栬緫鍣?,"
+    desc: "64脳64 鐢诲竷锛屾敮鎸佺敾绗斻€佹鐨摝銆佸～鍏呫€佸浘鐗囧鍏?,"
   },
   {
     icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
-    title: "拼豆图纸",
-    desc: "桌面端优先保留图纸识别、拼豆整理和发送前检查能力",
+    title: "鎷艰眴鍥剧焊",
+    desc: "妗岄潰绔紭鍏堜繚鐣欏浘绾歌瘑鍒€佹嫾璞嗘暣鐞嗗拰鍙戦€佸墠妫€鏌ヨ兘鍔?,"
   },
   {
     icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
-    title: "图片处理",
-    desc: "导入任意图片，智能转换为像素图案",
+    title: "鍥剧墖澶勭悊",
+    desc: "瀵煎叆浠绘剰鍥剧墖锛屾櫤鑳借浆鎹负鍍忕礌鍥炬",
   },
   {
     icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-    title: "社区分享",
-    desc: "发布作品、点赞评论、关注创作者",
+    title: "绀惧尯鍒嗕韩",
+    desc: "鍙戝竷浣滃搧銆佺偣璧炶瘎璁恒€佸叧娉ㄥ垱浣滆€?,"
   },
   {
     icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>`,
-    title: "设备连接",
-    desc: "连接设备后即可下发内容并进行常用控制",
+    title: "璁惧杩炴帴",
+    desc: "杩炴帴璁惧鍚庡嵆鍙笅鍙戝唴瀹瑰苟杩涜甯哥敤鎺у埗",
   },
   {
     icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
-    title: "边框玩法",
-    desc: "浏览边框样式和社区作品，中间主体内容由你自己决定",
+    title: "杈规鐜╂硶",
+    desc: "娴忚杈规鏍峰紡鍜岀ぞ鍖轰綔鍝侊紝涓棿涓讳綋鍐呭鐢变綘鑷繁鍐冲畾",
   },
 ];
 
@@ -146,41 +143,41 @@ const artworks = ref([]);
 const hardwareSpecs = [
   {
     icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M8 12h8M12 8v8"/></svg>`,
-    label: "显示规格",
-    value: "64 × 64 像素",
+    label: "鏄剧ず瑙勬牸",
+    value: "64 脳 64 鍍忕礌",
   },
   {
     icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>`,
-    label: "显示形式",
-    value: "RGB 像素显示",
+    label: "鏄剧ず褰㈠紡",
+    value: "RGB 鍍忕礌鏄剧ず",
   },
   {
     icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>`,
-    label: "连接方式",
-    value: "热点配网 + 局域网连接",
+    label: "杩炴帴鏂瑰紡",
+    value: "鐑偣閰嶇綉 + 灞€鍩熺綉杩炴帴",
   },
   {
     icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>`,
-    label: "使用方式",
-    value: "连接后直接控制",
+    label: "浣跨敤鏂瑰紡",
+    value: "杩炴帴鍚庣洿鎺ユ帶鍒?,"
   },
   {
     icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
-    label: "内容同步",
-    value: "网页 / 小程序",
+    label: "鍐呭鍚屾",
+    value: "缃戦〉 / 灏忕▼搴?,"
   },
   {
     icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`,
-    label: "应用场景",
-    value: "创作展示 / 日常互动",
+    label: "搴旂敤鍦烘櫙",
+    value: "鍒涗綔灞曠ず / 鏃ュ父浜掑姩",
   },
 ];
 
 const setupSteps = [
-  "首次使用先连接设备热点并打开 192.168.4.1 完成配网",
-  "选择图片、拼豆图纸或画板内容进入桌面创作链",
-  "连接设备后发送到画板模式并立即确认效果",
-  "复杂设备模式继续保留给 uniapp 负责",
+  "棣栨浣跨敤鍏堣繛鎺ヨ澶囩儹鐐瑰苟鎵撳紑 192.168.4.1 瀹屾垚閰嶇綉",
+  "閫夋嫨鍥剧墖銆佹嫾璞嗗浘绾告垨鐢绘澘鍐呭杩涘叆妗岄潰鍒涗綔閾?,"
+  "杩炴帴璁惧鍚庡彂閫佸埌鐢绘澘妯″紡骞剁珛鍗崇‘璁ゆ晥鏋?,"
+  "澶嶆潅璁惧妯″紡缁х画淇濈暀缁?uniapp 璐熻矗",
 ];
 
 onMounted(async () => {

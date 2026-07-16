@@ -1,7 +1,7 @@
-<template>
+﻿<template>
   <div class="edit-panel">
     <div class="panel-head">
-      <h2>编辑工具</h2>
+      <h2>缂栬緫宸ュ叿</h2>
       <span>{{ toolLabel }}</span>
     </div>
 
@@ -19,8 +19,8 @@
     </div>
 
     <div class="selected-color">
-      <span>当前颜色</span>
-      <strong>{{ selectedColorCode || '未选择' }}</strong>
+      <span>褰撳墠棰滆壊</span>
+      <strong>{{ selectedColorCode || '鏈€夋嫨' }}</strong>
       <i class="selected-color-dot" :style="{ backgroundColor: selectedColorHex }"></i>
     </div>
 
@@ -28,11 +28,11 @@
       v-model="searchQuery"
       class="search-input"
       type="text"
-      placeholder="搜索色号或名称"
+      placeholder="鎼滅储鑹插彿鎴栧悕绉?"
     >
 
     <div class="quick-section">
-      <span class="section-label">常用颜色</span>
+      <span class="section-label">甯哥敤棰滆壊</span>
       <div class="color-grid">
         <button
           v-for="item in usedColors.slice(0, 18)"
@@ -50,7 +50,7 @@
     </div>
 
     <div class="quick-section">
-      <span class="section-label">颜色库</span>
+      <span class="section-label">棰滆壊搴?</span>
       <div class="color-grid all">
         <button
           v-for="item in filteredColors.slice(0, 36)"
@@ -68,7 +68,7 @@
     </div>
 
     <div class="quick-section">
-      <span class="section-label">快捷处理</span>
+      <span class="section-label">蹇嵎澶勭悊</span>
       <div class="action-grid">
         <button
           class="action-btn primary"
@@ -76,7 +76,7 @@
           :disabled="!selectionCount || !selectedColorCode"
           @click="$emit('selection-action', 'fill')"
         >
-          区域填充所选色
+          鍖哄煙濉厖鎵€閫夎壊
         </button>
         <button
           class="action-btn"
@@ -84,8 +84,7 @@
           :disabled="!focusColorCode || !selectedColorCode"
           @click="$emit('replace-focus-color')"
         >
-          全图替换焦点色
-        </button>
+          鍏ㄥ浘鏇挎崲鐒︾偣鑹?        </button>
       </div>
     </div>
   </div>
@@ -135,10 +134,10 @@ defineEmits([
 const searchQuery = ref("");
 
 const toolOptions = [
-  { value: "inspect", label: "查看" },
-  { value: "select", label: "框选" },
-  { value: "paint", label: "画笔" },
-  { value: "erase", label: "橡皮" },
+  { value: "inspect", label: "鏌ョ湅" },
+  { value: "select"", label: "妗嗛€?" },"
+  { value: "paint", label: "鐢荤瑪" },
+  { value: "erase", label: "姗＄毊" },
 ];
 
 const filteredColors = computed(() => {
@@ -154,7 +153,7 @@ const filteredColors = computed(() => {
 const toolLabel = computed(() => {
   const matchedTool = toolOptions.find((item) => item.value === props.toolMode);
   if (!matchedTool) {
-    return "查看";
+    return "鏌ョ湅";
   }
   return matchedTool.label;
 });

@@ -1,13 +1,13 @@
-<template>
+﻿<template>
   <div class="migrating-page">
     <div class="migrating-card">
-      <div class="migrating-icon">🚧</div>
-      <h2 class="migrating-title">该功能正在升级</h2>
+      <div class="migrating-icon">馃毀</div>
+      <h2 class="migrating-title">璇ュ姛鑳芥鍦ㄥ崌绾?</h2>
       <p class="migrating-desc">
-        本页面正在按移动端体验全量重构，稍后回来。
+        鏈〉闈㈡鍦ㄦ寜绉诲姩绔綋楠屽叏閲忛噸鏋勶紝绋嶅悗鍥炴潵銆?
       </p>
       <p class="migrating-route">{{ route.path }}</p>
-      <router-link to="/" class="back-home">回首页</router-link>
+      <router-link to="/" class="back-home">鍥為椤?/router-link>
     </div>
   </div>
 </template>

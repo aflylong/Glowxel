@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="clock-editor-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
 
@@ -6,7 +6,7 @@
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
-      <span class="nav-title glx-topbar__title">海绵宝宝时钟</span>
+      <span class="nav-title glx-topbar__title">娴风坏瀹濆疂鏃堕挓</span>
       <div class="nav-right"></div>
     </div>
 
@@ -24,7 +24,7 @@
           :grid-visible="true"
           :is-dark-mode="true"
         />
-        <div v-if="isLoading" class="preview-loading">正在加载海绵宝宝像素数据...</div>
+        <div v-if="isLoading" class="preview-loading">姝ｅ湪鍔犺浇娴风坏瀹濆疂鍍忕礌鏁版嵁...</div>
       </div>
 
       <div class="preview-caption glx-preview-panel">
@@ -39,7 +39,7 @@
             @click="sendToDevice"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
@@ -54,8 +54,8 @@
       <div class="content-wrapper glx-scroll-stack">
         <div v-show="currentTab === 1" class="settings-card">
           <div class="card-title-section">
-            <span class="card-title">主题流程</span>
-            <span class="card-meta">双角色同步编排</span>
+            <span class="card-title">涓婚娴佺▼</span>
+            <span class="card-meta">鍙岃鑹插悓姝ョ紪鎺?</span>
           </div>
           <div class="program-grid">
             <div
@@ -69,92 +69,91 @@
             </div>
           </div>
           <ControlRange
-            label="播放速度"
+            label="鎾斁閫熷害"
             :value="config.frameInterval"
-            suffix="ms/帧"
+            suffix="ms/甯?"
             :min="80"
             :max="500"
             :step="10"
             @input="setConfigValue('frameInterval', $event)"
           />
           <p class="desc-text">
-            当前只使用海绵宝宝和派大星。一个角色动作没跑完时，另一个角色按自己的动作循环补齐，保持类似拳皇的双人场面节奏。
-          </p>
+            褰撳墠鍙娇鐢ㄦ捣缁靛疂瀹濆拰娲惧ぇ鏄熴€備竴涓鑹插姩浣滄病璺戝畬鏃讹紝鍙︿竴涓鑹叉寜鑷繁鐨勫姩浣滃惊鐜ˉ榻愶紝淇濇寔绫讳技鎷崇殗鐨勫弻浜哄満闈㈣妭濂忋€?          </p>
         </div>
 
         <div v-show="currentTab === 2" class="settings-card">
           <div class="card-title-section">
-            <span class="card-title">角色位置</span>
-            <span class="card-meta">统一脚底线和缩放</span>
+            <span class="card-title">瑙掕壊浣嶇疆</span>
+            <span class="card-meta">缁熶竴鑴氬簳绾垮拰缂╂斁</span>
           </div>
           <div class="role-section">
-            <span class="role-title">共同基准</span>
-            <ControlRange label="脚底 Y" :value="config.spongebobY" suffix="" :min="0" :max="72" :step="1" @input="setConfigValue('spongebobY', $event)" />
-            <ControlRange label="缩放" :value="config.spongebobScale" suffix="x" :min="0.25" :max="1.5" :step="0.05" @input="setConfigValue('spongebobScale', $event)" />
+            <span class="role-title">鍏卞悓鍩哄噯</span>
+            <ControlRange label="鑴氬簳 Y" :value="config.spongebobY" suffix="" :min="0" :max="72" :step="1" @input="setConfigValue('spongebobY', $event)" />
+            <ControlRange label="缂╂斁" :value="config.spongebobScale" suffix="x" :min="0.25" :max="1.5" :step="0.05" @input="setConfigValue('spongebobScale', $event)" />
           </div>
           <div class="role-section">
-            <span class="role-title">海绵宝宝</span>
+            <span class="role-title">娴风坏瀹濆疂</span>
             <ControlRange label="X" :value="config.spongebobX" suffix="" :min="-16" :max="80" :step="1" @input="setConfigValue('spongebobX', $event)" />
           </div>
           <div class="role-section">
-            <span class="role-title">派大星</span>
+            <span class="role-title">娲惧ぇ鏄?</span>
             <ControlRange label="X" :value="config.patrickX" suffix="" :min="-16" :max="80" :step="1" @input="setConfigValue('patrickX', $event)" />
           </div>
           <div class="role-section">
-            <span class="role-title">背景底图 BG1</span>
-            <ControlRange label="左上 X" :value="config.bg1X" suffix="" :min="-64" :max="64" :step="1" @input="setConfigValue('bg1X', $event)" />
-            <ControlRange label="左上 Y" :value="config.bg1Y" suffix="" :min="-32" :max="64" :step="1" @input="setConfigValue('bg1Y', $event)" />
-            <ControlRange label="缩放" :value="config.bg1Scale" suffix="x" :min="0.1" :max="2" :step="0.01" @input="setConfigValue('bg1Scale', $event)" />
-            <p class="desc-text">bg1.png 作为底部背景图层参与渲染，当前这三个参数按左上角定位。</p>
+            <span class="role-title">鑳屾櫙搴曞浘 BG1</span>
+            <ControlRange label="宸︿笂 X" :value="config.bg1X" suffix="" :min="-64" :max="64" :step="1" @input="setConfigValue('bg1X', $event)" />
+            <ControlRange label="宸︿笂 Y" :value="config.bg1Y" suffix="" :min="-32" :max="64" :step="1" @input="setConfigValue('bg1Y', $event)" />
+            <ControlRange label="缂╂斁" :value="config.bg1Scale" suffix="x" :min="0.1" :max="2" :step="0.01" @input="setConfigValue('bg1Scale', $event)" />
+            <p class="desc-text">bg1.png 浣滀负搴曢儴鑳屾櫙鍥惧眰鍙備笌娓叉煋锛屽綋鍓嶈繖涓変釜鍙傛暟鎸夊乏涓婅瀹氫綅銆?</p>
           </div>
         </div>
 
         <div v-show="currentTab === 3" class="settings-card">
           <div class="card-title-section">
-            <span class="card-title">时间字体</span>
-            <span class="card-meta">泰拉瑞亚式三层描边</span>
+            <span class="card-title">鏃堕棿瀛椾綋</span>
+            <span class="card-meta">娉版媺鐟炰簹寮忎笁灞傛弿杈?</span>
           </div>
           <div class="font-tabs">
-            <div class="font-tab" :class="{ active: timeFontTab === 1 }" @click="timeFontTab = 1">位置</div>
-            <div class="font-tab" :class="{ active: timeFontTab === 2 }" @click="timeFontTab = 2">尺寸</div>
-            <div class="font-tab" :class="{ active: timeFontTab === 3 }" @click="timeFontTab = 3">状态</div>
+            <div class="font-tab" :class="{ active: timeFontTab === 1 }" @click="timeFontTab = 1">浣嶇疆</div>
+            <div class="font-tab" :class="{ active: timeFontTab === 2 }" @click="timeFontTab = 2">灏哄</div>
+            <div class="font-tab" :class="{ active: timeFontTab === 3 }" @click="timeFontTab = 3">鐘舵€?</div>
           </div>
           <div v-show="timeFontTab === 1">
-            <ToggleRow label="显示时间" :active="config.showTime" @click="toggleConfigValue('showTime')" />
-            <ControlRange label="时间 X" :value="config.timeX" suffix="" :min="0" :max="63" :step="1" @input="setConfigValue('timeX', $event)" />
-            <ControlRange label="时间 Y" :value="config.timeY" suffix="" :min="0" :max="56" :step="1" @input="setConfigValue('timeY', $event)" />
+            <ToggleRow label="鏄剧ず鏃堕棿" :active="config.showTime" @click="toggleConfigValue('showTime')" />
+            <ControlRange label="鏃堕棿 X" :value="config.timeX" suffix="" :min="0" :max="63" :step="1" @input="setConfigValue('timeX', $event)" />
+            <ControlRange label="鏃堕棿 Y" :value="config.timeY" suffix="" :min="0" :max="56" :step="1" @input="setConfigValue('timeY', $event)" />
           </div>
           <div v-show="timeFontTab === 2">
-            <ControlRange label="字体倍率" :value="config.timeFontScale" suffix="x" :min="1" :max="2" :step="1" @input="setConfigValue('timeFontScale', $event)" />
+            <ControlRange label="瀛椾綋鍊嶇巼" :value="config.timeFontScale" suffix="x" :min="1" :max="2" :step="1" @input="setConfigValue('timeFontScale', $event)" />
           </div>
           <div v-show="timeFontTab === 3">
             <div class="palette-row">
               <span class="palette-chip palette-chip--dark"></span>
-              <span>外圈深蓝</span>
+              <span>澶栧湀娣辫摑</span>
             </div>
             <div class="palette-row">
               <span class="palette-chip palette-chip--light"></span>
-              <span>内圈浅蓝</span>
+              <span>鍐呭湀娴呰摑</span>
             </div>
             <div class="palette-row">
               <span class="palette-chip palette-chip--yellow"></span>
-              <span>字芯黄色</span>
+              <span>瀛楄姱榛勮壊</span>
             </div>
-            <p class="desc-text">这里直接使用泰拉瑞亚的 lcd_6x8 时间字模，只把颜色改成海绵宝宝主题的黄芯、浅蓝内圈、深蓝外圈。</p>
+            <p class="desc-text">杩欓噷鐩存帴浣跨敤娉版媺鐟炰簹鐨?lcd_6x8 鏃堕棿瀛楁ā锛屽彧鎶婇鑹叉敼鎴愭捣缁靛疂瀹濅富棰樼殑榛勮姱銆佹祬钃濆唴鍦堛€佹繁钃濆鍦堛€?</p>
           </div>
         </div>
 
         <div v-show="currentTab === 4" class="settings-card">
           <div class="card-title-section">
-            <span class="card-title">状态</span>
-            <span class="card-meta">当前帧信息</span>
+            <span class="card-title">鐘舵€?</span>
+            <span class="card-meta">褰撳墠甯т俊鎭?</span>
           </div>
           <div class="status-list">
-            <span>流程：{{ selectedProgramName }}</span>
-            <span>段落：{{ statusDetail.segment }}</span>
-            <span>左侧：{{ statusDetail.left }}</span>
-            <span>右侧：{{ statusDetail.right }}</span>
-            <span>发送：当前走现有 gif_player 动画通道，发送的是当前主题序列。</span>
+            <span>娴佺▼锛歿{ selectedProgramName }}</span>
+            <span>娈佃惤锛歿{ statusDetail.segment }}</span>
+            <span>宸︿晶锛歿{ statusDetail.left }}</span>
+            <span>鍙充晶锛歿{ statusDetail.right }}</span>
+            <span>鍙戦€侊細褰撳墠璧扮幇鏈?gif_player 鍔ㄧ敾閫氶亾锛屽彂閫佺殑鏄綋鍓嶄富棰樺簭鍒椼€?</span>
           </div>
         </div>
       </div>
@@ -178,6 +177,7 @@
 </template>
 
 <script>
+import { getSystemInfo, createDomQuery, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
@@ -198,7 +198,7 @@ import {
 } from "@/utils/spongebobRenderer.js";
 
 const EMPTY_STATUS = Object.freeze({
-  segment: "等待加载",
+  segment: "绛夊緟鍔犺浇",
   left: "-",
   right: "-",
 });
@@ -343,7 +343,7 @@ const ToggleRow = {
           type: "button",
           onClick: () => this.$emit("click"),
         },
-        this.active ? "开启" : "关闭",
+        this.active ? "寮€鍚? : "鍏抽棴","
       ),
     ]);
   },
@@ -379,10 +379,10 @@ export default {
       timeFontTab: 1,
       programOptions: SPONGEBOB_PROGRAMS,
       tabDefinitions: [
-        { index: 1, label: "流程", icon: "refresh" },
-        { index: 2, label: "角色", icon: "user" },
-        { index: 3, label: "时间", icon: "time" },
-        { index: 4, label: "状态", icon: "setting" },
+        { index: 1, label: "娴佺▼", icon: "refresh" },
+        { index: 2, label: "瑙掕壊", icon: "user" },
+        { index: 3, label: "鏃堕棿", icon: "time" },
+        { index: 4, label: "鐘舵€?", icon: "setting"" },"
       ],
       config: {
         programId: "duo",
@@ -412,7 +412,7 @@ export default {
       if (program) {
         return program.name;
       }
-      throw new Error(`缺少流程选项: ${this.config.programId}`);
+      throw new Error(`缂哄皯娴佺▼閫夐」: ${this.config.programId}`);
     },
     statusDetail() {
       if (this.assets && this.sceneState) {
@@ -421,7 +421,7 @@ export default {
       return EMPTY_STATUS;
     },
     statusText() {
-      return `${this.statusDetail.segment} · ${this.statusDetail.left} / ${this.statusDetail.right}`;
+      return `${this.statusDetail.segment} 路 ${this.statusDetail.left} / ${this.statusDetail.right}`;
     },
     previewCanvasBoxStyle() {
       return { height: `${this.previewContainerSize.height}px` };
@@ -480,13 +480,13 @@ export default {
   },
   methods: {
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
     initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
+      const systemInfo = getSystemInfo();
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query.select(".canvas-section").boundingClientRect((sectionRect) => {
             if (sectionRect && sectionRect.height) {
               const nextHeight = systemInfo.windowHeight - this.statusBarHeight - 88 - sectionRect.height;

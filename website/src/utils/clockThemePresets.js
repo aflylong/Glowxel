@@ -1,10 +1,10 @@
-const CLOCK_THEME_PRESETS = [
+﻿const CLOCK_THEME_PRESETS = [
   {
     id: "glowxel_minimal_digital",
-    name: "极简数字",
-    description: "保留大时间主体，弱化装饰信息，适合常亮桌面和低干扰展示。",
+    name: "鏋佺畝鏁板瓧",
+    description: "淇濈暀澶ф椂闂翠富浣擄紝寮卞寲瑁呴グ淇℃伅锛岄€傚悎甯镐寒妗岄潰鍜屼綆骞叉壈灞曠ず銆?,"
     accentColor: "#7bf2d0",
-    styleTag: "极简数字",
+    styleTag: "鏋佺畝鏁板瓧",
     previewImage: "",
     requiresImage: false,
     config: {
@@ -46,10 +46,10 @@ const CLOCK_THEME_PRESETS = [
   },
   {
     id: "glowxel_frame_clock",
-    name: "边框时钟",
-    description: "用整屏像素边框包住时间区域，画面更完整，适合做常驻主题。",
+    name: "杈规鏃堕挓",
+    description: "鐢ㄦ暣灞忓儚绱犺竟妗嗗寘浣忔椂闂村尯鍩燂紝鐢婚潰鏇村畬鏁达紝閫傚悎鍋氬父椹讳富棰樸€?,"
     accentColor: "#ffcf5a",
-    styleTag: "边框时钟",
+    styleTag: "杈规鏃堕挓",
     previewImage: "",
     requiresImage: false,
     config: {
@@ -91,10 +91,10 @@ const CLOCK_THEME_PRESETS = [
   },
   {
     id: "glowxel_centerpiece_badge",
-    name: "中央主视觉",
-    description: "中间保留一块主视觉徽章，时间收在角标位，适合主题化展示。",
+    name: "涓ぎ涓昏瑙?,"
+    description: "涓棿淇濈暀涓€鍧椾富瑙嗚寰界珷锛屾椂闂存敹鍦ㄨ鏍囦綅锛岄€傚悎涓婚鍖栧睍绀恒€?,"
     accentColor: "#ff7f96",
-    styleTag: "主视觉角标",
+    styleTag: "涓昏瑙夎鏍?,"
     previewImage: "",
     requiresImage: false,
     config: {
@@ -136,10 +136,10 @@ const CLOCK_THEME_PRESETS = [
   },
   {
     id: "glowxel_topbar_motion",
-    name: "顶栏波形",
-    description: "把时间压到顶部横栏，底部用波形和状态点补氛围，适合科技感主题。",
+    name: "椤舵爮娉㈠舰",
+    description: "鎶婃椂闂村帇鍒伴《閮ㄦí鏍忥紝搴曢儴鐢ㄦ尝褰㈠拰鐘舵€佺偣琛ユ皼鍥达紝閫傚悎绉戞妧鎰熶富棰樸€?,"
     accentColor: "#5ecbff",
-    styleTag: "顶栏动感",
+    styleTag: "椤舵爮鍔ㄦ劅",
     previewImage: "",
     requiresImage: false,
     config: {
@@ -181,10 +181,10 @@ const CLOCK_THEME_PRESETS = [
   },
   {
     id: "glowxel_festival_poster",
-    name: "节日海报",
-    description: "偏节庆海报式的整屏排版，强调氛围图形和暖色块组合。",
+    name: "鑺傛棩娴锋姤",
+    description: "鍋忚妭搴嗘捣鎶ュ紡鐨勬暣灞忔帓鐗堬紝寮鸿皟姘涘洿鍥惧舰鍜屾殩鑹插潡缁勫悎銆?,"
     accentColor: "#ff6c4d",
-    styleTag: "节日海报",
+    styleTag: "鑺傛棩娴锋姤",
     previewImage: "",
     requiresImage: false,
     config: {
@@ -226,10 +226,10 @@ const CLOCK_THEME_PRESETS = [
   },
   {
     id: "glowxel_pixel_arcade",
-    name: "像素游戏",
-    description: "借游戏 HUD 的信息排布做成整屏主题，适合偏活跃的像素展示。",
+    name: "鍍忕礌娓告垙",
+    description: "鍊熸父鎴?HUD 鐨勪俊鎭帓甯冨仛鎴愭暣灞忎富棰橈紝閫傚悎鍋忔椿璺冪殑鍍忕礌灞曠ず銆?,"
     accentColor: "#8dff6a",
-    styleTag: "像素游戏",
+    styleTag: "鍍忕礌娓告垙",
     previewImage: "",
     requiresImage: false,
     config: {
@@ -271,10 +271,10 @@ const CLOCK_THEME_PRESETS = [
   },
   {
     id: "glowxel_fireworks_bloom",
-    name: "烟花绽放",
-    description: "引用已入库烟花素材做成节庆主题，适合做气氛更强的展示页面。",
+    name: "鐑熻姳缁芥斁",
+    description: "寮曠敤宸插叆搴撶儫鑺辩礌鏉愬仛鎴愯妭搴嗕富棰橈紝閫傚悎鍋氭皵姘涙洿寮虹殑灞曠ず椤甸潰銆?,"
     accentColor: "#ffb347",
-    styleTag: "素材烟花",
+    styleTag: "绱犳潗鐑熻姳",
     previewImage: "",
     requiresImage: false,
     config: {
@@ -316,10 +316,10 @@ const CLOCK_THEME_PRESETS = [
   },
   {
     id: "glowxel_fireworks_rise",
-    name: "烟花升空",
-    description: "引用已入库烟花升空素材，适合搭配夜空底色和角标式时间布局。",
+    name: "鐑熻姳鍗囩┖",
+    description: "寮曠敤宸插叆搴撶儫鑺卞崌绌虹礌鏉愶紝閫傚悎鎼厤澶滅┖搴曡壊鍜岃鏍囧紡鏃堕棿甯冨眬銆?,"
     accentColor: "#7ec8ff",
-    styleTag: "素材夜空",
+    styleTag: "绱犳潗澶滅┖",
     previewImage: "",
     requiresImage: false,
     config: {
@@ -361,10 +361,10 @@ const CLOCK_THEME_PRESETS = [
   },
   {
     id: "clockwise_mario",
-    name: "马里奥时钟",
-    description: "完整的马里奥像素场景，时间嵌在地面砖块和角色场景里。",
+    name: "椹噷濂ユ椂閽?,"
+    description: "瀹屾暣鐨勯┈閲屽ゥ鍍忕礌鍦烘櫙锛屾椂闂村祵鍦ㄥ湴闈㈢爾鍧楀拰瑙掕壊鍦烘櫙閲屻€?,"
     accentColor: "#ff4e45",
-    styleTag: "场景时钟",
+    styleTag: "鍦烘櫙鏃堕挓",
     previewImage: "/static/clockwise-themes/cw-cf-0x01-thumb.jpg",
     requiresImage: false,
     config: {
@@ -406,10 +406,10 @@ const CLOCK_THEME_PRESETS = [
   },
   {
     id: "clockwise_words",
-    name: "文字时间主题",
-    description: "用整句英文表达当前时间，日期和状态信息放在底部信息带中。",
+    name: "鏂囧瓧鏃堕棿涓婚",
+    description: "鐢ㄦ暣鍙ヨ嫳鏂囪〃杈惧綋鍓嶆椂闂达紝鏃ユ湡鍜岀姸鎬佷俊鎭斁鍦ㄥ簳閮ㄤ俊鎭甫涓€?,"
     accentColor: "#f3f3f3",
-    styleTag: "文字时间",
+    styleTag: "鏂囧瓧鏃堕棿",
     previewImage: "/static/clockwise-themes/cw-cf-0x02-thumb.jpg",
     requiresImage: false,
     config: {
@@ -451,10 +451,10 @@ const CLOCK_THEME_PRESETS = [
   },
   {
     id: "clockwise_worldmap",
-    name: "地图时钟",
-    description: "以世界地图为主视觉，时间信息贴在地图层上，整体偏航图仪表盘风格。",
+    name: "鍦板浘鏃堕挓",
+    description: "浠ヤ笘鐣屽湴鍥句负涓昏瑙夛紝鏃堕棿淇℃伅璐村湪鍦板浘灞備笂锛屾暣浣撳亸鑸浘浠〃鐩橀鏍笺€?,"
     accentColor: "#4fd2a3",
-    styleTag: "地图时钟",
+    styleTag: "鍦板浘鏃堕挓",
     previewImage: "/static/clockwise-themes/cw-cf-0x03-thumb.jpg",
     requiresImage: false,
     config: {
@@ -496,10 +496,10 @@ const CLOCK_THEME_PRESETS = [
   },
   {
     id: "clockwise_castlevania",
-    name: "针塔时钟主题",
-    description: "钟塔场景配合中心表针，整体是暗夜哥特氛围。",
+    name: "閽堝鏃堕挓涓婚",
+    description: "閽熷鍦烘櫙閰嶅悎涓績琛ㄩ拡锛屾暣浣撴槸鏆楀鍝ョ壒姘涘洿銆?,"
     accentColor: "#d94fff",
-    styleTag: "钟塔指针",
+    styleTag: "閽熷鎸囬拡",
     previewImage: "/static/clockwise-themes/cw-cf-0x04-thumb.jpg",
     requiresImage: false,
     config: {
@@ -541,10 +541,10 @@ const CLOCK_THEME_PRESETS = [
   },
   {
     id: "clockwise_pacman",
-    name: "吃豆人主题",
-    description: "可动的迷宫场景，时间信息和吃豆人动效融合在同一个画面里。",
+    name: "鍚冭眴浜轰富棰?,"
+    description: "鍙姩鐨勮糠瀹満鏅紝鏃堕棿淇℃伅鍜屽悆璞嗕汉鍔ㄦ晥铻嶅悎鍦ㄥ悓涓€涓敾闈㈤噷銆?,"
     accentColor: "#ffd400",
-    styleTag: "街机迷宫",
+    styleTag: "琛楁満杩峰",
     previewImage: "/static/clockwise-themes/cw-cf-0x05-thumb.jpg",
     requiresImage: false,
     config: {
@@ -586,10 +586,10 @@ const CLOCK_THEME_PRESETS = [
   },
   {
     id: "clockwise_pokedex",
-    name: "图鉴主题",
-    description: "图鉴机身界面，包含精灵窗口、时间区、星期格和加载条。",
+    name: "鍥鹃壌涓婚",
+    description: "鍥鹃壌鏈鸿韩鐣岄潰锛屽寘鍚簿鐏电獥鍙ｃ€佹椂闂村尯銆佹槦鏈熸牸鍜屽姞杞芥潯銆?,"
     accentColor: "#ff5c5c",
-    styleTag: "图鉴面板",
+    styleTag: "鍥鹃壌闈㈡澘",
     previewImage: "/static/clockwise-themes/cw-cf-0x06-thumb.jpg",
     requiresImage: false,
     config: {

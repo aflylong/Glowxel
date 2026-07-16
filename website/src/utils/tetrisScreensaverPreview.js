@@ -1,4 +1,4 @@
-import { drawClockTextToPixels, getCurrentTimeText } from "./clockCanvas.js";
+﻿import { drawClockTextToPixels, getCurrentTimeText } from "./clockCanvas.js";
 
 const PANEL_SIZE = 64;
 const PIECES = [
@@ -368,7 +368,7 @@ function drawCell(map, cellX, cellY, cellSize, color, boardOffsetY = 0) {
 }
 
 function drawBoard(map, board, cols, rows, cellSize) {
-  // 底部对齐: 把"64 / cellSize 取 floor 后剩下的像素"放到顶部 (跟板载 tetris_effect.cpp 一致)
+  // 搴曢儴瀵归綈: 鎶?64 / cellSize 鍙?floor 鍚庡墿涓嬬殑鍍忕礌"鏀惧埌椤堕儴 (璺熸澘杞?tetris_effect.cpp 涓€鑷?"
   const boardOffsetY = Math.max(0, PANEL_SIZE - rows * cellSize);
   for (let row = 0; row < rows; row += 1) {
     for (let col = 0; col < cols; col += 1) {

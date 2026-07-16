@@ -1,6 +1,6 @@
-<template>
+﻿<template>
   <div class="canvas-editor-page glx-page-shell game-mode-page">
-    <PcModeTopbar title="画板模式" />
+    <PcModeTopbar title="鐢绘澘妯″紡" />
 
     <section class="canvas-editor-layout game-mode-layout">
       <article
@@ -9,10 +9,9 @@
         <div class="canvas-editor-preview-card__head">
           <div>
             <p class="canvas-editor-preview-card__eyebrow">Device Mode</p>
-            <h2 class="canvas-editor-preview-card__title">64x64 画板预览</h2>
+            <h2 class="canvas-editor-preview-card__title">64x64 鐢绘澘棰勮</h2>
             <p class="canvas-editor-preview-card__desc">
-              左侧统一保留预览、发送和摘要信息，原来的画布编辑、缩放、拖动和发送逻辑不变。
-            </p>
+              宸︿晶缁熶竴淇濈暀棰勮銆佸彂閫佸拰鎽樿淇℃伅锛屽師鏉ョ殑鐢诲竷缂栬緫銆佺缉鏀俱€佹嫋鍔ㄥ拰鍙戦€侀€昏緫涓嶅彉銆?            </p>
           </div>
           <span class="glx-chip glx-chip--blue">64 x 64</span>
         </div>
@@ -25,14 +24,14 @@
               :disabled="isSending"
               @click="publishCanvas"
             >
-              {{ isSending ? "发送中..." : "发送到设备" }}
+              {{ isSending ? "鍙戦€佷腑..." : "鍙戦€佸埌璁惧" }}
             </button>
             <button
               type="button"
               class="glx-button glx-button--ghost"
               @click="handleFit"
             >
-              适配
+              閫傞厤
             </button>
           </div>
 
@@ -54,7 +53,7 @@
               class="canvas-editor-stage__canvas"
               :class="{
                 'canvas-editor-stage__canvas--drag': currentTool === 'move',
-              }"
+              }""
               @pointerdown="handlePointerDown"
               @pointermove="handlePointerMove"
               @pointerup="handlePointerUp"
@@ -65,7 +64,7 @@
             <DeviceSendingOverlay
               :visible="isSending"
               title="正在发送画板像素"
-              description="发送期间锁定当前 64×64 快照，等待设备完成画板模式切换和稀疏像素写入。"
+              description="发送期间锁定当前 64x64 快照，等待设备完成画板模式切换和稀疏像素写入。"
             >
               <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
             </DeviceSendingOverlay>
@@ -74,22 +73,22 @@
 
         <div class="canvas-editor-summary-grid">
           <article class="canvas-editor-summary-card">
-            <span class="canvas-editor-summary-card__label">已上色像素</span>
+            <span class="canvas-editor-summary-card__label">宸蹭笂鑹插儚绱?</span>
             <strong class="canvas-editor-summary-card__value">{{ coloredPixelCount }}</strong>
-            <span class="canvas-editor-summary-card__meta">当前画布非空像素数量</span>
+            <span class="canvas-editor-summary-card__meta">褰撳墠鐢诲竷闈炵┖鍍忕礌鏁伴噺</span>
           </article>
           <article class="canvas-editor-summary-card">
-            <span class="canvas-editor-summary-card__label">当前缩放</span>
+            <span class="canvas-editor-summary-card__label">褰撳墠缂╂斁</span>
             <strong class="canvas-editor-summary-card__value">{{ zoom }}x</strong>
-            <span class="canvas-editor-summary-card__meta">滚轮和快捷按钮同步生效</span>
+            <span class="canvas-editor-summary-card__meta">婊氳疆鍜屽揩鎹锋寜閽悓姝ョ敓鏁?</span>
           </article>
           <article class="canvas-editor-summary-card">
-            <span class="canvas-editor-summary-card__label">拖动偏移</span>
+            <span class="canvas-editor-summary-card__label">鎷栧姩鍋忕Щ</span>
             <strong class="canvas-editor-summary-card__value">{{ panText }}</strong>
-            <span class="canvas-editor-summary-card__meta">拖动画布时更新当前视口</span>
+            <span class="canvas-editor-summary-card__meta">鎷栧姩鐢诲竷鏃舵洿鏂板綋鍓嶈鍙?</span>
           </article>
           <article class="canvas-editor-summary-card">
-            <span class="canvas-editor-summary-card__label">业务模式</span>
+            <span class="canvas-editor-summary-card__label">涓氬姟妯″紡</span>
             <strong class="canvas-editor-summary-card__value">{{ businessModeText }}</strong>
             <span class="canvas-editor-summary-card__meta">{{ storageKey }}</span>
           </article>
@@ -99,8 +98,8 @@
       <div class="canvas-editor-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">模式配置</h2>
-            <span class="glx-section-meta">操作 / 绘制 / 状态</span>
+            <h2 class="glx-section-title">妯″紡閰嶇疆</h2>
+            <span class="glx-section-meta">鎿嶄綔 / 缁樺埗 / 鐘舵€?</span>
           </div>
           <DeviceModeTabs v-model="currentPanel" :items="panelItems" />
         </article>
@@ -108,8 +107,8 @@
         <template v-if="currentPanel === 'actions'">
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">快捷操作</h2>
-              <span class="glx-section-meta">撤销 / 重做 / 视图 / 清空</span>
+              <h2 class="glx-section-title">蹇嵎鎿嶄綔</h2>
+              <span class="glx-section-meta">鎾ら攢 / 閲嶅仛 / 瑙嗗浘 / 娓呯┖</span>
             </div>
 
             <div class="canvas-editor-action-grid">
@@ -119,7 +118,7 @@
                 :disabled="historyIndex <= 0"
                 @click="handleUndo"
               >
-                撤销
+                鎾ら攢
               </button>
               <button
                 type="button"
@@ -127,41 +126,41 @@
                 :disabled="historyIndex >= history.length - 1"
                 @click="handleRedo"
               >
-                重做
+                閲嶅仛
               </button>
               <button type="button" class="canvas-editor-action-btn" @click="handleZoom(-1)">
-                缩小
+                缂╁皬
               </button>
               <button type="button" class="canvas-editor-action-btn" @click="handleZoom(1)">
-                放大
+                鏀惧ぇ
               </button>
               <button type="button" class="canvas-editor-action-btn" @click="handleFit">
-                适配
+                閫傞厤
               </button>
               <button
                 type="button"
                 class="canvas-editor-action-btn canvas-editor-action-btn--danger"
                 @click="clearCanvas"
               >
-                清空
+                娓呯┖
               </button>
             </div>
           </article>
 
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">操作说明</h2>
-              <span class="glx-section-meta">保留原有画布交互</span>
+              <h2 class="glx-section-title">鎿嶄綔璇存槑</h2>
+              <span class="glx-section-meta">淇濈暀鍘熸湁鐢诲竷浜や簰</span>
             </div>
 
             <div class="canvas-editor-note-grid">
               <div class="canvas-editor-note-card">
-                <strong>拖动模式</strong>
-                <p>切到拖动工具后可移动视口，方便检查边缘绘制区域。</p>
+                <strong>鎷栧姩妯″紡</strong>
+                <p>鍒囧埌鎷栧姩宸ュ叿鍚庡彲绉诲姩瑙嗗彛锛屾柟渚挎鏌ヨ竟缂樼粯鍒跺尯鍩熴€?</p>
               </div>
               <div class="canvas-editor-note-card">
-                <strong>发送逻辑</strong>
-                <p>发送时仍使用当前 64×64 稀疏像素快照，不改业务链路。</p>
+                <strong>鍙戦€侀€昏緫</strong>
+                <p>鍙戦€佹椂浠嶄娇鐢ㄥ綋鍓?64脳64 绋€鐤忓儚绱犲揩鐓э紝涓嶆敼涓氬姟閾捐矾銆?</p>
               </div>
             </div>
           </article>
@@ -170,8 +169,8 @@
         <template v-else-if="currentPanel === 'draw'">
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">绘制工具</h2>
-              <span class="glx-section-meta">拖动 / 绘画 / 擦除</span>
+              <h2 class="glx-section-title">缁樺埗宸ュ叿</h2>
+              <span class="glx-section-meta">鎷栧姩 / 缁樼敾 / 鎿﹂櫎</span>
             </div>
 
             <DeviceModeTabs v-model="currentTool" :items="toolItems" />
@@ -182,8 +181,8 @@
             class="glx-section-card glx-section-card--stack"
           >
             <div class="glx-section-head">
-              <h2 class="glx-section-title">笔触大小</h2>
-              <span class="glx-section-meta">与移动端保持同一规格</span>
+              <h2 class="glx-section-title">绗旇Е澶у皬</h2>
+              <span class="glx-section-meta">涓庣Щ鍔ㄧ淇濇寔鍚屼竴瑙勬牸</span>
             </div>
 
             <DeviceModeTabs v-model="brushSize" :items="brushSizeItems" />
@@ -194,13 +193,13 @@
             class="glx-section-card glx-section-card--stack"
           >
             <div class="glx-section-head">
-              <h2 class="glx-section-title">画笔颜色</h2>
-              <span class="glx-section-meta">本地缓存画布数据</span>
+              <h2 class="glx-section-title">鐢荤瑪棰滆壊</h2>
+              <span class="glx-section-meta">鏈湴缂撳瓨鐢诲竷鏁版嵁</span>
             </div>
 
             <div class="canvas-editor-color-row">
               <label class="canvas-editor-color-picker">
-                <span class="canvas-editor-color-picker__label">当前颜色</span>
+                <span class="canvas-editor-color-picker__label">褰撳墠棰滆壊</span>
                 <input
                   type="color"
                   :value="selectedColor"
@@ -210,7 +209,7 @@
               </label>
 
               <div class="canvas-editor-color-code">
-                <span class="canvas-editor-color-code__label">颜色值</span>
+                <span class="canvas-editor-color-code__label">棰滆壊鍊?</span>
                 <strong class="canvas-editor-color-code__value">{{ selectedColor }}</strong>
               </div>
             </div>
@@ -222,25 +221,25 @@
         <template v-else>
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">当前状态</h2>
-              <span class="glx-section-meta">本地缓存已启用</span>
+              <h2 class="glx-section-title">褰撳墠鐘舵€?</h2>
+              <span class="glx-section-meta">鏈湴缂撳瓨宸插惎鐢?</span>
             </div>
 
             <div class="glx-kv-grid">
               <div class="glx-kv-card">
-                <span class="glx-kv-card__label">本地缓存键</span>
+                <span class="glx-kv-card__label">鏈湴缂撳瓨閿?</span>
                 <strong class="glx-kv-card__value">{{ storageKey }}</strong>
               </div>
               <div class="glx-kv-card">
-                <span class="glx-kv-card__label">画布尺寸</span>
-                <strong class="glx-kv-card__value">64 × 64</strong>
+                <span class="glx-kv-card__label">鐢诲竷灏哄</span>
+                <strong class="glx-kv-card__value">64 脳 64</strong>
               </div>
               <div class="glx-kv-card">
-                <span class="glx-kv-card__label">拖动偏移</span>
+                <span class="glx-kv-card__label">鎷栧姩鍋忕Щ</span>
                 <strong class="glx-kv-card__value">{{ panText }}</strong>
               </div>
               <div class="glx-kv-card">
-                <span class="glx-kv-card__label">当前工具</span>
+                <span class="glx-kv-card__label">褰撳墠宸ュ叿</span>
                 <strong class="glx-kv-card__value">{{ currentToolLabel }}</strong>
               </div>
             </div>
@@ -248,17 +247,17 @@
 
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">发送状态</h2>
-              <span class="glx-section-meta">设备连接与模式同步</span>
+              <h2 class="glx-section-title">鍙戦€佺姸鎬?</h2>
+              <span class="glx-section-meta">璁惧杩炴帴涓庢ā寮忓悓姝?</span>
             </div>
 
             <div class="canvas-editor-note-grid">
               <div class="canvas-editor-note-card">
-                <strong>连接状态</strong>
-                <p>{{ deviceStore.connected ? "设备已连接，可直接发送画板。" : "当前未连接，发送前需要先连接设备。" }}</p>
+                <strong>杩炴帴鐘舵€?</strong>
+                <p>{{ deviceStore.connected ? "设备已连接，可以直接发送画板。" : "当前未连接，发送前需要先连接设备。" }}</p>
               </div>
               <div class="canvas-editor-note-card">
-                <strong>业务模式</strong>
+                <strong>涓氬姟妯″紡</strong>
                 <p>{{ businessModeText }}</p>
               </div>
             </div>
@@ -287,9 +286,9 @@ const MAX_ZOOM = 20;
 const CANVAS_PIXELS_KEY = "canvas_mode_pixels";
 
 const toolItems = Object.freeze([
-  { value: "move", label: "拖动" },
-  { value: "pencil", label: "绘画" },
-  { value: "eraser", label: "擦除" },
+  { value: "move", label: "鎷栧姩" },
+  { value: "pencil", label: "缁樼敾" },
+  { value: "eraser", label: "鎿﹂櫎" },
 ]);
 
 const brushSizeItems = Object.freeze([
@@ -300,20 +299,20 @@ const brushSizeItems = Object.freeze([
 ]);
 
 const panelItems = Object.freeze([
-  { value: "actions", label: "操作" },
-  { value: "draw", label: "绘制" },
+  { value: "actions", label: "鎿嶄綔" },
+  { value: "draw", label: "缁樺埗" },
   { value: "status", label: "状态" },
 ]);
 
 const presetColors = Object.freeze([
-  { label: "冰蓝", value: "#64c8ff" },
-  { label: "亮黄", value: "#ffd23f" },
-  { label: "橘红", value: "#ff8454" },
-  { label: "薄荷", value: "#67d7a5" },
-  { label: "紫粉", value: "#d57cff" },
-  { label: "白色", value: "#ffffff" },
-  { label: "深蓝", value: "#356dff" },
-  { label: "暖红", value: "#ff5f6d" },
+  { label: "鍐拌摑", value: "#64c8ff" },
+  { label: "浜粍", value: "#ffd23f" },
+  { label: "姗樼孩", value: "#ff8454" },
+  { label: "钖勮嵎", value: "#67d7a5" },
+  { label: "绱矇", value: "#d57cff" },
+  { label: "鐧借壊", value: "#ffffff" },
+  { label: "娣辫摑", value: "#356dff" },
+  { label: "鏆栫孩", value: "#ff5f6d" },
 ]);
 
 const deviceStore = useDeviceLegacyStore();
@@ -411,14 +410,14 @@ onMounted(async () => {
   try {
     await deviceStore.restoreConnection();
   } catch (error) {
-    // 保持离线编辑，不阻断页面打开
+    // 淇濇寔绂荤嚎缂栬緫锛屼笉闃绘柇椤甸潰鎵撳紑
   }
 
   if (deviceStore.connected) {
     try {
       await deviceStore.syncDeviceStatus();
     } catch (error) {
-      // 保持当前本地态
+      // Keep current local state.
     }
   }
 
@@ -783,7 +782,7 @@ function clearCanvas() {
   pushHistory(pixels.value);
   persistPixels();
   renderCanvas();
-  feedback.info("画板已清空", "本地 64×64 画板已经清空。");
+  feedback.info("画板已清空", "本地 64x64 画板已经清空。");
 }
 
 function handleNativeColorInput(value) {

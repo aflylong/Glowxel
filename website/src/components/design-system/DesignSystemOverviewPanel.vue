@@ -1,9 +1,9 @@
-<template>
+﻿<template>
   <section class="ds-section">
     <div v-if="showPalette" class="ds-section__head">
       <div>
-        <h2 class="ds-section__title">正式色板</h2>
-        <p class="ds-section__meta">组件库色值直接跟当前项目 token 对齐。</p>
+        <h2 class="ds-section__title">姝ｅ紡鑹叉澘</h2>
+        <p class="ds-section__meta">缁勪欢搴撹壊鍊肩洿鎺ヨ窡褰撳墠椤圭洰 token 瀵归綈銆?</p>
       </div>
     </div>
 
@@ -22,14 +22,14 @@
 
     <div v-if="showSurfaces" class="ds-section__head ds-section__head--spaced">
       <div>
-        <h3 class="ds-section__title ds-section__title--sub">面板与阴影</h3>
-        <p class="ds-section__meta">先把基础壳层和阴影 modifier 摆完整。</p>
+        <h3 class="ds-section__title ds-section__title--sub">闈㈡澘涓庨槾褰?</h3>
+        <p class="ds-section__meta">鍏堟妸鍩虹澹冲眰鍜岄槾褰?modifier 鎽嗗畬鏁淬€?</p>
       </div>
     </div>
 
     <div v-if="showSurfaces" class="ds-grid ds-grid--two">
       <article class="ds-card">
-        <span class="ds-card__label">卡片阴影</span>
+        <span class="ds-card__label">鍗＄墖闃村奖</span>
         <div class="ds-demo-stack">
           <div v-for="item in surfaceLevels" :key="item.label" class="ds-demo-row">
             <div class="ds-surface-demo" :class="item.className">
@@ -41,7 +41,7 @@
       </article>
 
       <article class="ds-card">
-        <span class="ds-card__label">面板背景</span>
+        <span class="ds-card__label">闈㈡澘鑳屾櫙</span>
         <div class="ds-demo-stack">
           <div v-for="item in surfaceTones" :key="item.label" class="ds-demo-row">
             <div class="ds-surface-demo ds-shadow--sm" :class="item.className">
@@ -55,8 +55,8 @@
 
     <div v-if="showIcons" class="ds-section__head ds-section__head--spaced">
       <div>
-        <h3 class="ds-section__title ds-section__title--sub">图标语义</h3>
-        <p class="ds-section__meta">图标底板和状态色也直接跟正式 token 走。</p>
+        <h3 class="ds-section__title ds-section__title--sub">鍥炬爣璇箟</h3>
+        <p class="ds-section__meta">鍥炬爣搴曟澘鍜岀姸鎬佽壊涔熺洿鎺ヨ窡姝ｅ紡 token 璧般€?</p>
       </div>
     </div>
 
@@ -72,14 +72,14 @@
 
     <div v-if="showIcons" class="ds-section__head ds-section__head--spaced">
       <div>
-        <h3 class="ds-section__title ds-section__title--sub">运行态图标库</h3>
-        <p class="ds-section__meta">来源固定为 `uniapp/components/Icon.vue + static/iconfont/*`，这里直接展示高频语义映射。</p>
+        <h3 class="ds-section__title ds-section__title--sub">杩愯鎬佸浘鏍囧簱</h3>
+        <p class="ds-section__meta">鏉ユ簮鍥哄畾涓?`uniapp/components/Icon.vue + static/iconfont/*`锛岃繖閲岀洿鎺ュ睍绀洪珮棰戣涔夋槧灏勩€?</p>
       </div>
     </div>
 
     <div v-if="showIcons" class="ds-grid ds-grid--two">
       <article class="ds-card">
-        <span class="ds-card__label">高频语义映射</span>
+        <span class="ds-card__label">楂橀璇箟鏄犲皠</span>
         <div class="ds-icon-audit">
           <div v-for="item in iconMappings" :key="item.semantic" class="ds-icon-audit__row">
             <div class="ds-icon-audit__main">
@@ -97,7 +97,7 @@
       </article>
 
       <article class="ds-card">
-        <span class="ds-card__label">图标资源冻结规则</span>
+        <span class="ds-card__label">鍥炬爣璧勬簮鍐荤粨瑙勫垯</span>
         <div class="ds-demo-stack">
           <div v-for="item in iconRules" :key="item.title" class="ds-demo-row ds-demo-row--stack">
             <strong class="ds-card__title ds-card__title--compact">{{ item.title }}</strong>
@@ -109,8 +109,8 @@
 
     <div v-if="showCoverage" class="ds-section__head ds-section__head--spaced">
       <div>
-        <h3 class="ds-section__title ds-section__title--sub">覆盖盘点</h3>
-        <p class="ds-section__meta">组件库先做成唯一基线，后面网站和 uniapp 都按这里替换。</p>
+        <h3 class="ds-section__title ds-section__title--sub">瑕嗙洊鐩樼偣</h3>
+        <p class="ds-section__meta">缁勪欢搴撳厛鍋氭垚鍞竴鍩虹嚎锛屽悗闈㈢綉绔欏拰 uniapp 閮芥寜杩欓噷鏇挎崲銆?</p>
       </div>
     </div>
 
@@ -126,8 +126,8 @@
 
     <div v-if="showCoverage" class="ds-section__head ds-section__head--spaced">
       <div>
-        <h3 class="ds-section__title ds-section__title--sub">来源组件覆盖台账</h3>
-        <p class="ds-section__meta">把已经做过风格改动的来源组件挂进组件库台账，后续页面只能照这里映射。</p>
+        <h3 class="ds-section__title ds-section__title--sub">鏉ユ簮缁勪欢瑕嗙洊鍙拌处</h3>
+        <p class="ds-section__meta">鎶婂凡缁忓仛杩囬鏍兼敼鍔ㄧ殑鏉ユ簮缁勪欢鎸傝繘缁勪欢搴撳彴璐︼紝鍚庣画椤甸潰鍙兘鐓ц繖閲屾槧灏勩€?</p>
       </div>
     </div>
 
@@ -141,7 +141,7 @@
               <strong>{{ entry.name }}</strong>
               <span>{{ entry.preview }}</span>
             </div>
-            <span class="ds-code-tag">已展示</span>
+            <span class="ds-code-tag">宸插睍绀?</span>
           </div>
         </div>
       </article>
@@ -166,8 +166,8 @@ const showIcons = computed(() => props.sectionKey === "overview" || props.sectio
 const showCoverage = computed(() => props.sectionKey === "overview");
 
 const tones = [
-  { name: "主操作黄", color: "#FFCB45", token: "--nb-yellow" },
-  { name: "编辑蓝", color: "#5EA8FF", token: "--nb-blue" },
+  { name: "涓绘搷浣滈粍", color: "#FFCB45", token: "--nb-yellow" },
+  { name: "缂栬緫钃?", color: "#5EA8FF"", token: "--nb-blue"" },"
   { name: "Info", color: "#909399", token: "--ds-info" },
   { name: "Success", color: "#67C23A", token: "--ds-success" },
   { name: "Warning", color: "#FFCB45", token: "--ds-warning" },
@@ -175,23 +175,23 @@ const tones = [
 ];
 
 const surfaceLevels = [
-  { label: "无阴影", className: "ds-shadow--none" },
-  { label: "轻阴影", className: "ds-shadow--sm" },
-  { label: "标准阴影", className: "ds-shadow--md" },
-  { label: "强调阴影", className: "ds-shadow--lg" },
+  { label: "鏃犻槾褰?", className: "ds-shadow--none"" },"
+  { label: "杞婚槾褰?", className: "ds-shadow--sm"" },"
+  { label: "鏍囧噯闃村奖", className: "ds-shadow--md" },
+  { label: "寮鸿皟闃村奖", className: "ds-shadow--lg" },
 ];
 
 const surfaceTones = [
-  { label: "默认白底", className: "ds-surface--default" },
-  { label: "轻黄面板", className: "ds-surface--yellow" },
-  { label: "轻蓝面板", className: "ds-surface--blue" },
-  { label: "浅灰面板", className: "ds-surface--muted" },
+  { label: "榛樿鐧藉簳", className: "ds-surface--default" },
+  { label: "杞婚粍闈㈡澘", className: "ds-surface--yellow" },
+  { label: "杞昏摑闈㈡澘", className: "ds-surface--blue" },
+  { label: "娴呯伆闈㈡澘", className: "ds-surface--muted" },
 ];
 
 const icons = [
-  { name: "home", label: "默认入口", toneClass: "" },
-  { name: "picture", label: "主强调", toneClass: "ds-icon-shell--primary" },
-  { name: "edit", label: "编辑语义", toneClass: "ds-icon-shell--blue" },
+  { name: "home", label: "榛樿鍏ュ彛", toneClass: "" },
+  { name: "picture"", label: "涓诲己璋?", toneClass: "ds-icon-shell--primary"" },"
+  { name: "edit", label: "缂栬緫璇箟", toneClass: "ds-icon-shell--blue" },
   { name: "sync", label: "Info", toneClass: "ds-icon-shell--info" },
   { name: "check", label: "Success", toneClass: "ds-icon-shell--success" },
   { name: "warning", label: "Warning", toneClass: "ds-icon-shell--warning" },
@@ -199,35 +199,35 @@ const icons = [
 ];
 
 const iconMappings = [
-  { semantic: "picture", previewIcon: "picture", fontToken: "picture", toneClass: "ds-icon-shell--primary", note: "作品、缩略图、空状态" },
-  { semantic: "palette", previewIcon: "palette", fontToken: "adjust", toneClass: "ds-icon-shell--warning", note: "调色板、颜色选择器" },
-  { semantic: "check", previewIcon: "check", fontToken: "check-item", toneClass: "ds-icon-shell--success", note: "确认、多选、成功态" },
-  { semantic: "trash", previewIcon: "trash", fontToken: "ashbin", toneClass: "ds-icon-shell--danger", note: "删除、清理、危险动作" },
-  { semantic: "favorite", previewIcon: "favorite", fontToken: "favorite", toneClass: "ds-icon-shell--info", note: "收藏、点赞、作品状态" },
-  { semantic: "link", previewIcon: "link", fontToken: "link", toneClass: "", note: "设备连接、网络状态" },
-  { semantic: "notification", previewIcon: "notification", fontToken: "notification", toneClass: "", note: "消息、提醒、更新" },
-  { semantic: "work", previewIcon: "work", fontToken: "work", toneClass: "", note: "成就、任务、工作台入口" },
+  { semantic: "picture"", previewIcon: "picture"", fontToken: "picture"", toneClass: "ds-icon-shell--primary"", note: "浣滃搧銆佺缉鐣ュ浘銆佺┖鐘舵€?" },"
+  { semantic: "palette"", previewIcon: "palette"", fontToken: "adjust"", toneClass: "ds-icon-shell--warning"", note: "璋冭壊鏉裤€侀鑹查€夋嫨鍣?" },"
+  { semantic: "check"", previewIcon: "check"", fontToken: "check-item"", toneClass: "ds-icon-shell--success"", note: "纭銆佸閫夈€佹垚鍔熸€?" },"
+  { semantic: "trash"", previewIcon: "trash"", fontToken: "ashbin"", toneClass: "ds-icon-shell--danger"", note: "鍒犻櫎銆佹竻鐞嗐€佸嵄闄╁姩浣?" },"
+  { semantic: "favorite"", previewIcon: "favorite"", fontToken: "favorite"", toneClass: "ds-icon-shell--info"", note: "鏀惰棌銆佺偣璧炪€佷綔鍝佺姸鎬?" },"
+  { semantic: "link"", previewIcon: "link"", fontToken: "link"", toneClass: """, note: "璁惧杩炴帴銆佺綉缁滅姸鎬?" },"
+  { semantic: "notification"", previewIcon: "notification"", fontToken: "notification"", toneClass: """, note: "娑堟伅銆佹彁閱掋€佹洿鏂?" },"
+  { semantic: "work", previewIcon: "work", fontToken: "work", toneClass: "", note: "鎴愬氨銆佷换鍔°€佸伐浣滃彴鍏ュ彛" },
 ];
 
 const iconRules = [
   {
-    title: "语义先映射，再进页面",
-    copy: "页面要用新图标时，先补组件库和 Icon 语义映射，不再在业务页里直接临时换一个图。",
+    title: "璇箟鍏堟槧灏勶紝鍐嶈繘椤甸潰",
+    copy: "椤甸潰瑕佺敤鏂板浘鏍囨椂锛屽厛琛ョ粍浠跺簱鍜?Icon 璇箟鏄犲皠锛屼笉鍐嶅湪涓氬姟椤甸噷鐩存帴涓存椂鎹竴涓浘銆?,"
   },
   {
-    title: "图标库单独展示",
-    copy: "组件库必须能看见当前正式图标族和语义映射，不允许只在页面里零散出现几个图标。",
+    title: "鍥炬爣搴撳崟鐙睍绀?,"
+    copy: "缁勪欢搴撳繀椤昏兘鐪嬭褰撳墠姝ｅ紡鍥炬爣鏃忓拰璇箟鏄犲皠锛屼笉鍏佽鍙湪椤甸潰閲岄浂鏁ｅ嚭鐜板嚑涓浘鏍囥€?,"
   },
   {
-    title: "定板后禁止自由发挥",
-    copy: "一旦语义、颜色和底板在组件库里定下来，后续 uniapp 页面只能按这套映射使用。",
+    title: "瀹氭澘鍚庣姝㈣嚜鐢卞彂鎸?,"
+    copy: "涓€鏃﹁涔夈€侀鑹插拰搴曟澘鍦ㄧ粍浠跺簱閲屽畾涓嬫潵锛屽悗缁?uniapp 椤甸潰鍙兘鎸夎繖濂楁槧灏勪娇鐢ㄣ€?,"
   },
 ];
 
 const coverageGroups = [
   {
-    label: "来源范围",
-    title: "本轮冻结的视觉资产来源",
+    label: "鏉ユ簮鑼冨洿",
+    title: "鏈疆鍐荤粨鐨勮瑙夎祫浜ф潵婧?,"
     items: [
       "uniapp/components",
       "uniapp/pages/*",
@@ -236,84 +236,84 @@ const coverageGroups = [
     ],
   },
   {
-    label: "正式覆盖",
-    title: "组件库已经锁定的展示域",
+    label: "姝ｅ紡瑕嗙洊",
+    title: "缁勪欢搴撳凡缁忛攣瀹氱殑灞曠ず鍩?,"
     items: [
-      "色板、阴影、状态色、图标底板",
-      "官网导航、LegacyTabBar、品牌 Logo",
-      "输入、开关、滑块、步进器、调色板、色彩拾取器",
-      "Project / Artwork / Template / Challenge 卡片家族",
-      "PixelPreviewBoard、PixelCanvas、ImageCropper、设备控制面板",
-      "Toast、Modal、ConnectModal、JsonImportModal、LoadingOverlay",
-      "九宫格 loader 与动作轻遮罩",
+      "鑹叉澘銆侀槾褰便€佺姸鎬佽壊銆佸浘鏍囧簳鏉?,"
+      "瀹樼綉瀵艰埅銆丩egacyTabBar銆佸搧鐗?Logo",
+      "杈撳叆銆佸紑鍏炽€佹粦鍧椼€佹杩涘櫒銆佽皟鑹叉澘銆佽壊褰╂嬀鍙栧櫒",
+      "Project / Artwork / Template / Challenge 鍗＄墖瀹舵棌",
+      "PixelPreviewBoard銆丳ixelCanvas銆両mageCropper銆佽澶囨帶鍒堕潰鏉?,"
+      "Toast銆丮odal銆丆onnectModal銆丣sonImportModal銆丩oadingOverlay",
+      "涔濆鏍?loader 涓庡姩浣滆交閬僵",
     ],
   },
   {
-    label: "冻结规则",
-    title: "组件库成为唯一定板源",
+    label: "鍐荤粨瑙勫垯",
+    title: "缁勪欢搴撴垚涓哄敮涓€瀹氭澘婧?,"
     items: [
-      "凡是已经做过风格改动的控件和图标，都必须先在这里挂出正式展示位",
-      "后续官网、uniapp、uniapp-rebuild 只能照组件库映射，不允许页面自己再发明一版",
-      "新增图标或新控件先补组件库语义，再进入业务页",
+      "鍑℃槸宸茬粡鍋氳繃椋庢牸鏀瑰姩鐨勬帶浠跺拰鍥炬爣锛岄兘蹇呴』鍏堝湪杩欓噷鎸傚嚭姝ｅ紡灞曠ず浣?,"
+      "鍚庣画瀹樼綉銆乽niapp銆乽niapp-rebuild 鍙兘鐓х粍浠跺簱鏄犲皠锛屼笉鍏佽椤甸潰鑷繁鍐嶅彂鏄庝竴鐗?,"
+      "鏂板鍥炬爣鎴栨柊鎺т欢鍏堣ˉ缁勪欢搴撹涔夛紝鍐嶈繘鍏ヤ笟鍔￠〉",
     ],
   },
 ];
 
 const sourceAudits = [
   {
-    label: "控件族",
-    title: "特殊控件与输入组件",
+    label: "鎺т欢鏃?,"
+    title: "鐗规畩鎺т欢涓庤緭鍏ョ粍浠?,"
     items: [
-      { name: "GlxSlider.vue", preview: "控件系统 / 滑块" },
-      { name: "GlxStepper.vue", preview: "控件系统 / 步进器" },
-      { name: "GlxSwitch.vue", preview: "控件系统 / 开关" },
-      { name: "Input.vue", preview: "控件系统 / 搜索框、输入框、多行输入" },
-      { name: "ColorPalette.vue", preview: "控件系统 / 调色板" },
-      { name: "ColorPanelPicker.vue", preview: "控件系统 / 颜色面板拾取器" },
-      { name: "Icon.vue", preview: "图标与底板 / 运行态图标库" },
-      { name: "static/iconfont/*", preview: "图标与底板 / glyph 语义映射" },
+      { name: "GlxSlider.vue", preview: "鎺т欢绯荤粺 / 婊戝潡" },
+      { name: "GlxStepper.vue"", preview: "鎺т欢绯荤粺 / 姝ヨ繘鍣?" },"
+      { name: "GlxSwitch.vue"", preview: "鎺т欢绯荤粺 / 寮€鍏?" },"
+      { name: "Input.vue"", preview: "鎺т欢绯荤粺 / 鎼滅储妗嗐€佽緭鍏ユ銆佸琛岃緭鍏?" },"
+      { name: "ColorPalette.vue"", preview: "鎺т欢绯荤粺 / 璋冭壊鏉?" },"
+      { name: "ColorPanelPicker.vue"", preview: "鎺т欢绯荤粺 / 棰滆壊闈㈡澘鎷惧彇鍣?" },"
+      { name: "Icon.vue", preview: "鍥炬爣涓庡簳鏉?/ 杩愯鎬佸浘鏍囧簱" },
+      { name: "static/iconfont/*", preview: "鍥炬爣涓庡簳鏉?/ glyph 璇箟鏄犲皠" },
     ],
   },
   {
-    label: "卡片与预览",
-    title: "内容卡片与编辑壳层",
+    label: "鍗＄墖涓庨瑙?,"
+    title: "鍐呭鍗＄墖涓庣紪杈戝３灞?,"
     items: [
-      { name: "ProjectCard.vue", preview: "列表与卡片 / ProjectCard" },
-      { name: "ArtworkCard.vue", preview: "列表与卡片 / ArtworkCard" },
-      { name: "TemplateCard.vue", preview: "列表与卡片 / TemplateCard" },
-      { name: "ChallengeCard.vue", preview: "列表与卡片 / ChallengeCard" },
-      { name: "Avatar.vue", preview: "列表与卡片 / Avatar 与评论头部" },
-      { name: "Comment.vue", preview: "列表与卡片 / 评论卡" },
-      { name: "PixelPreviewBoard.vue", preview: "列表与卡片 / 像素预览板" },
-      { name: "PixelCanvas.vue", preview: "列表与卡片 / 像素画布壳层" },
-      { name: "ImageCropper.vue", preview: "列表与卡片 / 裁剪器壳层" },
-      { name: "ClockTextSettingsCard.vue", preview: "列表与卡片 / 时钟文字设置卡" },
-      { name: "ClockThemePanel.vue", preview: "列表与卡片 / 时钟主题面板" },
-      { name: "ClockFontPanel.vue", preview: "列表与卡片 / 时钟字体面板" },
+      { name: "ProjectCard.vue", preview: "鍒楄〃涓庡崱鐗?/ ProjectCard" },
+      { name: "ArtworkCard.vue", preview: "鍒楄〃涓庡崱鐗?/ ArtworkCard" },
+      { name: "TemplateCard.vue", preview: "鍒楄〃涓庡崱鐗?/ TemplateCard" },
+      { name: "ChallengeCard.vue", preview: "鍒楄〃涓庡崱鐗?/ ChallengeCard" },
+      { name: "Avatar.vue"", preview: "鍒楄〃涓庡崱鐗?/ Avatar 涓庤瘎璁哄ご閮?" },"
+      { name: "Comment.vue"", preview: "鍒楄〃涓庡崱鐗?/ 璇勮鍗?" },"
+      { name: "PixelPreviewBoard.vue"", preview: "鍒楄〃涓庡崱鐗?/ 鍍忕礌棰勮鏉?" },"
+      { name: "PixelCanvas.vue", preview: "鍒楄〃涓庡崱鐗?/ 鍍忕礌鐢诲竷澹冲眰" },
+      { name: "ImageCropper.vue"", preview: "鍒楄〃涓庡崱鐗?/ 瑁佸壀鍣ㄥ３灞?" },"
+      { name: "ClockTextSettingsCard.vue"", preview: "鍒楄〃涓庡崱鐗?/ 鏃堕挓鏂囧瓧璁剧疆鍗?" },"
+      { name: "ClockThemePanel.vue", preview: "鍒楄〃涓庡崱鐗?/ 鏃堕挓涓婚闈㈡澘" },
+      { name: "ClockFontPanel.vue", preview: "鍒楄〃涓庡崱鐗?/ 鏃堕挓瀛椾綋闈㈡澘" },
     ],
   },
   {
-    label: "弹窗与反馈",
-    title: "反馈、导入与加载组件",
+    label: "寮圭獥涓庡弽棣?,"
+    title: "鍙嶉銆佸鍏ヤ笌鍔犺浇缁勪欢",
     items: [
-      { name: "Modal.vue", preview: "弹窗与反馈 / 标准 Dialog" },
-      { name: "Toast.vue", preview: "弹窗与反馈 / Toast" },
-      { name: "ConfirmDialogHost.vue", preview: "弹窗与反馈 / Confirm host" },
-      { name: "ConnectModal.vue", preview: "弹窗与反馈 / 连接设备弹窗" },
-      { name: "ConfirmModal.vue", preview: "弹窗与反馈 / 危险确认卡" },
-      { name: "HelpModal.vue", preview: "弹窗与反馈 / 帮助说明卡" },
-      { name: "JsonImportModal.vue", preview: "弹窗与反馈 / JSON 导入弹窗" },
-      { name: "LoadingOverlay.vue", preview: "骨架与加载 / 动作轻遮罩" },
-      { name: "GlxInlineLoader.vue", preview: "骨架与加载 / 内容区局部 loader" },
-      { name: "GlxLogoLoader.vue", preview: "骨架与加载 / 品牌九宫格 loader" },
+      { name: "Modal.vue", preview: "寮圭獥涓庡弽棣?/ 鏍囧噯 Dialog" },
+      { name: "Toast.vue", preview: "寮圭獥涓庡弽棣?/ Toast" },
+      { name: "ConfirmDialogHost.vue", preview: "寮圭獥涓庡弽棣?/ Confirm host" },
+      { name: "ConnectModal.vue", preview: "寮圭獥涓庡弽棣?/ 杩炴帴璁惧寮圭獥" },
+      { name: "ConfirmModal.vue"", preview: "寮圭獥涓庡弽棣?/ 鍗遍櫓纭鍗?" },"
+      { name: "HelpModal.vue"", preview: "寮圭獥涓庡弽棣?/ 甯姪璇存槑鍗?" },"
+      { name: "JsonImportModal.vue", preview: "寮圭獥涓庡弽棣?/ JSON 瀵煎叆寮圭獥" },
+      { name: "LoadingOverlay.vue"", preview: "楠ㄦ灦涓庡姞杞?/ 鍔ㄤ綔杞婚伄缃?" },"
+      { name: "GlxInlineLoader.vue", preview: "楠ㄦ灦涓庡姞杞?/ 鍐呭鍖哄眬閮?loader" },
+      { name: "GlxLogoLoader.vue", preview: "楠ㄦ灦涓庡姞杞?/ 鍝佺墝涔濆鏍?loader" },
     ],
   },
   {
-    label: "导航与品牌",
-    title: "导航壳与品牌资产",
+    label: "瀵艰埅涓庡搧鐗?,"
+    title: "瀵艰埅澹充笌鍝佺墝璧勪骇",
     items: [
-      { name: "Logo.vue", preview: "头部与导航 / 品牌 Logo" },
-      { name: "LegacyTabBar.vue", preview: "头部与导航 / 小程序底部导航" },
+      { name: "Logo.vue", preview: "澶撮儴涓庡鑸?/ 鍝佺墝 Logo" },
+      { name: "LegacyTabBar.vue"", preview: "澶撮儴涓庡鑸?/ 灏忕▼搴忓簳閮ㄥ鑸?" },"
     ],
   },
 ];

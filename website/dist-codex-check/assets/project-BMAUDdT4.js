@@ -1,0 +1,1 @@
+import{O as s,P as a,Q as o}from"./index-DvLGkGAL.js";const p=t=>s("/api/project/list",t),n=t=>s(`/api/project/${t}`),r=(t,c)=>a("/api/project/sync",{project:t,pixels:c}),i=t=>o(`/api/project/${t}`),j=()=>s("/api/project/sync-status"),y=t=>a("/api/project/batch-sync",{projects:t});export{n as a,y as b,p as c,j as g,i as r,r as s};

@@ -1,14 +1,14 @@
-<template>
+﻿<template>
   <div class="color-palette-container">
-    <!-- 颜色网格 -->
+    <!-- 棰滆壊缃戞牸 -->
     <div class="color-grid-wrapper">
-      <!-- 顶部信息栏 -->
+      <!-- 椤堕儴淇℃伅鏍?-->
       <div class="palette-header">
-        <span class="palette-info">调色板 ({{ colors.length }}色)</span>
-        <span v-if="selectedColorInfo" class="selected-code">当前选中:{{ selectedColorInfo.code }}</span>
+        <span class="palette-info">璋冭壊鏉?({{ colors.length }}鑹?</span>
+        <span v-if="selectedColorInfo" class="selected-code">褰撳墠閫変腑:{{ selectedColorInfo.code }}</span>
       </div>
       
-      <!-- 颜色网格 -->
+      <!-- 棰滆壊缃戞牸 -->
       <div data-scroll-view 
         scroll-y 
         class="color-grid-scroll"
@@ -20,7 +20,7 @@
           :key="group.letter" 
           class="color-group"
         >
-          <!-- 分组标题 -->
+          <!-- 鍒嗙粍鏍囬 -->
           <div 
             :id="`letter-${group.letter}`"
             class="group-header"
@@ -29,7 +29,7 @@
             <span class="group-count">({{ group.colors.length }})</span>
           </div>
           
-          <!-- 该字母下的颜色 -->
+          <!-- 璇ュ瓧姣嶄笅鐨勯鑹?-->
           <div class="color-grid">
             <div
               v-for="color in group.colors"
@@ -38,13 +38,13 @@
               :class="{ 'active': selectedColor === color.hex }"
               @click="handleColorClick(color.hex)"
             >
-              <!-- 颜色圆圈 -->
+              <!-- 棰滆壊鍦嗗湀 -->
               <div 
                 class="color-swatch" 
                 :style="{ backgroundColor: color.hex }"
               ></div>
               
-              <!-- 色号 -->
+              <!-- 鑹插彿 -->
               <span class="color-code">{{ color.code }}</span>
             </div>
           </div>
@@ -52,7 +52,7 @@
       </div>
     </div>
     
-    <!-- 右侧字母索引条 -->
+    <!-- 鍙充晶瀛楁瘝绱㈠紩鏉?-->
     <div 
       class="index-bar"
       @touchstart="handleIndexTouchStart"
@@ -74,14 +74,14 @@
       </div>
     </div>
     
-    <!-- 字母提示气泡 -->
+    <!-- 瀛楁瘝鎻愮ず姘旀场 -->
     <div 
       v-if="showLetterBubble && currentTouchLetter"
       class="letter-bubble"
       :style="{ 
         left: bubblePosition.x + 'px', 
         top: bubblePosition.y + 'px'
-      }"
+      }""
     >
       <span class="bubble-letter">{{ currentTouchLetter }}</span>
     </div>
@@ -89,6 +89,7 @@
 </template>
 
 <script>
+import { createDomQuery } from '@/utils/browser-platform.js'
 export default {
   props: {
     colors: {
@@ -113,14 +114,12 @@ export default {
   },
   
   computed: {
-    // 按色号首字母分组并排序
-    colorGroups() {
+    // 鎸夎壊鍙烽瀛楁瘝鍒嗙粍骞舵帓搴?    colorGroups() {
       const groups = new Map()
       
-      // 按色号排序
-      const sortedColors = [...this.colors].sort((a, b) => a.code.localeCompare(b.code))
+      // 鎸夎壊鍙锋帓搴?      const sortedColors = [...this.colors].sort((a, b) => a.code.localeCompare(b.code))
       
-      // 按首字母分组
+      // 鎸夐瀛楁瘝鍒嗙粍
       sortedColors.forEach(color => {
         const letter = color.code.charAt(0).toUpperCase()
         if (!groups.has(letter)) {
@@ -129,38 +128,33 @@ export default {
         groups.get(letter).push(color)
       })
       
-      // 转换为数组并排序
+      // 杞崲涓烘暟缁勫苟鎺掑簭
       return Array.from(groups.entries())
         .sort((a, b) => a[0].localeCompare(b[0]))
         .map(([letter, colors]) => ({ letter, colors }))
     },
     
-    // 可用的字母列表
-    availableLetters() {
+    // 鍙敤鐨勫瓧姣嶅垪琛?    availableLetters() {
       return this.colorGroups.map(g => g.letter)
     },
     
-    // 当前选中颜色的信息
-    selectedColorInfo() {
+    // 褰撳墠閫変腑棰滆壊鐨勪俊鎭?    selectedColorInfo() {
       return this.colors.find(c => c.hex === this.selectedColor)
     }
   },
   
   methods: {
-    // 滚动到指定字母
-    scrollToLetter(letter) {
+    // 婊氬姩鍒版寚瀹氬瓧姣?    scrollToLetter(letter) {
       this.scrollIntoView = `letter-${letter}`
       this.currentVisibleLetter = letter
     },
     
-    // 处理滚动事件
+    // 澶勭悊婊氬姩浜嬩欢
     handleScroll(e) {
-      // uni-app 中滚动事件处理较简单，这里简化处理
-      // 实际应用中可以根据 scrollTop 计算当前可见字母
+      // uni-app 涓粴鍔ㄤ簨浠跺鐞嗚緝绠€鍗曪紝杩欓噷绠€鍖栧鐞?      // 瀹為檯搴旂敤涓彲浠ユ牴鎹?scrollTop 璁＄畻褰撳墠鍙瀛楁瘝
     },
     
-    // 触摸开始
-    handleIndexTouchStart(e) {
+    // 瑙︽懜寮€濮?    handleIndexTouchStart(e) {
       this.isIndexTouching = true
       this.showLetterBubble = true
       
@@ -174,7 +168,7 @@ export default {
       }
     },
     
-    // 触摸移动
+    // 瑙︽懜绉诲姩
     handleIndexTouchMove(e) {
       if (!this.isIndexTouching) return
       
@@ -190,16 +184,15 @@ export default {
       }
     },
     
-    // 触摸结束
+    // 瑙︽懜缁撴潫
     handleIndexTouchEnd() {
       this.isIndexTouching = false
       this.showLetterBubble = false
     },
     
-    // 根据触摸位置获取字母
+    // 鏍规嵁瑙︽懜浣嶇疆鑾峰彇瀛楁瘝
     getLetterFromTouch(pageY) {
-      // 简化实现：根据触摸位置计算对应的字母索引
-      const query = uni.createSelectorQuery().in(this)
+      // 绠€鍖栧疄鐜帮細鏍规嵁瑙︽懜浣嶇疆璁＄畻瀵瑰簲鐨勫瓧姣嶇储寮?      const query = createDomQuery().in(this)
       query.select('.index-bar').boundingClientRect()
       query.selectAll('.index-letter').boundingClientRect()
       query.exec((res) => {
@@ -208,8 +201,7 @@ export default {
         const barRect = res[0]
         const letterRects = res[1]
         
-        // 找到最接近的字母
-        let closestIndex = 0
+        // 鎵惧埌鏈€鎺ヨ繎鐨勫瓧姣?        let closestIndex = 0
         let minDistance = Infinity
         
         letterRects.forEach((rect, index) => {
@@ -225,11 +217,10 @@ export default {
         return this.availableLetters[closestIndex]
       })
       
-      // 临时返回第一个字母（实际应该异步处理）
-      return this.availableLetters[0]
+      // 涓存椂杩斿洖绗竴涓瓧姣嶏紙瀹為檯搴旇寮傛澶勭悊锛?      return this.availableLetters[0]
     },
     
-    // 处理颜色点击
+    // 澶勭悊棰滆壊鐐瑰嚮
     handleColorClick(hex) {
       if (this.selectedColor === hex) {
         this.$emit('select-color', '')

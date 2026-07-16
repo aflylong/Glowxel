@@ -1,8 +1,8 @@
-import { clamp } from "@/utils/device-mode-core.js";
+﻿import { clamp } from "@/utils/device-mode-core.js";
 
 export function buildPixelBinaryBufferFromPackedPixels(pixelData, width = 64, height = 64) {
   if (!Array.isArray(pixelData) || pixelData.length % 5 !== 0) {
-    throw new Error("像素数据格式无效");
+    throw new Error("鍍忕礌鏁版嵁鏍煎紡鏃犳晥");
   }
   const offsetX = Math.floor((64 - width) / 2);
   const offsetY = Math.floor((64 - height) / 2);
@@ -20,7 +20,7 @@ export function buildPixelBinaryBufferFromPackedPixels(pixelData, width = 64, he
       !Number.isInteger(g) ||
       !Number.isInteger(b)
     ) {
-      throw new Error("像素数据格式无效");
+      throw new Error("鍍忕礌鏁版嵁鏍煎紡鏃犳晥");
     }
     buffer[index] = x + offsetX;
     buffer[index + 1] = y + offsetY;
@@ -33,18 +33,18 @@ export function buildPixelBinaryBufferFromPackedPixels(pixelData, width = 64, he
 
 function normalizeCompactAnimationPixelBytes(pixels, totalPixels, frameIndex) {
   if (!Array.isArray(pixels) || pixels.length !== totalPixels) {
-    throw new Error(`第 ${frameIndex + 1} 帧像素数量无效`);
+    throw new Error(`绗?${frameIndex + 1} 甯у儚绱犳暟閲忔棤鏁坄);
   }
   const bytes = new Uint8Array(totalPixels * 5);
   for (let pixelIndex = 0; pixelIndex < totalPixels; pixelIndex += 1) {
     const pixel = pixels[pixelIndex];
     if (!Array.isArray(pixel) || pixel.length < 5) {
-      throw new Error(`第 ${frameIndex + 1} 帧像素格式无效`);
+      throw new Error(`绗?${frameIndex + 1} 甯у儚绱犳牸寮忔棤鏁坄);
     }
     for (let channelIndex = 0; channelIndex < 5; channelIndex += 1) {
       const value = Number(pixel[channelIndex]);
       if (!Number.isInteger(value) || value < 0 || value > 255) {
-        throw new Error(`第 ${frameIndex + 1} 帧像素数据无效`);
+        throw new Error(`绗?${frameIndex + 1} 甯у儚绱犳暟鎹棤鏁坄);
       }
       bytes[pixelIndex * 5 + channelIndex] = value;
     }
@@ -54,21 +54,21 @@ function normalizeCompactAnimationPixelBytes(pixels, totalPixels, frameIndex) {
 
 export function buildCompactAnimationBinaryBuffer(animationData) {
   if (!Array.isArray(animationData) || animationData.length === 0) {
-    throw new Error("动画帧不能为空");
+    throw new Error("鍔ㄧ敾甯т笉鑳戒负绌?")";"
   }
 
   const normalizedFrames = animationData.map((frame, frameIndex) => {
     if (!Array.isArray(frame) || frame.length < 4) {
-      throw new Error(`第 ${frameIndex + 1} 帧格式无效`);
+      throw new Error(`绗?${frameIndex + 1} 甯ф牸寮忔棤鏁坄);
     }
     const type = Number(frame[0]);
     const delay = Number(frame[1]);
     const totalPixels = Number(frame[2]);
     if (!Number.isInteger(type) || (type !== 0 && type !== 1)) {
-      throw new Error(`第 ${frameIndex + 1} 帧类型无效`);
+      throw new Error(`绗?${frameIndex + 1} 甯х被鍨嬫棤鏁坄);
     }
     if (!Number.isInteger(totalPixels) || totalPixels < 0 || totalPixels > 65535) {
-      throw new Error(`第 ${frameIndex + 1} 帧像素数无效`);
+      throw new Error(`绗?${frameIndex + 1} 甯у儚绱犳暟鏃犳晥`);
     }
     return {
       type,

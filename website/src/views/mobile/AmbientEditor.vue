@@ -1,4 +1,4 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/ambient-editor/ambient-editor.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/ambient-editor/ambient-editor.vue -->
 <template>
   <div class="ambient-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
@@ -11,7 +11,7 @@
           color="var(--nb-ink)"
         />
       </div>
-      <span class="nav-title glx-topbar__title">像素场景集</span>
+      <span class="nav-title glx-topbar__title">鍍忕礌鍦烘櫙闆?</span>
       <div class="nav-right"></div>
     </div>
 
@@ -47,7 +47,7 @@
       </div>
       <div class="preview-caption glx-preview-panel">
         <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-caption-title">预览效果</span>
+          <span class="preview-caption-title">棰勮鏁堟灉</span>
         </div>
         <div class="preview-actions">
           <div
@@ -56,7 +56,7 @@
             @click="saveAndApply"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
@@ -66,7 +66,7 @@
       <div class="content-wrapper glx-scroll-stack">
         <div class="card glx-panel-card glx-editor-card">
           <div class="card-title-section glx-panel-head">
-            <span class="card-title glx-panel-title">场景选择</span>
+            <span class="card-title glx-panel-title">鍦烘櫙閫夋嫨</span>
           </div>
           <div class="scene-grid">
             <div
@@ -83,11 +83,11 @@
 
         <div class="card glx-panel-card glx-editor-card">
           <div class="card-title-section glx-panel-head">
-            <span class="card-title glx-panel-title">场景参数</span>
+            <span class="card-title glx-panel-title">鍦烘櫙鍙傛暟</span>
           </div>
 
           <div class="form-row">
-            <span class="form-label">速度 {{ config.speed }}</span>
+            <span class="form-label">閫熷害 {{ config.speed }}</span>
             <GlxStepper
               :value="config.speed"
               :min="1"
@@ -98,7 +98,7 @@
           </div>
 
           <div v-if="!isRainPreset" class="form-row">
-            <span class="form-label">强度 {{ config.intensity }}</span>
+            <span class="form-label">寮哄害 {{ config.intensity }}</span>
             <GlxSlider
               :value="config.intensity"
               :min="10"
@@ -109,7 +109,7 @@
           </div>
 
           <div v-if="isRainPreset" class="form-row">
-            <span class="form-label">密度 {{ config.density }}</span>
+            <span class="form-label">瀵嗗害 {{ config.density }}</span>
             <GlxSlider
               :value="config.density"
               :min="10"
@@ -120,17 +120,17 @@
           </div>
 
           <div v-if="isRainPreset" class="form-row color-picker-row">
-            <span class="form-label">颜色</span>
+            <span class="form-label">棰滆壊</span>
             <ColorPanelPicker
               :value="config.color"
-              label="雨滴颜色"
+              label="闆ㄦ淮棰滆壊"
               :preset-colors="rainPresetColors"
               @change="handleRainColorChange"
             />
           </div>
 
           <div class="form-row inline-row">
-            <span class="form-label">循环</span>
+            <span class="form-label">寰幆</span>
             <GlxSwitch class="glx-row-switch" :checked="config.loop" @change="config.loop = $event.detail.value" />
           </div>
         </div>
@@ -148,8 +148,8 @@
           variant="chase"
           size="lg"
         />
-        <span class="glx-device-sending-title">正在发送场景...</span>
-        <span class="glx-device-sending-tip">设备应用完成前请勿切换页面</span>
+        <span class="glx-device-sending-title">姝ｅ湪鍙戦€佸満鏅?..</span>
+        <span class="glx-device-sending-tip">璁惧搴旂敤瀹屾垚鍓嶈鍕垮垏鎹㈤〉闈?</span>
       </div>
     </div>
 
@@ -162,6 +162,7 @@
 </template>
 
 <script>
+import { getStorage, setStorage, createDomQuery, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import Icon from "@/components/uni/Icon.vue";
@@ -179,21 +180,21 @@ import { buildAmbientPreviewFrames } from "@/utils/ambientEffectPreview.js";
 
 const AMBIENT_CONFIG_KEY = "ambient_effect_config";
 const SOURCE_AMBIENT_PRESETS = [
-  { value: "clock_scene", label: "场景时钟" },
-  { value: "starfield", label: "星空漂移" },
-  { value: "metablob", label: "液体模拟" },
-  { value: "digital_rain", label: "数字雨" },
-  { value: "neon_tunnel", label: "霓虹隧道" },
-  { value: "boids", label: "群游粒子" },
-  { value: "falling_sand", label: "流沙" },
-  { value: "sorting_visualizer", label: "排序柱阵" },
-  { value: "bouncing_logo", label: "弹跳徽标" },
-  { value: "game_of_life", label: "生命游戏" },
-  { value: "julia_set", label: "朱莉亚集" },
-  { value: "wave_pattern", label: "波纹图案" },
-  { value: "watermelon_plasma", label: "西瓜等离子" },
-  { value: "rain_scene", label: "雨幕" },
-  { value: "sparks", label: "火花" },
+  { value: "clock_scene", label: "鍦烘櫙鏃堕挓" },
+  { value: "starfield", label: "鏄熺┖婕傜Щ" },
+  { value: "metablob", label: "娑蹭綋妯℃嫙" },
+  { value: "digital_rain"", label: "鏁板瓧闆?" },"
+  { value: "neon_tunnel", label: "闇撹櫣闅ч亾" },
+  { value: "boids", label: "缇ゆ父绮掑瓙" },
+  { value: "falling_sand", label: "娴佹矙" },
+  { value: "sorting_visualizer", label: "鎺掑簭鏌遍樀" },
+  { value: "bouncing_logo", label: "寮硅烦寰芥爣" },
+  { value: "game_of_life", label: "鐢熷懡娓告垙" },
+  { value: "julia_set", label: "鏈辫帀浜氶泦" },
+  { value: "wave_pattern", label: "娉㈢汗鍥炬" },
+  { value: "watermelon_plasma"", label: "瑗跨摐绛夌瀛?" },"
+  { value: "rain_scene", label: "闆ㄥ箷" },
+  { value: "sparks", label: "鐏姳" },
 ];
 
 function createDefaultAmbientConfig() {
@@ -343,7 +344,7 @@ export default {
     this.deviceStore = useDeviceStore();
     this.deviceStore.init();
     this.toast = useToast();
-    this.config = normalizeAmbientConfig(uni.getStorageSync(AMBIENT_CONFIG_KEY));
+    this.config = normalizeAmbientConfig(getStorage(AMBIENT_CONFIG_KEY));
   },
   onReady() {
     if (this.$refs.toastRef) {
@@ -385,7 +386,7 @@ export default {
       }
     },
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
     handleToastShow() {
       this.isToastVisible = true;
@@ -404,7 +405,7 @@ export default {
       this.clearSendingPreview();
     },
     initPreviewCanvas() {
-      const query = uni.createSelectorQuery().in(this);
+      const query = createDomQuery().in(this);
       query
         .select(".preview-canvas-container")
         .boundingClientRect((rect) => {
@@ -470,7 +471,7 @@ export default {
       }
       if (!this.deviceStore.connected) {
         this.prepareSendToastUi();
-        this.toast.showError("设备未连接");
+        this.toast.showError("璁惧鏈繛鎺?")";"
         return;
       }
 
@@ -479,14 +480,14 @@ export default {
       try {
         const ws = this.deviceStore.getWebSocket();
         await ws.setAmbientEffect(this.config);
-        uni.setStorageSync(AMBIENT_CONFIG_KEY, this.config);
-        this.toast.showSuccess("已保存并应用");
+        setStorage(AMBIENT_CONFIG_KEY, this.config);
+        this.toast.showSuccess("宸蹭繚瀛樺苟搴旂敤");
       } catch (error) {
         await this.deviceStore.rollbackBusinessMode(previousMode, {
           expectedMode: "led_matrix_showcase",
         });
-        console.error("应用场景失败:", error);
-        this.toast.showError("发送失败：" + error.message);
+        console.error("搴旂敤鍦烘櫙澶辫触:", error);
+        this.toast.showError("鍙戦€佸け璐ワ細" + error.message);
       } finally {
         this.endSendUi();
       }

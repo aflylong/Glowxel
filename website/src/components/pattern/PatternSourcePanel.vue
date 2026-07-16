@@ -1,42 +1,41 @@
-<template>
+﻿<template>
   <div class="source-panel">
     <div class="panel-head">
-      <h2>开始转换</h2>
-      <span>先选类型，再走对应流程</span>
+      <h2>寮€濮嬭浆鎹?</h2>
+      <span>鍏堥€夌被鍨嬶紝鍐嶈蛋瀵瑰簲娴佺▼</span>
     </div>
 
     <div class="source-actions primary-actions">
       <button class="chip action primary" type="button" @click="$emit('trigger-import', 'current-image')">
-        图片生成
+        鍥剧墖鐢熸垚
       </button>
       <button class="chip action primary" type="button" @click="$emit('trigger-import', 'numbered-sheet-image')">
-        上传拼豆图纸
+        涓婁紶鎷艰眴鍥剧焊
       </button>
       <button class="chip action" type="button" @click="$emit('trigger-import', 'capture-review-image')">
-        导入实拍图校验
-      </button>
+        瀵煎叆瀹炴媿鍥炬牎楠?      </button>
     </div>
 
     <div class="source-summary">
       <div class="summary-row">
-        <span>当前图纸</span>
+        <span>褰撳墠鍥剧焊</span>
         <strong>{{ document.name }}</strong>
       </div>
       <div class="summary-row">
-        <span>当前尺寸</span>
-        <strong>{{ document.width }} × {{ document.height }}</strong>
+        <span>褰撳墠灏哄</span>
+        <strong>{{ document.width }} 脳 {{ document.height }}</strong>
       </div>
       <div class="summary-row">
-        <span>实拍校验</span>
+        <span>瀹炴媿鏍￠獙</span>
         <strong>{{ captureReviewName }}</strong>
       </div>
       <div v-if="importReport" class="summary-row">
-        <span>识别区域</span>
-        <strong>{{ importReport.cropWidth }} × {{ importReport.cropHeight }}</strong>
+        <span>璇嗗埆鍖哄煙</span>
+        <strong>{{ importReport.cropWidth }} 脳 {{ importReport.cropHeight }}</strong>
       </div>
       <div v-if="importReport" class="summary-row">
-        <span>去背景</span>
-        <strong>{{ importReport.backgroundRemoved ? '已开启' : '未开启' }}</strong>
+        <span>鍘昏儗鏅?</span>
+        <strong>{{ importReport.backgroundRemoved ? '宸插紑鍚? : '鏈紑鍚? }}</strong>
       </div>
     </div>
 
@@ -47,10 +46,10 @@
         :disabled="!captureReviewDocument"
         @click="$emit('clear-capture-review')"
       >
-        清空实拍校验
+        娓呯┖瀹炴媿鏍￠獙
       </button>
       <button class="chip action subtle" type="button" @click="$emit('export-json')">
-        导出结果
+        瀵煎嚭缁撴灉
       </button>
     </div>
   </div>
@@ -82,7 +81,7 @@ defineEmits(["trigger-import", "clear-reference", "clear-capture-review", "expor
 
 const captureReviewName = computed(() => {
   if (!props.captureReviewDocument) {
-    return "未导入";
+    return "鏈鍏?";"
   }
   return props.captureReviewDocument.name;
 });

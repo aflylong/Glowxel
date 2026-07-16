@@ -1,4 +1,4 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/ble-config/ble-config.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/ble-config/ble-config.vue -->
 <template>
   <div
     class="wifi-config-page glx-device-shell glx-device-shell--desktop-stack glx-page-shell"
@@ -9,7 +9,7 @@
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
-      <span class="nav-title glx-topbar__title">热点配网</span>
+      <span class="nav-title glx-topbar__title">鐑偣閰嶇綉</span>
     </div>
 
     <div data-scroll-view
@@ -20,22 +20,21 @@
         <div class="step-card">
           <div class="step-badge">1</div>
           <div class="step-body">
-            <span class="step-title">连接设备热点</span>
+            <span class="step-title">杩炴帴璁惧鐑偣</span>
             <span class="step-desc">
-              在系统 WiFi 列表里选择
-              <span class="inline-strong">Glowxel PixelBoard-设备序列号</span>。
-            </span>
+              鍦ㄧ郴缁?WiFi 鍒楄〃閲岄€夋嫨
+              <span class="inline-strong">Glowxel PixelBoard-璁惧搴忓垪鍙?</span>銆?            </span>
           </div>
         </div>
 
         <div class="step-card">
           <div class="step-badge">2</div>
           <div class="step-body">
-            <span class="step-title">打开 192.168.4.1</span>
-            <span class="step-desc">进入配网页后可任选一种：</span>
+            <span class="step-title">鎵撳紑 192.168.4.1</span>
+            <span class="step-desc">杩涘叆閰嶇綉椤靛悗鍙换閫変竴绉嶏細</span>
             <div class="step-options">
-              <span class="step-option">扫描后直接选择 WiFi</span>
-              <span class="step-option">手动输入 WiFi 名称</span>
+              <span class="step-option">鎵弿鍚庣洿鎺ラ€夋嫨 WiFi</span>
+              <span class="step-option">鎵嬪姩杈撳叆 WiFi 鍚嶇О</span>
             </div>
           </div>
         </div>
@@ -43,11 +42,10 @@
         <div class="step-card">
           <div class="step-badge">3</div>
           <div class="step-body">
-            <span class="step-title">输入密码并保存</span>
-            <span class="step-desc">只支持 2.4GHz，保存后设备会自动重启。</span>
+            <span class="step-title">杈撳叆瀵嗙爜骞朵繚瀛?</span>
+            <span class="step-desc">鍙敮鎸?2.4GHz锛屼繚瀛樺悗璁惧浼氳嚜鍔ㄩ噸鍚€?</span>
             <span class="step-result">
-              成功后看屏幕上的新 IP；失败会回到热点模式。
-            </span>
+              鎴愬姛鍚庣湅灞忓箷涓婄殑鏂?IP锛涘け璐ヤ細鍥炲埌鐑偣妯″紡銆?            </span>
           </div>
         </div>
       </div>
@@ -56,6 +54,7 @@
 </template>
 
 <script>
+import { navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import Icon from "@/components/uni/Icon.vue";
@@ -65,7 +64,7 @@ export default {
   components: { Icon },
   methods: {
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
   },
 };

@@ -1,4 +1,4 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/maze-mode/maze-mode.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/maze-mode/maze-mode.vue -->
 <template>
   <div class="clock-editor-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
@@ -7,7 +7,7 @@
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
-      <span class="nav-title glx-topbar__title">迷宫漫游</span>
+      <span class="nav-title glx-topbar__title">杩峰婕父</span>
       <div class="nav-right"></div>
     </div>
 
@@ -39,7 +39,7 @@
       </div>
       <div class="preview-caption">
         <div class="preview-caption-info">
-          <span class="preview-caption-title">预览效果</span>
+          <span class="preview-caption-title">棰勮鏁堟灉</span>
         </div>
         <div class="preview-actions">
           <div
@@ -48,7 +48,7 @@
             @click="saveAndApply"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
@@ -60,43 +60,43 @@
       :style="{ height: contentHeight }"
     >
       <div class="content-wrapper glx-scroll-stack">
-        <!-- 颜色调整 UI 已隐藏（默认配色已够用） -->
+        <!-- 棰滆壊璋冩暣 UI 宸查殣钘忥紙榛樿閰嶈壊宸插鐢級 -->
         <div v-if="false" class="maze-section">
           <div class="maze-section-head">
-            <span class="maze-section-title">信息框</span>
+            <span class="maze-section-title">淇℃伅妗?</span>
           </div>
           <div class="form-row color-picker-row">
-            <span class="form-label">背景颜色</span>
+            <span class="form-label">鑳屾櫙棰滆壊</span>
             <ColorPanelPicker
               :value="config.panelBgColor"
-              label="背景颜色"
+              label="鑳屾櫙棰滆壊"
               :preset-colors="panelPresetColors"
               @change="handleColorChange('panelBgColor', $event)"
             />
           </div>
           <div class="form-row color-picker-row">
-            <span class="form-label">边框颜色</span>
+            <span class="form-label">杈规棰滆壊</span>
             <ColorPanelPicker
               :value="config.borderColor"
-              label="边框颜色"
+              label="杈规棰滆壊"
               :preset-colors="borderPresetColors"
               @change="handleColorChange('borderColor', $event)"
             />
           </div>
           <div class="form-row color-picker-row">
-            <span class="form-label">时间颜色</span>
+            <span class="form-label">鏃堕棿棰滆壊</span>
             <ColorPanelPicker
               :value="config.timeColor"
-              label="时间颜色"
+              label="鏃堕棿棰滆壊"
               :preset-colors="textPresetColors"
               @change="handleColorChange('timeColor', $event)"
             />
           </div>
           <div class="form-row color-picker-row">
-            <span class="form-label">月份/日期颜色</span>
+            <span class="form-label">鏈堜唤/鏃ユ湡棰滆壊</span>
             <ColorPanelPicker
               :value="config.dateColor"
-              label="月份/日期颜色"
+              label="鏈堜唤/鏃ユ湡棰滆壊"
               :preset-colors="textPresetColors"
               @change="handleColorChange('dateColor', $event)"
             />
@@ -105,31 +105,31 @@
 
         <div v-if="false" class="maze-section">
           <div class="maze-section-head">
-            <span class="maze-section-title">生成与寻路</span>
+            <span class="maze-section-title">鐢熸垚涓庡璺?</span>
           </div>
           <div class="form-row color-picker-row">
-            <span class="form-label">生成阶段路径颜色</span>
+            <span class="form-label">鐢熸垚闃舵璺緞棰滆壊</span>
             <ColorPanelPicker
               :value="config.generationPathColor"
-              label="生成阶段路径颜色"
+              label="鐢熸垚闃舵璺緞棰滆壊"
               :preset-colors="stagePresetColors"
               @change="handleColorChange('generationPathColor', $event)"
             />
           </div>
           <div class="form-row color-picker-row">
-            <span class="form-label">寻路已搜索颜色</span>
+            <span class="form-label">瀵昏矾宸叉悳绱㈤鑹?</span>
             <ColorPanelPicker
               :value="config.searchVisitedColor"
-              label="寻路已搜索颜色"
+              label="瀵昏矾宸叉悳绱㈤鑹?"
               :preset-colors="stagePresetColors"
               @change="handleColorChange('searchVisitedColor', $event)"
             />
           </div>
           <div class="form-row color-picker-row">
-            <span class="form-label">寻路待搜索颜色</span>
+            <span class="form-label">瀵昏矾寰呮悳绱㈤鑹?</span>
             <ColorPanelPicker
               :value="config.searchFrontierColor"
-              label="寻路待搜索颜色"
+              label="瀵昏矾寰呮悳绱㈤鑹?"
               :preset-colors="stagePresetColors"
               @change="handleColorChange('searchFrontierColor', $event)"
             />
@@ -138,22 +138,22 @@
 
         <div v-if="false" class="maze-section">
           <div class="maze-section-head">
-            <span class="maze-section-title">完成路径</span>
+            <span class="maze-section-title">瀹屾垚璺緞</span>
           </div>
           <div class="form-row color-picker-row">
-            <span class="form-label">最终路径起始色</span>
+            <span class="form-label">鏈€缁堣矾寰勮捣濮嬭壊</span>
             <ColorPanelPicker
               :value="config.solvedPathStartColor"
-              label="最终路径起始色"
+              label="鏈€缁堣矾寰勮捣濮嬭壊"
               :preset-colors="stagePresetColors"
               @change="handleColorChange('solvedPathStartColor', $event)"
             />
           </div>
           <div class="form-row color-picker-row">
-            <span class="form-label">最终路径结束色</span>
+            <span class="form-label">鏈€缁堣矾寰勭粨鏉熻壊</span>
             <ColorPanelPicker
               :value="config.solvedPathEndColor"
-              label="最终路径结束色"
+              label="鏈€缁堣矾寰勭粨鏉熻壊"
               :preset-colors="stagePresetColors"
               @change="handleColorChange('solvedPathEndColor', $event)"
             />
@@ -187,6 +187,7 @@
 </template>
 
 <script>
+import { getSystemInfo, createDomQuery, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
@@ -343,7 +344,7 @@ export default {
       return createMazeModeConfig(this.config);
     },
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
     handleColorChange(field, value) {
       this.config = {
@@ -362,17 +363,17 @@ export default {
     saveConfig() {
       const currentConfig = this.buildCurrentConfig();
       if (!currentConfig) {
-        throw new Error("迷宫颜色配置无效");
+        throw new Error("杩峰棰滆壊閰嶇疆鏃犳晥");
       }
       this.config = writeSavedMazeModeConfig(currentConfig);
     },
     initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
+      const systemInfo = getSystemInfo();
       const statusBarHeight = systemInfo.statusBarHeight || 0;
 
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query.select(".canvas-section").boundingClientRect((sectionRect) => {
             if (!sectionRect || !sectionRect.height) {
               return;
@@ -501,7 +502,7 @@ export default {
       try {
         const currentConfig = this.buildCurrentConfig();
         if (!currentConfig) {
-          throw new Error("迷宫颜色配置无效");
+          throw new Error("杩峰棰滆壊閰嶇疆鏃犳晥");
         }
         const ws = this.deviceStore.getWebSocket();
         await ws.startMaze(currentConfig);
@@ -511,7 +512,7 @@ export default {
         await this.deviceStore.rollbackBusinessMode(previousMode, {
           expectedMode: "maze",
         });
-        console.error("发送迷宫漫游失败:", error);
+        console.error("鍙戦€佽糠瀹极娓稿け璐?", error);
         this.showSendFailure(error);
       } finally {
         this.endSendUi();

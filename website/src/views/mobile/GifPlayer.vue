@@ -1,4 +1,4 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/gif-player/gif-player.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/gif-player/gif-player.vue -->
 <template>
   <div class="gif-player-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
@@ -7,7 +7,7 @@
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
-      <span class="nav-title glx-topbar__title">GIF/场景播放器</span>
+      <span class="nav-title glx-topbar__title">GIF/鍦烘櫙鎾斁鍣?</span>
       <div class="nav-right"></div>
     </div>
 
@@ -43,7 +43,7 @@
       </div>
       <div class="preview-caption glx-preview-panel">
         <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-caption-title">预览效果</span>
+          <span class="preview-caption-title">棰勮鏁堟灉</span>
         </div>
         <div class="preview-actions">
           <div
@@ -52,7 +52,7 @@
             @click="saveAndApply"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
@@ -66,7 +66,7 @@
       <div class="content-wrapper glx-scroll-stack">
         <div class="card glx-panel-card glx-editor-card">
           <div class="card-title-section glx-panel-head">
-            <span class="card-title glx-panel-title">离线素材</span>
+            <span class="card-title glx-panel-title">绂荤嚎绱犳潗</span>
           </div>
           <div class="scene-grid">
             <div
@@ -83,10 +83,10 @@
 
         <div class="card glx-panel-card glx-editor-card">
           <div class="card-title-section glx-panel-head">
-            <span class="card-title glx-panel-title">参数</span>
+            <span class="card-title glx-panel-title">鍙傛暟</span>
           </div>
           <div class="form-row">
-            <span class="form-label">速度 {{ speed }}</span>
+            <span class="form-label">閫熷害 {{ speed }}</span>
             <GlxStepper
               :value="speed"
               :min="1"
@@ -96,7 +96,7 @@
             />
           </div>
           <div class="form-row">
-            <span class="form-label">强度 {{ intensity }}</span>
+            <span class="form-label">寮哄害 {{ intensity }}</span>
             <GlxStepper
               :value="intensity"
               :min="10"
@@ -134,6 +134,7 @@
 </template>
 
 <script>
+import { getStorage, setStorage, getSystemInfo, createDomQuery, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
@@ -254,15 +255,15 @@ export default {
       deviceSendUxMixin.methods.endSendUi.call(this);
     },
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
     initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
+      const systemInfo = getSystemInfo();
       const statusBarHeight = systemInfo.statusBarHeight || 0;
 
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query.select(".canvas-section").boundingClientRect((sectionRect) => {
             if (!sectionRect || !sectionRect.height) {
               return;
@@ -376,7 +377,7 @@ export default {
       this.intensity = Number(event.detail.value);
     },
     loadSavedConfig() {
-      const saved = uni.getStorageSync(GIF_PLAYER_CONFIG_KEY);
+      const saved = getStorage(GIF_PLAYER_CONFIG_KEY);
       if (!saved || typeof saved !== "object") {
         return;
       }
@@ -391,7 +392,7 @@ export default {
       }
     },
     saveConfig() {
-      uni.setStorageSync(GIF_PLAYER_CONFIG_KEY, {
+      setStorage(GIF_PLAYER_CONFIG_KEY, {
         sceneId: this.selectedSceneId,
         speed: this.speed,
         intensity: this.intensity,
@@ -418,7 +419,7 @@ export default {
         await this.deviceStore.rollbackBusinessMode(previousMode, {
           expectedMode: "gif_player",
         });
-        console.error("发送 GIF 素材失败:", error);
+        console.error("鍙戦€?GIF 绱犳潗澶辫触:", error);
         this.showSendFailure(error);
       } finally {
         this.endSendUi();

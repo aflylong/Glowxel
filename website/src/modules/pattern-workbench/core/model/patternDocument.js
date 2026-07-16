@@ -1,4 +1,4 @@
-import { PATTERN_DEFAULT_DIMENSION } from "../patternBoard.js";
+﻿import { PATTERN_DEFAULT_DIMENSION } from "../patternBoard.js";
 
 function resolvePatternDimension(value) {
   if (value === undefined || value === null) {
@@ -10,7 +10,7 @@ function resolvePatternDimension(value) {
 export function createPatternDocument(input = {}) {
   return {
     id: input.id || "draft-pattern",
-    name: input.name || "未命名工作项目",
+    name: input.name || "鏈懡鍚嶅伐浣滈」鐩?,"
     width: resolvePatternDimension(input.width),
     height: resolvePatternDimension(input.height),
     pixels: input.pixels || new Map(),
@@ -55,8 +55,8 @@ export function deserializePatternDocument(input = {}) {
 export function createPatternIssue(input = {}) {
   return {
     id: input.id || `issue-${Date.now()}`,
-    type: input.type || "未分类",
-    title: input.title || "未命名问题",
+    type: input.type || "鏈垎绫?,"
+    title: input.title || "鏈懡鍚嶉棶棰?,"
     meta: input.meta || "",
     status: input.status || "pending",
     severity: input.severity || "medium",
@@ -67,7 +67,7 @@ export function createPatternIssue(input = {}) {
 export function createPatternSnapshot(input = {}) {
   return {
     id: input.id || `snapshot-${Date.now()}`,
-    label: input.label || "未命名快照",
+    label: input.label || "鏈懡鍚嶅揩鐓?,"
     stage: input.stage || "draft",
     createdAt: input.createdAt || Date.now(),
     document: input.document || null,

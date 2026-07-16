@@ -1,7 +1,7 @@
-function clampColorChannel(value) {
+﻿function clampColorChannel(value) {
   const channel = Number(value);
   if (!Number.isFinite(channel)) {
-    throw new Error("颜色通道无效");
+    throw new Error("棰滆壊閫氶亾鏃犳晥");
   }
   if (channel < 0) {
     return 0;
@@ -15,7 +15,7 @@ function clampColorChannel(value) {
 function parseHexColor(color) {
   const normalized = color.toLowerCase();
   if (!/^#([0-9a-f]{6})$/.test(normalized)) {
-    throw new Error("颜色格式无效");
+    throw new Error("棰滆壊鏍煎紡鏃犳晥");
   }
   return {
     r: parseInt(normalized.slice(1, 3), 16),
@@ -29,7 +29,7 @@ function parseRgbColor(color) {
     /^rgb\s*\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/i,
   );
   if (!match) {
-    throw new Error("颜色格式无效");
+    throw new Error("棰滆壊鏍煎紡鏃犳晥");
   }
   return {
     r: clampColorChannel(match[1]),
@@ -40,7 +40,7 @@ function parseRgbColor(color) {
 
 export function parsePixelColor(color) {
   if (typeof color !== "string") {
-    throw new Error("颜色格式无效");
+    throw new Error("棰滆壊鏍煎紡鏃犳晥");
   }
   if (color.startsWith("#")) {
     return parseHexColor(color);
@@ -48,12 +48,12 @@ export function parsePixelColor(color) {
   if (color.startsWith("rgb")) {
     return parseRgbColor(color);
   }
-  throw new Error("颜色格式无效");
+  throw new Error("棰滆壊鏍煎紡鏃犳晥");
 }
 
 export function pixelMapToAnimationFrame(pixelMap, delay = 180) {
   if (!(pixelMap instanceof Map)) {
-    throw new Error("像素数据类型错误");
+    throw new Error("鍍忕礌鏁版嵁绫诲瀷閿欒");
   }
 
   const bytes = [];
@@ -79,12 +79,12 @@ export function pixelMapToAnimationFrame(pixelMap, delay = 180) {
 
 export function pixelPreviewFramesToAnimationFrames(frames, defaultDelay = 180) {
   if (!Array.isArray(frames)) {
-    throw new Error("预览帧数据类型错误");
+    throw new Error("棰勮甯ф暟鎹被鍨嬮敊璇?")";"
   }
 
   return frames.map((frame) => {
     if (!frame || !(frame.pixels instanceof Map)) {
-      throw new Error("预览帧字段不完整");
+      throw new Error("棰勮甯у瓧娈典笉瀹屾暣");
     }
     const frameDelay =
       typeof frame.delay === "number" ? frame.delay : Number(defaultDelay);

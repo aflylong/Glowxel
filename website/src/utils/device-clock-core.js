@@ -1,4 +1,4 @@
-import {
+﻿import {
   drawClockTextToPixels,
   drawTinyTextToPixels,
   getClockFont,
@@ -11,15 +11,15 @@ import {
 export const DEVICE_CLOCK_BOARD_SIZE = 64;
 
 export const DEVICE_CLOCK_COLOR_PRESETS = [
-  { name: "青色", hex: "#64c8ff" },
-  { name: "绿色", hex: "#00ff9d" },
-  { name: "黄色", hex: "#ffdc00" },
-  { name: "橙色", hex: "#ffa500" },
-  { name: "红色", hex: "#ff6464" },
-  { name: "紫色", hex: "#c864ff" },
-  { name: "白色", hex: "#ffffff" },
-  { name: "灰色", hex: "#787878" },
-  { name: "深灰", hex: "#646464" },
+  { name: "闈掕壊", hex: "#64c8ff" },
+  { name: "缁胯壊", hex: "#00ff9d" },
+  { name: "榛勮壊", hex: "#ffdc00" },
+  { name: "姗欒壊", hex: "#ffa500" },
+  { name: "绾㈣壊", hex: "#ff6464" },
+  { name: "绱壊", hex: "#c864ff" },
+  { name: "鐧借壊", hex: "#ffffff" },
+  { name: "鐏拌壊", hex: "#787878" },
+  { name: "娣辩伆", hex: "#646464" },
 ];
 
 const CLOCK_WEEKDAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -429,20 +429,23 @@ export function setClockSectionAlignment(config, sectionKey, align) {
 
 export async function loadDeviceClockImageFile(file) {
   if (!(file instanceof File)) {
-    throw new Error("未选择图片文件");
+    throw new Error("鏈€夋嫨鍥剧墖鏂囦欢");
   }
+
+  const fileName = typeof file.name === "string" ? file.name.toLowerCase() : "";
+  const isGif = file.type === "image/gif" || fileName.endsWith(".gif");
 
   const sourceUrl = await new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error("图片读取失败"));
+    reader.onerror = () => reject(new Error("鍥剧墖璇诲彇澶辫触"));
     reader.readAsDataURL(file);
   });
 
   const bitmap = await new Promise((resolve, reject) => {
     const image = new Image();
     image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error("图片解码失败"));
+    image.onerror = () => reject(new Error("鍥剧墖瑙ｇ爜澶辫触"));
     image.src = sourceUrl;
   });
 
@@ -452,7 +455,7 @@ export async function loadDeviceClockImageFile(file) {
     sourceUrl,
     width: bitmap.naturalWidth,
     height: bitmap.naturalHeight,
-    isGif: file.type === "image/gif",
+    isGif,
   };
 }
 
@@ -468,13 +471,13 @@ export async function rasterizeDeviceClockImage(imageAsset, width, height) {
   canvas.height = targetHeight;
   const context = canvas.getContext("2d", { willReadFrequently: true });
   if (!context) {
-    throw new Error("浏览器不支持图片栅格化");
+    throw new Error("娴忚鍣ㄤ笉鏀寔鍥剧墖鏍呮牸鍖?")";"
   }
 
   const image = await new Promise((resolve, reject) => {
     const nextImage = new Image();
     nextImage.onload = () => resolve(nextImage);
-    nextImage.onerror = () => reject(new Error("图片加载失败"));
+    nextImage.onerror = () => reject(new Error("鍥剧墖鍔犺浇澶辫触"));
     nextImage.src = imageAsset.sourceUrl;
   });
 

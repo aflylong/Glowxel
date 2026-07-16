@@ -1,21 +1,21 @@
-// ============================================================
-// Terraria logo 风格的时钟"草膨胀边框"
-// 移植自 esp32-firmware/terraria-clock-preview.js renderClock 的 PAD=2 切比雪夫距离算法
-// 输入: 字像素 mask Set<"x,y">, 输出: Map<"x,y", "#hex"> 包含字本体 + 内圈 + 外圈
+﻿// ============================================================
+// Terraria logo 椋庢牸鐨勬椂閽?鑽夎啫鑳€杈规""
+// 绉绘鑷?esp32-firmware/terraria-clock-preview.js renderClock 鐨?PAD=2 鍒囨瘮闆か璺濈绠楁硶
+// 杈撳叆: 瀛楀儚绱?mask Set<"x,y">, 杈撳嚭: Map<"x,y", "#hex"> 鍖呭惈瀛楁湰浣?+ 鍐呭湀 + 澶栧湀
 // ============================================================
 
 const PAD = 2;
 
-// 把"字像素 mask + 字色"转成"带草膨胀边框的像素 Map"
-//   maskPixels: Set<"x,y"> 字本体覆盖的屏坐标
-//   textColor: '#d9cd82' (默认麦色)
-//   innerColor: '#63971f' (距离 1 内圈)
-//   outerColor: '#8FD71D' (距离 2 外圈)
+// 鎶?瀛楀儚绱?mask + 瀛楄壊"杞垚"甯﹁崏鑶ㄨ儉杈规鐨勫儚绱?Map""
+//   maskPixels: Set<"x,y"> 瀛楁湰浣撹鐩栫殑灞忓潗鏍?
+//   textColor: '#d9cd82' (榛樿楹﹁壊)
+//   innerColor: '#63971f' (璺濈 1 鍐呭湀)
+//   outerColor: '#8FD71D' (璺濈 2 澶栧湀)
 export function applyTerrariaClockBorder(maskPixels, textColor, innerColor, outerColor) {
   const result = new Map();
   if (!maskPixels || maskPixels.size === 0) return result;
 
-  // 1) 找 mask 的 bbox, 加 PAD 圈作为搜索范围
+  // 1) 鎵?mask 鐨?bbox, 鍔?PAD 鍦堜綔涓烘悳绱㈣寖鍥?
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
   for (const key of maskPixels) {
     const [x, y] = key.split(',').map(Number);
@@ -29,17 +29,17 @@ export function applyTerrariaClockBorder(maskPixels, textColor, innerColor, oute
   const x1 = Math.min(63, maxX + PAD);
   const y1 = Math.min(63, maxY + PAD);
 
-  // 2) 对范围内每个非 mask 像素, 计算到最近 mask 的切比雪夫距离
-  //    距离 1 = 内圈, 距离 2 = 外圈, 大于 2 不画
+  // 2) 瀵硅寖鍥村唴姣忎釜闈?mask 鍍忕礌, 璁＄畻鍒版渶杩?mask 鐨勫垏姣旈洩澶窛绂?
+  //    璺濈 1 = 鍐呭湀, 璺濈 2 = 澶栧湀, 澶т簬 2 涓嶇敾
   for (let y = y0; y <= y1; y++) {
     for (let x = x0; x <= x1; x++) {
       const key = `${x},${y}`;
       if (maskPixels.has(key)) {
-        // mask 内 = 字本体, 用 textColor
+        // mask 鍐?= 瀛楁湰浣? 鐢?textColor
         result.set(key, textColor);
         continue;
       }
-      // 外: 找最近 mask 距离
+      // 澶? 鎵炬渶杩?mask 璺濈
       let minD = 99;
       for (let dy = -PAD; dy <= PAD; dy++) {
         for (let dx = -PAD; dx <= PAD; dx++) {
@@ -53,7 +53,7 @@ export function applyTerrariaClockBorder(maskPixels, textColor, innerColor, oute
       }
       if (minD === 1) result.set(key, innerColor);
       else if (minD === 2) result.set(key, outerColor);
-      // 距离 > 2 不画 (留空, 让背景透出)
+      // 璺濈 > 2 涓嶇敾 (鐣欑┖, 璁╄儗鏅€忓嚭)
     }
   }
 

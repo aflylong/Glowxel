@@ -1,6 +1,6 @@
-<template>
+﻿<template>
   <div class="maze-page glx-page-shell game-mode-page">
-    <PcModeTopbar title="迷宫漫游" />
+    <PcModeTopbar title="杩峰婕父" />
 
     <section class="maze-layout game-mode-layout">
       <article
@@ -9,7 +9,7 @@
         <div class="maze-preview-card__head">
           <div>
             <p class="maze-preview-card__eyebrow">Device Mode</p>
-            <h2 class="maze-preview-card__title">迷宫漫游预览</h2>
+            <h2 class="maze-preview-card__title">杩峰婕父棰勮</h2>
           </div>
         </div>
 
@@ -20,13 +20,13 @@
             :disabled="isSending"
             @click="handleSend"
           >
-            {{ isSending ? "发送中..." : "发送到设备" }}
+            {{ isSending ? "鍙戦€佷腑..." : "鍙戦€佸埌璁惧" }}
           </button>
           <span
             class="glx-chip"
             :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
           >
-            {{ deviceStore.connected ? "已连接" : "未连接" }}
+            {{ deviceStore.connected ? "宸茶繛鎺? : "鏈繛鎺? }}
           </span>
         </div>
 
@@ -35,8 +35,8 @@
             <DevicePixelBoard :pixels="displayPixels" :grid-visible="true" />
             <DeviceSendingOverlay
               :visible="isSending"
-              title="正在发送迷宫漫游"
-              description="发送期间锁定当前预览快照，等待设备完成迷宫参数事务提交。"
+              title="姝ｅ湪鍙戦€佽糠瀹极娓?"
+              description="鍙戦€佹湡闂撮攣瀹氬綋鍓嶉瑙堝揩鐓э紝绛夊緟璁惧瀹屾垚杩峰鍙傛暟浜嬪姟鎻愪氦銆?"
             >
               <div class="maze-preview-sending">
                 <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
@@ -47,20 +47,20 @@
 
         <div class="maze-summary-grid">
           <article class="maze-summary-card">
-            <span class="maze-summary-card__label">背景</span>
+            <span class="maze-summary-card__label">鑳屾櫙</span>
             <strong class="maze-summary-card__value">{{ config.panelBgColor }}</strong>
-            <span class="maze-summary-card__meta">边框 {{ config.borderColor }}</span>
+            <span class="maze-summary-card__meta">杈规 {{ config.borderColor }}</span>
           </article>
           <article class="maze-summary-card">
-            <span class="maze-summary-card__label">时间</span>
+            <span class="maze-summary-card__label">鏃堕棿</span>
             <strong class="maze-summary-card__value">{{ config.timeColor }}</strong>
-            <span class="maze-summary-card__meta">日期 {{ config.dateColor }}</span>
+            <span class="maze-summary-card__meta">鏃ユ湡 {{ config.dateColor }}</span>
           </article>
           <article class="maze-summary-card">
-            <span class="maze-summary-card__label">路径</span>
+            <span class="maze-summary-card__label">璺緞</span>
             <strong class="maze-summary-card__value">{{ config.generationPathColor }}</strong>
             <span class="maze-summary-card__meta">
-              已搜 {{ config.searchVisitedColor }} / 待搜 {{ config.searchFrontierColor }}
+              宸叉悳 {{ config.searchVisitedColor }} / 寰呮悳 {{ config.searchFrontierColor }}
             </span>
           </article>
         </div>
@@ -69,8 +69,8 @@
       <div class="maze-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">模式配置</h2>
-            <span class="glx-section-meta">信息框 / 寻路 / 完成路径</span>
+            <h2 class="glx-section-title">妯″紡閰嶇疆</h2>
+            <span class="glx-section-meta">淇℃伅妗?/ 瀵昏矾 / 瀹屾垚璺緞</span>
           </div>
           <DeviceModeTabs v-model="currentTab" :items="tabItems" />
         </article>
@@ -80,29 +80,29 @@
           class="glx-section-card glx-section-card--stack"
         >
           <div class="glx-section-head">
-            <h2 class="glx-section-title">信息框</h2>
-            <span class="glx-section-meta">背景 / 边框 / 时间 / 日期</span>
+            <h2 class="glx-section-title">淇℃伅妗?</h2>
+            <span class="glx-section-meta">鑳屾櫙 / 杈规 / 鏃堕棿 / 鏃ユ湡</span>
           </div>
 
           <div class="game-fields">
             <GameModeColorField
               v-model="config.panelBgColor"
-              label="背景颜色"
+              label="鑳屾櫙棰滆壊"
               :preset-colors="panelPresetColors"
             />
             <GameModeColorField
               v-model="config.borderColor"
-              label="边框颜色"
+              label="杈规棰滆壊"
               :preset-colors="borderPresetColors"
             />
             <GameModeColorField
               v-model="config.timeColor"
-              label="时间颜色"
+              label="鏃堕棿棰滆壊"
               :preset-colors="textPresetColors"
             />
             <GameModeColorField
               v-model="config.dateColor"
-              label="月份/日期颜色"
+              label="鏈堜唤/鏃ユ湡棰滆壊"
               :preset-colors="textPresetColors"
             />
           </div>
@@ -113,24 +113,24 @@
           class="glx-section-card glx-section-card--stack"
         >
           <div class="glx-section-head">
-            <h2 class="glx-section-title">生成与寻路</h2>
-            <span class="glx-section-meta">生成阶段 / 已搜索 / 待搜索</span>
+            <h2 class="glx-section-title">鐢熸垚涓庡璺?</h2>
+            <span class="glx-section-meta">鐢熸垚闃舵 / 宸叉悳绱?/ 寰呮悳绱?</span>
           </div>
 
           <div class="game-fields">
             <GameModeColorField
               v-model="config.generationPathColor"
-              label="生成阶段路径颜色"
+              label="鐢熸垚闃舵璺緞棰滆壊"
               :preset-colors="stagePresetColors"
             />
             <GameModeColorField
               v-model="config.searchVisitedColor"
-              label="寻路已搜索颜色"
+              label="瀵昏矾宸叉悳绱㈤鑹?"
               :preset-colors="stagePresetColors"
             />
             <GameModeColorField
               v-model="config.searchFrontierColor"
-              label="寻路待搜索颜色"
+              label="瀵昏矾寰呮悳绱㈤鑹?"
               :preset-colors="stagePresetColors"
             />
           </div>
@@ -138,19 +138,19 @@
 
         <article v-else class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">完成路径</h2>
-            <span class="glx-section-meta">首尾渐变</span>
+            <h2 class="glx-section-title">瀹屾垚璺緞</h2>
+            <span class="glx-section-meta">棣栧熬娓愬彉</span>
           </div>
 
           <div class="game-fields">
             <GameModeColorField
               v-model="config.solvedPathStartColor"
-              label="最终路径起始色"
+              label="鏈€缁堣矾寰勮捣濮嬭壊"
               :preset-colors="stagePresetColors"
             />
             <GameModeColorField
               v-model="config.solvedPathEndColor"
-              label="最终路径结束色"
+              label="鏈€缁堣矾寰勭粨鏉熻壊"
               :preset-colors="stagePresetColors"
             />
           </div>
@@ -212,9 +212,9 @@ const stagePresetColors = Object.freeze([
   { hex: "#ffd166", name: "#ffd166" },
 ]);
 const tabItems = Object.freeze([
-  { value: "info", label: "信息框" },
-  { value: "path", label: "寻路" },
-  { value: "finish", label: "完成路径" },
+  { value: "info"", label: "淇℃伅妗?" },"
+  { value: "path", label: "瀵昏矾" },
+  { value: "finish", label: "瀹屾垚璺緞" },
 ]);
 
 const deviceStore = useDeviceLegacyStore();
@@ -270,7 +270,7 @@ function buildMazeConfig() {
     solvedPathEndColor: config.solvedPathEndColor,
   });
   if (normalized === null) {
-    throw new Error("迷宫颜色配置无效");
+    throw new Error("杩峰棰滆壊閰嶇疆鏃犳晥");
   }
   return normalized;
 }
@@ -300,23 +300,23 @@ function refreshPreview() {
 
 async function handleSend() {
   if (deviceStore.connected !== true) {
-    feedback.warning("设备未连接", "请先返回设备控制页建立连接。");
+    feedback.warning("璁惧鏈繛鎺?, "璇峰厛杩斿洖璁惧鎺у埗椤靛缓绔嬭繛鎺ャ€?);
     return;
   }
 
   isSending.value = true;
   sendingPixels.value = snapshot();
-  feedback.showBlocking("发送迷宫漫游", "正在把当前迷宫参数发送到设备。");
+  feedback.showBlocking("鍙戦€佽糠瀹极娓?, "姝ｅ湪鎶婂綋鍓嶈糠瀹弬鏁板彂閫佸埌璁惧銆?);
   try {
     const nextConfig = buildMazeConfig();
     await deviceStore.startMaze(nextConfig);
     saveMazeConfig();
-    feedback.success("发送成功", "迷宫漫游已发送到设备。");
+    feedback.success("鍙戦€佹垚鍔?, "杩峰婕父宸插彂閫佸埌璁惧銆?);
   } catch (error) {
     if (error instanceof Error) {
-      feedback.error("发送失败", error.message);
+      feedback.error("鍙戦€佸け璐?", error.message")";"
     } else {
-      feedback.error("发送失败", "迷宫漫游发送失败。");
+      feedback.error("鍙戦€佸け璐?, "杩峰婕父鍙戦€佸け璐ャ€?);
     }
   } finally {
     feedback.hideBlocking();

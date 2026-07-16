@@ -1,8 +1,9 @@
-const FRAME_COUNT = 48;
+﻿const FRAME_COUNT = 48;
 const CANVAS_SIZE = 64;
 const PREVIEW_DIAMETER = 52;
 const PREVIEW_CENTER = CANVAS_SIZE * 0.5;
 const TWO_PI = Math.PI * 2;
+const PLANET_DEFAULT_COLOR_SEED = 33521;
 const PLANET_REFERENCE_DEFAULT_COLOR_SEED = 20260415;
 
 const PLANET_PREVIEW_MIN_PIXELS = 12;
@@ -10,24 +11,24 @@ const PLANET_PREVIEW_MAX_PIXELS = 5000;
 const MAX_PLANET_PREVIEW_SEED = 999999999;
 const PLANET_PREVIEW_MIN_SPEED = 1;
 const PLANET_PREVIEW_MAX_SPEED = 7;
-const PLANET_PREVIEW_PLAYBACK_INTERVAL_MS = 8;  // 从16ms提升到8ms，实现125 FPS
+const PLANET_PREVIEW_PLAYBACK_INTERVAL_MS = 8;  // 浠?6ms鎻愬崌鍒?ms锛屽疄鐜?25 FPS
 const PLANET_SIZE_OPTIONS = [
-  { id: "small", label: "小" },
-  { id: "medium", label: "中" },
-  { id: "large", label: "大" },
+  { id: "small"", label: "灏?" },"
+  { id: "medium"", label: "涓?" },"
+  { id: "large"", label: "澶?" },"
 ];
 
 const PLANET_DIRECTION_OPTIONS = [
-  { id: "left", label: "左转" },
-  { id: "right", label: "右转" },
+  { id: "left", label: "宸﹁浆" },
+  { id: "right", label: "鍙宠浆" },
 ];
 
 const PLANET_PORTAL_PRESET_IDS = ["portal_green", "portal_blue", "portal_yellow"];
 const PORTAL_SWIRL_ROTATIONS_PER_CYCLE = 1.35;
 const PORTAL_BUBBLE_ROTATIONS_PER_CYCLE = 1.18;
-const PORTAL_LIFECYCLE_REPEATS_PER_CYCLE = 1;     // 1分钟1次循环
-const PORTAL_OPEN_END = 1.5/60.0;               // 1.5秒打开
-const PORTAL_CLOSE_START = 58.5/60.0;           // 58.5秒开始关闭
+const PORTAL_LIFECYCLE_REPEATS_PER_CYCLE = 1;     // 1鍒嗛挓1娆″惊鐜?
+const PORTAL_OPEN_END = 1.5/60.0;               // 1.5绉掓墦寮€
+const PORTAL_CLOSE_START = 58.5/60.0;           // 58.5绉掑紑濮嬪叧闂?
 const PORTAL_BUBBLE_ORBITS = Object.freeze([
   { angle: -1.45, radius: 0.43, size: 0.038, alpha: 0.96, speed: 1.00, wobble: 0.72, life: 0.86, offset: 0.02 },
   { angle: -0.92, radius: 0.46, size: 0.024, alpha: 0.82, speed: 0.82, wobble: 1.08, life: 1.14, offset: 0.31 },
@@ -192,111 +193,111 @@ const PRESET_DEFINITIONS = {
   terran_wet: {
     id: "terran_wet",
     sourceLabel: "Terran Wet",
-    label: "湿润行星",
-    hint: "对应原始生成器里的 Terran Wet，重点看河道、陆地和云层在 64×64 下会不会挤成一团。",
+    label: "婀挎鼎琛屾槦",
+    hint: "瀵瑰簲鍘熷鐢熸垚鍣ㄩ噷鐨?Terran Wet锛岄噸鐐圭湅娌抽亾銆侀檰鍦板拰浜戝眰鍦?64脳64 涓嬩細涓嶄細鎸ゆ垚涓€鍥€?,"
     relativeScale: 1,
   },
   terran_dry: {
     id: "terran_dry",
     sourceLabel: "Terran Dry",
-    label: "干旱行星",
-    hint: "对应原始生成器里的 Terran Dry，适合观察高反差干裂地表在小屏上是否仍然清楚。",
+    label: "骞叉棻琛屾槦",
+    hint: "瀵瑰簲鍘熷鐢熸垚鍣ㄩ噷鐨?Terran Dry锛岄€傚悎瑙傚療楂樺弽宸共瑁傚湴琛ㄥ湪灏忓睆涓婃槸鍚︿粛鐒舵竻妤氥€?,"
     relativeScale: 1,
   },
   islands: {
     id: "islands",
     sourceLabel: "Islands",
-    label: "群岛行星",
-    hint: "对应原始生成器里的 Islands，水面、岛屿边界和云层分离度是这类预览的关键。",
+    label: "缇ゅ矝琛屾槦",
+    hint: "瀵瑰簲鍘熷鐢熸垚鍣ㄩ噷鐨?Islands锛屾按闈€佸矝灞胯竟鐣屽拰浜戝眰鍒嗙搴︽槸杩欑被棰勮鐨勫叧閿€?,"
     relativeScale: 1,
   },
   no_atmosphere: {
     id: "no_atmosphere",
     sourceLabel: "No atmosphere",
-    label: "无气行星",
-    hint: "对应原始生成器里的 No atmosphere，主要看陨坑阴影和球体体积是否还能站住。",
+    label: "鏃犳皵琛屾槦",
+    hint: "瀵瑰簲鍘熷鐢熸垚鍣ㄩ噷鐨?No atmosphere锛屼富瑕佺湅闄ㄥ潙闃村奖鍜岀悆浣撲綋绉槸鍚﹁繕鑳界珯浣忋€?,"
     relativeScale: 1,
   },
   gas_giant_1: {
     id: "gas_giant_1",
     sourceLabel: "Gas giant 1",
-    label: "风暴巨星",
-    hint: "对应原始生成器里的 Gas giant 1，能直接观察条带流动和明暗分层是否稳定。",
+    label: "椋庢毚宸ㄦ槦",
+    hint: "瀵瑰簲鍘熷鐢熸垚鍣ㄩ噷鐨?Gas giant 1锛岃兘鐩存帴瑙傚療鏉″甫娴佸姩鍜屾槑鏆楀垎灞傛槸鍚︾ǔ瀹氥€?,"
     relativeScale: 1,
   },
   gas_giant_2: {
     id: "gas_giant_2",
     sourceLabel: "Gas giant 2",
-    label: "星环巨星",
-    hint: "对应原始生成器里的 Gas giant 2，重点验证光环与球体的遮挡关系和厚度感。",
+    label: "鏄熺幆宸ㄦ槦",
+    hint: "瀵瑰簲鍘熷鐢熸垚鍣ㄩ噷鐨?Gas giant 2锛岄噸鐐归獙璇佸厜鐜笌鐞冧綋鐨勯伄鎸″叧绯诲拰鍘氬害鎰熴€?,"
     relativeScale: 3,
   },
   ice_world: {
     id: "ice_world",
     sourceLabel: "Ice World",
-    label: "冰封行星",
-    hint: "对应原始生成器里的 Ice World，冰层、水带和冷色云层是否还能看清层次很关键。",
+    label: "鍐板皝琛屾槦",
+    hint: "瀵瑰簲鍘熷鐢熸垚鍣ㄩ噷鐨?Ice World锛屽啺灞傘€佹按甯﹀拰鍐疯壊浜戝眰鏄惁杩樿兘鐪嬫竻灞傛寰堝叧閿€?,"
     relativeScale: 1,
   },
   lava_world: {
     id: "lava_world",
     sourceLabel: "Lava World",
-    label: "熔核行星",
-    hint: "对应原始生成器里的 Lava World，最适合判断裂隙亮线在 64×64 下会不会发糊。",
+    label: "鐔旀牳琛屾槦",
+    hint: "瀵瑰簲鍘熷鐢熸垚鍣ㄩ噷鐨?Lava World锛屾渶閫傚悎鍒ゆ柇瑁傞殭浜嚎鍦?64脳64 涓嬩細涓嶄細鍙戠硦銆?,"
     relativeScale: 1,
   },
   asteroid: {
     id: "asteroid",
     sourceLabel: "Asteroid",
-    label: "小行星",
-    hint: "对应原始生成器里的 Asteroid，这类不规则轮廓最能看出小屏边缘是否干净。",
+    label: "灏忚鏄?,"
+    hint: "瀵瑰簲鍘熷鐢熸垚鍣ㄩ噷鐨?Asteroid锛岃繖绫讳笉瑙勫垯杞粨鏈€鑳界湅鍑哄皬灞忚竟缂樻槸鍚﹀共鍑€銆?,"
     relativeScale: 1,
   },
   black_hole: {
     id: "black_hole",
     sourceLabel: "Black Hole",
-    label: "黑洞",
-    hint: "对应原始生成器里的 Black Hole，重点看吸积盘弯曲和高亮边在 64×64 下是否还成立。",
+    label: "榛戞礊",
+    hint: "瀵瑰簲鍘熷鐢熸垚鍣ㄩ噷鐨?Black Hole锛岄噸鐐圭湅鍚哥Н鐩樺集鏇插拰楂樹寒杈瑰湪 64脳64 涓嬫槸鍚﹁繕鎴愮珛銆?,"
     relativeScale: 2,
   },
   galaxy: {
     id: "galaxy",
     sourceLabel: "Galaxy",
-    label: "星系",
-    hint: "对应原始生成器里的 Galaxy,主要验证旋臂层叠、倾斜和旋转是否还能读出来。",
+    label: "鏄熺郴",
+    hint: "瀵瑰簲鍘熷鐢熸垚鍣ㄩ噷鐨?Galaxy,涓昏楠岃瘉鏃嬭噦灞傚彔銆佸€炬枩鍜屾棆杞槸鍚﹁繕鑳借鍑烘潵銆?,"
     relativeScale: 1,
   },
-  // 传送门 3 个固定颜色变体: 仅供 rick_morty_portal 模式复用渲染。
-  // 星球屏保 UI 已经把这 3 项过滤掉(见 pages/planet-screensaver/planet-screensaver.vue
-  // 的 PLANET_DISPLAY_PRESETS),用户在星球屏保里看不到它们;但 PRESET_DEFINITIONS
-  // 必须保留,让传送门预览的 normalizeConfig 能识别 preset.id,
-  // 否则 normalizeConfig 会把 preset 静默 fallback 到 terran_wet(灰球)。
+  // 浼犻€侀棬 3 涓浐瀹氶鑹插彉浣? 浠呬緵 rick_morty_portal 妯″紡澶嶇敤娓叉煋銆?
+  // 鏄熺悆灞忎繚 UI 宸茬粡鎶婅繖 3 椤硅繃婊ゆ帀(瑙?pages/planet-screensaver/planet-screensaver.vue
+  // 鐨?PLANET_DISPLAY_PRESETS),鐢ㄦ埛鍦ㄦ槦鐞冨睆淇濋噷鐪嬩笉鍒板畠浠?浣?PRESET_DEFINITIONS
+  // 蹇呴』淇濈暀,璁╀紶閫侀棬棰勮鐨?normalizeConfig 鑳借瘑鍒?preset.id,
+  // 鍚﹀垯 normalizeConfig 浼氭妸 preset 闈欓粯 fallback 鍒?terran_wet(鐏扮悆)銆?
   portal_green: {
     id: "portal_green",
     sourceLabel: "Portal Green",
-    label: "绿色传送门",
-    hint: "正面圆形液态旋涡门,固定酸性绿色系,不走随机颜色。",
+    label: "缁胯壊浼犻€侀棬",
+    hint: "姝ｉ潰鍦嗗舰娑叉€佹棆娑￠棬,鍥哄畾閰告€х豢鑹茬郴,涓嶈蛋闅忔満棰滆壊銆?,"
     relativeScale: 1,
   },
   portal_blue: {
     id: "portal_blue",
     sourceLabel: "Portal Blue",
-    label: "蓝色传送门",
-    hint: "正面圆形液态旋涡门,固定蓝色系,不走随机颜色。",
+    label: "钃濊壊浼犻€侀棬",
+    hint: "姝ｉ潰鍦嗗舰娑叉€佹棆娑￠棬,鍥哄畾钃濊壊绯?涓嶈蛋闅忔満棰滆壊銆?,"
     relativeScale: 1,
   },
   portal_yellow: {
     id: "portal_yellow",
     sourceLabel: "Portal Yellow",
-    label: "金色传送门",
-    hint: "正面圆形液态旋涡门,固定黄色/金色系,不走随机颜色。",
+    label: "閲戣壊浼犻€侀棬",
+    hint: "姝ｉ潰鍦嗗舰娑叉€佹棆娑￠棬,鍥哄畾榛勮壊/閲戣壊绯?涓嶈蛋闅忔満棰滆壊銆?,"
     relativeScale: 1,
   },
   star: {
     id: "star",
     sourceLabel: "Star",
-    label: "恒星",
-    hint: "对应原始生成器里的 Star,核心、耀斑和外部 blob 的明暗关系是这一类的重点。",
+    label: "鎭掓槦",
+    hint: "瀵瑰簲鍘熷鐢熸垚鍣ㄩ噷鐨?Star,鏍稿績銆佽€€鏂戝拰澶栭儴 blob 鐨勬槑鏆楀叧绯绘槸杩欎竴绫荤殑閲嶇偣銆?,"
     relativeScale: 2,
   },
 };
@@ -316,7 +317,7 @@ function createDefaultPlanetPreviewConfig() {
     pixels: 100,
     size: "medium",
     seed: 20260415,
-    colorSeed: PLANET_REFERENCE_DEFAULT_COLOR_SEED,
+    colorSeed: PLANET_DEFAULT_COLOR_SEED,
     planetX: 32,
     planetY: 32,
     direction: "right",
@@ -389,7 +390,7 @@ function smoothstep(edge0, edge1, value) {
   return t * t * (3 - 2 * t);
 }
 
-// 更平滑的缓动函数 - 用于传送门动画
+// 鏇村钩婊戠殑缂撳姩鍑芥暟 - 鐢ㄤ簬浼犻€侀棬鍔ㄧ敾
 function easeInOutCubic(t) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
@@ -555,8 +556,8 @@ function circleNoiseCloud(x, y, randValue) {
   const dx = fx - 0.25 - h * 0.5;
   const dy = fy - 0.25 - h * 0.5;
   const magnitude = Math.sqrt(dx * dx + dy * dy);
-  const radius = h * 0.28;  // 与ESP32保持一致
-  return smoothstep(0, radius, magnitude * 0.68);  // 与ESP32保持一致
+  const radius = h * 0.28;  // 涓嶦SP32淇濇寔涓€鑷?
+  return smoothstep(0, radius, magnitude * 0.68);  // 涓嶦SP32淇濇寔涓€鑷?
 }
 
 function circleNoiseCrater(x, y, randValue) {
@@ -902,13 +903,13 @@ function getSizeScaleForPreset(presetId, sizeId) {
   }
   if (isPortalPresetValue(presetId)) {
     if (sizeId === "small") {
-      return 0.673;  // 35像素: 35/52
+      return 0.673;  // 35鍍忕礌: 35/52
     }
     if (sizeId === "medium") {
-      return 0.962;  // 50像素: 50/52
+      return 0.962;  // 50鍍忕礌: 50/52
     }
     if (sizeId === "large") {
-      return 1.154;  // 60像素: 60/52
+      return 1.154;  // 60鍍忕礌: 60/52
     }
   }
   if (presetId === "star") {
@@ -1153,7 +1154,7 @@ function renderClouds(buffer, frame, layer) {
     frame.motionFactor,
     layer.timeFactor || 1,
   );
-  // 改回原来的计算方式
+  // 鏀瑰洖鍘熸潵鐨勮绠楁柟寮?
   const timeOffset = time * layer.timeSpeed;
 
   createLayerIterator(frame.preset.relativeScale, layer.planeScale, frame.sizeScale, (offset, u, v) => {
@@ -1171,7 +1172,7 @@ function renderClouds(buffer, frame, layer) {
     let sphereY = sphere[1] + smoothstep(0, layer.cloudCurve, Math.abs(sphere[0] - 0.4));
     sphereY *= layer.stretch;
 
-    // 云层噪声计算 (默认9次, 地球3次, 跟板载一致)
+    // 浜戝眰鍣０璁＄畻 (榛樿9娆? 鍦扮悆3娆? 璺熸澘杞戒竴鑷?
     const noiseLoops = layer.noiseLoops || 9;
     let cloudNoise = 0;
     for (let index = 0; index < noiseLoops; index += 1) {
@@ -1209,7 +1210,7 @@ function renderGasClouds(buffer, frame, layer) {
   const pixels = useLayerPixels(frame.config.pixels, layer.pixelsScale);
   const randValue = buildTiledRand(frame.shaderSeed, layer.size);
   const time = loopTimeFromMultiplier(frame.progress, layer.size, layer.timeSpeed, frame.motionFactor);
-  // 改回原来的计算方式
+  // 鏀瑰洖鍘熸潵鐨勮绠楁柟寮?
   const timeOffset = time * layer.timeSpeed;
 
   createLayerIterator(frame.preset.relativeScale, layer.planeScale, frame.sizeScale, (offset, u, v) => {
@@ -1352,7 +1353,7 @@ function renderCraters(buffer, frame, layer) {
   const pixels = useLayerPixels(frame.config.pixels, layer.pixelsScale);
   const randValue = buildTiledRand(frame.shaderSeed, layer.size);
   const time = loopTimeFromMultiplier(frame.progress, layer.size, layer.timeSpeed, frame.motionFactor);
-  // 改回原来的计算方式
+  // 鏀瑰洖鍘熸潵鐨勮绠楁柟寮?
   const timeOffset = time * layer.timeSpeed;
 
   createLayerIterator(frame.preset.relativeScale, layer.planeScale, frame.sizeScale, (offset, u, v) => {
@@ -1578,7 +1579,7 @@ function renderDenseGas(buffer, frame, layer) {
   const pixels = useLayerPixels(frame.config.pixels, layer.pixelsScale);
   const randValue = buildTiledRand(frame.shaderSeed, layer.size, 2, 1);
   const time = loopTimeFromMultiplier(frame.progress, layer.size, layer.timeSpeed, frame.motionFactor);
-  // 改回原来的计算方式
+  // 鏀瑰洖鍘熸潵鐨勮绠楁柟寮?
   const timeOffset = time * layer.timeSpeed;
 
   createLayerIterator(frame.preset.relativeScale, layer.planeScale, frame.sizeScale, (offset, u, v) => {
@@ -2071,28 +2072,28 @@ function resolvePortalLifecycle(progress) {
   const cycleProgress = mod(progress * PORTAL_LIFECYCLE_REPEATS_PER_CYCLE, 1);
   
   if (cycleProgress < PORTAL_OPEN_END) {
-    // 打开阶段 - 平滑放大
+    // 鎵撳紑闃舵 - 骞虫粦鏀惧ぇ
     const t = cycleProgress / PORTAL_OPEN_END;
     const ease = easeInOutCubic(t);
     
     return {
-      scale: 0.25 + 0.75 * ease,  // 从0.25放大到1.0，避免过小的值
+      scale: 0.25 + 0.75 * ease,  // 浠?.25鏀惧ぇ鍒?.0锛岄伩鍏嶈繃灏忕殑鍊?
       alpha: ease,
     };
   }
   
   if (cycleProgress > PORTAL_CLOSE_START) {
-    // 关闭阶段 - 平滑缩小
+    // 鍏抽棴闃舵 - 骞虫粦缂╁皬
     const t = (cycleProgress - PORTAL_CLOSE_START) / (1 - PORTAL_CLOSE_START);
     const ease = easeInOutCubic(1 - t);
     
     return {
-      scale: 0.25 + 0.75 * ease,  // 从1.0缩小到0.25
+      scale: 0.25 + 0.75 * ease,  // 浠?.0缂╁皬鍒?.25
       alpha: ease,
     };
   }
   
-  // 持续阶段 - 保持稳定
+  // 鎸佺画闃舵 - 淇濇寔绋冲畾
   return {
     scale: 1.0,
     alpha: 1.0,
@@ -2104,20 +2105,20 @@ function resolvePortalLifecycleUv(u, v, lifecycle) {
     return null;
   }
   
-  // 计算到中心的距离
+  // 璁＄畻鍒颁腑蹇冪殑璺濈
   const dx = u - 0.5;
   const dy = v - 0.5;
   const distanceFromCenter = Math.sqrt(dx * dx + dy * dy);
   
-  // 缩放后的距离
+  // 缂╂斁鍚庣殑璺濈
   const scaledDistance = distanceFromCenter / lifecycle.scale;
   
-  // 扩大有效区域，添加边界渐变
+  // 鎵╁ぇ鏈夋晥鍖哄煙锛屾坊鍔犺竟鐣屾笎鍙?
   if (scaledDistance > 0.52) {
     return null;
   }
   
-  // 进行缩放变换
+  // 杩涜缂╂斁鍙樻崲
   const centerU = 0.5 + dx / lifecycle.scale;
   const centerV = 0.5 + dy / lifecycle.scale;
   
@@ -2188,7 +2189,7 @@ function resolvePortalBubbleAlpha(u, v, progress) {
 }
 
 function renderPortalPreset(buffer, frame) {
-  // 传送门使用固定60秒周期，不受速度影响
+  // 浼犻€侀棬浣跨敤鍥哄畾60绉掑懆鏈燂紝涓嶅彈閫熷害褰卞搷
   const lifecycle = resolvePortalLifecycle(frame.portalProgress);
   createLayerIterator(frame.preset.relativeScale, 1, frame.sizeScale, (offset, u, v) => {
     const lifecycleUv = resolvePortalLifecycleUv(u, v, lifecycle);
@@ -2196,23 +2197,23 @@ function renderPortalPreset(buffer, frame) {
       return;
     }
     
-    // 计算边界渐变
+    // 璁＄畻杈圭晫娓愬彉
     const dx = u - 0.5;
     const dy = v - 0.5;
     const distanceFromCenter = Math.sqrt(dx * dx + dy * dy);
     const scaledDistance = distanceFromCenter / lifecycle.scale;
     
-    // 在边界区域应用渐变
+    // 鍦ㄨ竟鐣屽尯鍩熷簲鐢ㄦ笎鍙?
     let edgeFade = 1;
     if (scaledDistance > 0.48) {
-      edgeFade = (0.52 - scaledDistance) / 0.04;  // 在0.48-0.52之间线性渐变
+      edgeFade = (0.52 - scaledDistance) / 0.04;  // 鍦?.48-0.52涔嬮棿绾挎€ф笎鍙?
       edgeFade = clamp01(edgeFade);
     }
     
     const sampleU = lifecycleUv[0];
     const sampleV = lifecycleUv[1];
     const baseLevel = readPortalTemplateLevel(sampleU, sampleV);
-    // 旋涡和气泡动画仍使用普通progress（受速度影响）
+    // 鏃嬫丁鍜屾皵娉″姩鐢讳粛浣跨敤鏅€歱rogress锛堝彈閫熷害褰卞搷锛?
     const level = resolvePortalAnimatedLevel(baseLevel, sampleU, sampleV, frame.progress);
     if (level > 0) {
       const color = portalColorForLevel(frame.preset.id, level);
@@ -2256,8 +2257,8 @@ function buildFrameState(config, preset, progressValue) {
   const spinFactor = directionFactor;
   const spinAngle = progress * spinFactor * TWO_PI;
   
-  // 传送门使用真实时间（固定60秒周期），不受速度影响
-  const realTimeSeconds = (Date.now() / 1000) % 60;  // 0-60秒循环
+  // 浼犻€侀棬浣跨敤鐪熷疄鏃堕棿锛堝浐瀹?0绉掑懆鏈燂級锛屼笉鍙楅€熷害褰卞搷
+  const realTimeSeconds = (Date.now() / 1000) % 60;  // 0-60绉掑惊鐜?
   const portalProgress = realTimeSeconds / 60;  // 0-1
   
   return {
@@ -2273,7 +2274,7 @@ function buildFrameState(config, preset, progressValue) {
     frameDelay: getFrameDelay(speedValue),
     sizeScale: getSizeScaleForPreset(config.preset, config.size),
     shaderSeed: convertShaderSeed(config.seed),
-    portalProgress,  // 传送门专用的progress（固定60秒）
+    portalProgress,  // 浼犻€侀棬涓撶敤鐨刾rogress锛堝浐瀹?0绉掞級
   };
 }
 
@@ -2291,7 +2292,7 @@ function renderTerranWet(buffer, frame) {
     planeScale: 1,
     pixelsScale: 1,
     lightOrigin: [0.39, 0.39],
-    rotationOffset: 0,      // 板载是 0.0
+    rotationOffset: 0,      // 鏉胯浇鏄?0.0
     timeSpeed: 0.1,
     ditherSize: 3.951,
     lightBorder1: 0.287,
@@ -2320,7 +2321,7 @@ function renderTerranWet(buffer, frame) {
     lightBorder1: 0.52,
     lightBorder2: 0.62,
     size: 7.315,
-    octaves: 1,             // 板载是 1
+    octaves: 1,             // 鏉胯浇鏄?1
     colors: [
       rgba(0.960784, 1, 0.909804),
       rgba(0.87451, 0.878431, 0.909804),
@@ -2372,7 +2373,7 @@ function renderIslands(buffer, frame) {
     planeScale: 1,
     pixelsScale: 1,
     lightOrigin: [0.39, 0.39],
-    rotationOffset: 0,      // 板载是 0.0
+    rotationOffset: 0,      // 鏉胯浇鏄?0.0
     timeSpeed: 0.2,
     lightBorder1: 0.32,
     lightBorder2: 0.534,
@@ -2895,7 +2896,7 @@ function readPreviewCache(key) {
 }
 
 function writePreviewCache(key, sequence) {
-  if (PREVIEW_CACHE.size >= 16) {  // 从8增加到16，减少缓存失效
+  if (PREVIEW_CACHE.size >= 16) {  // 浠?澧炲姞鍒?6锛屽噺灏戠紦瀛樺け鏁?
     const firstKey = PREVIEW_CACHE.keys().next().value;
     PREVIEW_CACHE.delete(firstKey);
   }
@@ -2914,7 +2915,7 @@ function buildPlanetScreensaverPreviewSequenceFromNormalized(normalized) {
   const delays = [];
   const frameDelay = getFrameDelay(normalized.speed);
 
-  // 渲染完整序列
+  // 娓叉煋瀹屾暣搴忓垪
   for (let i = 0; i < FRAME_COUNT; i++) {
     const progress = i / FRAME_COUNT;
     maps.push(renderPlanetScreensaverPreviewMap(normalized, preset, progress));
@@ -2941,6 +2942,7 @@ function buildPlanetScreensaverPreviewSequence(config) {
 
 export {
   FRAME_COUNT,
+  PLANET_DEFAULT_COLOR_SEED,
   PLANET_REFERENCE_DEFAULT_COLOR_SEED,
   PLANET_SCREEN_PRESETS,
   PLANET_PREVIEW_MAX_PIXELS,

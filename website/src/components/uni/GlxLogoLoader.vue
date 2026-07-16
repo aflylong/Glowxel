@@ -1,10 +1,10 @@
-<template>
+﻿<template>
   <div
     class="glx-logo-loader"
-    :class="[
+    :class="["
       `glx-logo-loader--${resolvedVariant}`,
       `glx-logo-loader--${resolvedSurface}`,
-    ]"
+    ]""
     :style="loaderStyle"
   >
     <div

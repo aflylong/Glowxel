@@ -1,9 +1,9 @@
-<template>
+﻿<template>
   <div class="mobile-panel-overlay" @click="handleOverlayClick">
     <div class="mobile-panel" @click.stop>
       <div class="panel-header">
         <h3 class="panel-title">{{ panelTitle }}</h3>
-        <button class="close-btn" @click="$emit('close')">✕</button>
+        <button class="close-btn" @click="$emit('close')">鉁?</button>
       </div>
       
       <div class="panel-content">
@@ -24,12 +24,12 @@ const emit = defineEmits(['close'])
 
 const panelTitle = computed(() => {
   const titles = {
-    upload: '上传图片',
-    tools: '工具面板',
-    colors: '颜色选择',
-    export: '导出设置'
+    upload: '涓婁紶鍥剧墖',
+    tools: '宸ュ叿闈㈡澘',
+    colors: '棰滆壊閫夋嫨',
+    export: '瀵煎嚭璁剧疆'
   }
-  return titles[props.type] || '面板'
+  return titles[props.type] || '闈㈡澘'
 })
 
 function handleOverlayClick() {
@@ -107,7 +107,7 @@ function handleOverlayClick() {
   padding: 24px;
 }
 
-/* 移动端滚动条优化 */
+/* 绉诲姩绔粴鍔ㄦ潯浼樺寲 */
 .panel-content::-webkit-scrollbar {
   width: 4px;
 }
@@ -121,7 +121,7 @@ function handleOverlayClick() {
   border-radius: 2px;
 }
 
-/* 动画效果 */
+/* 鍔ㄧ敾鏁堟灉 */
 .mobile-panel-overlay {
   animation: fadeIn 0.3s ease;
 }

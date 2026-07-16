@@ -1,6 +1,6 @@
-<template>
+﻿<template>
   <div class="planet-page glx-page-shell game-mode-page">
-    <PcModeTopbar title="星球屏保" />
+    <PcModeTopbar title="鏄熺悆灞忎繚" />
 
     <section class="planet-layout game-mode-layout">
       <article
@@ -9,7 +9,7 @@
         <div class="planet-preview-card__head">
           <div>
             <p class="planet-preview-card__eyebrow">Device Mode</p>
-            <h2 class="planet-preview-card__title">星球屏保预览</h2>
+            <h2 class="planet-preview-card__title">鏄熺悆灞忎繚棰勮</h2>
           </div>
         </div>
 
@@ -21,7 +21,7 @@
               :disabled="isSending"
               @click="handleSend"
             >
-              {{ isSending ? "发送中..." : sendButtonText }}
+              {{ isSending ? "鍙戦€佷腑..." : sendButtonText }}
             </button>
             <button
               v-if="showRandomPlanetAction"
@@ -39,7 +39,7 @@
               :disabled="isSending"
               @click="handleRandomColor"
             >
-              随机颜色
+              闅忔満棰滆壊
             </button>
           </div>
           <span
@@ -62,19 +62,19 @@
 
         <div class="planet-summary-grid">
           <article class="planet-summary-card">
-            <span class="planet-summary-card__label">星球</span>
+            <span class="planet-summary-card__label">鏄熺悆</span>
             <strong class="planet-summary-card__value">{{ selectedPresetLabel }}</strong>
             <span class="planet-summary-card__meta">{{ selectedSizeLabel }}</span>
           </article>
           <article class="planet-summary-card">
-            <span class="planet-summary-card__label">布局</span>
+            <span class="planet-summary-card__label">甯冨眬</span>
             <strong class="planet-summary-card__value">{{ selectedDirectionLabel }}</strong>
             <span class="planet-summary-card__meta">
               X {{ config.planetX }} / Y {{ config.planetY }}
             </span>
           </article>
           <article class="planet-summary-card">
-            <span class="planet-summary-card__label">轮播</span>
+            <span class="planet-summary-card__label">杞挱</span>
             <strong class="planet-summary-card__value">{{ autoRotateIntervalLabel }}</strong>
             <span class="planet-summary-card__meta">{{ autoRotateContentLabel }}</span>
           </article>
@@ -84,8 +84,8 @@
       <div class="planet-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">模式配置</h2>
-            <span class="glx-section-meta">星球 / 时间 / 字体 / 轮播</span>
+            <h2 class="glx-section-title">妯″紡閰嶇疆</h2>
+            <span class="glx-section-meta">鏄熺悆 / 鏃堕棿 / 瀛椾綋 / 杞挱</span>
           </div>
           <DeviceModeTabs v-model="activeTab" :items="tabItems" />
         </article>
@@ -95,8 +95,8 @@
           class="glx-section-card glx-section-card--stack"
         >
           <div class="glx-section-head">
-            <h2 class="glx-section-title">星球类型</h2>
-            <span class="glx-section-meta">{{ presetOptions.length }} 个预设</span>
+            <h2 class="glx-section-title">鏄熺悆绫诲瀷</h2>
+            <span class="glx-section-meta">{{ presetOptions.length }} 涓璁?</span>
           </div>
 
           <div class="planet-grid">
@@ -114,7 +114,7 @@
           </div>
 
           <div v-if="isPortalPreset" class="planet-block">
-            <span class="game-row__label">传送门颜色</span>
+            <span class="game-row__label">浼犻€侀棬棰滆壊</span>
             <DeviceModeTabs
               v-model="portalPresetValue"
               :items="portalColorOptions"
@@ -122,12 +122,12 @@
           </div>
 
           <div class="game-row">
-            <span class="game-row__label">水平位置</span>
+            <span class="game-row__label">姘村钩浣嶇疆</span>
             <DeviceModeStepper v-model="config.planetX" :min="0" :max="63" />
           </div>
 
           <div class="game-row">
-            <span class="game-row__label">垂直位置</span>
+            <span class="game-row__label">鍨傜洿浣嶇疆</span>
             <DeviceModeStepper v-model="config.planetY" :min="0" :max="63" />
           </div>
 
@@ -137,12 +137,12 @@
               class="glx-button glx-button--ghost"
               @click="centerPlanet"
             >
-              快速居中
+              蹇€熷眳涓?
             </button>
           </div>
 
           <div class="game-row">
-            <span class="game-row__label">转速 {{ config.speed }}</span>
+            <span class="game-row__label">杞€?{{ config.speed }}</span>
             <DeviceModeStepper
               v-model="config.speed"
               :min="PLANET_PREVIEW_MIN_SPEED"
@@ -156,7 +156,7 @@
           </div>
 
           <div v-if="!isPortalPreset" class="planet-block">
-            <span class="game-row__label">自转方向</span>
+            <span class="game-row__label">鑷浆鏂瑰悜</span>
             <DeviceModeTabs v-model="config.direction" :items="directionTabItems" />
           </div>
         </article>
@@ -166,8 +166,8 @@
           class="glx-section-card glx-section-card--stack"
         >
           <ClockTextSettingsSection
-            title="时间显示"
-            description="时间位置、字号、对齐与颜色保持和 mobile 同一套语义。"
+            title="鏃堕棿鏄剧ず"
+            description="鏃堕棿浣嶇疆銆佸瓧鍙枫€佸榻愪笌棰滆壊淇濇寔鍜?mobile 鍚屼竴濂楄涔夈€?"
             :section="clockConfig.time"
             :preset-colors="timeColorItems"
             :show-font-size="true"
@@ -183,8 +183,8 @@
 
         <article v-else-if="activeTab === 'font'" class="glx-section-card glx-section-card--stack">
           <GameModeFontSelector
-            title="字体样式"
-            description="预览和发送共用当前时间字体配置。"
+            title="瀛椾綋鏍峰紡"
+            description="棰勮鍜屽彂閫佸叡鐢ㄥ綋鍓嶆椂闂村瓧浣撻厤缃€?"
             :font-options="fontOptions"
             :selected-font="clockConfig.font"
             :show-seconds="clockConfig.showSeconds"
@@ -197,17 +197,17 @@
 
         <article v-else class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">自动轮播</h2>
-            <span class="glx-section-meta">保持和 mobile 同一套随机轮播语义</span>
+            <h2 class="glx-section-title">鑷姩杞挱</h2>
+            <span class="glx-section-meta">淇濇寔鍜?mobile 鍚屼竴濂楅殢鏈鸿疆鎾涔?</span>
           </div>
 
           <div class="planet-block">
-            <span class="game-row__label">自动轮播</span>
+            <span class="game-row__label">鑷姩杞挱</span>
             <DeviceModeTabs v-model="autoRotateEnabledValue" :items="autoRotateSwitchItems" />
           </div>
 
           <div class="planet-block">
-            <span class="game-row__label">随机内容</span>
+            <span class="game-row__label">闅忔満鍐呭</span>
             <div class="planet-toggle-grid">
               <button
                 type="button"
@@ -215,7 +215,7 @@
                 :class="{ 'is-active': autoRotate.randomPlanet }"
                 @click="toggleAutoRotateRandomPlanet"
               >
-                随机星球
+                闅忔満鏄熺悆
               </button>
               <button
                 type="button"
@@ -223,13 +223,13 @@
                 :class="{ 'is-active': autoRotate.randomColor }"
                 @click="toggleAutoRotateRandomColor"
               >
-                随机颜色
+                闅忔満棰滆壊
               </button>
             </div>
           </div>
 
           <div class="planet-block">
-            <span class="game-row__label">切换时长</span>
+            <span class="game-row__label">鍒囨崲鏃堕暱</span>
             <DeviceModeTabs v-model="autoRotate.interval" :items="autoRotateIntervalItems" />
           </div>
         </article>
@@ -264,6 +264,7 @@ import {
   createRandomPlanetPreviewSeed,
   getPlanetPreviewCycleDuration,
   PLANET_DIRECTION_OPTIONS,
+  PLANET_DEFAULT_COLOR_SEED,
   PLANET_PREVIEW_MAX_SPEED,
   PLANET_PREVIEW_MIN_SPEED,
   PLANET_REFERENCE_DEFAULT_COLOR_SEED,
@@ -273,24 +274,24 @@ import {
 
 const PLANET_PAGE_STORAGE_KEY = "planet_screensaver_page_state";
 const PLANET_TIME_COLOR_OPTIONS = Object.freeze([
-  { label: "青色", value: "#64c8ff" },
-  { label: "绿色", value: "#00ff9d" },
-  { label: "黄色", value: "#ffdc00" },
-  { label: "橙色", value: "#ffa500" },
-  { label: "红色", value: "#ff6464" },
-  { label: "紫色", value: "#c864ff" },
-  { label: "白色", value: "#ffffff" },
+  { label: "闈掕壊", value: "#64c8ff" },
+  { label: "缁胯壊", value: "#00ff9d" },
+  { label: "榛勮壊", value: "#ffdc00" },
+  { label: "姗欒壊", value: "#ffa500" },
+  { label: "绾㈣壊", value: "#ff6464" },
+  { label: "绱壊", value: "#c864ff" },
+  { label: "鐧借壊", value: "#ffffff" },
 ]);
 const PLANET_PORTAL_COLOR_OPTIONS = Object.freeze([
-  { id: "portal_green", label: "绿色" },
-  { id: "portal_blue", label: "蓝色" },
-  { id: "portal_yellow", label: "黄色" },
+  { id: "portal_green", label: "缁胯壊" },
+  { id: "portal_blue", label: "钃濊壊" },
+  { id: "portal_yellow", label: "榛勮壊" },
 ]);
 const PLANET_AUTO_ROTATE_INTERVAL_OPTIONS = Object.freeze([
-  { value: 30, label: "30 秒" },
-  { value: 60, label: "1 分钟" },
-  { value: 300, label: "5 分钟" },
-  { value: 600, label: "10 分钟" },
+  { value: 30, label: "30 绉?" },"
+  { value: 60, label: "1 鍒嗛挓" },
+  { value: 300, label: "5 鍒嗛挓" },
+  { value: 600, label: "10 鍒嗛挓" },
 ]);
 const PLANET_DISPLAY_PRESETS = Object.freeze(
   PLANET_SCREEN_PRESETS.filter(
@@ -302,10 +303,10 @@ const PLANET_DISPLAY_PRESETS = Object.freeze(
 );
 
 const tabItems = Object.freeze([
-  { value: "planet", label: "星球" },
-  { value: "time", label: "时间" },
-  { value: "font", label: "字体" },
-  { value: "rotate", label: "轮播" },
+  { value: "planet", label: "鏄熺悆" },
+  { value: "time", label: "鏃堕棿" },
+  { value: "font", label: "瀛椾綋" },
+  { value: "rotate", label: "杞挱" },
 ]);
 const sizeTabItems = Object.freeze(
   PLANET_SIZE_OPTIONS.map((item) => ({ value: item.id, label: item.label })),
@@ -326,8 +327,8 @@ const timeColorItems = Object.freeze(
   })),
 );
 const autoRotateSwitchItems = Object.freeze([
-  { value: "on", label: "开启" },
-  { value: "off", label: "关闭" },
+  { value: "on"", label: "寮€鍚?" },"
+  { value: "off", label: "鍏抽棴" },
 ]);
 const autoRotateIntervalItems = Object.freeze(
   PLANET_AUTO_ROTATE_INTERVAL_OPTIONS.map((item) => ({
@@ -373,14 +374,14 @@ const isPortalPreset = computed(() => isPortalPresetValue(config.preset));
 const isFixedPalettePreset = computed(() => isFixedPalettePresetValue(config.preset));
 
 const sizeSectionLabel = computed(() => {
-  return isPortalPreset.value ? "传送门大小" : "星球大小";
+  return isPortalPreset.value ? "浼犻€侀棬澶у皬" : "鏄熺悆澶у皬";
 });
 
 const showRandomColorAction = computed(() => !isFixedPalettePreset.value);
 const showRandomPlanetAction = computed(() => !isPortalPreset.value);
 
 const randomPlanetActionLabel = computed(() => {
-  return isPortalPreset.value ? "随机纹理" : "随机星球";
+  return isPortalPreset.value ? "闅忔満绾圭悊" : "闅忔満鏄熺悆";
 });
 
 const isAutoRotatePreviewActive = computed(() => {
@@ -395,37 +396,37 @@ const isAutoRotatePreviewActive = computed(() => {
 
 const autoRotateContentLabel = computed(() => {
   if (autoRotate.randomPlanet && autoRotate.randomColor) {
-    return "随机星球 + 随机颜色";
+    return "闅忔満鏄熺悆 + 闅忔満棰滆壊";
   }
   if (autoRotate.randomPlanet) {
-    return "随机星球";
+    return "闅忔満鏄熺悆";
   }
   if (autoRotate.randomColor) {
-    return "随机颜色";
+    return "闅忔満棰滆壊";
   }
-  return "未选择随机内容";
+  return "鏈€夋嫨闅忔満鍐呭";
 });
 
 const autoRotateIntervalLabel = computed(() => {
   const matched = PLANET_AUTO_ROTATE_INTERVAL_OPTIONS.find(
     (item) => item.value === autoRotate.interval,
   );
-  return matched ? matched.label : "未设置";
+  return matched ? matched.label : "鏈缃?";"
 });
 
 const sendModeBadgeText = computed(() => {
-  return isAutoRotatePreviewActive.value ? "随机已开启" : "随机已关闭";
+  return isAutoRotatePreviewActive.value ? "闅忔満宸插紑鍚? : "闅忔満宸插叧闂?;
 });
 
 const sendModeHint = computed(() => {
   if (isAutoRotatePreviewActive.value) {
-    return `发送后设备按 ${autoRotateIntervalLabel.value} ${autoRotateContentLabel.value} 自动轮播`;
+    return `鍙戦€佸悗璁惧鎸?${autoRotateIntervalLabel.value} ${autoRotateContentLabel.value} 鑷姩杞挱`;
   }
-  return "发送后设备使用当前固定星球配置";
+  return "鍙戦€佸悗璁惧浣跨敤褰撳墠鍥哄畾鏄熺悆閰嶇疆";
 });
 
 const sendButtonText = computed(() => {
-  return isAutoRotatePreviewActive.value ? "发送随机" : "发送固定";
+  return isAutoRotatePreviewActive.value ? "鍙戦€侀殢鏈? : "鍙戦€佸浐瀹?;
 });
 
 const autoRotateEnabledValue = computed({
@@ -817,16 +818,16 @@ function disableAutoRotateForManualEdit() {
 
 function handlePresetSelect(presetId) {
   if (config.preset === presetId) {
-    if (config.colorSeed !== PLANET_REFERENCE_DEFAULT_COLOR_SEED) {
+    if (config.colorSeed !== PLANET_DEFAULT_COLOR_SEED) {
       disableAutoRotateForManualEdit();
-      config.colorSeed = PLANET_REFERENCE_DEFAULT_COLOR_SEED;
+      config.colorSeed = PLANET_DEFAULT_COLOR_SEED;
       restartPreviewPlayback();
     }
     return;
   }
   disableAutoRotateForManualEdit();
   config.preset = presetId;
-  config.colorSeed = PLANET_REFERENCE_DEFAULT_COLOR_SEED;
+  config.colorSeed = PLANET_DEFAULT_COLOR_SEED;
   restartPreviewPlayback();
 }
 
@@ -930,24 +931,24 @@ function buildPlanetSendPayload() {
 
 async function handleSend() {
   if (deviceStore.connected !== true) {
-    feedback.warning("设备未连接", "请先返回设备控制页建立连接。");
+    feedback.warning("璁惧鏈繛鎺?, "璇峰厛杩斿洖璁惧鎺у埗椤靛缓绔嬭繛鎺ャ€?);
     return;
   }
 
   isSending.value = true;
   feedback.showBlocking(
-    "发送星球屏保",
-    `正在把 ${selectedPresetLabel.value} 发送到设备。`,
+    "鍙戦€佹槦鐞冨睆淇?,"
+    `姝ｅ湪鎶?${selectedPresetLabel.value} 鍙戦€佸埌璁惧銆俙,
   );
 
   try {
     await deviceStore.setPlanetScreensaver(buildPlanetSendPayload());
-    feedback.success("发送成功", `${selectedPresetLabel.value} 已发送到设备。`);
+    feedback.success("鍙戦€佹垚鍔?, `${selectedPresetLabel.value"} 宸插彂閫佸埌璁惧銆俙")";"
   } catch (error) {
     if (error instanceof Error) {
-      feedback.error("发送失败", error.message);
+      feedback.error("鍙戦€佸け璐?", error.message")";"
     } else {
-      feedback.error("发送失败", "星球屏保发送失败。");
+      feedback.error("鍙戦€佸け璐?, "鏄熺悆灞忎繚鍙戦€佸け璐ャ€?);
     }
   } finally {
     feedback.hideBlocking();

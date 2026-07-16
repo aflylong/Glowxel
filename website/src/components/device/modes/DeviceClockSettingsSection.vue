@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <section class="mode-clock-section">
     <div class="mode-clock-section__head">
       <div>
@@ -12,19 +12,19 @@
         :class="{ 'is-on': section.show }"
         @click="$emit('toggle')"
       >
-        {{ section.show ? "显示中" : "已隐藏" }}
+        {{ section.show ? "鏄剧ず涓? : "宸查殣钘? }}
       </button>
     </div>
 
     <div v-if="showSecondsControl" class="mode-clock-row">
-      <span class="mode-clock-row__label">显示秒钟</span>
+      <span class="mode-clock-row__label">鏄剧ず绉掗挓</span>
       <button type="button" class="glx-button glx-button--ghost" @click="$emit('toggle-seconds')">
-        {{ showSeconds ? "开启" : "关闭" }}
+        {{ showSeconds ? "寮€鍚?" : "鍏抽棴""" }}"
       </button>
     </div>
 
     <div v-if="showFontSize" class="mode-clock-row">
-      <span class="mode-clock-row__label">字体大小</span>
+      <span class="mode-clock-row__label">瀛椾綋澶у皬</span>
       <div class="mode-clock-stepper">
         <button
           type="button"
@@ -45,7 +45,7 @@
     </div>
 
     <div class="mode-clock-row">
-      <span class="mode-clock-row__label">X 位置</span>
+      <span class="mode-clock-row__label">X 浣嶇疆</span>
       <div class="mode-clock-stepper">
         <button
           type="button"
@@ -66,7 +66,7 @@
     </div>
 
     <div class="mode-clock-row">
-      <span class="mode-clock-row__label">Y 位置</span>
+      <span class="mode-clock-row__label">Y 浣嶇疆</span>
       <div class="mode-clock-stepper">
         <button
           type="button"
@@ -87,7 +87,7 @@
     </div>
 
     <div class="mode-clock-block">
-      <span class="mode-clock-row__label">对齐方式</span>
+      <span class="mode-clock-row__label">瀵归綈鏂瑰紡</span>
       <div class="mode-clock-tabs">
         <button
           type="button"
@@ -95,15 +95,14 @@
           :class="{ 'is-active': section.align === 'left' }"
           @click="$emit('set-align', 'left')"
         >
-          左对齐
-        </button>
+          宸﹀榻?        </button>
         <button
           type="button"
           class="mode-clock-tab"
           :class="{ 'is-active': section.align === 'center' }"
           @click="$emit('set-align', 'center')"
         >
-          居中
+          灞呬腑
         </button>
         <button
           type="button"
@@ -111,14 +110,13 @@
           :class="{ 'is-active': section.align === 'right' }"
           @click="$emit('set-align', 'right')"
         >
-          右对齐
-        </button>
+          鍙冲榻?        </button>
       </div>
     </div>
 
     <div class="mode-clock-block">
       <div class="mode-clock-block__head">
-        <span class="mode-clock-row__label">颜色</span>
+        <span class="mode-clock-row__label">棰滆壊</span>
         <input
           class="mode-clock-color-input"
           type="color"

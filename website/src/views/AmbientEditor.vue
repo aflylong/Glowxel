@@ -162,6 +162,7 @@
 </template>
 
 <script>
+import { getStorage, setStorage, createDomQuery, navigateBack } from "@/utils/browser-platform.js";
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import Icon from "@/components/uni/Icon.vue";
@@ -343,7 +344,7 @@ export default {
     this.deviceStore = useDeviceStore();
     this.deviceStore.init();
     this.toast = useToast();
-    this.config = normalizeAmbientConfig(uni.getStorageSync(AMBIENT_CONFIG_KEY));
+    this.config = normalizeAmbientConfig(getStorage(AMBIENT_CONFIG_KEY));
   },
   onReady() {
     if (this.$refs.toastRef) {
@@ -385,7 +386,7 @@ export default {
       }
     },
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
     handleToastShow() {
       this.isToastVisible = true;
@@ -404,7 +405,7 @@ export default {
       this.clearSendingPreview();
     },
     initPreviewCanvas() {
-      const query = uni.createSelectorQuery().in(this);
+      const query = createDomQuery().in(this);
       query
         .select(".preview-canvas-container")
         .boundingClientRect((rect) => {
@@ -479,7 +480,7 @@ export default {
       try {
         const ws = this.deviceStore.getWebSocket();
         await ws.setAmbientEffect(this.config);
-        uni.setStorageSync(AMBIENT_CONFIG_KEY, this.config);
+        setStorage(AMBIENT_CONFIG_KEY, this.config);
         this.toast.showSuccess("已保存并应用");
       } catch (error) {
         await this.deviceStore.rollbackBusinessMode(previousMode, {

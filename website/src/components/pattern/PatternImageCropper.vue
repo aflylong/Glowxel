@@ -1,7 +1,7 @@
-<template>
+﻿<template>
   <div v-if="visible" class="cropper-overlay">
     <div class="cropper-title-bar">
-      <h3 class="cropper-title">裁一下</h3>
+      <h3 class="cropper-title">瑁佷竴涓?</h3>
     </div>
 
     <div class="cropper-body">
@@ -10,7 +10,7 @@
           v-if="src"
           :src="src"
           class="crop-image"
-          alt="裁剪图片"
+          alt="瑁佸壀鍥剧墖"
           draggable="false"
           @load="handleImageLoad"
         >
@@ -37,11 +37,10 @@
 
     <div class="cropper-footer">
       <button class="footer-btn cancel" type="button" @click="$emit('cancel')">
-        返回
+        杩斿洖
       </button>
       <button class="footer-btn confirm" type="button" @click="handleConfirm">
-        用这张
-      </button>
+        鐢ㄨ繖寮?      </button>
     </div>
   </div>
 </template>

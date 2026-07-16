@@ -1,4 +1,4 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/tetris-clock-settings/tetris-clock-settings.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/tetris-clock-settings/tetris-clock-settings.vue -->
 <template>
   <div class="tetris-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
@@ -7,7 +7,7 @@
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
-      <span class="nav-title glx-topbar__title">俄罗斯方块时钟</span>
+      <span class="nav-title glx-topbar__title">淇勭綏鏂柟鍧楁椂閽?</span>
       <div class="nav-right"></div>
     </div>
 
@@ -43,7 +43,7 @@
       </div>
       <div class="preview-caption glx-preview-panel">
         <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-caption-title">预览效果</span>
+          <span class="preview-caption-title">棰勮鏁堟灉</span>
         </div>
         <div class="preview-actions">
           <div
@@ -52,7 +52,7 @@
             @click="saveAndApply"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
@@ -66,7 +66,7 @@
       <div class="content-wrapper glx-scroll-stack">
         <div class="card glx-panel-card glx-editor-card tetris-section-card">
           <div class="card-title-section glx-panel-head">
-            <span class="card-title glx-panel-title">下落速度</span>
+            <span class="card-title glx-panel-title">涓嬭惤閫熷害</span>
           </div>
           <div class="option-row option-row-triple">
             <div
@@ -74,28 +74,28 @@
               :class="{ active: config.speed === 'slow' }"
               @click="config.speed = 'slow'"
             >
-              <span>慢</span>
+              <span>鎱?</span>
             </div>
             <div
               class="option-btn glx-feature-option"
               :class="{ active: config.speed === 'normal' }"
               @click="config.speed = 'normal'"
             >
-              <span>中</span>
+              <span>涓?</span>
             </div>
             <div
               class="option-btn glx-feature-option"
               :class="{ active: config.speed === 'fast' }"
               @click="config.speed = 'fast'"
             >
-              <span>快</span>
+              <span>蹇?</span>
             </div>
           </div>
         </div>
 
         <div class="card glx-panel-card glx-editor-card tetris-section-card">
           <div class="card-title-section glx-panel-head">
-            <span class="card-title glx-panel-title">小时制式</span>
+            <span class="card-title glx-panel-title">灏忔椂鍒跺紡</span>
           </div>
           <div class="option-row option-row-double">
             <div
@@ -103,14 +103,14 @@
               :class="{ active: config.hourFormat === 24 }"
               @click="config.hourFormat = 24"
             >
-              <span>24 小时</span>
+              <span>24 灏忔椂</span>
             </div>
             <div
               class="option-btn glx-feature-option"
               :class="{ active: config.hourFormat === 12 }"
               @click="config.hourFormat = 12"
             >
-              <span>12 小时</span>
+              <span>12 灏忔椂</span>
             </div>
           </div>
         </div>
@@ -142,6 +142,7 @@
 </template>
 
 <script>
+import { getStorage, setStorage, getSystemInfo, createDomQuery, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import { useDeviceStore } from "@/stores/device.js";
 import { useToast } from "@/composables/useToast.js";
@@ -235,7 +236,7 @@ export default {
     this.deviceStore = useDeviceStore();
     this.deviceStore.init();
     this.toast = useToast();
-    const saved = uni.getStorageSync(TETRIS_CLOCK_STORAGE_KEY);
+    const saved = getStorage(TETRIS_CLOCK_STORAGE_KEY);
     this.config = normalizeSavedConfig(saved);
   },
   onReady() {
@@ -267,10 +268,10 @@ export default {
       deviceSendUxMixin.methods.endSendUi.call(this);
     },
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
     initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
+      const systemInfo = getSystemInfo();
       const statusBarHeight =
         typeof systemInfo.statusBarHeight === "number"
           ? systemInfo.statusBarHeight
@@ -278,7 +279,7 @@ export default {
 
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query.select(".canvas-section").boundingClientRect((sectionRect) => {
             if (!sectionRect || !sectionRect.height) {
               return;
@@ -396,7 +397,7 @@ export default {
         return;
       }
 
-      uni.setStorageSync(TETRIS_CLOCK_STORAGE_KEY, this.config);
+      setStorage(TETRIS_CLOCK_STORAGE_KEY, this.config);
       const previousMode = this.deviceStore.deviceMode;
       this.beginSendUi();
       try {
@@ -406,12 +407,12 @@ export default {
           speed: TETRIS_SPEED_OPTIONS[this.config.speed],
           hourFormat: this.config.hourFormat,
         });
-        this.showSendSuccess("已应用");
+        this.showSendSuccess("宸插簲鐢?")";"
       } catch (err) {
         await this.deviceStore.rollbackBusinessMode(previousMode, {
           expectedMode: "tetris_clock",
         });
-        console.error("发送失败:", err);
+        console.error("鍙戦€佸け璐?", err);
         this.showSendFailure(err);
       } finally {
         this.endSendUi();

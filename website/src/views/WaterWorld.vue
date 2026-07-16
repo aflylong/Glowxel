@@ -1,6 +1,6 @@
-<template>
+﻿<template>
   <div class="water-page glx-page-shell game-mode-page">
-    <PcModeTopbar title="水世界" />
+    <PcModeTopbar title="姘翠笘鐣?" /">"
     <section class="water-layout game-mode-layout">
       <article
         class="glx-section-card glx-section-card--stack water-preview-card game-preview-card"
@@ -8,7 +8,7 @@
         <div class="water-preview-card__head">
           <div>
             <p class="water-preview-card__eyebrow">Device Mode</p>
-            <h2 class="water-preview-card__title">水世界预览</h2>
+            <h2 class="water-preview-card__title">姘翠笘鐣岄瑙?</h2>
           </div>
         </div>
 
@@ -19,13 +19,13 @@
             :disabled="isSending"
             @click="handleSend"
           >
-            {{ isSending ? "发送中..." : "发送到设备" }}
+            {{ isSending ? "鍙戦€佷腑..." : "鍙戦€佸埌璁惧" }}
           </button>
           <span
             class="glx-chip"
             :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
           >
-            {{ deviceStore.connected ? "已连接" : "未连接" }}
+            {{ deviceStore.connected ? "宸茶繛鎺? : "鏈繛鎺? }}
           </span>
         </div>
 
@@ -34,8 +34,8 @@
             <DevicePixelBoard :pixels="currentPreviewPixels" :grid-visible="false" />
             <DeviceSendingOverlay
               :visible="isSending"
-              title="正在发送水世界"
-              description="发送期间锁定当前预览快照，等待设备完成水世界场景与时钟配置事务提交。"
+              title="姝ｅ湪鍙戦€佹按涓栫晫"
+              description="鍙戦€佹湡闂撮攣瀹氬綋鍓嶉瑙堝揩鐓э紝绛夊緟璁惧瀹屾垚姘翠笘鐣屽満鏅笌鏃堕挓閰嶇疆浜嬪姟鎻愪氦銆?"
             >
               <div class="water-preview-sending">
                 <DevicePixelBoard :pixels="sendingPixels" :grid-visible="false" />
@@ -46,21 +46,20 @@
 
         <div class="water-summary-grid">
           <article class="water-summary-card">
-            <span class="water-summary-card__label">场景</span>
+            <span class="water-summary-card__label">鍦烘櫙</span>
             <strong class="water-summary-card__value">{{ selectedPresetLabel }}</strong>
             <span class="water-summary-card__meta">{{ colorThemeLabel }}</span>
           </article>
           <article class="water-summary-card">
-            <span class="water-summary-card__label">时间</span>
+            <span class="water-summary-card__label">鏃堕棿</span>
             <strong class="water-summary-card__value">
-              {{ clockConfig.showSeconds ? "显示秒钟" : "隐藏秒钟" }}
+              {{ clockConfig.showSeconds ? "鏄剧ず绉掗挓" : "闅愯棌绉掗挓" }}
             </strong>
             <span class="water-summary-card__meta">
-              字号 {{ clockConfig.time.fontSize }} / {{ clockConfig.hourFormat }} 小时制
-            </span>
+              瀛楀彿 {{ clockConfig.time.fontSize }} / {{ clockConfig.hourFormat }} 灏忔椂鍒?            </span>
           </article>
           <article class="water-summary-card">
-            <span class="water-summary-card__label">字体</span>
+            <span class="water-summary-card__label">瀛椾綋</span>
             <strong class="water-summary-card__value">{{ selectedFontLabel }}</strong>
             <span class="water-summary-card__meta">{{ clockConfig.time.color }}</span>
           </article>
@@ -70,8 +69,8 @@
       <div class="water-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">模式配置</h2>
-            <span class="glx-section-meta">场景 / 时间 / 字体</span>
+            <h2 class="glx-section-title">妯″紡閰嶇疆</h2>
+            <span class="glx-section-meta">鍦烘櫙 / 鏃堕棿 / 瀛椾綋</span>
           </div>
           <DeviceModeTabs v-model="currentTab" :items="tabItems" />
         </article>
@@ -79,8 +78,8 @@
         <template v-if="currentTab === 'scene'">
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">路线</h2>
-              <span class="glx-section-meta">{{ WATER_WORLD_OPTIONS.length }} 个水域</span>
+              <h2 class="glx-section-title">璺嚎</h2>
+              <span class="glx-section-meta">{{ WATER_WORLD_OPTIONS.length }} 涓按鍩?</span>
             </div>
             <DeviceModeTabs
               v-model="config.preset"
@@ -90,11 +89,11 @@
 
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">海水颜色</h2>
-              <span class="glx-section-meta">随机海色也会一起缓存</span>
+              <h2 class="glx-section-title">娴锋按棰滆壊</h2>
+              <span class="glx-section-meta">闅忔満娴疯壊涔熶細涓€璧风紦瀛?</span>
             </div>
             <div class="game-inline-actions">
-              <button type="button" class="glx-button glx-button--ghost" @click="randomizeColorTheme">随机海色</button>
+              <button type="button" class="glx-button glx-button--ghost" @click="randomizeColorTheme">闅忔満娴疯壊</button>
             </div>
             <div class="color-theme-grid">
               <button
@@ -121,8 +120,8 @@
 
         <article v-else-if="currentTab === 'time'" class="glx-section-card glx-section-card--stack">
           <ClockTextSettingsSection
-            title="时间显示"
-            description="时间层字段继续沿用时钟配置合同，位置、字号、颜色和对齐与 uniapp 同源。"
+            title="鏃堕棿鏄剧ず"
+            description="鏃堕棿灞傚瓧娈电户缁部鐢ㄦ椂閽熼厤缃悎鍚岋紝浣嶇疆銆佸瓧鍙枫€侀鑹插拰瀵归綈涓?uniapp 鍚屾簮銆?"
             :section="timeSection"
             :preset-colors="presetColors"
             :show-font-size="true"
@@ -140,8 +139,8 @@
 
         <article v-else class="glx-section-card glx-section-card--stack">
           <GameModeFontSelector
-            title="字体样式"
-            description="水世界时钟覆盖和站内其它时钟页保持同一套字模与小时制切换。"
+            title="瀛椾綋鏍峰紡"
+            description="姘翠笘鐣屾椂閽熻鐩栧拰绔欏唴鍏跺畠鏃堕挓椤典繚鎸佸悓涓€濂楀瓧妯′笌灏忔椂鍒跺垏鎹€?"
             :font-options="fontOptions"
             :selected-font="clockConfig.font"
             :show-seconds="clockConfig.showSeconds"
@@ -198,9 +197,9 @@ import {
 const WATER_WORLD_THEME_KEY = "water_world_preview_theme_id";
 
 const tabItems = Object.freeze([
-  { value: "scene", label: "场景" },
-  { value: "time", label: "时间" },
-  { value: "font", label: "字体" },
+  { value: "scene", label: "鍦烘櫙" },
+  { value: "time", label: "鏃堕棿" },
+  { value: "font", label: "瀛椾綋" },
 ]);
 
 const presetColors = WATER_WORLD_PRESET_COLORS.map((item) => ({
@@ -453,13 +452,13 @@ function handleTimeColor(color) {
 
 async function handleSend() {
   if (deviceStore.connected !== true) {
-    feedback.warning("设备未连接", "请先返回设备控制页建立连接。");
+    feedback.warning("璁惧鏈繛鎺?, "璇峰厛杩斿洖璁惧鎺у埗椤靛缓绔嬭繛鎺ャ€?);
     return;
   }
 
   isSending.value = true;
   sendingPixels.value = new Map(currentPreviewPixels.value);
-  feedback.showBlocking("发送水世界", "正在把当前水世界配置发送到设备。");
+  feedback.showBlocking("鍙戦€佹按涓栫晫"", "姝ｅ湪鎶婂綋鍓嶆按涓栫晫閰嶇疆鍙戦€佸埌璁惧銆?")";"
   try {
     const sendPlan = buildWaterWorldSendPlan(config.preset);
     sendPlan.command.colorTheme = buildWaterWorldColorThemePayload(
@@ -475,12 +474,12 @@ async function handleSend() {
       },
     );
     persistState();
-    feedback.success("发送成功", "水世界已发送到设备。");
+    feedback.success("鍙戦€佹垚鍔?, "姘翠笘鐣屽凡鍙戦€佸埌璁惧銆?);
   } catch (error) {
     if (error instanceof Error) {
-      feedback.error("发送失败", error.message);
+      feedback.error("鍙戦€佸け璐?", error.message")";"
     } else {
-      feedback.error("发送失败", "水世界发送失败。");
+      feedback.error("鍙戦€佸け璐?, "姘翠笘鐣屽彂閫佸け璐ャ€?);
     }
   } finally {
     feedback.hideBlocking();

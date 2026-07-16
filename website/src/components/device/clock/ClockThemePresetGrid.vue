@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <section class="clock-theme-grid">
     <button
       v-for="preset in presets"
@@ -8,7 +8,7 @@
       :class="{
         'is-active': selectedThemeId === preset.id,
         'is-current': currentThemeId === preset.id,
-      }"
+      }""
       @click="$emit('select-theme', preset.id)"
     >
       <div class="clock-theme-card__preview">
@@ -24,7 +24,7 @@
         <div class="clock-theme-card__topline">
           <strong>{{ preset.name }}</strong>
           <div class="clock-theme-card__tag-row">
-            <span v-if="currentThemeId === preset.id" class="clock-theme-card__badge">当前</span>
+            <span v-if="currentThemeId === preset.id" class="clock-theme-card__badge">褰撳墠</span>
             <span class="clock-theme-card__tag">{{ preset.styleTag }}</span>
           </div>
         </div>

@@ -1,24 +1,23 @@
-<template>
+﻿<template>
   <div class="glx-page-shell">
     <section class="glx-page-shell__hero">
       <span class="glx-page-shell__eyebrow">Social</span>
       <h1 class="glx-page-shell__title">{{ pageTitle }}</h1>
       <p class="glx-page-shell__desc">
-        关系链页继续承接粉丝和关注列表，关注动作也一起恢复回来。
-      </p>
+        鍏崇郴閾鹃〉缁х画鎵挎帴绮変笣鍜屽叧娉ㄥ垪琛紝鍏虫敞鍔ㄤ綔涔熶竴璧锋仮澶嶅洖鏉ャ€?      </p>
       <div class="glx-inline-actions">
-        <button type="button" class="glx-button glx-button--ghost" @click="switchTab('followers')">看粉丝</button>
-        <button type="button" class="glx-button glx-button--ghost" @click="switchTab('following')">看关注</button>
+        <button type="button" class="glx-button glx-button--ghost" @click="switchTab('followers')">鐪嬬矇涓?</button>
+        <button type="button" class="glx-button glx-button--ghost" @click="switchTab('following')">鐪嬪叧娉?</button>
       </div>
     </section>
 
     <section class="glx-section-card glx-section-card--stack">
       <div class="glx-tabs">
         <button type="button" class="glx-tab" :class="{ 'is-active': tab === 'followers' }" @click="switchTab('followers')">
-          粉丝
+          绮変笣
         </button>
         <button type="button" class="glx-tab" :class="{ 'is-active': tab === 'following' }" @click="switchTab('following')">
-          关注
+          鍏虫敞
         </button>
       </div>
     </section>
@@ -29,8 +28,8 @@
     </div>
 
     <section v-else-if="list.length === 0" class="glx-empty-card">
-      <strong class="glx-section-title">当前列表为空</strong>
-      <p class="glx-page-shell__desc">等关系链建立后，这里会自动显示对应用户列表。</p>
+      <strong class="glx-section-title">褰撳墠鍒楄〃涓虹┖</strong>
+      <p class="glx-page-shell__desc">绛夊叧绯婚摼寤虹珛鍚庯紝杩欓噷浼氳嚜鍔ㄦ樉绀哄搴旂敤鎴峰垪琛ㄣ€?</p>
     </section>
 
     <section v-else class="glx-stack">
@@ -41,14 +40,14 @@
           <span class="glx-list-card__desc">{{ resolveUserBio(user) }}</span>
         </div>
         <div class="glx-inline-actions">
-          <router-link :to="`/user/${user.id}`" class="glx-button glx-button--ghost">查看主页</router-link>
+          <router-link :to="`/user/${user.id}`" class="glx-button glx-button--ghost">鏌ョ湅涓婚〉</router-link>
           <button
             v-if="showToggleButton(user)"
             type="button"
             class="glx-button glx-button--ghost"
             @click="handleToggle(user)"
           >
-            {{ user.is_following ? "已关注" : "关注" }}
+            {{ user.is_following ? "宸插叧娉?" : "鍏虫敞""" }}"
           </button>
         </div>
       </article>
@@ -75,9 +74,9 @@ const loading = ref(false);
 
 const pageTitle = computed(() => {
   if (profileUserId.value.length > 0) {
-    return tab.value === "following" ? "TA 的关注" : "TA 的粉丝";
+    return tab.value === "following" ? "TA 鐨勫叧娉? : "TA 鐨勭矇涓?;
   }
-  return tab.value === "following" ? "我的关注" : "我的粉丝";
+  return tab.value === "following" ? "鎴戠殑鍏虫敞" : "鎴戠殑绮変笣";
 });
 
 const profileUserId = computed(() => {
@@ -109,14 +108,14 @@ function resolveUserName(user) {
   if (typeof user.name === "string" && user.name.length > 0) {
     return user.name;
   }
-  return "未命名用户";
+  return "鏈懡鍚嶇敤鎴?";"
 }
 
 function resolveUserBio(user) {
   if (typeof user.bio === "string" && user.bio.length > 0) {
     return user.bio;
   }
-  return "暂无简介";
+  return "鏆傛棤绠€浠?";"
 }
 
 function resolveAvatarText(name) {
@@ -144,13 +143,13 @@ async function load(currentTab) {
     }
 
     list.value = [];
-    feedback.error("列表加载失败", response.message || "关系链列表没有成功返回。");
+    feedback.error("鍒楄〃鍔犺浇澶辫触"", response.message || "鍏崇郴閾惧垪琛ㄦ病鏈夋垚鍔熻繑鍥炪€?")";"
   } catch (error) {
     list.value = [];
     if (error instanceof Error) {
-      feedback.error("列表加载失败", error.message);
+      feedback.error("鍒楄〃鍔犺浇澶辫触", error.message);
     } else {
-      feedback.error("列表加载失败", "关系链列表读取失败。");
+      feedback.error("鍒楄〃鍔犺浇澶辫触"", "鍏崇郴閾惧垪琛ㄨ鍙栧け璐ャ€?")";"
     }
   } finally {
     loading.value = false;
@@ -190,7 +189,7 @@ async function handleToggle(user) {
 
   const response = await followAPI.toggle(user.id);
   if (!response.success) {
-    feedback.error("操作失败", "关注状态没有成功更新。");
+    feedback.error("鎿嶄綔澶辫触"", "鍏虫敞鐘舵€佹病鏈夋垚鍔熸洿鏂般€?")";"
     return;
   }
 

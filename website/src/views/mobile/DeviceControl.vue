@@ -1,4 +1,4 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/control/control.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/control/control.vue -->
 <template>
   <div
     class="control-page glx-device-shell glx-device-shell--desktop-stack glx-page-shell"
@@ -8,7 +8,7 @@
     >
       <div class="header-content">
         <div class="header-placeholder"></div>
-        <span class="header-title glx-topbar__title">光格像素工坊</span>
+        <span class="header-title glx-topbar__title">鍏夋牸鍍忕礌宸ュ潑</span>
         <div class="header-placeholder"></div>
       </div>
     </div>
@@ -31,7 +31,7 @@
                   :class="{ online: isDeviceConnected }"
                 ></div>
                 <span class="device-status-label">{{
-                  isDeviceConnected ? "已连接" : "未连接"
+                  isDeviceConnected ? "宸茶繛鎺? : "鏈繛鎺?
                 }}</span>
                 <span
                   v-if="isDeviceConnected && deviceIp"
@@ -49,8 +49,8 @@
               <Icon name="scanning" :size="36" color="var(--nb-ink)" />
             </div>
             <div class="connect-entry-text">
-              <span class="connect-entry-label">连接设备</span>
-              <span class="connect-entry-desc">输入设备 IP 地址连接</span>
+              <span class="connect-entry-label">杩炴帴璁惧</span>
+              <span class="connect-entry-desc">杈撳叆璁惧 IP 鍦板潃杩炴帴</span>
             </div>
           </div>
           <div class="connect-entry-card" @click="goToWifiConfig">
@@ -58,9 +58,9 @@
               <Icon name="mobile-phone" :size="36" color="var(--nb-ink)" />
             </div>
             <div class="connect-entry-text">
-              <span class="connect-entry-label">热点配网</span>
+              <span class="connect-entry-label">鐑偣閰嶇綉</span>
               <span class="connect-entry-desc"
-                >首次使用请连接设备热点完成配网</span
+                >棣栨浣跨敤璇疯繛鎺ヨ澶囩儹鐐瑰畬鎴愰厤缃?/span
               >
             </div>
           </div>
@@ -72,14 +72,14 @@
           @click="handleDisconnect"
         >
           <Icon name="close" :size="32" color="var(--nb-ink)" />
-          <span class="device-disconnect-label">断开连接</span>
+          <span class="device-disconnect-label">鏂紑杩炴帴</span>
         </div>
       </div>
 
       <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
-          <span class="section-title glx-section-title">模式入口</span>
-          <span class="section-meta">{{ modeCatalog.length }} 个入口</span>
+          <span class="section-title glx-section-title">妯″紡鍏ュ彛</span>
+          <span class="section-meta">{{ modeCatalog.length }} 涓叆鍙?</span>
         </div>
         <div class="mode-badge-grid">
           <div
@@ -113,7 +113,7 @@
 
       <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
-          <span class="section-title glx-section-title">设备工具</span>
+          <span class="section-title glx-section-title">璁惧宸ュ叿</span>
         </div>
         <div class="panel-card glx-panel-card">
           <div class="panel-action" @click="openDeviceParams">
@@ -121,9 +121,9 @@
               <Icon name="setting" :size="32" color="var(--nb-ink)" />
             </div>
             <div class="panel-action-text">
-              <span class="panel-action-label">设备参数</span>
+              <span class="panel-action-label">璁惧鍙傛暟</span>
               <span class="panel-action-desc"
-                >调整亮度、方向、颜色、重置网络</span
+                >璋冩暣浜害銆佹柟鍚戙€侀鑹层€侀噸缃綉缁?/span
               >
             </div>
             <Icon name="direction-right" :size="28" color="var(--nb-ink)" />
@@ -133,8 +133,8 @@
               <Icon name="upload" :size="32" color="var(--nb-ink)" />
             </div>
             <div class="panel-action-text">
-              <span class="panel-action-label">设备烧录</span>
-              <span class="panel-action-desc">USB Web Serial 写入固件</span>
+              <span class="panel-action-label">璁惧鐑у綍</span>
+              <span class="panel-action-desc">USB Web Serial 鍐欏叆鍥轰欢</span>
             </div>
             <Icon name="direction-right" :size="28" color="var(--nb-ink)" />
           </div>
@@ -146,8 +146,8 @@
     <Toast ref="toastRef" />
     <ConnectModal
       :visible="showConnectModal"
-      title="连接设备"
-      description="请输入 Glowxel PixelBoard 的 IP 地址"
+      title="杩炴帴璁惧"
+      description="璇疯緭鍏?Glowxel PixelBoard 鐨?IP 鍦板潃"
       :placeholder="deviceIp || '192.168.31.84'"
       :defaultValue="deviceIp"
       ref="connectModal"
@@ -159,9 +159,9 @@
     <JsonImportModal
       :visible="showJsonImportModal"
       :sending="jsonImportSending"
-      title="导入 JSON 配置"
-      description="从 LED 模拟器复制的完整配置数据"
-      placeholder="粘贴 JSON 数据..."
+      title="瀵煎叆 JSON 閰嶇疆"
+      description="浠?LED 妯℃嫙鍣ㄥ鍒剁殑瀹屾暣閰嶇疆鏁版嵁"
+      placeholder="绮樿创 JSON 鏁版嵁..."
       @confirm="handleJsonImport"
       @error="handleJsonImportError"
       @update:visible="(val) => (showJsonImportModal = val)"
@@ -171,10 +171,12 @@
 </template>
 
 <script>
+import { getStorage, setStorage, navigateTo } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import { useDeviceStore } from "@/stores/device.js";
 import { useToast } from "@/composables/useToast.js";
 import { applyCompactAnimation } from "@/utils/animationUploader.js";
+import { DEVICE_MODE_ENTRY_CATALOG } from "@/utils/device-mode-catalog.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import Icon from "@/components/uni/Icon.vue";
 import Toast from "@/components/uni/Toast.vue";
@@ -206,8 +208,8 @@ export default {
     this.toast = useToast();
     this.deviceStore.init();
 
-    // 从缓存读取设备 IP
-    const savedIp = uni.getStorageSync("device_ip");
+    // 浠庣紦瀛樿鍙栬澶?IP
+    const savedIp = getStorage("device_ip");
     if (savedIp) {
       this.deviceIp = savedIp;
     }
@@ -234,136 +236,7 @@ export default {
       return this.deviceStore?.deviceMode || "clock";
     },
     modeCatalog() {
-      return [
-        {
-          key: "eyes",
-          name: "桌面宠物",
-          icon: "smile",
-          variant: "pink",
-          type: "mode",
-          bucket: "stable",
-        },
-        // {
-        //   key: "clock",
-        //   name: "静态时钟",
-        //   icon: "time",
-        //   variant: "cyan",
-        //   type: "mode",
-        //   bucket: "stable",
-        // },
-        // {
-        //   key: "animation",
-        //   name: "动态时钟",
-        //   icon: "dynamic-filling",
-        //   variant: "teal",
-        //   type: "mode",
-        //   bucket: "stable",
-        // },
-        {
-          key: "theme",
-          name: "主题模式",
-          icon: "picture",
-          variant: "purple",
-          type: "mode",
-          bucket: "stable",
-        },
-        // {
-        //   key: "canvas",
-        //   name: "画板模式",
-        //   icon: "edit",
-        //   variant: "blue",
-        //   type: "mode",
-        //   bucket: "stable",
-        // },
-        // {
-        //   key: "tetris",
-        //   name: "俄罗斯方块屏保",
-        //   icon: "modular",
-        //   variant: "indigo",
-        //   type: "mode",
-        //   bucket: "secondary",
-        // },
-        {
-          key: "tetris_clock",
-          name: "俄罗斯方块时钟",
-          icon: "clock-filling",
-          variant: "gold",
-          type: "mode",
-          bucket: "secondary",
-        },
-        // {
-        //   key: "maze",
-        //   name: "迷宫漫游",
-        //   icon: "map",
-        //   variant: "indigo",
-        //   type: "mode",
-        //   bucket: "secondary",
-        // },
-        // {
-        //   key: "snake",
-        //   name: "贪吃蛇",
-        //   icon: "move",
-        //   variant: "indigo",
-        //   type: "mode",
-        //   bucket: "secondary",
-        // },
-        // {
-        //   key: "water_world",
-        //   name: "水世界",
-        //   icon: "layers",
-        //   variant: "azure",
-        //   type: "mode",
-        //   bucket: "secondary",
-        // },
-        // {
-        //   key: "planet_screensaver",
-        //   name: "星球屏保",
-        //   icon: "navigation",
-        //   variant: "indigo",
-        //   type: "mode",
-        //   bucket: "secondary",
-        // },
-        {
-          key: "rick_morty_portal",
-          name: "传送门",
-          icon: "refresh",
-          variant: "mint",
-          type: "mode",
-          bucket: "secondary",
-        },
-        {
-          key: "terraria_clock",
-          name: "泰拉瑞亚时钟",
-          icon: "layers",
-          variant: "gold",
-          type: "mode",
-          bucket: "secondary",
-        },
-        {
-          key: "adventure_island",
-          name: "冒险岛",
-          icon: "navigation",
-          variant: "orange",
-          type: "mode",
-          bucket: "secondary",
-        },
-        {
-          key: "kof97",
-          name: "拳皇 97",
-          icon: "modular",
-          variant: "copper",
-          type: "mode",
-          bucket: "secondary",
-        },
-        // {
-        //   key: "spongebob_clock",
-        //   name: "海绵宝宝时钟",
-        //   icon: "time",
-        //   variant: "gold",
-        //   type: "mode",
-        //   bucket: "secondary",
-        // },
-      ];
+      return DEVICE_MODE_ENTRY_CATALOG;
     },
   },
   methods: {
@@ -385,7 +258,7 @@ export default {
         this.deviceStore.init();
       }
       await this.deviceStore.disconnect();
-      this.toast?.showInfo("设备已断开");
+      this.toast?.showInfo("璁惧宸叉柇寮€");
     },
 
     async handleConnectConfirm(ip) {
@@ -400,9 +273,9 @@ export default {
         const result = await this.deviceStore.connect(ip);
         if (result.success) {
           this.$refs.connectModal.onSuccess();
-          this.toast?.showSuccess("已连接到 Glowxel PixelBoard");
+          this.toast?.showSuccess("宸茶繛鎺ュ埌 Glowxel PixelBoard");
         } else {
-          let errorMessage = "连接失败，请检查 IP 地址";
+          let errorMessage = "杩炴帴澶辫触锛岃妫€鏌?IP 鍦板潃";
           if (result.error && result.error.errMsg) {
             errorMessage = result.error.errMsg;
           } else if (result.error && result.error.message) {
@@ -411,8 +284,8 @@ export default {
           this.$refs.connectModal.onError(errorMessage);
         }
       } catch (err) {
-        console.error("连接失败:", err);
-        let errorMessage = "连接失败，请检查 IP 地址";
+        console.error("杩炴帴澶辫触:", err);
+        let errorMessage = "杩炴帴澶辫触锛岃妫€鏌?IP 鍦板潃";
         if (err && err.errMsg) {
           errorMessage = err.errMsg;
         } else if (err && err.message) {
@@ -423,11 +296,11 @@ export default {
     },
 
     handleConnectCancel() {
-      // 取消连接
+      // 鍙栨秷杩炴帴
     },
 
     handleConnectTimeout() {
-      this.toast.showError("连接超时，请重试");
+      this.toast.showError("杩炴帴瓒呮椂锛岃閲嶈瘯");
     },
 
     handleModeSelect(entry) {
@@ -483,121 +356,121 @@ export default {
       } else if (mode === "theme") {
         url = "/pages/clock-editor/theme-clock";
       }
-      uni.navigateTo({
+      navigateTo({
         url,
       });
     },
 
     openTerrariaClockEditor() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/clock-editor/terraria-clock",
       });
     },
 
     openAdventureIsland() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/adventure-island/adventure-island",
       });
     },
 
     openKof97() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/kof97/kof97",
       });
     },
 
     openSpongeBobClock() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/spongebob-clock/spongebob-clock",
       });
     },
 
     openTetrisSettings() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/tetris-settings/tetris-settings",
       });
     },
 
     openTetrisClockSettings() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/tetris-clock-settings/tetris-clock-settings",
       });
     },
 
     openCanvasEditor() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/canvas-editor/canvas-editor",
       });
     },
 
     openLedMatrixShowcase() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/led-matrix/led-matrix",
       });
     },
 
     openGifPlayer() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/gif-player/gif-player",
       });
     },
 
     openMazeMode() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/maze-mode/maze-mode",
       });
     },
 
     openSnakeMode() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/snake-mode/snake-mode",
       });
     },
 
     openWaterWorld() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/water-world/water-world",
       });
     },
 
     openSpiritScreen() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/spirit-screen/spirit-screen",
       });
     },
 
     openPlanetScreensaver() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/planet-screensaver/planet-screensaver",
         fail: (error) => {
-          console.error("打开星球屏保页面失败:", error);
-          this.toast.showError("星球屏保页面路由未刷新，请重新运行项目");
+          console.error("鎵撳紑鏄熺悆灞忎繚椤甸潰澶辫触:", error);
+          this.toast.showError("鏄熺悆灞忎繚椤甸潰璺敱鏈埛鏂帮紝璇烽噸鏂拌繍琛岄」鐩?")";"
         },
       });
     },
 
     openRickMortyPortal() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/rick-morty-portal/rick-morty-portal",
         fail: (error) => {
-          console.error("打开传送门页面失败:", error);
-          this.toast.showError("传送门页面路由未刷新，请重新运行项目");
+          console.error("鎵撳紑浼犻€侀棬椤甸潰澶辫触:", error);
+          this.toast.showError("浼犻€侀棬椤甸潰璺敱鏈埛鏂帮紝璇烽噸鏂拌繍琛岄」鐩?")";"
         },
       });
     },
 
     openDeviceParams() {
       if (!this.isDeviceConnected) {
-        this.toast.showInfo("请先连接设备");
+        this.toast.showInfo("璇峰厛杩炴帴璁惧");
         return;
       }
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/device-params/device-params",
       });
     },
 
     openDeviceFlash() {
-      uni.navigateTo({
+      navigateTo({
         url: "/pages/device-flash/device-flash",
       });
     },
@@ -609,7 +482,7 @@ export default {
     async handleJsonImport(jsonData) {
       try {
         if (!jsonData || typeof jsonData !== "object") {
-          this.toast.showError("无效的配置数据");
+          this.toast.showError("鏃犳晥鐨勯厤缃暟鎹?")";"
           return;
         }
 
@@ -618,7 +491,7 @@ export default {
         if (!this.deviceStore.connected) {
           this.jsonImportSending = false;
           this.showJsonImportModal = false;
-          this.toast.showError("设备未连接");
+          this.toast.showError("璁惧鏈繛鎺?")";"
           return;
         }
 
@@ -635,10 +508,10 @@ export default {
             const animationData = frames.slice(0, frameCount);
 
             await applyCompactAnimation(ws, animationData, "animation");
-            this.toast.showSuccess(`动画已发送！${frameCount} 帧`);
+            this.toast.showSuccess(`鍔ㄧ敾宸插彂閫侊紒${frameCount} 甯);
           } catch (err) {
-            console.error("发送动画数据失败:", err);
-            this.toast.showError("发送动画数据失败：" + err.message);
+            console.error("鍙戦€佸姩鐢绘暟鎹け璐?", err);
+            this.toast.showError("鍙戦€佸姩鐢绘暟鎹け璐ワ細" + err.message);
           }
 
           this.jsonImportSending = false;
@@ -646,10 +519,10 @@ export default {
           return;
         }
 
-        uni.setStorageSync("clock_config", JSON.stringify(jsonData));
+        setStorage("clock_config", JSON.stringify(jsonData));
 
         if (jsonData.imagePixels) {
-          uni.setStorageSync(
+          setStorage(
             "clock_image_pixels",
             JSON.stringify(jsonData.imagePixels),
           );
@@ -657,7 +530,7 @@ export default {
 
         try {
           if (jsonData.clockMode !== "clock" || !jsonData.config) {
-            throw new Error("请导入静态时钟页面导出的配置文件");
+            throw new Error("璇峰鍏ラ潤鎬佹椂閽熼〉闈㈠鍑虹殑閰嶇疆鏂囦欢");
           }
 
           const configData = {
@@ -700,13 +573,13 @@ export default {
                   typeof entry[0] !== "string" ||
                   typeof entry[1] !== "string"
                 ) {
-                  throw new Error(`第 ${index + 1} 个图片像素格式无效`);
+                  throw new Error(`绗?${index + 1} 涓浘鐗囧儚绱犳牸寮忔棤鏁坄);
                 }
                 const [xText, yText] = entry[0].split(",");
                 const x = Number(xText);
                 const y = Number(yText);
                 if (!Number.isInteger(x) || !Number.isInteger(y)) {
-                  throw new Error(`第 ${index + 1} 个图片像素坐标无效`);
+                  throw new Error(`绗?${index + 1} 涓浘鐗囧儚绱犲潗鏍囨棤鏁坄);
                 }
                 const rgb = this.hexToRgb(entry[1]);
                 return {
@@ -729,25 +602,25 @@ export default {
 
           if (imagePixels.length > 0) {
             this.toast.showSuccess(
-              `配置已发送！包含 ${imagePixels.length} 个像素点`,
+              `閰嶇疆宸插彂閫侊紒鍖呭惈 ${imagePixels.length} 涓儚绱犵偣`,
             );
           } else {
-            this.toast.showSuccess("配置已发送到设备！");
+            this.toast.showSuccess("閰嶇疆宸插彂閫佸埌璁惧锛?")";"
           }
 
           this.jsonImportSending = false;
           this.showJsonImportModal = false;
         } catch (err) {
-          console.error("发送配置失败:", err);
+          console.error("鍙戦€侀厤缃け璐?", err);
           this.jsonImportSending = false;
           this.showJsonImportModal = false;
-          this.toast.showError("发送失败：" + err.message);
+          this.toast.showError("鍙戦€佸け璐ワ細" + err.message);
         }
       } catch (e) {
-        console.error("导入配置失败:", e);
+        console.error("瀵煎叆閰嶇疆澶辫触:", e);
         this.jsonImportSending = false;
         this.showJsonImportModal = false;
-        this.toast.showError("导入失败：" + e.message);
+        this.toast.showError("瀵煎叆澶辫触锛? + e.message")";"
       }
     },
 
@@ -767,7 +640,7 @@ export default {
     },
 
     goToWifiConfig() {
-      uni.navigateTo({ url: "/pages/ble-config/ble-config" });
+      navigateTo({ url: "/pages/ble-config/ble-config" });
     },
   },
 };

@@ -1,0 +1,1 @@
+const s={data(){return{statusBarHeight:0}},onLoad(){this.initStatusBar()},onShow(){this.statusBarHeight||this.initStatusBar()},methods:{initStatusBar(){const t=uni.getSystemInfoSync();this.statusBarHeight=t.statusBarHeight||0}}};export{s};

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="editor-page" :class="{ 'editor-page--template': isTemplateMode }">
     <div class="editor-header">
       <div class="header-left">
@@ -6,26 +6,26 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
         <span class="project-name">{{ projectName }}</span>
-        <span class="project-size">{{ width }}×{{ height }}</span>
+        <span class="project-size">{{ width }}脳{{ height }}</span>
       </div>
       <div class="header-right">
-        <button class="icon-btn" @click="triggerImageUpload" title="导入图片">
+        <button class="icon-btn" @click="triggerImageUpload" title="瀵煎叆鍥剧墖">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
         </button>
         <input ref="fileInputRef" type="file" accept="image/*" style="display:none" @change="handleImageUpload" />
-        <button class="icon-btn" @click="handleUndo" :disabled="historyIndex <= 0" title="撤销 Ctrl+Z">
+        <button class="icon-btn" @click="handleUndo" :disabled="historyIndex <= 0" title="鎾ら攢 Ctrl+Z">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
         </button>
-        <button class="icon-btn" @click="handleRedo" :disabled="historyIndex >= history.length - 1" title="重做">
+        <button class="icon-btn" @click="handleRedo" :disabled="historyIndex >= history.length - 1" title="閲嶅仛">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
         </button>
-        <button class="icon-btn" :class="{ active: gridVisible }" @click="gridVisible = !gridVisible" title="网格">
+        <button class="icon-btn" :class="{ active: gridVisible }" @click="gridVisible = !gridVisible" title="缃戞牸">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         </button>
-        <button class="icon-btn" @click="handleSave" title="保存">
+        <button class="icon-btn" @click="handleSave" title="淇濆瓨">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         </button>
-        <button class="btn-publish" @click="handlePublish">发布</button>
+        <button class="btn-publish" @click="handlePublish">鍙戝竷</button>
       </div>
     </div>
 
@@ -47,8 +47,8 @@
       </div>
 
       <div class="color-sidebar">
-        <div class="color-sidebar-title">Artkal 颜色</div>
-        <input class="color-search" v-model="colorSearch" placeholder="搜索颜色..." />
+        <div class="color-sidebar-title">Artkal 棰滆壊</div>
+        <input class="color-search" v-model="colorSearch" placeholder="鎼滅储棰滆壊..." />
         <div class="color-grid">
           <div v-for="c in filteredColors" :key="c.code"
             class="color-swatch" :class="{ active: currentColor === c.hex }"
@@ -59,25 +59,23 @@
     </div>
   </div>
 
-  <!-- 图片导入对话框 -->
+  <!-- 鍥剧墖瀵煎叆瀵硅瘽妗?-->
   <div class="modal-overlay" v-if="showImportModal" @click.self="showImportModal = false">
     <div class="modal">
-      <h3>图片像素化设置</h3>
+      <h3>鍥剧墖鍍忕礌鍖栬缃?</h3>
       <div class="preview-row">
         <img :src="importPreviewUrl" class="import-preview" />
         <canvas ref="importCanvasRef" class="import-result"></canvas>
       </div>
       <div class="modal-form">
-        <label>目标宽度（格）
-          <input type="number" v-model.number="importWidth" min="8" max="64" @input="previewImport" />
+        <label>鐩爣瀹藉害锛堟牸锛?          <input type="number" v-model.number="importWidth" min="8" max="64" @input="previewImport" />
         </label>
-        <label>目标高度（格）
-          <input type="number" v-model.number="importHeight" min="8" max="64" @input="previewImport" />
+        <label>鐩爣楂樺害锛堟牸锛?          <input type="number" v-model.number="importHeight" min="8" max="64" @input="previewImport" />
         </label>
       </div>
       <div class="modal-actions">
-        <button class="btn-cancel" @click="showImportModal = false">取消</button>
-        <button class="btn-confirm" @click="confirmImport">应用</button>
+        <button class="btn-cancel" @click="showImportModal = false">鍙栨秷</button>
+        <button class="btn-confirm" @click="confirmImport">搴旂敤</button>
       </div>
     </div>
   </div>
@@ -103,7 +101,7 @@ const fileInputRef = ref(null)
 const importCanvasRef = ref(null)
 
 // project state
-const projectName = ref('未命名项目')
+const projectName = ref('鏈懡鍚嶉」鐩?)
 const width = ref(32)
 const height = ref(32)
 const cellSize = ref(16)
@@ -126,10 +124,10 @@ const projectId = ref(route.params.id || '')
 const challengeId = ref(route.query.challengeId || '')
 
 const tools = [
-  { id: 'pen', label: '画笔', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7-3-3-7 7v3h3z"/><path d="M18 13l1.5-1.5a2.121 2.121 0 0 0-3-3L15 10"/></svg>' },
-  { id: 'eraser', label: '橡皮', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20H7L3 16l10-10 7 7-3.5 3.5"/><path d="M6.5 17.5l5-5"/></svg>' },
-  { id: 'fill', label: '填充', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11l-8-8-8.5 8.5a5.5 5.5 0 0 0 7.78 7.78L19 11z"/><path d="M20 23a2 2 0 0 0 2-2c0-1.1-2-4-2-4s-2 2.9-2 4a2 2 0 0 0 2 2z"/></svg>' },
-  { id: 'eyedropper', label: '取色', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 22l1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="M15 6l3.4-3.4a2.1 2.1 0 0 1 3 3L18 9l.4.4a2.1 2.1 0 0 1-3 3L12 9"/></svg>' },
+  { id: 'pen', label: '鐢荤瑪', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7-3-3-7 7v3h3z"/><path d="M18 13l1.5-1.5a2.121 2.121 0 0 0-3-3L15 10"/></svg>' },
+  { id: 'eraser', label: '姗＄毊', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20H7L3 16l10-10 7 7-3.5 3.5"/><path d="M6.5 17.5l5-5"/></svg>' },
+  { id: 'fill', label: '濉厖', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11l-8-8-8.5 8.5a5.5 5.5 0 0 0 7.78 7.78L19 11z"/><path d="M20 23a2 2 0 0 0 2-2c0-1.1-2-4-2-4s-2 2.9-2 4a2 2 0 0 0 2 2z"/></svg>' },
+  { id: 'eyedropper', label: '鍙栬壊', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 22l1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="M15 6l3.4-3.4a2.1 2.1 0 0 1 3 3L18 9l.4.4a2.1 2.1 0 0 1-3 3L12 9"/></svg>' },
 ]
 
 const filteredColors = computed(() => {
@@ -308,14 +306,14 @@ async function handleSave(silent = false) {
   if (res.success) {
     localStorage.setItem('editor_draft', JSON.stringify({ ...project, pixelData, challengeId: challengeId.value }))
     if (!silent) {
-      alert('已保存到云端草稿')
+      alert('宸蹭繚瀛樺埌浜戠鑽夌')
     }
   } else {
     if (typeof res.message === 'string' && res.message.length > 0) {
       alert(res.message)
       return
     }
-    alert('保存失败')
+    alert('淇濆瓨澶辫触')
   }
 }
 
@@ -357,7 +355,7 @@ onMounted(() => {
       if (res.success) {
         const project = res.data?.project || {}
         projectId.value = project.id || route.params.id
-        projectName.value = project.name || '未命名项目'
+        projectName.value = project.name || '鏈懡鍚嶉」鐩?
         width.value = project.width || 32
         height.value = project.height || 32
         if (res.data?.pixels) pixels.value = new Map(Object.entries(res.data.pixels))
@@ -372,7 +370,7 @@ onMounted(() => {
       if (res.success) {
         const template = res.data?.template || {}
         const size = `${template.size || ''}`.match(/^(\d+)x(\d+)$/i)
-        projectName.value = template.name || '未命名边框'
+        projectName.value = template.name || '鏈懡鍚嶈竟妗?
         if (size) {
           width.value = parseInt(size[1], 10) || width.value
           height.value = parseInt(size[2], 10) || height.value
@@ -390,7 +388,7 @@ onMounted(() => {
         try {
           const d = JSON.parse(draft)
           projectId.value = d.id || ''
-          projectName.value = d.title || d.name || '未命名项目'
+          projectName.value = d.title || d.name || '鏈懡鍚嶉」鐩?
           width.value = d.width || 32
           height.value = d.height || 32
           if (d.pixelData) pixels.value = new Map(Object.entries(d.pixelData))

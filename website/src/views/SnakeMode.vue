@@ -1,6 +1,6 @@
-<template>
+﻿<template>
   <div class="snake-page glx-page-shell game-mode-page">
-    <PcModeTopbar title="贪吃蛇" />
+    <PcModeTopbar title="璐悆铔?" /">"
 
     <section class="snake-layout game-mode-layout">
       <article
@@ -9,7 +9,7 @@
         <div class="snake-preview-card__head">
           <div>
             <p class="snake-preview-card__eyebrow">Device Mode</p>
-            <h2 class="snake-preview-card__title">贪吃蛇预览</h2>
+            <h2 class="snake-preview-card__title">璐悆铔囬瑙?</h2>
           </div>
         </div>
 
@@ -20,13 +20,13 @@
             :disabled="isSending"
             @click="handleSend"
           >
-            {{ isSending ? "发送中..." : "发送到设备" }}
+            {{ isSending ? "鍙戦€佷腑..." : "鍙戦€佸埌璁惧" }}
           </button>
           <span
             class="glx-chip"
             :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
           >
-            {{ deviceStore.connected ? "已连接" : "未连接" }}
+            {{ deviceStore.connected ? "宸茶繛鎺? : "鏈繛鎺? }}
           </span>
         </div>
 
@@ -35,8 +35,8 @@
             <DevicePixelBoard :pixels="displayPixels" :grid-visible="true" />
             <DeviceSendingOverlay
               :visible="isSending"
-              title="正在发送贪吃蛇"
-              description="发送期间锁定当前预览快照，等待设备完成贪吃蛇参数事务提交。"
+              title="姝ｅ湪鍙戦€佽椽鍚冭泧"
+              description="鍙戦€佹湡闂撮攣瀹氬綋鍓嶉瑙堝揩鐓э紝绛夊緟璁惧瀹屾垚璐悆铔囧弬鏁颁簨鍔℃彁浜ゃ€?"
             >
               <div class="snake-preview-sending">
                 <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
@@ -47,21 +47,21 @@
 
         <div class="snake-summary-grid">
           <article class="snake-summary-card">
-            <span class="snake-summary-card__label">皮肤</span>
+            <span class="snake-summary-card__label">鐨偆</span>
             <strong class="snake-summary-card__value">{{ selectedSkinLabel }}</strong>
             <span class="snake-summary-card__meta">{{ config.snakeColor }}</span>
           </article>
           <article class="snake-summary-card">
-            <span class="snake-summary-card__label">字体</span>
+            <span class="snake-summary-card__label">瀛椾綋</span>
             <strong class="snake-summary-card__value">{{ selectedFontLabel }}</strong>
             <span class="snake-summary-card__meta">
-              {{ config.showSeconds ? "显示秒钟" : "隐藏秒钟" }}
+              {{ config.showSeconds ? "鏄剧ず绉掗挓" : "闅愯棌绉掗挓" }}
             </span>
           </article>
           <article class="snake-summary-card">
-            <span class="snake-summary-card__label">参数</span>
-            <strong class="snake-summary-card__value">速度 {{ config.speed }}</strong>
-            <span class="snake-summary-card__meta">蛇宽 {{ config.snakeWidth }}</span>
+            <span class="snake-summary-card__label">鍙傛暟</span>
+            <strong class="snake-summary-card__value">閫熷害 {{ config.speed }}</strong>
+            <span class="snake-summary-card__meta">铔囧 {{ config.snakeWidth }}</span>
           </article>
         </div>
       </article>
@@ -69,29 +69,29 @@
       <div class="snake-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">模式配置</h2>
-            <span class="glx-section-meta">外观 / 参数</span>
+            <h2 class="glx-section-title">妯″紡閰嶇疆</h2>
+            <span class="glx-section-meta">澶栬 / 鍙傛暟</span>
           </div>
           <DeviceModeTabs v-model="currentTab" :items="tabItems" />
         </article>
 
         <article v-if="currentTab === 'appearance'" class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">蛇皮肤</h2>
-            <span class="glx-section-meta">纯色 / 渐变 / 斑点</span>
+            <h2 class="glx-section-title">铔囩毊鑲?</h2>
+            <span class="glx-section-meta">绾壊 / 娓愬彉 / 鏂戠偣</span>
           </div>
 
           <div class="game-inline-actions">
             <button type="button" class="glx-button glx-button--ghost" @click="randomizeSkinColor">
-              换个随机颜色
+              鎹釜闅忔満棰滆壊
             </button>
           </div>
 
           <DeviceModeTabs v-model="config.snakeSkin" :items="snakeSkinOptions" />
 
           <GameModeFontSelector
-            title="字体样式"
-            description="沿用设备时钟字模，保持和 uniapp 同一套蛇身时间显示效果。"
+            title="瀛椾綋鏍峰紡"
+            description="娌跨敤璁惧鏃堕挓瀛楁ā锛屼繚鎸佸拰 uniapp 鍚屼竴濂楄泧韬椂闂存樉绀烘晥鏋溿€?"
             :font-options="fontOptions"
             :selected-font="config.font"
             :show-seconds="config.showSeconds"
@@ -102,29 +102,29 @@
 
           <GameModeColorField
             v-model="config.foodColor"
-            label="果子颜色"
+            label="鏋滃瓙棰滆壊"
             :preset-colors="foodPresetColors"
           />
         </article>
 
         <article v-else class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">参数</h2>
-            <span class="glx-section-meta">速度 / 蛇宽 / 秒钟</span>
+            <h2 class="glx-section-title">鍙傛暟</h2>
+            <span class="glx-section-meta">閫熷害 / 铔囧 / 绉掗挓</span>
           </div>
 
           <div class="game-row">
-            <span class="game-row__label">速度 {{ config.speed }}</span>
+            <span class="game-row__label">閫熷害 {{ config.speed }}</span>
             <DeviceModeStepper v-model="config.speed" :min="1" :max="10" />
           </div>
 
           <div class="game-row">
-            <span class="game-row__label">蛇宽 {{ config.snakeWidth }}</span>
+            <span class="game-row__label">铔囧 {{ config.snakeWidth }}</span>
             <DeviceModeStepper v-model="config.snakeWidth" :min="2" :max="4" />
           </div>
 
           <div class="game-row">
-            <span class="game-row__label">显示秒钟</span>
+            <span class="game-row__label">鏄剧ず绉掗挓</span>
             <GlxSwitch :checked="config.showSeconds" @change="handleShowSecondsChange" />
           </div>
         </article>
@@ -154,13 +154,13 @@ const SNAKE_MODE_CONFIG_KEY = "snake_mode_config";
 const fontOptions = getDeviceClockFontOptions();
 const SNAKE_FONT_IDS = Object.freeze(fontOptions.map((item) => item.id));
 const snakeSkinOptions = Object.freeze([
-  { value: "solid", label: "纯色" },
-  { value: "gradient", label: "渐变" },
-  { value: "spotted", label: "斑点" },
+  { value: "solid", label: "绾壊" },
+  { value: "gradient", label: "娓愬彉" },
+  { value: "spotted", label: "鏂戠偣" },
 ]);
 const tabItems = Object.freeze([
-  { value: "appearance", label: "外观" },
-  { value: "params", label: "参数" },
+  { value: "appearance", label: "澶栬" },
+  { value: "params", label: "鍙傛暟" },
 ]);
 const foodPresetColors = Object.freeze([
   { hex: "#ffa854", name: "#ffa854" },
@@ -357,23 +357,23 @@ function randomizeSkinColor() {
 
 async function handleSend() {
   if (deviceStore.connected !== true) {
-    feedback.warning("设备未连接", "请先返回设备控制页建立连接。");
+    feedback.warning("璁惧鏈繛鎺?, "璇峰厛杩斿洖璁惧鎺у埗椤靛缓绔嬭繛鎺ャ€?);
     return;
   }
 
   isSending.value = true;
   sendingPixels.value = snapshot();
-  feedback.showBlocking("发送贪吃蛇", "正在把当前贪吃蛇参数发送到设备。");
+  feedback.showBlocking("鍙戦€佽椽鍚冭泧"", "姝ｅ湪鎶婂綋鍓嶈椽鍚冭泧鍙傛暟鍙戦€佸埌璁惧銆?")";"
   try {
     const nextConfig = buildSnakeConfig();
     await deviceStore.startSnake(nextConfig);
     saveSnakeConfig();
-    feedback.success("发送成功", "贪吃蛇已发送到设备。");
+    feedback.success("鍙戦€佹垚鍔?, "璐悆铔囧凡鍙戦€佸埌璁惧銆?);
   } catch (error) {
     if (error instanceof Error) {
-      feedback.error("发送失败", error.message);
+      feedback.error("鍙戦€佸け璐?", error.message")";"
     } else {
-      feedback.error("发送失败", "贪吃蛇发送失败。");
+      feedback.error("鍙戦€佸け璐?, "璐悆铔囧彂閫佸け璐ャ€?);
     }
   } finally {
     feedback.hideBlocking();

@@ -1,13 +1,12 @@
+import { createDomQuery } from '@/utils/browser-platform.js'
 /**
  * 图片导入工具
- * 将图片转换为像素画
- */
+ * 将图片转换为像素�? */
 
 import { ARTKAL_COLORS_FULL } from '../data/artkal-colors-full.js'
 
 /**
- * 计算两个颜色的距离（欧几里得距离）
- */
+ * 计算两个颜色的距离（欧几里得距离�? */
 function colorDistance(color1, color2) {
   const r1 = (color1 >> 16) & 0xff
   const g1 = (color1 >> 8) & 0xff
@@ -25,7 +24,7 @@ function colorDistance(color1, color2) {
 }
 
 /**
- * 找到最接近的 Artkal 颜色
+ * 找到最接近�?Artkal 颜色
  */
 function findClosestColor(rgb, palette) {
   const colors = palette && palette.length > 0
@@ -49,9 +48,7 @@ function findClosestColor(rgb, palette) {
 }
 
 /**
- * 检测图片是否可能是像素画
- * 通过分析颜色数量和边缘特征判断
- */
+ * 检测图片是否可能是像素�? * 通过分析颜色数量和边缘特征判�? */
 function detectPixelArt(imageData, width, height) {
   const data = imageData.data
   const colorSet = new Set()
@@ -81,8 +78,7 @@ function detectPixelArt(imageData, width, height) {
 }
 
 /**
- * 从图片路径导入像素数据
- */
+ * 从图片路径导入像素数�? */
 export async function importImageAsPixels(options) {
   const {
     imagePath,
@@ -94,7 +90,7 @@ export async function importImageAsPixels(options) {
   
   return new Promise((resolve, reject) => {
     // 创建临时 Canvas 用于读取图片
-    const query = uni.createSelectorQuery()
+    const query = createDomQuery()
     query.select('#importCanvas')
       .fields({ node: true })
       .exec((res) => {
@@ -112,24 +108,23 @@ export async function importImageAsPixels(options) {
         
         // 加载图片 - 区分平台
         let image
-        // #ifdef H5
-        image = new Image()
-        image.crossOrigin = 'anonymous'
-        // #endif
-        
-        // #ifndef H5
-        image = canvas.createImage()
-        // #endif
+        if (typeof Image !== 'undefined') {
+          image = new Image()
+          image.crossOrigin = 'anonymous'
+        } else if (typeof canvas.createImage === 'function') {
+          image = canvas.createImage()
+        } else {
+          reject(new Error('图片加载能力不可�?))
+          return
+        }
         
         image.onload = () => {
-          // 先绘制原始尺寸以检测是否为像素画
-          const tempCanvas = canvas
+          // 先绘制原始尺寸以检测是否为像素�?          const tempCanvas = canvas
           const tempCtx = ctx
           tempCanvas.width = image.width
           tempCanvas.height = image.height
           
-          // 第一次绘制：用于检测
-          tempCtx.drawImage(image, 0, 0)
+          // 第一次绘制：用于检�?          tempCtx.drawImage(image, 0, 0)
           const detectData = tempCtx.getImageData(0, 0, image.width, image.height)
           
           // 判断是否使用像素完美模式
@@ -138,16 +133,14 @@ export async function importImageAsPixels(options) {
             usePixelPerfect = detectPixelArt(detectData, image.width, image.height)
           }
           
-          // 重新设置 Canvas 尺寸为目标尺寸
-          canvas.width = targetWidth
+          // 重新设置 Canvas 尺寸为目标尺�?          canvas.width = targetWidth
           canvas.height = targetHeight
           
           // 设置图像平滑选项
           if (usePixelPerfect) {
             // 禁用所有平滑算法，使用最近邻采样
             ctx.imageSmoothingEnabled = false
-            // 兼容性写法
-            ctx.mozImageSmoothingEnabled = false
+            // 兼容性写�?            ctx.mozImageSmoothingEnabled = false
             ctx.webkitImageSmoothingEnabled = false
             ctx.msImageSmoothingEnabled = false
           } else {
@@ -155,14 +148,13 @@ export async function importImageAsPixels(options) {
             ctx.imageSmoothingQuality = 'high'
           }
           
-          // 绘制图片到目标尺寸
-          ctx.drawImage(image, 0, 0, targetWidth, targetHeight)
+          // 绘制图片到目标尺�?          ctx.drawImage(image, 0, 0, targetWidth, targetHeight)
           
           // 读取像素数据
           const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight)
           const data = imageData.data
           
-          // 转换为像素 Map
+          // 转换为像�?Map
           const pixels = new Map()
           const usedColors = new Set()
           
@@ -177,10 +169,10 @@ export async function importImageAsPixels(options) {
               // 跳过透明像素
               if (a < 128) continue
               
-              // 转换为 RGB 整数
+              // 转换�?RGB 整数
               const rgb = (r << 16) | (g << 8) | b
               
-              // 找到最接近的 Artkal 颜色
+              // 找到最接近�?Artkal 颜色
               const closestColor = findClosestColor(rgb, palette)
               
               // 保存像素
@@ -207,8 +199,7 @@ export async function importImageAsPixels(options) {
 }
 
 /**
- * 选择图片并导入（已废弃，请直接使用 importImageAsPixels）
- */
+ * 选择图片并导入（已废弃，请直接使�?importImageAsPixels�? */
 export async function chooseAndImportImage(options) {
   return importImageAsPixels(options)
 }

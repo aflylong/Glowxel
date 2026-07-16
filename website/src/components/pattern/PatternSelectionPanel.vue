@@ -1,24 +1,23 @@
-<template>
+﻿<template>
   <div class="selection-panel">
     <div class="panel-head">
-      <h2>区域处理</h2>
-      <span>{{ selectionCount }} 点</span>
+      <h2>鍖哄煙澶勭悊</h2>
+      <span>{{ selectionCount }} 鐐?</span>
     </div>
 
     <div v-if="selectionCount" class="selection-detail">
       <div class="detail-row">
-        <span>范围</span>
+        <span>鑼冨洿</span>
         <strong>{{ boundsText }}</strong>
       </div>
       <div class="detail-row">
-        <span>宽高</span>
+        <span>瀹介珮</span>
         <strong>{{ sizeText }}</strong>
       </div>
     </div>
 
     <div v-else class="empty-state">
-      在中间画布按住鼠标拖拽，就能框选一片区域后再批量处理。
-    </div>
+      鍦ㄤ腑闂寸敾甯冩寜浣忛紶鏍囨嫋鎷斤紝灏辫兘妗嗛€変竴鐗囧尯鍩熷悗鍐嶆壒閲忓鐞嗐€?    </div>
 
     <div class="action-grid">
       <button
@@ -27,15 +26,14 @@
         :disabled="!selectionCount || !hasReference"
         @click="$emit('region-action', 'reference')"
       >
-        区域按参考
-      </button>
+        鍖哄煙鎸夊弬鑰?      </button>
       <button
         class="action-btn"
         type="button"
         :disabled="!selectionCount"
         @click="$emit('region-action', 'remove')"
       >
-        区域擦除
+        鍖哄煙鎿﹂櫎
       </button>
       <button
         class="action-btn"
@@ -43,7 +41,7 @@
         :disabled="!selectionCount"
         @click="$emit('region-action', 'neighbor')"
       >
-        区域邻域主色
+        鍖哄煙閭诲煙涓昏壊
       </button>
       <button
         class="action-btn"
@@ -51,7 +49,7 @@
         :disabled="!selectionCount"
         @click="$emit('clear-selection')"
       >
-        清空区域
+        娓呯┖鍖哄煙
       </button>
     </div>
   </div>
@@ -91,7 +89,7 @@ const sizeText = computed(() => {
   }
   const width = props.selectionBounds.maxX - props.selectionBounds.minX + 1;
   const height = props.selectionBounds.maxY - props.selectionBounds.minY + 1;
-  return `${width} × ${height}`;
+  return `${width} 脳 ${height}`;
 });
 </script>
 

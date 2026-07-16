@@ -1,14 +1,14 @@
-<template>
+﻿<template>
   <section class="ds-section">
     <div class="ds-section__head">
       <div>
-        <h2 class="ds-section__title">导航与布局</h2>
-        <p class="ds-section__meta">先把官网导航、组件库顶部 tabs、页头和列表入口全部摆成正式语法。</p>
+        <h2 class="ds-section__title">瀵艰埅涓庡竷灞€</h2>
+        <p class="ds-section__meta">鍏堟妸瀹樼綉瀵艰埅銆佺粍浠跺簱椤堕儴 tabs銆侀〉澶村拰鍒楄〃鍏ュ彛鍏ㄩ儴鎽嗘垚姝ｅ紡璇硶銆?</p>
       </div>
     </div>
 
     <article v-if="showHeaders" class="ds-card">
-      <span class="ds-card__label">官网顶层导航</span>
+      <span class="ds-card__label">瀹樼綉椤跺眰瀵艰埅</span>
       <div class="ds-nav-preview">
         <span
           v-for="item in navItems"
@@ -20,12 +20,11 @@
         </span>
       </div>
       <p class="ds-card__copy ds-card__copy--top-spaced">
-        官网最顶层导航已经和组件库顶部 tabs 统一成同一套黄底按钮选中态。
-      </p>
+        瀹樼綉鏈€椤跺眰瀵艰埅宸茬粡鍜岀粍浠跺簱椤堕儴 tabs 缁熶竴鎴愬悓涓€濂楅粍搴曟寜閽€変腑鎬併€?      </p>
     </article>
 
     <article v-if="showHeaders" class="ds-card ds-card--top-spaced">
-      <span class="ds-card__label">组件库顶部 Tabs</span>
+      <span class="ds-card__label">缁勪欢搴撻《閮?Tabs</span>
       <div class="ds-top-tabs">
         <button
           v-for="item in topTabs"
@@ -38,52 +37,51 @@
         </button>
       </div>
       <p class="ds-card__copy ds-card__copy--top-spaced">
-        组件库内部 tabs 继续保留黄底按钮态，官网最顶层导航也跟这套语法对齐。
-      </p>
+        缁勪欢搴撳唴閮?tabs 缁х画淇濈暀榛勫簳鎸夐挳鎬侊紝瀹樼綉鏈€椤跺眰瀵艰埅涔熻窡杩欏璇硶瀵归綈銆?      </p>
     </article>
 
     <div v-if="showHeaders" class="ds-grid ds-grid--two">
       <article class="ds-example">
         <div class="ds-card ds-card--plain">
-          <span class="ds-card__label">一级页头部</span>
+          <span class="ds-card__label">涓€绾ч〉澶撮儴</span>
           <div class="ds-header-preview">
             <div class="ds-header-preview__main">
               <span class="ds-icon-shell ds-icon-shell--primary">
                 <DesignSystemGlyph name="home" />
               </span>
               <div class="ds-title-stack">
-                <span class="ds-title-stack__title">控件库 / 组件规范</span>
-                <span class="ds-title-stack__desc">这是官网里的正式页面，但视觉继续按上一版硬朗规范站收口</span>
+                <span class="ds-title-stack__title">鎺т欢搴?/ 缁勪欢瑙勮寖</span>
+                <span class="ds-title-stack__desc">杩欐槸瀹樼綉閲岀殑姝ｅ紡椤甸潰锛屼絾瑙嗚缁х画鎸変笂涓€鐗堢‖鏈楄鑼冪珯鏀跺彛</span>
               </div>
             </div>
-            <span class="ds-inline-note">官网内正式页头</span>
+            <span class="ds-inline-note">瀹樼綉鍐呮寮忛〉澶?</span>
           </div>
           <div class="ds-toolbar">
-            <span class="ds-inline-note">搜索和筛选继续留在工具层</span>
-            <span class="ds-inline-note">不再额外堆标签框说明自己是什么页</span>
+            <span class="ds-inline-note">鎼滅储鍜岀瓫閫夌户缁暀鍦ㄥ伐鍏峰眰</span>
+            <span class="ds-inline-note">涓嶅啀棰濆鍫嗘爣绛炬璇存槑鑷繁鏄粈涔堥〉</span>
           </div>
         </div>
       </article>
 
       <article class="ds-example">
         <div class="ds-card ds-card--plain">
-          <span class="ds-card__label">二级页头部</span>
+          <span class="ds-card__label">浜岀骇椤靛ご閮?</span>
           <div class="ds-header-preview">
             <div class="ds-header-preview__main">
               <span class="ds-icon-shell">
                 <DesignSystemGlyph name="arrow-left" />
               </span>
               <div class="ds-title-stack">
-                <span class="ds-title-stack__title">设备参数</span>
-                <span class="ds-title-stack__desc">左返回 / 中标题 / 右侧尽量保持干净</span>
+                <span class="ds-title-stack__title">璁惧鍙傛暟</span>
+                <span class="ds-title-stack__desc">宸﹁繑鍥?/ 涓爣棰?/ 鍙充晶灏介噺淇濇寔骞插噣</span>
               </div>
             </div>
-            <span class="ds-inline-note">二级页头部</span>
+            <span class="ds-inline-note">浜岀骇椤靛ご閮?</span>
           </div>
           <div class="ds-inline-list">
-            <span>基础参数</span>
-            <span>亮度与时间</span>
-            <span>网络</span>
+            <span>鍩虹鍙傛暟</span>
+            <span>浜害涓庢椂闂?</span>
+            <span>缃戠粶</span>
           </div>
         </div>
       </article>
@@ -95,8 +93,8 @@
         <div class="ds-brand-showcase">
           <BrandLogo variant="page" />
           <div class="ds-brand-showcase__meta">
-            <span class="ds-inline-note">中文主标 + 黄底英文标签继续保留</span>
-            <span class="ds-inline-note">官网与 uniapp 的品牌壳统一照这一版走</span>
+            <span class="ds-inline-note">涓枃涓绘爣 + 榛勫簳鑻辨枃鏍囩缁х画淇濈暀</span>
+            <span class="ds-inline-note">瀹樼綉涓?uniapp 鐨勫搧鐗屽３缁熶竴鐓ц繖涓€鐗堣蛋</span>
           </div>
         </div>
       </article>
@@ -118,15 +116,14 @@
           </div>
         </div>
         <p class="ds-card__copy ds-card__copy--top-spaced">
-          小程序底部 tab 先对齐旧原生观感，只切图标和字色，不做黄底整块选中。
-        </p>
+          灏忕▼搴忓簳閮?tab 鍏堝榻愭棫鍘熺敓瑙傛劅锛屽彧鍒囧浘鏍囧拰瀛楄壊锛屼笉鍋氶粍搴曟暣鍧楅€変腑銆?        </p>
       </article>
     </div>
 
     <div v-if="showLists" class="ds-section__head ds-section__head--spaced">
       <div>
-        <h3 class="ds-section__title ds-section__title--sub">列表与卡片语法</h3>
-        <p class="ds-section__meta">白底黑边、统一硬阴影、清楚分区，不再回到柔和圆角专题页语法</p>
+        <h3 class="ds-section__title ds-section__title--sub">鍒楄〃涓庡崱鐗囪娉?</h3>
+        <p class="ds-section__meta">鐧藉簳榛戣竟銆佺粺涓€纭槾褰便€佹竻妤氬垎鍖猴紝涓嶅啀鍥炲埌鏌斿拰鍦嗚涓撻椤佃娉?</p>
       </div>
     </div>
 
@@ -138,12 +135,12 @@
               <DesignSystemGlyph name="setting" />
             </span>
             <div class="ds-list-card__copy">
-              <span class="ds-list-card__title">设备参数</span>
-              <span class="ds-list-card__desc">说明文字收进副标题，不在标题区堆满额外标签。</span>
+              <span class="ds-list-card__title">璁惧鍙傛暟</span>
+              <span class="ds-list-card__desc">璇存槑鏂囧瓧鏀惰繘鍓爣棰橈紝涓嶅湪鏍囬鍖哄爢婊￠澶栨爣绛俱€?</span>
             </div>
           </div>
           <div class="ds-list-card__meta">
-            <span>查看</span>
+            <span>鏌ョ湅</span>
             <DesignSystemGlyph name="arrow-right" />
           </div>
         </div>
@@ -154,12 +151,12 @@
               <DesignSystemGlyph name="profile" />
             </span>
             <div class="ds-list-card__copy">
-              <span class="ds-list-card__title">用户中心入口</span>
-              <span class="ds-list-card__desc">图标壳仍然清楚，但大小、阴影、边框全部跟同组统一。</span>
+              <span class="ds-list-card__title">鐢ㄦ埛涓績鍏ュ彛</span>
+              <span class="ds-list-card__desc">鍥炬爣澹充粛鐒舵竻妤氾紝浣嗗ぇ灏忋€侀槾褰便€佽竟妗嗗叏閮ㄨ窡鍚岀粍缁熶竴銆?</span>
             </div>
           </div>
           <div class="ds-list-card__meta">
-            <span>进入</span>
+            <span>杩涘叆</span>
             <DesignSystemGlyph name="arrow-right" />
           </div>
         </div>
@@ -170,16 +167,16 @@
           <span class="ds-icon-shell ds-icon-shell--primary">
             <DesignSystemGlyph name="picture" />
           </span>
-          <strong class="ds-card__title ds-card__title--compact">还没有内容</strong>
-          <span class="ds-card__copy">空状态继续跟随黑边硬壳语法，不做默认灰大壳，也不堆大段说明。</span>
+          <strong class="ds-card__title ds-card__title--compact">杩樻病鏈夊唴瀹?</strong>
+          <span class="ds-card__copy">绌虹姸鎬佺户缁窡闅忛粦杈圭‖澹宠娉曪紝涓嶅仛榛樿鐏板ぇ澹筹紝涔熶笉鍫嗗ぇ娈佃鏄庛€?</span>
         </div>
       </div>
     </div>
 
     <div v-if="showLists" class="ds-section__head ds-section__head--spaced">
       <div>
-        <h3 class="ds-section__title ds-section__title--sub">业务卡片家族</h3>
-        <p class="ds-section__meta">这些是 uniapp 里已经改过风格的实际壳层，必须在组件库里定板后再映射回页面。</p>
+        <h3 class="ds-section__title ds-section__title--sub">涓氬姟鍗＄墖瀹舵棌</h3>
+        <p class="ds-section__meta">杩欎簺鏄?uniapp 閲屽凡缁忔敼杩囬鏍肩殑瀹為檯澹冲眰锛屽繀椤诲湪缁勪欢搴撻噷瀹氭澘鍚庡啀鏄犲皠鍥為〉闈€?</p>
       </div>
     </div>
 
@@ -194,13 +191,13 @@
                 <span v-for="cell in projectPixels" :key="cell" :style="{ backgroundColor: cell }"></span>
               </div>
             </div>
-            <span class="ds-project-card__badge ds-project-card__badge--published">已发布</span>
+            <span class="ds-project-card__badge ds-project-card__badge--published">宸插彂甯?</span>
             <span class="ds-project-card__progress"><span></span></span>
           </div>
           <div class="ds-project-card__body">
-            <strong class="ds-project-card__title">像素拼豆图纸</strong>
+            <strong class="ds-project-card__title">鍍忕礌鎷艰眴鍥剧焊</strong>
             <div class="ds-project-card__meta">
-              <span>64×64</span>
+              <span>64脳64</span>
               <span>4/18</span>
             </div>
           </div>
@@ -212,18 +209,18 @@
         <div class="ds-artwork-card">
           <div class="ds-artwork-card__media">
             <div class="ds-artwork-card__art"></div>
-            <span class="ds-artwork-card__pill">社区作品</span>
+            <span class="ds-artwork-card__pill">绀惧尯浣滃搧</span>
           </div>
           <div class="ds-artwork-card__body">
-            <strong class="ds-card__title ds-card__title--compact">霓虹像素街区</strong>
+            <strong class="ds-card__title ds-card__title--compact">闇撹櫣鍍忕礌琛楀尯</strong>
             <div class="ds-artwork-card__author">
               <span class="ds-avatar-shell ds-avatar-shell--sm">GX</span>
-              <span>光格像素工坊用户</span>
+              <span>鍏夋牸鍍忕礌宸ュ潑鐢ㄦ埛</span>
             </div>
             <div class="ds-artwork-card__stats">
-              <span>1.2k 喜欢</span>
-              <span>84 评论</span>
-              <span>4.6k 浏览</span>
+              <span>1.2k 鍠滄</span>
+              <span>84 璇勮</span>
+              <span>4.6k 娴忚</span>
             </div>
           </div>
         </div>
@@ -234,14 +231,14 @@
         <div class="ds-template-card">
           <div class="ds-template-card__media">
             <div class="ds-template-card__preview"></div>
-            <span class="ds-status-pill ds-status-pill--warning">中等</span>
+            <span class="ds-status-pill ds-status-pill--warning">涓瓑</span>
           </div>
           <div class="ds-template-card__body">
-            <strong class="ds-card__title ds-card__title--compact">霓虹天气模板</strong>
+            <strong class="ds-card__title ds-card__title--compact">闇撹櫣澶╂皵妯℃澘</strong>
             <div class="ds-template-card__facts">
-              <span>64×64</span>
-              <span>12 色</span>
-              <span>2.3k 使用</span>
+              <span>64脳64</span>
+              <span>12 鑹?</span>
+              <span>2.3k 浣跨敤</span>
             </div>
           </div>
         </div>
@@ -254,22 +251,22 @@
         <div class="ds-challenge-card">
           <div class="ds-challenge-card__banner">
             <div class="ds-challenge-card__overlay"></div>
-            <span class="ds-challenge-card__status">进行中</span>
+            <span class="ds-challenge-card__status">杩涜涓?</span>
             <span class="ds-icon-shell ds-icon-shell--warning ds-challenge-card__icon">
               <DesignSystemGlyph name="work" />
             </span>
           </div>
           <div class="ds-challenge-card__body">
-            <strong class="ds-card__title ds-card__title--compact">像素春日挑战</strong>
-            <p class="ds-card__copy">横幅、状态角标、说明和 CTA 继续按硬边结构收口。</p>
+            <strong class="ds-card__title ds-card__title--compact">鍍忕礌鏄ユ棩鎸戞垬</strong>
+            <p class="ds-card__copy">妯箙銆佺姸鎬佽鏍囥€佽鏄庡拰 CTA 缁х画鎸夌‖杈圭粨鏋勬敹鍙ｃ€?</p>
             <div class="ds-challenge-card__meta">
-              <span>3.2k 人参与</span>
-              <span>还剩 6 天</span>
-              <span>奖励模板包</span>
+              <span>3.2k 浜哄弬涓?</span>
+              <span>杩樺墿 6 澶?</span>
+              <span>濂栧姳妯℃澘鍖?</span>
             </div>
           </div>
           <div class="ds-challenge-card__foot">
-            <button type="button" class="ds-btn ds-btn--primary ds-btn--sm ds-shadow--sm">立即参与</button>
+            <button type="button" class="ds-btn ds-btn--primary ds-btn--sm ds-shadow--sm">绔嬪嵆鍙備笌</button>
           </div>
         </div>
       </article>
@@ -280,13 +277,13 @@
           <span class="ds-avatar-shell">GX</span>
           <div class="ds-comment-card__body">
             <div class="ds-comment-card__head">
-              <strong>光格像素工坊用户</strong>
-              <span>刚刚</span>
+              <strong>鍏夋牸鍍忕礌宸ュ潑鐢ㄦ埛</strong>
+              <span>鍒氬垰</span>
             </div>
-            <p class="ds-card__copy">头像允许保留圆形，但外围信息块、评论块和操作行继续按白底黑边直角体系收口。</p>
+            <p class="ds-card__copy">澶村儚鍏佽淇濈暀鍦嗗舰锛屼絾澶栧洿淇℃伅鍧椼€佽瘎璁哄潡鍜屾搷浣滆缁х画鎸夌櫧搴曢粦杈圭洿瑙掍綋绯绘敹鍙ｃ€?</p>
             <div class="ds-comment-card__actions">
-              <span class="ds-inline-note">点赞</span>
-              <span class="ds-inline-note">回复</span>
+              <span class="ds-inline-note">鐐硅禐</span>
+              <span class="ds-inline-note">鍥炲</span>
             </div>
           </div>
         </div>
@@ -295,8 +292,8 @@
 
     <div v-if="showLists" class="ds-section__head ds-section__head--spaced">
       <div>
-        <h3 class="ds-section__title ds-section__title--sub">预览与编辑壳层</h3>
-        <p class="ds-section__meta">PixelPreviewBoard、ImageCropper、时钟设置卡这些特殊壳层也要先在组件库里定板。</p>
+        <h3 class="ds-section__title ds-section__title--sub">棰勮涓庣紪杈戝３灞?</h3>
+        <p class="ds-section__meta">PixelPreviewBoard銆両mageCropper銆佹椂閽熻缃崱杩欎簺鐗规畩澹冲眰涔熻鍏堝湪缁勪欢搴撻噷瀹氭澘銆?</p>
       </div>
     </div>
 
@@ -310,8 +307,8 @@
             </div>
           </div>
           <div class="ds-preview-shell__meta">
-            <strong>64 × 64 预览板</strong>
-            <span>黑底预览、统一留边、像素居中。</span>
+            <strong>64 脳 64 棰勮鏉?</strong>
+            <span>榛戝簳棰勮銆佺粺涓€鐣欒竟銆佸儚绱犲眳涓€?</span>
           </div>
         </div>
       </article>
@@ -325,7 +322,7 @@
           </div>
           <div class="ds-setting-card">
             <strong>ClockTextSettingsCard.vue</strong>
-            <span>字号、位置、配色和文本字段仍然按统一设置卡语法收口。</span>
+            <span>瀛楀彿銆佷綅缃€侀厤鑹插拰鏂囨湰瀛楁浠嶇劧鎸夌粺涓€璁剧疆鍗¤娉曟敹鍙ｃ€?</span>
           </div>
         </div>
       </article>
@@ -334,8 +331,8 @@
         <span class="ds-card__label">ClockThemePanel.vue</span>
         <div class="ds-theme-panel">
           <div class="ds-theme-panel__head">
-            <strong>主题库</strong>
-            <span>3 个主题</span>
+            <strong>涓婚搴?</strong>
+            <span>3 涓富棰?</span>
           </div>
           <div class="ds-theme-panel__grid">
             <div
@@ -368,12 +365,12 @@
           </div>
           <div class="ds-font-panel__settings">
             <div class="ds-font-panel__row">
-              <span>显示秒钟</span>
-              <span class="ds-font-panel__toggle is-active">开启</span>
+              <span>鏄剧ず绉掗挓</span>
+              <span class="ds-font-panel__toggle is-active">寮€鍚?</span>
             </div>
             <div class="ds-choice-row">
-              <button type="button" class="ds-choice-chip is-active">24 小时</button>
-              <button type="button" class="ds-choice-chip">12 小时</button>
+              <button type="button" class="ds-choice-chip is-active">24 灏忔椂</button>
+              <button type="button" class="ds-choice-chip">12 灏忔椂</button>
             </div>
           </div>
         </div>
@@ -390,8 +387,8 @@
 
     <div v-if="showHeaders" class="ds-section__head ds-section__head--spaced">
       <div>
-        <h3 class="ds-section__title ds-section__title--sub">Uniapp 风格硬约束</h3>
-        <p class="ds-section__meta">网页组件库直接承接小程序的正式规则，不另起一套解释口径。</p>
+        <h3 class="ds-section__title ds-section__title--sub">Uniapp 椋庢牸纭害鏉?</h3>
+        <p class="ds-section__meta">缃戦〉缁勪欢搴撶洿鎺ユ壙鎺ュ皬绋嬪簭鐨勬寮忚鍒欙紝涓嶅彟璧蜂竴濂楄В閲婂彛寰勩€?</p>
       </div>
     </div>
 
@@ -422,45 +419,45 @@ const showLists = computed(() => props.sectionKey === "lists");
 
 const rules = [
   {
-    label: "官网基线",
-    title: "整站与控件库一起回到上一版基线",
-    copy: "规范站虽然挂在官网里，但整站都继续沿用白底黑边硬阴影，不再分成两种产品气质。",
+    label: "瀹樼綉鍩虹嚎",
+    title: "鏁寸珯涓庢帶浠跺簱涓€璧峰洖鍒颁笂涓€鐗堝熀绾?,"
+    copy: "瑙勮寖绔欒櫧鐒舵寕鍦ㄥ畼缃戦噷锛屼絾鏁寸珯閮界户缁部鐢ㄧ櫧搴曢粦杈圭‖闃村奖锛屼笉鍐嶅垎鎴愪袱绉嶄骇鍝佹皵璐ㄣ€?,"
   },
   {
-    label: "阴影规则",
-    title: "阴影统一分三级",
-    copy: "导航、tabs、卡片、弹窗分别对应固定 shadow token，不再同层级忽大忽小。",
+    label: "闃村奖瑙勫垯",
+    title: "闃村奖缁熶竴鍒嗕笁绾?,"
+    copy: "瀵艰埅銆乼abs銆佸崱鐗囥€佸脊绐楀垎鍒搴斿浐瀹?shadow token锛屼笉鍐嶅悓灞傜骇蹇藉ぇ蹇藉皬銆?,"
   },
   {
-    label: "布局规则",
-    title: "结构清楚，但不做柔和专题页",
-    copy: "不再堆玻璃感背景和大圆角卡片，重点回到可查阅、可扩展、可维护的规范站结构。",
+    label: "甯冨眬瑙勫垯",
+    title: "缁撴瀯娓呮锛屼絾涓嶅仛鏌斿拰涓撻椤?,"
+    copy: "涓嶅啀鍫嗙幓鐠冩劅鑳屾櫙鍜屽ぇ鍦嗚鍗＄墖锛岄噸鐐瑰洖鍒板彲鏌ラ槄銆佸彲鎵╁睍銆佸彲缁存姢鐨勮鑼冪珯缁撴瀯銆?,"
   },
 ];
 
 const navItems = [
-  { label: "首页" },
-  { label: "工作台" },
-  { label: "设备" },
-  { label: "社区" },
-  { label: "控件库", active: true },
-  { label: "模板" },
-  { label: "挑战" },
+  { label: "棣栭〉" },
+  { label: "宸ヤ綔鍙?" },"
+  { label: "璁惧" },
+  { label: "绀惧尯" },
+  { label: "鎺т欢搴?", active: true" },"
+  { label: "妯℃澘" },
+  { label: "鎸戞垬" },
 ];
 
 const topTabs = [
-  { label: "总览" },
-  { label: "控件", active: true },
-  { label: "反馈" },
-  { label: "规则" },
+  { label: "鎬昏" },
+  { label: "鎺т欢", active: true },
+  { label: "鍙嶉" },
+  { label: "瑙勫垯" },
 ];
 
 const legacyTabItems = [
-  { label: "首页", icon: "home" },
-  { label: "社区", icon: "community" },
-  { label: "创作", icon: "edit" },
-  { label: "设备", icon: "device" },
-  { label: "我的", icon: "profile", active: true },
+  { label: "棣栭〉", icon: "home" },
+  { label: "绀惧尯", icon: "community" },
+  { label: "鍒涗綔", icon: "edit" },
+  { label: "璁惧", icon: "device" },
+  { label: "鎴戠殑", icon: "profile", active: true },
 ];
 
 const projectPixels = [
@@ -502,32 +499,32 @@ const previewPixels = [
 ];
 
 const themeCards = [
-  { name: "经典", previewClass: "ds-theme-card__preview--classic", active: true, badge: "当前" },
-  { name: "图纸", previewClass: "ds-theme-card__preview--planet", badge: "图片" },
-  { name: "霓虹", previewClass: "ds-theme-card__preview--neon" },
+  { name: "缁忓吀", previewClass: "ds-theme-card__preview--classic", active: true, badge: "褰撳墠" },
+  { name: "鍥剧焊", previewClass: "ds-theme-card__preview--planet", badge: "鍥剧墖" },
+  { name: "闇撹櫣", previewClass: "ds-theme-card__preview--neon" },
 ];
 
 const fontCards = [
-  { name: "像素方正", sample: "12:34", previewClass: "ds-font-card__preview--mono", active: true },
-  { name: "圆点屏", sample: "12:34", previewClass: "ds-font-card__preview--dot" },
-  { name: "窄体屏", sample: "12:34", previewClass: "ds-font-card__preview--condensed" },
+  { name: "鍍忕礌鏂规", sample: "12:34", previewClass: "ds-font-card__preview--mono", active: true },
+  { name: "鍦嗙偣灞?", sample: "12:34"", previewClass: "ds-font-card__preview--dot"" },"
+  { name: "绐勪綋灞?", sample: "12:34"", previewClass: "ds-font-card__preview--condensed"" },"
 ];
 
 const guardrails = [
   {
-    label: "直角语法",
-    title: "不做圆角胶囊和漂浮圆壳",
-    copy: "网页组件库里的按钮、tabs、卡片、列表项默认都保持直角块面，后续映射到 uniapp 也不再临时圆角化。",
+    label: "鐩磋璇硶",
+    title: "涓嶅仛鍦嗚鑳跺泭鍜屾紓娴渾澹?,"
+    copy: "缃戦〉缁勪欢搴撻噷鐨勬寜閽€乼abs銆佸崱鐗囥€佸垪琛ㄩ」榛樿閮戒繚鎸佺洿瑙掑潡闈紝鍚庣画鏄犲皠鍒?uniapp 涔熶笉鍐嶄复鏃跺渾瑙掑寲銆?,"
   },
   {
-    label: "点击反馈",
-    title: "禁止按压位移、缩放、抖动",
-    copy: "所有入口、按钮、返回键、顶部导航和 tabs 都只改颜色或字重，不再靠 transform 制造点击感。",
+    label: "鐐瑰嚮鍙嶉",
+    title: "绂佹鎸夊帇浣嶇Щ銆佺缉鏀俱€佹姈鍔?,"
+    copy: "鎵€鏈夊叆鍙ｃ€佹寜閽€佽繑鍥為敭銆侀《閮ㄥ鑸拰 tabs 閮藉彧鏀归鑹叉垨瀛楅噸锛屼笉鍐嶉潬 transform 鍒堕€犵偣鍑绘劅銆?,"
   },
   {
-    label: "分组语义",
-    title: "功能页底部 tabs 不是黄底整块选中",
-    copy: "官网组件库必须明确区分组件库内部 tabs 与 uniapp 功能页底部 tabs，避免后续迁回小程序时把语法混掉。",
+    label: "鍒嗙粍璇箟",
+    title: "鍔熻兘椤靛簳閮?tabs 涓嶆槸榛勫簳鏁村潡閫変腑",
+    copy: "瀹樼綉缁勪欢搴撳繀椤绘槑纭尯鍒嗙粍浠跺簱鍐呴儴 tabs 涓?uniapp 鍔熻兘椤靛簳閮?tabs锛岄伩鍏嶅悗缁縼鍥炲皬绋嬪簭鏃舵妸璇硶娣锋帀銆?,"
   },
 ];
 </script>

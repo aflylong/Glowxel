@@ -1,34 +1,33 @@
-<template>
+﻿<template>
   <div class="glx-page-shell edit-profile-page">
     <section class="glx-page-shell__hero">
       <span class="glx-page-shell__eyebrow">Edit Profile</span>
-      <h1 class="glx-page-shell__title">编辑资料</h1>
+      <h1 class="glx-page-shell__title">缂栬緫璧勬枡</h1>
       <p class="glx-page-shell__desc">
-        资料页也恢复回来，继续承接昵称和个人简介修改。
-      </p>
+        璧勬枡椤典篃鎭㈠鍥炴潵锛岀户缁壙鎺ユ樀绉板拰涓汉绠€浠嬩慨鏀广€?      </p>
     </section>
 
     <section class="glx-section-card glx-section-card--stack">
       <div class="glx-form-grid">
         <label class="glx-field">
-          <span class="glx-field__label">昵称</span>
-          <input v-model="form.name" class="glx-input" maxlength="20" placeholder="请输入昵称" />
+          <span class="glx-field__label">鏄电О</span>
+          <input v-model="form.name" class="glx-input" maxlength="20" placeholder="璇疯緭鍏ユ樀绉?" /">"
         </label>
         <label class="glx-field">
-          <span class="glx-field__label">个人简介</span>
+          <span class="glx-field__label">涓汉绠€浠?</span>
           <textarea
             v-model="form.bio"
             class="glx-textarea"
             maxlength="100"
-            placeholder="介绍一下自己吧"
+            placeholder="浠嬬粛涓€涓嬭嚜宸卞惂"
           ></textarea>
         </label>
       </div>
       <div class="glx-inline-actions">
         <button type="button" class="glx-button glx-button--primary" :disabled="saving" @click="handleSave">
-          {{ saving ? "保存中..." : "保存" }}
+          {{ saving ? "淇濆瓨涓?.." : "淇濆瓨" }}
         </button>
-        <router-link to="/profile" class="glx-button glx-button--ghost">返回个人中心</router-link>
+        <router-link to="/profile" class="glx-button glx-button--ghost">杩斿洖涓汉涓績</router-link>
       </div>
       <p v-if="message.length > 0" class="edit-profile-message">{{ message }}</p>
     </section>
@@ -64,7 +63,7 @@ onMounted(async () => {
 
 async function handleSave() {
   if (form.name.trim().length === 0) {
-    message.value = "昵称不能为空";
+    message.value = "鏄电О涓嶈兘涓虹┖";
     return;
   }
 
@@ -78,7 +77,7 @@ async function handleSave() {
     });
 
     if (response.success) {
-      message.value = "保存成功";
+      message.value = "淇濆瓨鎴愬姛";
       window.setTimeout(() => {
         router.push("/profile");
       }, 800);
@@ -90,7 +89,7 @@ async function handleSave() {
       return;
     }
 
-    message.value = "保存失败";
+    message.value = "淇濆瓨澶辫触";
   } finally {
     saving.value = false;
   }

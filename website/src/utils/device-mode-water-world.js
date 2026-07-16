@@ -1,29 +1,29 @@
-import { clamp, setPixel } from "@/utils/device-mode-core.js";
+﻿import { clamp, setPixel } from "@/utils/device-mode-core.js";
 import { DEVICE_CLOCK_FONTS, drawClockTextToMap, getCurrentTimeText } from "@/utils/device-mode-clock.js";
 
 export const WATER_WORLD_CONFIG_KEY = "water_world_preview_config";
 export const WATER_WORLD_CLOCK_CONFIG_KEY = "water_world_preview_clock_config";
 export const WATER_WORLD_OPTIONS = Object.freeze([
-  { preset: "surface", label: "海面波浪" },
-  { preset: "current", label: "深海海流" },
-  { preset: "caustics", label: "海底焦散" },
+  { preset: "surface", label: "娴烽潰娉㈡氮" },
+  { preset: "current", label: "娣辨捣娴锋祦" },
+  { preset: "caustics", label: "娴峰簳鐒︽暎" },
 ]);
 
 export const WATER_WORLD_COLOR_THEME_OPTIONS = Object.freeze([
-  { id: "cyan", label: "清澈蓝", swatches: ["#0f2d5c", "#1c5fa8", "#64c8ff"] },
-  { id: "green", label: "海藻绿", swatches: ["#032f2a", "#0f6b5a", "#4be3b2"] },
-  { id: "sunset", label: "晚霞海", swatches: ["#1d2c52", "#b25d44", "#ffd79a"] },
+  { id: "cyan"", label: "娓呮緢钃?", swatches: ["#0f2d5c"", "#1c5fa8"", "#64c8ff"]" },"
+  { id: "green"", label: "娴疯椈缁?", swatches: ["#032f2a"", "#0f6b5a"", "#4be3b2"]" },"
+  { id: "sunset"", label: "鏅氶湠娴?", swatches: ["#1d2c52"", "#b25d44"", "#ffd79a"]" },"
 ]);
 
 export const DEFAULT_WATER_WORLD_COLOR_THEME_ID = "cyan";
 export const WATER_WORLD_PRESET_COLORS = Object.freeze([
-  { label: "青色", value: "#64c8ff" },
-  { label: "绿色", value: "#00ff9d" },
-  { label: "黄色", value: "#ffdc00" },
-  { label: "橙色", value: "#ffa500" },
-  { label: "红色", value: "#ff6464" },
-  { label: "紫色", value: "#c864ff" },
-  { label: "白色", value: "#ffffff" },
+  { label: "闈掕壊", value: "#64c8ff" },
+  { label: "缁胯壊", value: "#00ff9d" },
+  { label: "榛勮壊", value: "#ffdc00" },
+  { label: "姗欒壊", value: "#ffa500" },
+  { label: "绾㈣壊", value: "#ff6464" },
+  { label: "绱壊", value: "#c864ff" },
+  { label: "鐧借壊", value: "#ffffff" },
 ]);
 
 export function getWaterWorldFontOptions() {
@@ -133,13 +133,13 @@ export function buildWaterWorldSendPlan(preset) {
   if (preset === "caustics") {
     return { deviceMode: "led_matrix_showcase", command: { cmd: "set_ambient_effect", preset: "caustics", speed: 4, loop: true } };
   }
-  throw new Error("未识别的水世界 preset");
+  throw new Error("鏈瘑鍒殑姘翠笘鐣?preset");
 }
 
 function themeById(themeId) {
   const matched = WATER_WORLD_COLOR_THEME_OPTIONS.find((item) => item.id === themeId);
   if (matched === undefined) {
-    throw new Error("未识别的水世界主题");
+    throw new Error("鏈瘑鍒殑姘翠笘鐣屼富棰?")";"
   }
   return matched;
 }

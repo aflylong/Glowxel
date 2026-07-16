@@ -1,4 +1,4 @@
-import { defineStore } from "pinia";
+﻿import { defineStore } from "pinia";
 import { userAPI } from "@/api/index.js";
 import {
   clearStoredSession,
@@ -32,7 +32,7 @@ export const useUserStore = defineStore("user", {
       ) {
         return state.currentUser.name;
       }
-      return "未登录用户";
+      return "鏈櫥褰曠敤鎴?";"
     },
   },
   actions: {

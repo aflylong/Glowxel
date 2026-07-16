@@ -1,4 +1,5 @@
-﻿// ============================================================
+﻿import { base64ToArrayBuffer } from '@/utils/browser-platform.js'
+// ============================================================
 // Terraria sprite 加载 / 切片 / 着色 / 像素绘制 (优化版)
 //
 // 资产从 8 个合并 .js 文件加载, 每个文件 module.exports = { spriteName: {w,h,pixels}, ... }
@@ -22,14 +23,7 @@ import MISC_RAW from '../assets/static/terraria/misc.js';
 //     fmt=7: 每像素 7 字节 (x16, y16, r, g, b) — 大 sprite (守卫 108×736)
 //   解码后: { w, h, pixels: [[x,y,r,g,b,255], ...] }
 function _b64ToU8(b64) {
-  // 小程序 / H5 通用: atob → Uint8Array
-  if (typeof uni !== 'undefined' && uni.base64ToArrayBuffer) {
-    return new Uint8Array(uni.base64ToArrayBuffer(b64));
-  }
-  const bin = atob(b64);
-  const u8 = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
-  return u8;
+  return new Uint8Array(base64ToArrayBuffer(b64));
 }
 
 function _decodeSpriteIfNeeded(v) {

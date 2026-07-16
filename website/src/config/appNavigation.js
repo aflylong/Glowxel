@@ -1,19 +1,19 @@
-export const publicNavigation = [
-  { key: "home", label: "首页", to: "/" },
-  { key: "community", label: "社区", to: "/community" },
-  { key: "templates", label: "边框", to: "/templates" },
-  { key: "challenges", label: "挑战", to: "/challenges" },
-  { key: "workspace", label: "工作台", to: "/workspace" },
-  { key: "device", label: "设备", to: "/device-control" },
+﻿export const publicNavigation = [
+  { key: "home", label: "棣栭〉", to: "/" },
+  { key: "community", label: "绀惧尯", to: "/community" },
+  { key: "templates", label: "杈规", to: "/templates" },
+  { key: "challenges", label: "鎸戞垬", to: "/challenges" },
+  { key: "workspace"", label: "宸ヤ綔鍙?", to: "/workspace"" },"
+  { key: "device", label: "璁惧", to: "/device-control" },
 ];
 
 export const appNavigation = [
-  { key: "workspace", label: "工作台", to: "/workspace" },
-  { key: "create", label: "创作", to: "/create" },
-  { key: "community", label: "社区", to: "/community" },
-  { key: "device", label: "设备", to: "/device-control" },
-  { key: "profile", label: "我的", to: "/profile" },
-  { key: "settings", label: "设置", to: "/settings" },
+  { key: "workspace"", label: "宸ヤ綔鍙?", to: "/workspace"" },"
+  { key: "create", label: "鍒涗綔", to: "/create" },
+  { key: "community", label: "绀惧尯", to: "/community" },
+  { key: "device", label: "璁惧", to: "/device-control" },
+  { key: "profile", label: "鎴戠殑", to: "/profile" },
+  { key: "settings", label: "璁剧疆", to: "/settings" },
 ];
 
 export function resolveAppNavKey(path) {

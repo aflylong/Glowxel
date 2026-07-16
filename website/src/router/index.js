@@ -44,7 +44,7 @@ const deviceModeViewLoaders = Object.freeze({
     mobile: () => import("@/views/mobile/SpiritScreen.vue"),
   },
   AmbientEditor: {
-    pc: () => import("@/views/AmbientEditor.vue"),
+    pc: () => import("@/views/AmbientEditorPc.vue"),
     mobile: () => import("@/views/mobile/AmbientEditor.vue"),
   },
   RickMortyPortal: {

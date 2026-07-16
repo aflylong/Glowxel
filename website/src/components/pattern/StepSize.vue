@@ -1,20 +1,20 @@
-<template>
+﻿<template>
   <div class="step-size">
-    <h2 class="step-title">设置画布尺寸</h2>
+    <h2 class="step-title">璁剧疆鐢诲竷灏哄</h2>
     
-    <!-- 图片上传（仅图片模式） -->
+    <!-- 鍥剧墖涓婁紶锛堜粎鍥剧墖妯″紡锛?-->
     <div v-if="mode === 'image'" class="image-upload-section">
       <div v-if="!imageUrl" class="upload-area" @click="handleUpload">
-        <div class="upload-icon">上传</div>
-        <p>点击上传图片</p>
-        <span class="upload-hint">支持 JPG, PNG</span>
+        <div class="upload-icon">涓婁紶</div>
+        <p>鐐瑰嚮涓婁紶鍥剧墖</p>
+        <span class="upload-hint">鏀寔 JPG, PNG</span>
       </div>
       
       <div v-else class="preview-area">
         <img :src="imageUrl" alt="Preview" class="preview-image" />
         <div class="preview-actions">
-          <button class="btn-secondary" @click="handleUpload">更换图片</button>
-          <button class="btn-danger" @click="clearImage">删除</button>
+          <button class="btn-secondary" @click="handleUpload">鏇存崲鍥剧墖</button>
+          <button class="btn-danger" @click="clearImage">鍒犻櫎</button>
         </div>
       </div>
       
@@ -27,15 +27,15 @@
       />
     </div>
     
-    <!-- 尺寸设置 -->
+    <!-- 灏哄璁剧疆 -->
     <div class="size-section">
-      <h3 class="section-title">{{ mode === 'image' ? '目标尺寸（像素化）' : '画布尺寸' }}</h3>
+      <h3 class="section-title">{{ mode === 'image' ? '鐩爣灏哄锛堝儚绱犲寲锛? : '鐢诲竷灏哄' }}</h3>
       
-      <!-- 自定义尺寸 -->
+      <!-- 鑷畾涔夊昂瀵?-->
       <div class="custom-size">
         <div class="size-inputs">
           <div class="input-group">
-            <label>宽度</label>
+            <label>瀹藉害</label>
             <input 
               type="number"
               :value="width"
@@ -45,9 +45,9 @@
               placeholder="52"
             />
           </div>
-          <span class="separator">×</span>
+          <span class="separator">脳</span>
           <div class="input-group">
-            <label>高度</label>
+            <label>楂樺害</label>
             <input 
               type="number"
               :value="height"
@@ -60,9 +60,9 @@
         </div>
       </div>
       
-      <!-- 快捷尺寸 -->
+      <!-- 蹇嵎灏哄 -->
       <div class="preset-sizes">
-        <h4>快捷尺寸</h4>
+        <h4>蹇嵎灏哄</h4>
         <div class="size-grid">
           <button
             v-for="size in presetSizes"
@@ -71,20 +71,20 @@
             :class="{ active: width === size && height === size }"
             @click="selectSize(size)"
           >
-            {{ size }}×{{ size }}
+            {{ size }}脳{{ size }}
           </button>
         </div>
       </div>
       
-      <!-- 统计信息 -->
+      <!-- 缁熻淇℃伅 -->
       <div v-if="width > 0 && height > 0" class="stats">
         <div class="stat-item">
-          <span class="stat-label">总像素</span>
+          <span class="stat-label">鎬诲儚绱?</span>
           <span class="stat-value">{{ (width * height).toLocaleString() }}</span>
         </div>
         <div class="stat-item">
-          <span class="stat-label">板子数量</span>
-          <span class="stat-value">{{ boardsX }}×{{ boardsY }} ({{ totalBoards }}块)</span>
+          <span class="stat-label">鏉垮瓙鏁伴噺</span>
+          <span class="stat-value">{{ boardsX }}脳{{ boardsY }} ({{ totalBoards }}鍧?</span>
         </div>
       </div>
     </div>

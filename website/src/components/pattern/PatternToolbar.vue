@@ -1,29 +1,29 @@
-<template>
+﻿<template>
   <div class="pattern-toolbar">
     <div class="tool-group">
       <button
         class="tool-btn"
         :class="{ active: tool === 'pencil' }"
         @click="$emit('update:tool', 'pencil')"
-        title="画笔"
+        title="鐢荤瑪"
       >
-        画笔
+        鐢荤瑪
       </button>
       <button
         class="tool-btn"
         :class="{ active: tool === 'eraser' }"
         @click="$emit('update:tool', 'eraser')"
-        title="橡皮擦"
+        title="姗＄毊鎿?"
       >
-        橡皮
+        姗＄毊
       </button>
       <button
         class="tool-btn"
         :class="{ active: tool === 'move' }"
         @click="$emit('update:tool', 'move')"
-        title="拖动"
+        title="鎷栧姩"
       >
-        拖动
+        鎷栧姩
       </button>
     </div>
     
@@ -32,17 +32,17 @@
         class="tool-btn"
         :disabled="!canUndo"
         @click="$emit('undo')"
-        title="撤销"
+        title="鎾ら攢"
       >
-        撤销
+        鎾ら攢
       </button>
       <button
         class="tool-btn"
         :disabled="!canRedo"
         @click="$emit('redo')"
-        title="重做"
+        title="閲嶅仛"
       >
-        重做
+        閲嶅仛
       </button>
     </div>
     
@@ -51,16 +51,16 @@
         class="tool-btn"
         :class="{ active: gridVisible }"
         @click="$emit('update:gridVisible', !gridVisible)"
-        title="网格"
+        title="缃戞牸"
       >
-        网格
+        缃戞牸
       </button>
       <button
         class="tool-btn"
         @click="$emit('fit')"
-        title="适应屏幕"
+        title="閫傚簲灞忓箷"
       >
-        适应
+        閫傚簲
       </button>
     </div>
     
@@ -68,9 +68,9 @@
       <button
         class="tool-btn primary"
         @click="$emit('export')"
-        title="导出图纸"
+        title="瀵煎嚭鍥剧焊"
       >
-        导出
+        瀵煎嚭
       </button>
     </div>
   </div>

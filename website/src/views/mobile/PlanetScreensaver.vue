@@ -1,4 +1,4 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/planet-screensaver/planet-screensaver.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/planet-screensaver/planet-screensaver.vue -->
 <template>
   <div class="clock-editor-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
@@ -7,13 +7,13 @@
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
-      <span class="nav-title glx-topbar__title">星球屏保</span>
+      <span class="nav-title glx-topbar__title">鏄熺悆灞忎繚</span>
       <div class="nav-right"></div>
     </div>
 
     <div class="canvas-section">
       <div class="preview-canvas-container" :style="previewCanvasBoxStyle">
-        <PixelPreviewBoard
+        <PixelCanvas
           v-if="previewCanvasReady && !shouldShowSendingSnapshot"
           :width="64"
           :height="64"
@@ -22,10 +22,13 @@
           :zoom="previewZoom"
           :offset-x="previewOffset.x"
           :offset-y="previewOffset.y"
+          :canvas-width="previewContainerSize.width"
+          :canvas-height="previewContainerSize.height"
           :grid-visible="true"
           :is-dark-mode="true"
+          :touch-enabled="false"
         />
-        <PixelPreviewBoard
+        <PixelCanvas
           v-else-if="previewCanvasReady && shouldShowSendingSnapshot"
           :width="64"
           :height="64"
@@ -34,13 +37,16 @@
           :zoom="previewZoom"
           :offset-x="previewOffset.x"
           :offset-y="previewOffset.y"
+          :canvas-width="previewContainerSize.width"
+          :canvas-height="previewContainerSize.height"
           :grid-visible="true"
           :is-dark-mode="true"
+          :touch-enabled="false"
         />
       </div>
       <div class="preview-caption">
         <div class="preview-caption-info">
-          <span class="preview-caption-title">预览效果</span>
+          <span class="preview-caption-title">棰勮鏁堟灉</span>
           <span
             class="send-mode-badge"
             :class="sendModeBadgeClass"
@@ -69,7 +75,7 @@
         <div v-show="currentTab === 0" class="tab-panel glx-tab-panel">
           <div class="card glx-panel-card glx-editor-card">
             <div class="card-title-section glx-panel-head">
-              <span class="glx-panel-title">星球类型</span>
+              <span class="glx-panel-title">鏄熺悆绫诲瀷</span>
             </div>
             <div class="preset-grid">
               <div
@@ -86,7 +92,7 @@
             </div>
 
             <div v-if="isPortalPreset" class="option-stack portal-color-stack">
-              <span class="form-label">传送门颜色</span>
+              <span class="form-label">浼犻€侀棬棰滆壊</span>
               <div class="option-row option-row-triple">
                 <div
                   v-for="option in portalColorOptions"
@@ -105,7 +111,7 @@
 
           <div class="card glx-panel-card glx-editor-card">
             <div class="card-title-section glx-panel-head">
-              <span class="glx-panel-title">参数</span>
+              <span class="glx-panel-title">鍙傛暟</span>
             </div>
 
             <div
@@ -114,7 +120,7 @@
               :class="{
                 'bottom-action-row--single':
                   !showRandomColorAction || !showRandomPlanetAction,
-              }"
+              }""
             >
               <div
                 v-if="showRandomColorAction"
@@ -123,7 +129,7 @@
                 @click="handleRandomColor"
               >
                 <Icon name="palette" :size="32" color="var(--nb-ink)" />
-                <span>随机颜色</span>
+                <span>闅忔満棰滆壊</span>
               </div>
               <div
                 v-if="showRandomPlanetAction"
@@ -137,7 +143,7 @@
             </div>
 
             <div class="form-row">
-              <span class="form-label">水平位置 {{ config.planetX }}</span>
+              <span class="form-label">姘村钩浣嶇疆 {{ config.planetX }}</span>
               <GlxStepper
                 :value="config.planetX"
                 :min="0"
@@ -148,7 +154,7 @@
             </div>
 
             <div class="form-row">
-              <span class="form-label">垂直位置 {{ config.planetY }}</span>
+              <span class="form-label">鍨傜洿浣嶇疆 {{ config.planetY }}</span>
               <GlxStepper
                 :value="config.planetY"
                 :min="0"
@@ -165,7 +171,7 @@
                 @click="handlePlanetCenter"
               >
                 <Icon name="target" :size="32" color="var(--nb-ink)" />
-                <span>快速居中</span>
+                <span>蹇€熷眳涓?</span>
               </div>
             </div>
 
@@ -187,7 +193,7 @@
             </div>
 
             <div v-if="!isPortalPreset" class="option-stack">
-              <span class="form-label">自转方向</span>
+              <span class="form-label">鑷浆鏂瑰悜</span>
               <div class="option-row option-row-double">
                 <div
                   v-for="option in directionOptions"
@@ -204,7 +210,7 @@
             </div>
 
             <div class="form-row">
-              <span class="form-label">转速 {{ config.speed }}</span>
+              <span class="form-label">杞€?{{ config.speed }}</span>
               <GlxStepper
                 :value="config.speed"
                 :min="PLANET_PREVIEW_MIN_SPEED"
@@ -219,7 +225,7 @@
         <div v-show="currentTab === 1" class="tab-panel glx-tab-panel">
           <ClockTextSettingsCard
             icon-name="time"
-            title="时间显示"
+            title="鏃堕棿鏄剧ず"
             :section="clockConfig.time"
             :preset-colors="timeColorOptions"
             :show-font-size="true"
@@ -249,51 +255,51 @@
         <div v-show="currentTab === 3" class="tab-panel glx-tab-panel">
           <div class="card glx-panel-card glx-editor-card">
             <div class="card-title-section glx-panel-head">
-              <span class="glx-panel-title">轮播</span>
+              <span class="glx-panel-title">杞挱</span>
             </div>
 
             <div class="form-row">
-              <span class="form-label">自动轮播</span>
+              <span class="form-label">鑷姩杞挱</span>
               <div class="option-row option-row-double auto-rotate-switch">
                 <div
                   class="option-btn glx-feature-option"
                   :class="{ active: autoRotate.enabled }"
                   @click="setAutoRotateEnabled(true)"
                 >
-                  <span class="glx-feature-option__label">开启</span>
+                  <span class="glx-feature-option__label">寮€鍚?</span>
                 </div>
                 <div
                   class="option-btn glx-feature-option"
                   :class="{ active: !autoRotate.enabled }"
                   @click="setAutoRotateEnabled(false)"
                 >
-                  <span class="glx-feature-option__label">关闭</span>
+                  <span class="glx-feature-option__label">鍏抽棴</span>
                 </div>
               </div>
             </div>
 
             <div class="option-stack">
-              <span class="form-label">随机内容</span>
+              <span class="form-label">闅忔満鍐呭</span>
               <div class="option-row option-row-double">
                 <div
                   class="option-btn glx-feature-option"
                   :class="{ active: autoRotate.randomPlanet }"
                   @click="toggleAutoRotateRandomPlanet"
                 >
-                  <span class="glx-feature-option__label">随机地形</span>
+                  <span class="glx-feature-option__label">闅忔満鍦板舰</span>
                 </div>
                 <div
                   class="option-btn glx-feature-option"
                   :class="{ active: autoRotate.randomColor }"
                   @click="toggleAutoRotateRandomColor"
                 >
-                  <span class="glx-feature-option__label">随机颜色</span>
+                  <span class="glx-feature-option__label">闅忔満棰滆壊</span>
                 </div>
               </div>
             </div>
 
             <div class="option-stack">
-              <span class="form-label">切换时长</span>
+              <span class="form-label">鍒囨崲鏃堕暱</span>
               <div class="option-row option-row-double">
                 <div
                   v-for="option in autoRotateIntervalOptions"
@@ -351,13 +357,14 @@
 </template>
 
 <script>
+import { getStorage, setStorage, getSystemInfo, createDomQuery, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
 import Icon from "@/components/uni/Icon.vue";
 import Toast from "@/components/uni/Toast.vue";
 import GlxInlineLoader from "@/components/uni/GlxInlineLoader.vue";
-import PixelPreviewBoard from "@/components/uni/PixelPreviewBoard.vue";
+import PixelCanvas from "@/components/uni/PixelCanvas.vue";
 import GlxStepper from "@/components/uni/GlxStepper.vue";
 import ClockFontPanel from "@/components/uni/clock-editor/ClockFontPanel.vue";
 import ClockTextSettingsCard from "@/components/uni/clock-editor/ClockTextSettingsCard.vue";
@@ -371,6 +378,7 @@ import {
   getCurrentTimeText,
 } from "@/utils/clockCanvas.js";
 import {
+  PLANET_DEFAULT_COLOR_SEED,
   PLANET_REFERENCE_DEFAULT_COLOR_SEED,
   PLANET_SCREEN_PRESETS,
   PLANET_PREVIEW_MIN_SPEED,
@@ -393,12 +401,12 @@ const PLANET_TIME_FONT_IDS = new Set(
 const PLANET_PAGE_STORAGE_KEY = "planet_screensaver_page_state";
 const PLANET_FIXED_PALETTE_COLOR_SEED = PLANET_REFERENCE_DEFAULT_COLOR_SEED;
 const PLANET_PORTAL_COLOR_OPTIONS = Object.freeze([
-  { id: "portal_green", label: "绿色" },
-  { id: "portal_blue", label: "蓝色" },
-  { id: "portal_yellow", label: "黄色" },
+  { id: "portal_green", label: "缁胯壊" },
+  { id: "portal_blue", label: "钃濊壊" },
+  { id: "portal_yellow", label: "榛勮壊" },
 ]);
 const PLANET_DISPLAY_PRESETS = Object.freeze(
-  // 传送门已升级为独立模式 (rick_morty_portal),星球屏保里不再展示这 3 个 preset。
+  // 浼犻€侀棬宸插崌绾т负鐙珛妯″紡 (rick_morty_portal),鏄熺悆灞忎繚閲屼笉鍐嶅睍绀鸿繖 3 涓?preset銆?
   PLANET_SCREEN_PRESETS.filter(
     (preset) =>
       preset.id !== "portal_green" &&
@@ -407,20 +415,20 @@ const PLANET_DISPLAY_PRESETS = Object.freeze(
   ),
 );
 const PLANET_TIME_COLOR_OPTIONS = Object.freeze([
-  { name: "青色", hex: "#64c8ff" },
-  { name: "绿色", hex: "#00ff9d" },
-  { name: "黄色", hex: "#ffdc00" },
-  { name: "橙色", hex: "#ffa500" },
-  { name: "红色", hex: "#ff6464" },
-  { name: "紫色", hex: "#c864ff" },
-  { name: "白色", hex: "#ffffff" },
+  { name: "闈掕壊", hex: "#64c8ff" },
+  { name: "缁胯壊", hex: "#00ff9d" },
+  { name: "榛勮壊", hex: "#ffdc00" },
+  { name: "姗欒壊", hex: "#ffa500" },
+  { name: "绾㈣壊", hex: "#ff6464" },
+  { name: "绱壊", hex: "#c864ff" },
+  { name: "鐧借壊", hex: "#ffffff" },
 ]);
 
 const PLANET_AUTO_ROTATE_INTERVAL_OPTIONS = Object.freeze([
-  { value: 30, label: "30秒" },
-  { value: 60, label: "1分钟" },
-  { value: 300, label: "5分钟" },
-  { value: 600, label: "10分钟" },
+  { value: 30, label: "30绉?" },"
+  { value: 60, label: "1鍒嗛挓" },
+  { value: 300, label: "5鍒嗛挓" },
+  { value: 600, label: "10鍒嗛挓" },
 ]);
 
 function createDefaultPlanetClockConfig() {
@@ -611,7 +619,7 @@ export default {
     Icon,
     Toast,
     GlxInlineLoader,
-    PixelPreviewBoard,
+    PixelCanvas,
     GlxStepper,
     ClockFontPanel,
     ClockTextSettingsCard,
@@ -645,10 +653,10 @@ export default {
       timeColorOptions: PLANET_TIME_COLOR_OPTIONS,
       currentTab: 0,
       tabDefinitions: [
-        { index: 0, label: "星球", icon: "prompt" },
-        { index: 1, label: "时间", icon: "time" },
-        { index: 2, label: "字体", icon: "text" },
-        { index: 3, label: "轮播", icon: "refresh" },
+        { index: 0, label: "鏄熺悆", icon: "prompt" },
+        { index: 1, label: "鏃堕棿", icon: "time" },
+        { index: 2, label: "瀛椾綋", icon: "text" },
+        { index: 3, label: "杞挱", icon: "refresh" },
       ],
       config,
       autoRotate: createDefaultPlanetAutoRotateConfig(),
@@ -686,9 +694,9 @@ export default {
     },
     sizeSectionLabel() {
       if (this.isPortalPreset) {
-        return "传送门大小";
+        return "浼犻€侀棬澶у皬";
       }
-      return "星球大小";
+      return "鏄熺悆澶у皬";
     },
     showRandomColorAction() {
       return !this.isFixedPalettePreset;
@@ -698,9 +706,9 @@ export default {
     },
     randomPlanetActionLabel() {
       if (isPortalPresetValue(this.config.preset)) {
-        return "随机纹理";
+        return "闅忔満绾圭悊";
       }
-      return "随机星球";
+      return "闅忔満鏄熺悆";
     },
     isAutoRotatePreviewActive() {
       if (!this.autoRotate.enabled) {
@@ -713,15 +721,15 @@ export default {
     },
     autoRotateContentLabel() {
       if (this.autoRotate.randomPlanet && this.autoRotate.randomColor) {
-        return "随机地形 + 随机颜色";
+        return "闅忔満鍦板舰 + 闅忔満棰滆壊";
       }
       if (this.autoRotate.randomPlanet) {
-        return "随机地形";
+        return "闅忔満鍦板舰";
       }
       if (this.autoRotate.randomColor) {
-        return "随机颜色";
+        return "闅忔満棰滆壊";
       }
-      return "未选择随机内容";
+      return "鏈€夋嫨闅忔満鍐呭";
     },
     autoRotateIntervalLabel() {
       const option = PLANET_AUTO_ROTATE_INTERVAL_OPTIONS.find(
@@ -730,13 +738,13 @@ export default {
       if (option) {
         return option.label;
       }
-      return "未设置";
+      return "鏈缃?";"
     },
     sendModeBadgeText() {
       if (this.isAutoRotatePreviewActive) {
-        return "随机已开启";
+        return "闅忔満宸插紑鍚?";"
       }
-      return "随机已关闭";
+      return "闅忔満宸插叧闂?";"
     },
     sendModeBadgeClass() {
       if (this.isAutoRotatePreviewActive) {
@@ -746,15 +754,15 @@ export default {
     },
     sendModeHint() {
       if (this.isAutoRotatePreviewActive) {
-        return `发送后设备按 ${this.autoRotateIntervalLabel} ${this.autoRotateContentLabel} 自动轮播`;
+        return `鍙戦€佸悗璁惧鎸?${this.autoRotateIntervalLabel} ${this.autoRotateContentLabel} 鑷姩杞挱`;
       }
-      return "发送后设备使用当前固定星球配置";
+      return "鍙戦€佸悗璁惧浣跨敤褰撳墠鍥哄畾鏄熺悆閰嶇疆";
     },
     sendButtonText() {
       if (this.isAutoRotatePreviewActive) {
-        return "发送随机";
+        return "鍙戦€侀殢鏈?";"
       }
-      return "发送固定";
+      return "鍙戦€佸浐瀹?";"
     },
   },
   watch: {
@@ -782,7 +790,7 @@ export default {
     this.deviceStore.init();
     this.toast = useToast();
     const savedState = normalizePlanetPageState(
-      uni.getStorageSync(PLANET_PAGE_STORAGE_KEY),
+      getStorage(PLANET_PAGE_STORAGE_KEY),
     );
     this.config = savedState.config;
     this.clockConfig = savedState.clockConfig;
@@ -824,7 +832,7 @@ export default {
       deviceSendUxMixin.methods.endSendUi.call(this);
     },
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
     disableAutoRotateForManualEdit() {
       if (!this.autoRotate.enabled) {
@@ -834,7 +842,7 @@ export default {
       this.stopAutoRotateTimer();
     },
     persistLocalState() {
-      uni.setStorageSync(PLANET_PAGE_STORAGE_KEY, {
+      setStorage(PLANET_PAGE_STORAGE_KEY, {
         config: {
           preset: this.config.preset,
           size: this.config.size,
@@ -1055,19 +1063,19 @@ export default {
         this.showSendSuccess();
       } catch (error) {
         this.deviceStore.applyResolvedBusinessMode(previousMode);
-        console.error("发送星球屏保失败:", error);
+        console.error("鍙戦€佹槦鐞冨睆淇濆け璐?", error);
         this.showSendFailure(error);
       } finally {
         this.endSendUi();
       }
     },
     initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
+      const systemInfo = getSystemInfo();
       const statusBarHeight = systemInfo.statusBarHeight || 0;
 
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query.select(".canvas-section").boundingClientRect((sectionRect) => {
             if (!sectionRect || !sectionRect.height) {
               return;
@@ -1109,12 +1117,12 @@ export default {
     renderPreviewFrame(progress) {
       let frameMap;
       if (this.previewSequence && this.previewSequence.maps && this.previewSequence.maps.length > 0) {
-        // 根据 progress 选择对应帧
+        // 鏍规嵁 progress 閫夋嫨瀵瑰簲甯?
         const frameCount = this.previewSequence.maps.length;
         const frameIndex = Math.min(frameCount - 1, Math.floor(progress * frameCount));
         frameMap = this.previewSequence.maps[frameIndex];
         
-        // 只有显示时钟时才复制frameMap，避免污染缓存
+        // 鍙湁鏄剧ず鏃堕挓鏃舵墠澶嶅埗frameMap锛岄伩鍏嶆薄鏌撶紦瀛?
         if (this.clockConfig.time.show) {
           frameMap = new Map(frameMap);
           const text = this.getPlanetTimeText();
@@ -1131,7 +1139,7 @@ export default {
           );
         }
       } else {
-        // 回退：实时渲染当前进度帧
+        // 鍥為€€锛氬疄鏃舵覆鏌撳綋鍓嶈繘搴﹀抚
         frameMap = buildPlanetScreensaverPreviewFrame(
           {
             ...this.config,
@@ -1233,10 +1241,10 @@ export default {
         return;
       }
       if (this.config.preset === presetId) {
-        if (this.config.colorSeed !== PLANET_REFERENCE_DEFAULT_COLOR_SEED) {
+        if (this.config.colorSeed !== PLANET_DEFAULT_COLOR_SEED) {
           const progress = this.getCurrentPreviewProgress();
           this.disableAutoRotateForManualEdit();
-          this.config.colorSeed = PLANET_REFERENCE_DEFAULT_COLOR_SEED;
+          this.config.colorSeed = PLANET_DEFAULT_COLOR_SEED;
           this.schedulePreviewRefresh(progress);
         }
         return;
@@ -1244,7 +1252,7 @@ export default {
       const progress = this.getCurrentPreviewProgress();
       this.disableAutoRotateForManualEdit();
       this.config.preset = presetId;
-      this.config.colorSeed = PLANET_REFERENCE_DEFAULT_COLOR_SEED;
+      this.config.colorSeed = PLANET_DEFAULT_COLOR_SEED;
       this.schedulePreviewRefresh(progress);
     },
     handlePortalColorSelect(presetId) {
@@ -1533,7 +1541,7 @@ export default {
       const cycleDuration = getPlanetPreviewCycleDuration(this.config.speed);
       this.previewPlaybackStartedAt = Date.now() - preservedProgress * cycleDuration;
       
-      // 实时渲染动画循环 (跟板载一致，每帧实时计算)
+      // 瀹炴椂娓叉煋鍔ㄧ敾寰幆 (璺熸澘杞戒竴鑷达紝姣忓抚瀹炴椂璁＄畻)
       const tick = () => {
         const progress = this.getCurrentPreviewProgress();
         const frameMap = buildPlanetScreensaverPreviewFrame(this.config, progress);
@@ -1558,7 +1566,7 @@ export default {
           this.previewRefreshTick += 1;
         }
         
-        // 帧间隔跟板载一致: cycleDuration / 48帧
+        // 甯ч棿闅旇窡鏉胯浇涓€鑷? cycleDuration / 48甯?
         const frameInterval = getPlanetPreviewCycleDuration(this.config.speed) / 48;
         this.previewTimer = setTimeout(tick, Math.max(60, frameInterval));
       };

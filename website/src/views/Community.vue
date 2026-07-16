@@ -1,22 +1,21 @@
-<template>
+﻿<template>
   <div class="glx-page-shell">
     <section class="glx-page-shell__hero">
       <span class="glx-page-shell__eyebrow">Community</span>
-      <h1 class="glx-page-shell__title">社区</h1>
+      <h1 class="glx-page-shell__title">绀惧尯</h1>
       <p class="glx-page-shell__desc">
-        社区首页继续保留公开浏览壳，但列表、空态、错误反馈和作品回流统一收口到 `glx` 页面族。
-      </p>
+        绀惧尯棣栭〉缁х画淇濈暀鍏紑娴忚澹筹紝浣嗗垪琛ㄣ€佺┖鎬併€侀敊璇弽棣堝拰浣滃搧鍥炴祦缁熶竴鏀跺彛鍒?`glx` 椤甸潰鏃忋€?      </p>
       <div class="glx-hero-metrics">
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">当前排序</span>
+          <span class="glx-hero-metric__label">褰撳墠鎺掑簭</span>
           <strong class="glx-hero-metric__value">{{ tabText }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">当前页码</span>
+          <span class="glx-hero-metric__label">褰撳墠椤电爜</span>
           <strong class="glx-hero-metric__value">{{ pageText }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">已加载作品</span>
+          <span class="glx-hero-metric__label">宸插姞杞戒綔鍝?</span>
           <strong class="glx-hero-metric__value">{{ list.length }}</strong>
         </article>
       </div>
@@ -30,15 +29,14 @@
           :class="{ 'is-active': tab === 'latest' }"
           @click="switchTab('latest')"
         >
-          最新
-        </button>
+          鏈€鏂?        </button>
         <button
           type="button"
           class="glx-tab"
           :class="{ 'is-active': tab === 'hot' }"
           @click="switchTab('hot')"
         >
-          热门
+          鐑棬
         </button>
       </div>
     </section>
@@ -50,8 +48,8 @@
     </div>
 
     <section v-else-if="list.length === 0" class="glx-empty-card">
-      <strong class="glx-section-title">暂时还没有作品</strong>
-      <p class="glx-page-shell__desc">等作品发布后，这里会自动显示最新和热门列表。</p>
+      <strong class="glx-section-title">鏆傛椂杩樻病鏈変綔鍝?</strong>
+      <p class="glx-page-shell__desc">绛変綔鍝佸彂甯冨悗锛岃繖閲屼細鑷姩鏄剧ず鏈€鏂板拰鐑棬鍒楄〃銆?</p>
     </section>
 
     <section v-else class="glx-grid glx-grid--three">
@@ -67,13 +65,13 @@
           class="community-card__image"
         />
         <div v-else class="glx-empty-card community-card__empty">
-          <strong class="glx-section-title">暂无封面</strong>
-          <p class="glx-page-shell__desc">当前作品还没有封面图。</p>
+          <strong class="glx-section-title">鏆傛棤灏侀潰</strong>
+          <p class="glx-page-shell__desc">褰撳墠浣滃搧杩樻病鏈夊皝闈㈠浘銆?</p>
         </div>
         <strong class="glx-section-title community-card__title">{{ resolveTitle(item) }}</strong>
         <p class="glx-page-shell__desc">{{ resolveMeta(item) }}</p>
         <div class="glx-inline-actions">
-          <router-link :to="`/artwork/${item.id}`" class="glx-button glx-button--ghost">查看详情</router-link>
+          <router-link :to="`/artwork/${item.id}`" class="glx-button glx-button--ghost">鏌ョ湅璇︽儏</router-link>
         </div>
       </article>
     </section>
@@ -86,7 +84,7 @@
         :disabled="loading"
         @click="loadMore"
       >
-        {{ loading ? "加载中..." : "加载更多" }}
+        {{ loading ? "鍔犺浇涓?.." : "鍔犺浇鏇村" }}
       </button>
     </section>
   </div>
@@ -109,9 +107,9 @@ const loading = ref(false);
 
 const tabText = computed(() => {
   if (tab.value === "hot") {
-    return "热门";
+    return "鐑棬";
   }
-  return "最新";
+  return "鏈€鏂?";"
 });
 
 const pageText = computed(() => String(page.value));
@@ -120,13 +118,13 @@ function resolveTitle(item) {
   if (typeof item.title === "string" && item.title.length > 0) {
     return item.title;
   }
-  return "未命名";
+  return "鏈懡鍚?";"
 }
 
 function resolveMeta(item) {
-  const authorText = typeof item.author_name === "string" && item.author_name.length > 0 ? item.author_name : "匿名创作者";
-  const likeText = typeof item.likes === "number" ? `${item.likes} 赞` : "0 赞";
-  return `${authorText} · ${likeText}`;
+  const authorText = typeof item.author_name === "string" && item.author_name.length" > 0 ? item.author_name : "鍖垮悕鍒涗綔鑰?";"
+  const likeText = typeof item.likes === "number" ? `${item.likes"} 璧瀈 : "0 璧?";"
+  return `${authorText} 路 ${likeText}`;
 }
 
 async function fetchList(reset) {
@@ -161,16 +159,16 @@ async function fetchList(reset) {
     if (reset) {
       list.value = [];
     }
-    feedback.error("列表加载失败", response.message || "社区列表没有成功返回。");
+    feedback.error("鍒楄〃鍔犺浇澶辫触"", response.message || "绀惧尯鍒楄〃娌℃湁鎴愬姛杩斿洖銆?")";"
   } catch (error) {
     hasMore.value = false;
     if (reset) {
       list.value = [];
     }
     if (error instanceof Error) {
-      feedback.error("列表加载失败", error.message);
+      feedback.error("鍒楄〃鍔犺浇澶辫触", error.message);
     } else {
-      feedback.error("列表加载失败", "社区列表读取失败。");
+      feedback.error("鍒楄〃鍔犺浇澶辫触"", "绀惧尯鍒楄〃璇诲彇澶辫触銆?")";"
     }
   } finally {
     loading.value = false;

@@ -1,7 +1,7 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/rick-morty-portal/rick-morty-portal.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/rick-morty-portal/rick-morty-portal.vue -->
 <template>
   <div class="portal-page glx-page-shell game-mode-page">
-    <PcModeTopbar title="传送门" />
+    <PcModeTopbar title="浼犻€侀棬" />
 
     <section class="portal-layout game-mode-layout">
       <article
@@ -10,7 +10,7 @@
         <div class="portal-preview-card__head">
           <div>
             <p class="portal-preview-card__eyebrow">Device Mode</p>
-            <h2 class="portal-preview-card__title">传送门预览</h2>
+            <h2 class="portal-preview-card__title">浼犻€侀棬棰勮</h2>
           </div>
           <span
             class="portal-rotate-badge"
@@ -26,14 +26,14 @@
               :disabled="isSending"
               @click="handleSend"
             >
-              {{ isSending ? "发送中..." : "发送到设备" }}
+              {{ isSending ? "鍙戦€佷腑..." : "鍙戦€佸埌璁惧" }}
             </button>
           </div>
           <span
             class="glx-chip"
             :class="isDeviceConnected ? 'glx-chip--green' : 'glx-chip--yellow'"
           >
-            {{ isDeviceConnected ? "已连接" : "未连接" }}
+            {{ isDeviceConnected ? "宸茶繛鎺? : "鏈繛鎺? }}
           </span>
         </div>
 
@@ -68,24 +68,24 @@
 
         <div class="portal-summary-grid">
           <article class="portal-summary-card">
-            <span class="portal-summary-card__label">主题颜色</span>
+            <span class="portal-summary-card__label">涓婚棰滆壊</span>
             <strong class="portal-summary-card__value">{{ selectedColorLabel }}</strong>
             <span class="portal-summary-card__meta">{{ config.preset }}</span>
           </article>
           <article class="portal-summary-card">
-            <span class="portal-summary-card__label">传送门大小</span>
+            <span class="portal-summary-card__label">浼犻€侀棬澶у皬</span>
             <strong class="portal-summary-card__value">{{ selectedSizeLabel }}</strong>
             <span class="portal-summary-card__meta">{{ config.portalX }}, {{ config.portalY }}</span>
           </article>
           <article class="portal-summary-card">
-            <span class="portal-summary-card__label">时间显示</span>
+            <span class="portal-summary-card__label">鏃堕棿鏄剧ず</span>
             <strong class="portal-summary-card__value">
-              {{ clockConfig.time.show ? "已开启" : "已关闭" }}
+              {{ clockConfig.time.show ? "宸插紑鍚? : "宸插叧闂? }}
             </strong>
-            <span class="portal-summary-card__meta">{{ clockConfig.showSeconds ? "显示秒钟" : "隐藏秒钟" }}</span>
+            <span class="portal-summary-card__meta">{{ clockConfig.showSeconds ? "鏄剧ず绉掗挓" : "闅愯棌绉掗挓" }}</span>
           </article>
           <article class="portal-summary-card portal-summary-card--rotate">
-            <span class="portal-summary-card__label">随机轮播</span>
+            <span class="portal-summary-card__label">闅忔満杞挱</span>
             <strong class="portal-summary-card__value">{{ autoRotateStatusText }}</strong>
             <span class="portal-summary-card__meta">{{ autoRotateIntervalLabel }}</span>
           </article>
@@ -95,8 +95,8 @@
       <div class="portal-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">模式配置</h2>
-            <span class="glx-section-meta">传送门 / 时间</span>
+            <h2 class="glx-section-title">妯″紡閰嶇疆</h2>
+            <span class="glx-section-meta">浼犻€侀棬 / 鏃堕棿</span>
           </div>
           <DeviceModeTabs v-model="currentTab" :items="tabItems" />
         </article>
@@ -104,8 +104,8 @@
         <template v-if="currentTab === 0">
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">传送门颜色</h2>
-              <span class="glx-section-meta">{{ colorOptions.length }} 个预设</span>
+              <h2 class="glx-section-title">浼犻€侀棬棰滆壊</h2>
+              <span class="glx-section-meta">{{ colorOptions.length }} 涓璁?</span>
             </div>
 
             <div class="portal-option-grid">
@@ -121,35 +121,37 @@
               </button>
             </div>
             <span class="portal-rotate-note">
-              {{ config.autoRotate.enabled ? `当前按 ${autoRotateIntervalLabel} 随机切换三种颜色` : "当前固定显示手动选择的颜色" }}
+              {{ config.autoRotate.enabled ? `褰撳墠鎸?${autoRotateIntervalLabel} 闅忔満鍒囨崲涓夌棰滆壊` : "褰撳墠鍥哄畾鏄剧ず鎵嬪姩閫夋嫨鐨勯鑹?"" }}"
             </span>
           </article>
 
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">参数</h2>
-              <span class="glx-section-meta">位置 / 大小</span>
+              <h2 class="glx-section-title">鍙傛暟</h2>
+              <span class="glx-section-meta">浣嶇疆 / 澶у皬</span>
             </div>
 
             <div class="portal-setting-row">
-              <span class="portal-setting-row__label">水平位置 {{ config.portalX }}</span>
-              <GlxStepper
-                :value="config.portalX"
+              <span class="portal-setting-row__label">姘村钩浣嶇疆 {{ config.portalX }}</span>
+              <DeviceModeStepper
+                :model-value="config.portalX"
                 :min="0"
                 :max="63"
                 :step="1"
-                @change="handlePortalXChange"
+                :disabled="isSending"
+                @update:modelValue="handlePortalXChange"
               />
             </div>
 
             <div class="portal-setting-row">
-              <span class="portal-setting-row__label">垂直位置 {{ config.portalY }}</span>
-              <GlxStepper
-                :value="config.portalY"
+              <span class="portal-setting-row__label">鍨傜洿浣嶇疆 {{ config.portalY }}</span>
+              <DeviceModeStepper
+                :model-value="config.portalY"
                 :min="0"
                 :max="63"
                 :step="1"
-                @change="handlePortalYChange"
+                :disabled="isSending"
+                @update:modelValue="handlePortalYChange"
               />
             </div>
 
@@ -159,11 +161,11 @@
               :disabled="isSending"
               @click="handlePortalCenter"
             >
-              快速居中
+              蹇€熷眳涓?
             </button>
 
             <!-- <div class="portal-block">
-              <span class="portal-block__label">传送门大小</span>
+              <span class="portal-block__label">浼犻€侀棬澶у皬</span>
               <div class="portal-option-grid">
                 <button
                   v-for="option in sizeOptions"
@@ -180,7 +182,7 @@
 
             <div class="portal-block portal-rotate-panel">
               <div class="portal-rotate-panel__head">
-                <span class="portal-block__label">随机轮播</span>
+                <span class="portal-block__label">闅忔満杞挱</span>
                 <span
                   class="portal-rotate-badge"
                   :class="config.autoRotate.enabled ? 'portal-rotate-badge--on' : 'portal-rotate-badge--off'"
@@ -193,7 +195,7 @@
                   :class="{ 'is-active': config.autoRotate.enabled }"
                   @click="setAutoRotateEnabled(true)"
                 >
-                  <strong>开启</strong>
+                  <strong>寮€鍚?</strong>
                 </button>
                 <button
                   type="button"
@@ -201,7 +203,7 @@
                   :class="{ 'is-active': !config.autoRotate.enabled }"
                   @click="setAutoRotateEnabled(false)"
                 >
-                  <strong>关闭</strong>
+                  <strong>鍏抽棴</strong>
                 </button>
               </div>
               <div class="portal-option-grid portal-option-grid--intervals">
@@ -226,7 +228,7 @@
         >
           <ClockTextSettingsCard
             icon-name="time"
-            title="时间显示"
+            title="鏃堕棿鏄剧ず"
             :section="clockConfig.time"
             :preset-colors="timeColorOptions"
             :show-font-size="true"
@@ -276,16 +278,17 @@
 </template>
 
 <script>
+import { getStorage, setStorage, createDomQuery } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
 import Toast from "@/components/uni/Toast.vue";
 import GlxInlineLoader from "@/components/uni/GlxInlineLoader.vue";
 import PixelPreviewBoard from "@/components/uni/PixelPreviewBoard.vue";
-import GlxStepper from "@/components/uni/GlxStepper.vue";
 import ClockFontPanel from "@/components/uni/clock-editor/ClockFontPanel.vue";
 import ClockTextSettingsCard from "@/components/uni/clock-editor/ClockTextSettingsCard.vue";
 import PcModeTopbar from "@/components/device/modes/PcModeTopbar.vue";
 import DeviceModeTabs from "@/components/device/modes/DeviceModeTabs.vue";
+import DeviceModeStepper from "@/components/device/modes/DeviceModeStepper.vue";
 import { useDeviceStore } from "@/stores/device.js";
 import { useToast } from "@/composables/useToast.js";
 import {
@@ -317,7 +320,7 @@ const PORTAL_TIME_FONT_IDS = new Set(
 );
 const PORTAL_PRESET_IDS = new Set(PORTAL_COLOR_OPTIONS.map((item) => item.id));
 const PORTAL_SIZE_IDS = new Set(PORTAL_SIZE_OPTIONS.map((item) => item.id));
-// 传送门固定 60 秒生命周期(打开 → 旋涡 → 关闭),与板载渲染对齐
+// 浼犻€侀棬鍥哄畾 60 绉掔敓鍛藉懆鏈?鎵撳紑 鈫?鏃嬫丁 鈫?鍏抽棴),涓庢澘杞芥覆鏌撳榻?
 const PORTAL_CYCLE_DURATION_MS = 60000;
 const PORTAL_PREVIEW_FRAME_COUNT = 48;
 
@@ -327,11 +330,11 @@ export default {
     Toast,
     GlxInlineLoader,
     PixelPreviewBoard,
-    GlxStepper,
     ClockFontPanel,
     ClockTextSettingsCard,
     PcModeTopbar,
     DeviceModeTabs,
+    DeviceModeStepper,
   },
   data() {
     const config = createDefaultPortalPreviewConfig();
@@ -357,9 +360,9 @@ export default {
       timeColorOptions: PORTAL_TIME_COLOR_OPTIONS,
       currentTab: 0,
       tabItems: [
-        { value: 0, label: "传送门" },
-        // { value: 1, label: "时间" },
-        // { value: 2, label: "字体" },
+        { value: 0, label: "浼犻€侀棬" },
+        // { value: 1, label: "鏃堕棿" },
+        // { value: 2, label: "瀛椾綋" },
       ],
       config,
     };
@@ -392,7 +395,7 @@ export default {
       return matched ? matched.label : "--";
     },
     autoRotateStatusText() {
-      return this.config.autoRotate.enabled ? "轮播已开启" : "轮播已关闭";
+      return this.config.autoRotate.enabled ? "杞挱宸插紑鍚? : "杞挱宸插叧闂?;
     },
     autoRotateIntervalLabel() {
       const matched = this.rotateIntervalOptions.find(
@@ -420,7 +423,7 @@ export default {
     this.deviceStore.init();
     this.toast = useToast();
     const savedState = normalizePortalPageState(
-      uni.getStorageSync(PORTAL_PAGE_STORAGE_KEY),
+      getStorage(PORTAL_PAGE_STORAGE_KEY),
     );
     this.config = savedState.config;
     this.clockConfig = savedState.clockConfig;
@@ -460,7 +463,7 @@ export default {
       deviceSendUxMixin.methods.endSendUi.call(this);
     },
     persistLocalState() {
-      uni.setStorageSync(PORTAL_PAGE_STORAGE_KEY, {
+      setStorage(PORTAL_PAGE_STORAGE_KEY, {
         config: {
           preset: this.config.preset,
           size: this.config.size,
@@ -640,7 +643,7 @@ export default {
         await this.deviceStore.rollbackBusinessMode(previousMode, {
           expectedMode: "rick_morty_portal",
         });
-        console.error("发送传送门失败:", error);
+        console.error("鍙戦€佷紶閫侀棬澶辫触:", error);
         this.showSendFailure(error);
       } finally {
         this.endSendUi();
@@ -649,7 +652,7 @@ export default {
     initPreviewCanvas() {
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query
             .select(".preview-canvas-container")
             .boundingClientRect((data) => {
@@ -800,8 +803,8 @@ export default {
       this.config.autoRotate.interval = interval;
       this.schedulePreviewRefresh(progress);
     },
-    handlePortalXChange(event) {
-      const nextValue = Number(event && event.detail && event.detail.value);
+    handlePortalXChange(value) {
+      const nextValue = Number(value);
       if (!Number.isFinite(nextValue)) {
         return;
       }
@@ -813,8 +816,8 @@ export default {
       this.config.portalX = portalX;
       this.schedulePreviewRefresh(progress);
     },
-    handlePortalYChange(event) {
-      const nextValue = Number(event && event.detail && event.detail.value);
+    handlePortalYChange(value) {
+      const nextValue = Number(value);
       if (!Number.isFinite(nextValue)) {
         return;
       }

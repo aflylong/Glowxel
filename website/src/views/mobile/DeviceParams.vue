@@ -1,4 +1,4 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/device-params/device-params.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/device-params/device-params.vue -->
 <template>
   <div
     class="device-params-page glx-device-shell glx-device-shell--desktop-stack glx-page-shell"
@@ -9,7 +9,7 @@
       <div class="nav-left" @click="goBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
-      <span class="nav-title glx-topbar__title">设备参数</span>
+      <span class="nav-title glx-topbar__title">璁惧鍙傛暟</span>
     </div>
 
     <div data-scroll-view
@@ -18,61 +18,54 @@
     >
       <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
-          <span class="section-title glx-section-title">特殊LED</span>
-          <span class="section-meta">旋转、色彩、反转相位</span>
+          <span class="section-title glx-section-title">鐗规畩LED</span>
+          <span class="section-meta">鏃嬭浆銆佽壊褰┿€佸弽杞浉浣?</span>
         </div>
         <div class="panel-card glx-panel-card">
           <div class="param-card">
             <div class="param-row">
               <div class="param-copy">
-                <span class="param-label">旋转</span>
-                <span class="param-desc">画面侧着时在这里切换</span>
+                <span class="param-label">鏃嬭浆</span>
+                <span class="param-desc">鐢婚潰渚х潃鏃跺湪杩欓噷鍒囨崲</span>
               </div>
               <select
                 class="param-picker-field"
                 :value="String(params.displayRotation)"
                 @change="handleRotationChange"
               >
-                <option
-                  v-for="option in ROTATION_OPTIONS"
-                  :key="option.value"
-                  :value="String(option.value)"
-                >
-                  {{ option.label }}
-                </option>
+                <option value="0">0掳</option>
+                <option value="1">90掳</option>
+                <option value="2">180掳</option>
+                <option value="3">270掳</option>
               </select>
             </div>
             <div class="param-row">
               <div class="param-copy">
-                <span class="param-label">色彩</span>
-                <span class="param-desc">颜色不对时在这里切换</span>
+                <span class="param-label">鑹插僵</span>
+                <span class="param-desc">棰滆壊涓嶅鏃跺湪杩欓噷鍒囨崲</span>
               </div>
               <select
                 class="param-picker-field"
-                :value="String(colorOrderIndex)"
+                :value="colorOrderValue"
                 @change="handleColorOrderChange"
               >
-                <option
-                  v-for="(option, index) in COLOR_ORDER_OPTIONS"
-                  :key="option.label"
-                  :value="String(index)"
-                >
-                  {{ option.label }}
-                </option>
+                <option value="RGB">RGB</option>
+                <option value="RBG">RBG</option>
+                <option value="GBR">GBR</option>
               </select>
             </div>
             <div class="param-row">
               <div class="param-copy">
-                <span class="param-label">反转相位</span>
-                <span class="param-desc">残影、分裂、左右错位时切换</span>
+                <span class="param-label">鍙嶈浆鐩镐綅</span>
+                <span class="param-desc">娈嬪奖銆佸垎瑁傘€佸乏鍙抽敊浣嶆椂鍒囨崲</span>
               </div>
               <select
                 class="param-picker-field"
-                :value="params.clkphase ? '1' : '0'"
+                :value="params.clkphase ? '寮€鍚? : '鍏抽棴'"
                 @change="handleClkphaseChange"
               >
-                <option value="0">关闭</option>
-                <option value="1">开启</option>
+                <option value="鍏抽棴">鍏抽棴</option>
+                <option value="寮€鍚?">寮€鍚?/option>"
               </select>
             </div>
           </div>
@@ -81,84 +74,66 @@
 
       <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
-          <span class="section-title glx-section-title">日夜亮度</span>
-          <span class="section-meta">按设备当前值回显</span>
+          <span class="section-title glx-section-title">鏃ュ浜害</span>
+          <span class="section-meta">鎸夎澶囧綋鍓嶅€煎洖鏄?</span>
         </div>
         <div class="panel-card glx-panel-card">
           <div class="param-card">
             <div class="param-stack compact-gap">
-              <span class="param-label">当前亮度</span>
-              <span class="param-desc">设备常规显示亮度，范围 0-178</span>
-              <div class="slider-inline-head">
-                <span class="slider-inline-value">{{ brightness }}</span>
-              </div>
-              <GlxSlider
+              <span class="param-label">褰撳墠浜害</span>
+              <span class="param-desc">璁惧甯歌鏄剧ず浜害锛岃寖鍥?0-178</span>
+              <input
+                class="number-input"
+                type="number"
                 :value="brightness"
-                :min="0"
-                :max="178"
-                :step="1"
-                @change="handleBrightnessChange"
+                @input="handleBrightnessChange"
               />
             </div>
             <div class="param-stack">
-              <span class="param-label">日间亮度</span>
-              <span class="param-desc">白天自动亮度，范围 0-178</span>
-              <div class="slider-inline-head">
-                <span class="slider-inline-value">{{ brightnessDay }}</span>
-              </div>
-              <GlxSlider
+              <span class="param-label">鏃ラ棿浜害</span>
+              <span class="param-desc">鐧藉ぉ鑷姩浜害锛岃寖鍥?0-178</span>
+              <input
+                class="number-input"
+                type="number"
                 :value="brightnessDay"
-                :min="0"
-                :max="178"
-                :step="1"
-                @change="handleBrightnessDayChange"
-              />
+                @input="handleBrightnessDayChange"
+              />  
             </div>
             <div class="param-stack">
-              <span class="param-label">夜间亮度</span>
-              <span class="param-desc">夜间自动亮度，范围 0-178</span>
-              <div class="slider-inline-head">
-                <span class="slider-inline-value">{{ brightnessNight }}</span>
-              </div>
-              <GlxSlider
+              <span class="param-label">澶滈棿浜害</span>
+              <span class="param-desc">澶滈棿鑷姩浜害锛岃寖鍥?0-178</span>
+              <input
+                class="number-input"
+                type="number"
                 :value="brightnessNight"
-                :min="0"
-                :max="178"
-                :step="1"
-                @change="handleBrightnessNightChange"
+                @input="handleBrightnessNightChange"
               />
             </div>
             <div class="param-row">
               <div class="param-copy">
-                <span class="param-label">夜间开始时间</span>
-                <span class="param-desc">夜间开始时间</span>
+                <span class="param-label">澶滈棿寮€濮嬫椂闂?</span>
+                <span class="param-desc">澶滈棿寮€濮嬫椂闂?</span>
               </div>
-              <picker
-                class="param-picker param-picker-wide"
-                mode="time"
+              <input
+                type="time"
                 :value="params.nightStart"
-                @change="handleNightStartChange"
-              >
-                <div class="param-picker-text">{{ params.nightStart }}</div>
-              </picker>
+                @input="handleNightStartInput"
+              />
             </div>
             <div class="param-row">
               <div class="param-copy">
-                <span class="param-label">夜间结束时间</span>
-                <span class="param-desc">夜间结束时间</span>
+                <span class="param-label">澶滈棿缁撴潫鏃堕棿</span>
+                <span class="param-desc">澶滈棿缁撴潫鏃堕棿</span>
               </div>
-              <picker
-                class="param-picker param-picker-wide"
-                mode="time"
+              <input
+                type="time"
                 :value="params.nightEnd"
-                @change="handleNightEndChange"
-              >
-                <div class="param-picker-text">{{ params.nightEnd }}</div>
-              </picker>
+                @input="handleNightEndInput"
+              />
             </div>
             <div class="param-tip-box">
               <span class="param-tip-text"
-                >只有当日间亮度和夜间亮度设置成不同数值时，设备才会按时间自动切换。</span>
+                >鍙湁褰撴棩闂翠寒搴﹀拰澶滈棿浜害璁剧疆鎴愪笉鍚屾暟鍊兼椂锛岃澶囨墠浼氭寜鏃堕棿鑷姩鍒囨崲銆?</span>
             </div>
           </div>
         </div>
@@ -166,15 +141,15 @@
 
       <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
-          <span class="section-title glx-section-title">驱动参数</span>
-          <span class="section-meta">面板驱动相关配置</span>
+          <span class="section-title glx-section-title">椹卞姩鍙傛暟</span>
+          <span class="section-meta">闈㈡澘椹卞姩鐩稿叧閰嶇疆</span>
         </div>
         <div class="panel-card glx-panel-card">
           <div class="param-card">
             <div class="param-row">
               <div class="param-copy">
-                <span class="param-label">驱动芯片</span>
-                <span class="param-desc">按设备当前 driver 参数回显</span>
+                <span class="param-label">椹卞姩鑺墖</span>
+                <span class="param-desc">鎸夎澶囧綋鍓?driver 鍙傛暟鍥炴樉</span>
               </div>
               <picker
                 class="param-picker param-picker-wide"
@@ -190,8 +165,8 @@
             </div>
             <div class="param-row">
               <div class="param-copy">
-                <span class="param-label">I2S 速度</span>
-                <span class="param-desc">按设备当前 i2cSpeed 参数回显</span>
+                <span class="param-label">I2S 閫熷害</span>
+                <span class="param-desc">鎸夎澶囧綋鍓?i2cSpeed 鍙傛暟鍥炴樉</span>
               </div>
               <picker
                 class="param-picker param-picker-wide"
@@ -207,8 +182,8 @@
             </div>
             <div class="param-row">
               <div class="param-copy">
-                <span class="param-label">E 引脚</span>
-                <span class="param-desc">按设备当前 E_pin 参数回显</span>
+                <span class="param-label">E 寮曡剼</span>
+                <span class="param-desc">鎸夎澶囧綋鍓?E_pin 鍙傛暟鍥炴樉</span>
               </div>
               <input
                 class="number-input"
@@ -223,15 +198,15 @@
 
       <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
-          <span class="section-title glx-section-title">网络参数</span>
-          <span class="section-meta">国内优先 NTP</span>
+          <span class="section-title glx-section-title">缃戠粶鍙傛暟</span>
+          <span class="section-meta">鍥藉唴浼樺厛 NTP</span>
         </div>
         <div class="panel-card glx-panel-card">
           <div class="param-card">
             <div class="param-row">
               <div class="param-copy">
-                <span class="param-label">时间服务器预设</span>
-                <span class="param-desc">默认优先国内可用地址</span>
+                <span class="param-label">鏃堕棿鏈嶅姟鍣ㄩ璁?</span>
+                <span class="param-desc">榛樿浼樺厛鍥藉唴鍙敤鍦板潃</span>
               </div>
               <picker
                 class="param-picker param-picker-wide"
@@ -246,16 +221,16 @@
               </picker>
             </div>
             <div class="param-stack">
-              <span class="param-label">自定义时间服务器</span>
+              <span class="param-label">鑷畾涔夋椂闂存湇鍔″櫒</span>
               <span class="param-desc"
-                >如果默认地址慢或不可用，可以手动填写</span>
+                >濡傛灉榛樿鍦板潃鎱㈡垨涓嶅彲鐢紝鍙互鎵嬪姩濉啓</span>
               <input
                 class="text-input"
                 type="text"
                 :value="params.ntpServer"
                 @input="handleNtpServerInput"
                 maxlength="63"
-                placeholder="例如 ntp2.aliyun.com"
+                placeholder="渚嬪 ntp2.aliyun.com"
               />
             </div>
           </div>
@@ -264,15 +239,15 @@
 
       <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
-          <span class="section-title glx-section-title">设备信息</span>
-          <span class="section-meta">只读</span>
+          <span class="section-title glx-section-title">璁惧淇℃伅</span>
+          <span class="section-meta">鍙</span>
         </div>
         <div class="panel-card glx-panel-card">
           <div class="param-card">
             <div class="param-row">
               <div class="param-copy">
-                <span class="param-label">固件版本</span>
-                <span class="param-desc">当前固件版本</span>
+                <span class="param-label">鍥轰欢鐗堟湰</span>
+                <span class="param-desc">褰撳墠鍥轰欢鐗堟湰</span>
               </div>
               <span class="readonly-value value-box">{{
                 info.firmwareVersion.length > 0 ? info.firmwareVersion : "--"
@@ -280,8 +255,8 @@
             </div>
             <div class="param-row">
               <div class="param-copy">
-                <span class="param-label">运行时长</span>
-                <span class="param-desc">设备已运行时长</span>
+                <span class="param-label">杩愯鏃堕暱</span>
+                <span class="param-desc">璁惧宸茶繍琛屾椂闀?</span>
               </div>
               <span class="readonly-value value-box">{{
                 formattedUptime
@@ -289,11 +264,11 @@
             </div>
             <div class="param-row">
               <div class="param-copy">
-                <span class="param-label">当前 WiFi</span>
-                <span class="param-desc">当前已连接 WiFi</span>
+                <span class="param-label">褰撳墠 WiFi</span>
+                <span class="param-desc">褰撳墠宸茶繛鎺?WiFi</span>
               </div>
               <span class="readonly-value value-box">{{
-                info.wifiSsid.length > 0 ? info.wifiSsid : "未连接"
+                info.wifiSsid.length > 0 ? info.wifiSsid : "鏈繛鎺?"
               }}</span>
             </div>
           </div>
@@ -302,8 +277,8 @@
 
       <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
-          <span class="section-title glx-section-title">应用操作</span>
-          <span class="section-meta">逐项下发到设备</span>
+          <span class="section-title glx-section-title">搴旂敤鎿嶄綔</span>
+          <span class="section-meta">閫愰」涓嬪彂鍒拌澶?</span>
         </div>
         <div class="panel-card glx-panel-card">
           <div class="panel-action" @click="saveDeviceParams">
@@ -311,9 +286,9 @@
               <Icon name="success" :size="32" color="var(--nb-ink)" />
             </div>
             <div class="panel-action-text">
-              <span class="panel-action-label">保存并应用</span>
+              <span class="panel-action-label">淇濆瓨骞跺簲鐢?</span>
               <span class="panel-action-desc"
-                >把当前参数写入设备并立即生效</span>
+                >鎶婂綋鍓嶅弬鏁板啓鍏ヨ澶囧苟绔嬪嵆鐢熸晥</span>
             </div>
             <Icon name="direction-right" :size="28" color="var(--nb-ink)" />
           </div>
@@ -323,8 +298,8 @@
               <Icon name="refresh" :size="32" color="var(--nb-ink)" />
             </div>
             <div class="panel-action-text">
-              <span class="panel-action-label">重新读取</span>
-              <span class="panel-action-desc">从设备拉取当前实际参数</span>
+              <span class="panel-action-label">閲嶆柊璇诲彇</span>
+              <span class="panel-action-desc">浠庤澶囨媺鍙栧綋鍓嶅疄闄呭弬鏁?</span>
             </div>
             <Icon name="direction-right" :size="28" color="var(--nb-ink)" />
           </div>
@@ -333,8 +308,8 @@
 
       <div class="section-block glx-device-shell__section">
         <div class="section-header glx-section-head">
-          <span class="section-title glx-section-title">高级</span>
-          <span class="section-meta">危险操作请谨慎</span>
+          <span class="section-title glx-section-title">楂樼骇</span>
+          <span class="section-meta">鍗遍櫓鎿嶄綔璇疯皑鎱?</span>
         </div>
         <div class="panel-card glx-panel-card">
           <div class="panel-action danger" @click="handleResetWifi">
@@ -342,9 +317,9 @@
               <Icon name="close" :size="32" color="var(--nb-ink)" />
             </div>
             <div class="panel-action-text">
-              <span class="panel-action-label danger-text">重置网络</span>
+              <span class="panel-action-label danger-text">閲嶇疆缃戠粶</span>
               <span class="panel-action-desc"
-                >清除 WiFi 配置并自动重启设备</span>
+                >娓呴櫎 WiFi 閰嶇疆骞惰嚜鍔ㄩ噸鍚澶?</span>
             </div>
             <Icon name="direction-right" :size="28" color="var(--nb-ink)" />
           </div>
@@ -361,6 +336,7 @@
 </template>
 
 <script>
+import { getStorage, navigateBack, httpRequest } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import { useDeviceStore } from "@/stores/device.js";
 import { useToast } from "@/composables/useToast.js";
@@ -389,10 +365,10 @@ const SPEED_OPTIONS = [
 ];
 
 const ROTATION_OPTIONS = [
-  { label: "0°", value: 0 },
-  { label: "90°", value: 1 },
-  { label: "180°", value: 2 },
-  { label: "270°", value: 3 },
+  { label: "0掳", value: 0 },
+  { label: "90掳", value: 1 },
+  { label: "180掳", value: 2 },
+  { label: "270掳", value: 3 },
 ];
 
 const COLOR_ORDER_OPTIONS = [
@@ -402,11 +378,11 @@ const COLOR_ORDER_OPTIONS = [
 ];
 
 const NTP_PRESET_OPTIONS = [
-  { label: "阿里云 2", value: "ntp2.aliyun.com" },
-  { label: "阿里云", value: "ntp.aliyun.com" },
-  { label: "腾讯云", value: "ntp.tencent.com" },
-  { label: "国家授时中心", value: "ntp.ntsc.ac.cn" },
-  { label: "自定义", value: "__custom__" },
+  { label: "闃块噷浜?2", value: "ntp2.aliyun.com" },
+  { label: "闃块噷浜?", value: "ntp.aliyun.com"" },"
+  { label: "鑵捐浜?", value: "ntp.tencent.com"" },"
+  { label: "鍥藉鎺堟椂涓績", value: "ntp.ntsc.ac.cn" },
+  { label: "鑷畾涔?", value: "__custom__"" },"
 ];
 
 const UI_BRIGHTNESS_MAX = 178;
@@ -513,6 +489,12 @@ export default {
         );
       });
     },
+    colorOrderValue() {
+      if (this.colorOrderIndex < 0) {
+        return "";
+      }
+      return COLOR_ORDER_OPTIONS[this.colorOrderIndex].label;
+    },
     ntpPresetLabels() {
       return NTP_PRESET_OPTIONS.map((item) => item.label);
     },
@@ -534,12 +516,12 @@ export default {
       const hours = Math.floor((totalSeconds % 86400) / 3600);
       const minutes = Math.floor((totalSeconds % 3600) / 60);
       if (days > 0) {
-        return `${days}天 ${hours}小时 ${minutes}分`;
+        return `${days}澶?${hours}灏忔椂 ${minutes}鍒哷;
       }
       if (hours > 0) {
-        return `${hours}小时 ${minutes}分`;
+        return `${hours}灏忔椂 ${minutes}鍒哷;
       }
-      return `${minutes}分`;
+      return `${minutes}鍒哷;
     },
   },
   watch: {
@@ -560,7 +542,7 @@ export default {
     this.dialog = useDialog();
     this.deviceStore.init();
 
-    const savedIp = uni.getStorageSync("device_ip");
+    const savedIp = getStorage("device_ip");
     if (typeof savedIp === "string") {
       this.deviceIp = savedIp;
     }
@@ -591,7 +573,7 @@ export default {
   },
   methods: {
     goBack() {
-      uni.navigateBack();
+      navigateBack();
     },
     ensureConnectedOrLeave() {
       if (this.isDeviceConnected) {
@@ -609,17 +591,6 @@ export default {
       this.saving = false;
       this.waitingForSaveSettle = false;
       this.toast.hideLoading();
-      setTimeout(() => {
-        const pages = getCurrentPages();
-        if (pages.length > 1) {
-          uni.navigateBack();
-          return;
-        }
-        // 兼容 tabBar 隐藏后的"设备-only"启动模式，用 reLaunch 而不是 switchTab
-        uni.reLaunch({
-          url: "/pages/control/control",
-        });
-      }, 0);
     },
     clearSaveTimers() {
       if (this.saveFinalizeTimer != null) {
@@ -640,10 +611,10 @@ export default {
       this.clearSaveTimers();
       this.saving = false;
       this.toast.hideLoading();
-      this.toast.showSuccess("设备参数已应用");
+      this.toast.showSuccess("璁惧鍙傛暟宸插簲鐢?")";"
       this.saveNavigateTimer = setTimeout(() => {
         this.saveNavigateTimer = null;
-        uni.navigateBack();
+        navigateBack();
       }, 260);
     },
     scheduleSaveFallback() {
@@ -655,13 +626,13 @@ export default {
     },
     getBaseUrl() {
       if (this.deviceIp.length === 0) {
-        throw new Error("请先连接设备");
+        throw new Error("璇峰厛杩炴帴璁惧");
       }
       return `http://${this.deviceIp}`;
     },
     requestDevice(options) {
       return new Promise((resolve, reject) => {
-        uni.request({
+        httpRequest({
           ...options,
           success: (res) => {
             if (
@@ -672,7 +643,7 @@ export default {
               resolve(res);
               return;
             }
-            reject(new Error("设备请求失败"));
+            reject(new Error("璁惧璇锋眰澶辫触"));
           },
           fail: (err) => {
             reject(err);
@@ -710,7 +681,7 @@ export default {
       try {
         this.loadingParams = true;
         if (showLoading) {
-          this.toast.showLoading("读取设备参数...");
+          this.toast.showLoading("璇诲彇璁惧鍙傛暟...");
         }
         const baseUrl = this.getBaseUrl();
         const response = await this.requestDevice({
@@ -771,9 +742,9 @@ export default {
           wifiSsid,
         };
       } catch (err) {
-        console.error("加载设备参数失败:", err);
+        console.error("鍔犺浇璁惧鍙傛暟澶辫触:", err);
         if (showLoading) {
-          this.toast.showError("读取设备参数失败");
+          this.toast.showError("璇诲彇璁惧鍙傛暟澶辫触");
         }
       } finally {
         this.loadingParams = false;
@@ -783,25 +754,29 @@ export default {
       }
     },
     handleBrightnessChange(e) {
-      this.brightness = this.clampBrightnessValue(e.detail.value);
+      this.brightness = this.clampBrightnessValue(e.target.value);
     },
     handleBrightnessDayChange(e) {
-      this.brightnessDay = this.clampBrightnessValue(e.detail.value);
+      this.brightnessDay = this.clampBrightnessValue(e.target.value);
     },
     handleBrightnessNightChange(e) {
-      this.brightnessNight = this.clampBrightnessValue(e.detail.value);
+      this.brightnessNight = this.clampBrightnessValue(e.target.value);
     },
     handleRotationChange(event) {
       this.params.displayRotation = Number(event.target.value);
     },
     handleColorOrderChange(event) {
-      const index = Number(event.target.value);
-      const option = COLOR_ORDER_OPTIONS[index];
+      const option = COLOR_ORDER_OPTIONS.find(
+        (item) => item.label === event.target.value,
+      );
+      if (!option) {
+        return;
+      }
       this.params.swapBlueGreen = option.swapBlueGreen;
       this.params.swapBlueRed = option.swapBlueRed;
     },
     handleClkphaseChange(event) {
-      this.params.clkphase = event.target.value === "1";
+      this.params.clkphase = event.target.value === "寮€鍚?";"
     },
     handleDriverChange(e) {
       const index = Number(e.detail.value);
@@ -827,6 +802,12 @@ export default {
     },
     handleNightEndChange(event) {
       this.params.nightEnd = String(event.detail.value);
+    },
+    handleNightStartInput(event) {
+      this.params.nightStart = String(event.target.value);
+    },
+    handleNightEndInput(event) {
+      this.params.nightEnd = String(event.target.value);
     },
     handleNtpPresetChange(e) {
       const index = Number(e.detail.value);
@@ -869,11 +850,11 @@ export default {
         this.params.E_pin < 0 ||
         this.params.E_pin > 32
       ) {
-        this.toast.showError("E_pin 必须是 0 到 32 之间的整数");
+        this.toast.showError("E_pin 蹇呴』鏄?0 鍒?32 涔嬮棿鐨勬暣鏁?")";"
         return;
       }
       if (this.params.ntpServer.length === 0) {
-        this.toast.showError("ntpServer 不能为空");
+        this.toast.showError("ntpServer 涓嶈兘涓虹┖");
         return;
       }
 
@@ -961,12 +942,12 @@ export default {
         }
 
         if (updates.length === 0) {
-          this.toast.showInfo("参数没有变化");
+          this.toast.showInfo("鍙傛暟娌℃湁鍙樺寲");
           this.saving = false;
           return;
         }
 
-        this.toast.showLoading("应用中...");
+        this.toast.showLoading("搴旂敤涓?..");
         for (let i = 0; i < updates.length; i += 1) {
           await updates[i]();
         }
@@ -982,8 +963,8 @@ export default {
           this.finishSaveAndLeave();
           return;
         }
-        console.error("保存设备参数失败:", err);
-        this.toast.showError("保存失败，请检查设备连接");
+        console.error("淇濆瓨璁惧鍙傛暟澶辫触:", err);
+        this.toast.showError("淇濆瓨澶辫触锛岃妫€鏌ヨ澶囪繛鎺?")";"
       } finally {
         if (!this.saveSettled) {
           this.saving = false;
@@ -995,13 +976,13 @@ export default {
     },
     async handleResetWifi() {
       if (this.deviceIp.length === 0) {
-        this.toast.showError("请先连接设备");
+        this.toast.showError("璇峰厛杩炴帴璁惧");
         return;
       }
 
       const confirmed = await this.dialog.confirm({
-        title: "重置网络",
-        content: "将清除当前 WiFi 配置并重启设备，是否继续？",
+        title: "閲嶇疆缃戠粶",
+        content: "灏嗘竻闄ゅ綋鍓?WiFi 閰嶇疆骞堕噸鍚澶囷紝鏄惁缁х画锛?,"
         danger: true,
       });
 
@@ -1015,10 +996,10 @@ export default {
           url: `${baseUrl}/clear-wifi`,
           method: "GET",
         });
-        this.toast.showSuccess("设备已开始重置网络");
+        this.toast.showSuccess("璁惧宸插紑濮嬮噸缃綉缁?")";"
       } catch (err) {
-        console.error("重置网络失败:", err);
-        this.toast.showError("重置网络失败");
+        console.error("閲嶇疆缃戠粶澶辫触:", err);
+        this.toast.showError("閲嶇疆缃戠粶澶辫触");
       }
     },
   },

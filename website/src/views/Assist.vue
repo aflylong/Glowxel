@@ -1,43 +1,42 @@
-<template>
+﻿<template>
   <div class="glx-page-shell">
     <section class="glx-page-shell__hero">
       <span class="glx-page-shell__eyebrow">Assist</span>
-      <h1 class="glx-page-shell__title">辅助处理</h1>
+      <h1 class="glx-page-shell__title">杈呭姪澶勭悊</h1>
       <p class="glx-page-shell__desc">
-        这页继续承接分行辅助和颜色辅助，不再直接把整条创作辅助链删掉。
-      </p>
+        杩欓〉缁х画鎵挎帴鍒嗚杈呭姪鍜岄鑹茶緟鍔╋紝涓嶅啀鐩存帴鎶婃暣鏉″垱浣滆緟鍔╅摼鍒犳帀銆?      </p>
       <div class="glx-hero-metrics">
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">当前模式</span>
+          <span class="glx-hero-metric__label">褰撳墠妯″紡</span>
           <strong class="glx-hero-metric__value">{{ modeLabel }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">已上色像素</span>
+          <span class="glx-hero-metric__label">宸蹭笂鑹插儚绱?</span>
           <strong class="glx-hero-metric__value">{{ coloredPixelCount }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">颜色数</span>
+          <span class="glx-hero-metric__label">棰滆壊鏁?</span>
           <strong class="glx-hero-metric__value">{{ usedColors.length }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">行数</span>
+          <span class="glx-hero-metric__label">琛屾暟</span>
           <strong class="glx-hero-metric__value">{{ rowSummaries.length }}</strong>
         </article>
       </div>
       <div class="glx-inline-actions">
-        <router-link :to="`/overview/${route.params.id}`" class="glx-button glx-button--ghost">回总览</router-link>
-        <router-link :to="`/editor/${route.params.id}`" class="glx-button glx-button--ghost">继续编辑</router-link>
-        <router-link :to="`/publish-project/${route.params.id}`" class="glx-button glx-button--primary">去发布</router-link>
+        <router-link :to="`/overview/${route.params.id}`" class="glx-button glx-button--ghost">鍥炴€昏</router-link>
+        <router-link :to="`/editor/${route.params.id}`" class="glx-button glx-button--ghost">缁х画缂栬緫</router-link>
+        <router-link :to="`/publish-project/${route.params.id}`" class="glx-button glx-button--primary">鍘诲彂甯?/router-link>
       </div>
     </section>
 
     <section class="glx-section-card glx-section-card--stack">
       <div class="glx-tabs">
         <button type="button" class="glx-tab" :class="{ 'is-active': mode === 'color' }" @click="setMode('color')">
-          颜色辅助
+          棰滆壊杈呭姪
         </button>
         <button type="button" class="glx-tab" :class="{ 'is-active': mode === 'row' }" @click="setMode('row')">
-          分行辅助
+          鍒嗚杈呭姪
         </button>
       </div>
     </section>
@@ -45,7 +44,7 @@
     <section class="glx-grid glx-grid--two">
       <article class="glx-section-card glx-section-card--stack">
         <div class="glx-section-head">
-          <h2 class="glx-section-title">辅助预览</h2>
+          <h2 class="glx-section-title">杈呭姪棰勮</h2>
           <span class="glx-section-meta">{{ highlightLabel }}</span>
         </div>
         <canvas ref="previewCanvasRef" class="assist-preview"></canvas>
@@ -53,8 +52,8 @@
 
       <article class="glx-section-card glx-section-card--stack">
         <div class="glx-section-head">
-          <h2 class="glx-section-title">{{ mode === "color" ? "颜色列表" : "行列表" }}</h2>
-          <span class="glx-section-meta">{{ mode === "color" ? `${usedColors.length} 项` : `${rowSummaries.length} 行` }}</span>
+          <h2 class="glx-section-title"">{{ mode === "color" ? "棰滆壊鍒楄〃"" : "琛屽垪琛?"" }}</h2">"
+          <span class="glx-section-meta">{{ mode === "color" ? `${usedColors.length} 椤筦 : `${rowSummaries.length} 琛宍 }}</span>
         </div>
 
         <div v-if="mode === 'color'" class="glx-stack">
@@ -69,7 +68,7 @@
             <span class="assist-color-chip" :style="{ background: item.color }"></span>
             <div class="glx-list-card__copy">
               <strong class="glx-list-card__title">{{ item.color }}</strong>
-              <span class="glx-list-card__desc">{{ item.count }} 个像素</span>
+              <span class="glx-list-card__desc">{{ item.count }} 涓儚绱?</span>
             </div>
           </button>
         </div>
@@ -84,7 +83,7 @@
             @click="selectedRow = row.y"
           >
             <div class="glx-list-card__copy">
-              <strong class="glx-list-card__title">第 {{ row.y + 1 }} 行</strong>
+              <strong class="glx-list-card__title">绗?{{ row.y + 1 }} 琛?</strong>
               <span class="glx-list-card__desc">{{ row.description }}</span>
             </div>
           </button>
@@ -181,13 +180,13 @@ const rowSummaries = computed(() => {
       .sort((a, b) => b[1] - a[1])
       .forEach(([color, count]) => {
         coloredCount += count;
-        descriptionParts.push(`${color} × ${count}`);
+        descriptionParts.push(`${color} 脳 ${count}`);
       });
 
     result.push({
       y,
       coloredCount,
-      description: descriptionParts.length > 0 ? descriptionParts.join(" / ") : "当前行没有像素",
+      description: descriptionParts.length > 0 ? descriptionParts.join(" / ") : "褰撳墠琛屾病鏈夊儚绱?,"
     });
   }
 
@@ -197,18 +196,18 @@ const rowSummaries = computed(() => {
 const coloredPixelCount = computed(() => pixelEntries.value.length);
 
 const modeLabel = computed(() => {
-  return mode.value === "color" ? "颜色辅助" : "分行辅助";
+  return mode.value === "color" ? "棰滆壊杈呭姪" : "鍒嗚杈呭姪";
 });
 
 const highlightLabel = computed(() => {
   if (mode.value === "color") {
     if (selectedColor.value.length > 0) {
-      return `当前高亮 ${selectedColor.value}`;
+      return `褰撳墠楂樹寒 ${selectedColor.value}`;
     }
-    return "未选择颜色";
+    return "鏈€夋嫨棰滆壊";
   }
 
-  return `当前高亮第 ${selectedRow.value + 1} 行`;
+  return `褰撳墠楂樹寒绗?${selectedRow.value + 1} 琛宍;
 });
 
 function setMode(nextMode) {
@@ -277,7 +276,7 @@ function drawPreview() {
 async function loadProject() {
   const response = await projectStore.loadProjectDetail(route.params.id);
   if (!response.success) {
-    feedback.error("项目加载失败", "辅助处理页没有成功读取项目数据。");
+    feedback.error("椤圭洰鍔犺浇澶辫触"", "杈呭姪澶勭悊椤垫病鏈夋垚鍔熻鍙栭」鐩暟鎹€?")";"
     return;
   }
 

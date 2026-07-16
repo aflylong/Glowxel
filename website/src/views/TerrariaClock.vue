@@ -1,11 +1,11 @@
-<template>
+﻿<template>
   <div class="terraria-page glx-page-shell game-mode-page">
     <header class="glx-section-card terraria-topbar">
       <button
         type="button"
         class="terraria-topbar__back"
         @click="handleBack"
-        aria-label="返回"
+        aria-label="杩斿洖"
       >
         <Icon name="direction-left" :size="40" color="#000000" />
       </button>
@@ -33,7 +33,7 @@
             :disabled="isSending"
             @click="sendToDevice"
           >
-            {{ isSending ? "发送中..." : "发送到设备" }}
+            {{ isSending ? "鍙戦€佷腑..." : "鍙戦€佸埌璁惧" }}
           </button>
           <span
             class="glx-chip"
@@ -41,10 +41,10 @@
               config.terraria.autoRotate.enabled
                 ? 'glx-chip--green'
                 : 'glx-chip--yellow'
-            "
+            ""
           >
             {{
-              config.terraria.autoRotate.enabled ? "轮播已开启" : "轮播已关闭"
+              config.terraria.autoRotate.enabled ? "杞挱宸插紑鍚? : "杞挱宸插叧闂?
             }}
           </span>
         </div>
@@ -67,11 +67,11 @@
               :is-dark-mode="true"
             />
             <PixelPreviewBoard
-              v-else-if="
+              v-else-if=""
                 previewCanvasReady &&
                 shouldShowSendingSnapshot &&
                 sendingPreviewPixels.size > 0
-              "
+              ""
               :width="64"
               :height="64"
               :pixels="sendingPreviewPixels"
@@ -111,7 +111,7 @@
 
         <div class="terraria-summary-grid">
           <article class="terraria-summary-card">
-            <span class="terraria-summary-card__label">角色</span>
+            <span class="terraria-summary-card__label">瑙掕壊</span>
             <strong class="terraria-summary-card__value">{{
               selectedCharacterName
             }}</strong>
@@ -120,7 +120,7 @@
             }}</span>
           </article>
           <article class="terraria-summary-card">
-            <span class="terraria-summary-card__label">场景</span>
+            <span class="terraria-summary-card__label">鍦烘櫙</span>
             <strong class="terraria-summary-card__value">{{
               selectedBiomeName
             }}</strong>
@@ -129,12 +129,12 @@
             }}</span>
           </article>
           <article class="terraria-summary-card">
-            <span class="terraria-summary-card__label">轮播</span>
+            <span class="terraria-summary-card__label">杞挱</span>
             <strong class="terraria-summary-card__value">
               {{
                 config.terraria.autoRotate.mode === "combo"
-                  ? "组合轮播"
-                  : "元素轮播"
+                  ? "缁勫悎杞挱"
+                  : "鍏冪礌杞挱"
               }}
             </strong>
             <span class="terraria-summary-card__meta">{{
@@ -147,9 +147,9 @@
       <div class="terraria-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">模式配置</h2>
+            <h2 class="glx-section-title">妯″紡閰嶇疆</h2>
             <span class="glx-section-meta"
-              >角色 / 地形 / 轮播 / 时间 / 字体</span
+              >瑙掕壊 / 鍦板舰 / 杞挱 / 鏃堕棿 / 瀛椾綋</span
             >
           </div>
           <DeviceModeTabs v-model="currentTab" :items="tabDefinitions" />
@@ -160,8 +160,8 @@
           class="glx-section-card glx-section-card--stack"
         >
           <div class="glx-section-head">
-            <h2 class="glx-section-title">角色搭配</h2>
-            <span class="glx-section-meta">套装 / 武器 / 面具 / 翅膀</span>
+            <h2 class="glx-section-title">瑙掕壊鎼厤</h2>
+            <span class="glx-section-meta">濂楄 / 姝﹀櫒 / 闈㈠叿 / 缈呰唨</span>
           </div>
 
           <div class="terraria-subtabs">
@@ -213,7 +213,7 @@
               :class="{ 'is-active': !config.terraria.maskId }"
               @click="selectMask(0)"
             >
-              <strong>默认</strong>
+              <strong>榛樿</strong>
             </button>
             <button
               v-for="mask in maskList"
@@ -246,8 +246,8 @@
           class="glx-section-card glx-section-card--stack"
         >
           <div class="glx-section-head">
-            <h2 class="glx-section-title">场景与 Boss</h2>
-            <span class="glx-section-meta">地形与 Boss 联动选择</span>
+            <h2 class="glx-section-title">鍦烘櫙涓?Boss</h2>
+            <span class="glx-section-meta">鍦板舰涓?Boss 鑱斿姩閫夋嫨</span>
           </div>
 
           <div class="terraria-subtabs">
@@ -298,12 +298,12 @@
           class="glx-section-card glx-section-card--stack"
         >
           <div class="glx-section-head">
-            <h2 class="glx-section-title">轮播设置</h2>
-            <span class="glx-section-meta">元素轮播 / 组合轮播</span>
+            <h2 class="glx-section-title">杞挱璁剧疆</h2>
+            <span class="glx-section-meta">鍏冪礌杞挱 / 缁勫悎杞挱</span>
           </div>
 
           <div class="terraria-setting-row">
-            <span class="terraria-setting-row__label">自动轮播</span>
+            <span class="terraria-setting-row__label">鑷姩杞挱</span>
             <button
               type="button"
               class="glx-button"
@@ -311,15 +311,15 @@
                 config.terraria.autoRotate.enabled
                   ? 'glx-button--primary'
                   : 'glx-button--ghost'
-              "
+              ""
               @click="toggleAutoRotate"
             >
-              {{ config.terraria.autoRotate.enabled ? "已开启" : "已关闭" }}
+              {{ config.terraria.autoRotate.enabled ? "宸插紑鍚? : "宸插叧闂? }}
             </button>
           </div>
 
           <div class="terraria-block">
-            <span class="terraria-block__label">轮播模式</span>
+            <span class="terraria-block__label">杞挱妯″紡</span>
             <DeviceModeTabs
               v-model="config.terraria.autoRotate.mode"
               :items="rotateModeItems"
@@ -343,14 +343,14 @@
               />
             </div>
             <p class="terraria-inline-copy">
-              角色轴会自动联动对应武器与翅膀，Boss
-              轴会联动对应地形，保持设备端组合语义一致。
+              瑙掕壊杞翠細鑷姩鑱斿姩瀵瑰簲姝﹀櫒涓庣繀鑶€锛孊oss
+              杞翠細鑱斿姩瀵瑰簲鍦板舰锛屼繚鎸佽澶囩缁勫悎璇箟涓€鑷淬€?
             </p>
           </div>
 
           <div v-else class="terraria-list-block">
             <div class="terraria-setting-row">
-              <span class="terraria-setting-row__label">切换方式</span>
+              <span class="terraria-setting-row__label">鍒囨崲鏂瑰紡</span>
               <DeviceModeTabs
                 :model-value="config.terraria.autoRotate.comboStrategy"
                 :items="strategyItems"
@@ -373,7 +373,7 @@
                   class="glx-button glx-button--ghost"
                   @click="removeCombo(idx)"
                 >
-                  删除
+                  鍒犻櫎
                 </button>
               </article>
             </div>
@@ -384,12 +384,12 @@
               class="glx-button glx-button--primary terraria-add-combo"
               @click="addCurrentAsCombo"
             >
-              收藏当前配置
+              鏀惰棌褰撳墠閰嶇疆
             </button>
           </div>
 
           <div class="terraria-block">
-            <span class="terraria-block__label">切换间隔</span>
+            <span class="terraria-block__label">鍒囨崲闂撮殧</span>
             <div class="terraria-interval-grid">
               <button
                 v-for="option in intervalOptions"
@@ -399,7 +399,7 @@
                 :class="{
                   'is-active':
                     config.terraria.autoRotate.interval === option.value,
-                }"
+                }""
                 @click="setRotateInterval(option.value)"
               >
                 {{ option.label }}
@@ -413,8 +413,8 @@
           class="glx-section-card glx-section-card--stack"
         >
           <ClockTextSettingsSection
-            title="时间显示"
-            description="直接沿用设备端时间文字配置，调节字号、位置、颜色与显示状态。"
+            title="鏃堕棿鏄剧ず"
+            description="鐩存帴娌跨敤璁惧绔椂闂存枃瀛楅厤缃紝璋冭妭瀛楀彿銆佷綅缃€侀鑹蹭笌鏄剧ず鐘舵€併€?"
             :section="config.time"
             :preset-colors="presetColors"
             :show-font-size="true"
@@ -435,12 +435,12 @@
           class="glx-section-card glx-section-card--stack terraria-font-panel"
         >
           <div class="glx-section-head">
-            <h2 class="glx-section-title">字体样式</h2>
-            <span class="glx-section-meta">按 mobile 的字体预览逻辑居中显示</span>
+            <h2 class="glx-section-title">瀛椾綋鏍峰紡</h2>
+            <span class="glx-section-meta">鎸?mobile 鐨勫瓧浣撻瑙堥€昏緫灞呬腑鏄剧ず</span>
           </div>
 
           <div class="terraria-font-panel__section">
-            <span class="terraria-font-panel__label">统一字体</span>
+            <span class="terraria-font-panel__label">缁熶竴瀛椾綋</span>
             <div class="terraria-font-grid">
               <button
                 v-for="font in fontOptions"
@@ -471,7 +471,7 @@
                             backgroundColor: cell.active
                               ? font.previewColor
                               : 'transparent',
-                          }"
+                          }""
                         ></div>
                       </div>
                     </div>
@@ -483,7 +483,7 @@
           </div>
 
           <div class="terraria-font-panel__section">
-            <span class="terraria-font-panel__label">秒钟</span>
+            <span class="terraria-font-panel__label">绉掗挓</span>
             <DeviceModeTabs
               :model-value="config.showSeconds"
               :items="fontSecondItems"
@@ -492,7 +492,7 @@
           </div>
 
           <div class="terraria-font-panel__section">
-            <span class="terraria-font-panel__label">小时制式</span>
+            <span class="terraria-font-panel__label">灏忔椂鍒跺紡</span>
             <DeviceModeTabs
               :model-value="config.hourFormat"
               :items="hourFormatItems"
@@ -506,13 +506,13 @@
     <canvas
       id="imageProcessCanvas"
       type="2d"
-      style="
+      style=""
         position: fixed;
         left: -9999px;
         top: -9999px;
         width: 64px;
         height: 64px;
-      "
+      ""
     ></canvas>
 
     <Toast ref="toastRef" @show="handleToastShow" @hide="handleToastHide" />
@@ -549,49 +549,49 @@ export default {
   computed: {
     tabDefinitions() {
       return [
-        { value: 3, label: "角色" },
-        { value: 4, label: "地形" },
-        { value: 5, label: "轮播" },
-        { value: 1, label: "时间" },
-        { value: 2, label: "字体" },
+        { value: 3, label: "瑙掕壊" },
+        { value: 4, label: "鍦板舰" },
+        { value: 5, label: "杞挱" },
+        { value: 1, label: "鏃堕棿" },
+        { value: 2, label: "瀛椾綋" },
       ];
     },
     equipTabItems() {
       return [
-        { value: 0, label: "套装" },
-        { value: 1, label: "武器" },
-        { value: 2, label: "面具" },
-        { value: 3, label: "翅膀" },
+        { value: 0, label: "濂楄" },
+        { value: 1, label: "姝﹀櫒" },
+        { value: 2, label: "闈㈠叿" },
+        { value: 3, label: "缈呰唨" },
       ];
     },
     terrainTabItems() {
       return [
-        { value: 0, label: "地形" },
+        { value: 0, label: "鍦板舰" },
         { value: 1, label: "Boss" },
       ];
     },
     rotateModeItems() {
       return [
-        { value: "element", label: "元素轮播" },
-        { value: "combo", label: "组合轮播" },
+        { value: "element", label: "鍏冪礌杞挱" },
+        { value: "combo", label: "缁勫悎杞挱" },
       ];
     },
     strategyItems() {
       return [
-        { value: "random", label: "随机" },
-        { value: "sequential", label: "顺序" },
+        { value: "random", label: "闅忔満" },
+        { value: "sequential", label: "椤哄簭" },
       ];
     },
     fontSecondItems() {
       return [
-        { value: false, label: "关闭" },
-        { value: true, label: "显示" },
+        { value: false, label: "鍏抽棴" },
+        { value: true, label: "鏄剧ず" },
       ];
     },
     hourFormatItems() {
       return [
-        { value: 24, label: "24 小时" },
-        { value: 12, label: "12 小时" },
+        { value: 24, label: "24 灏忔椂" },
+        { value: 12, label: "12 灏忔椂" },
       ];
     },
     selectedCharacterName() {

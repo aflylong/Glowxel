@@ -1,20 +1,20 @@
-/**
- * 冒险岛 1 代主题渲染器
- * 输入: state + animTimeSec → 输出: Map<"x,y", "#hex">
+﻿/**
+ * 鍐掗櫓宀?1 浠ｄ富棰樻覆鏌撳櫒
+ * 杈撳叆: state + animTimeSec 鈫?杈撳嚭: Map<"x,y", "#hex">
  * 
- * 64×64 像素屏，无角色死亡，循环展示。
- * 角色固定在屏幕左侧 X 位置，背景滚动。
+ * 64脳64 鍍忕礌灞忥紝鏃犺鑹叉浜★紝寰幆灞曠ず銆?
+ * 瑙掕壊鍥哄畾鍦ㄥ睆骞曞乏渚?X 浣嶇疆锛岃儗鏅粴鍔ㄣ€?
  */
 
 import { SPRITES } from './adventureIslandSprites.js';
 
 const SCREEN_W = 64;
 const SCREEN_H = 64;
-const GROUND_Y = 48;     // 地面顶部 Y
-const CHAR_X = 12;       // 角色固定 X
-const CHAR_HIT_W = 16;   // 角色碰撞宽度
+const GROUND_Y = 48;     // 鍦伴潰椤堕儴 Y
+const CHAR_X = 12;       // 瑙掕壊鍥哄畾 X
+const CHAR_HIT_W = 16;   // 瑙掕壊纰版挒瀹藉害
 
-// NES 真实调色板
+// NES 鐪熷疄璋冭壊鏉?
 const SKY = '#001E74';
 const GRASS_LIGHT = '#7CD420';
 const GRASS_MID = '#38CC6C';
@@ -24,7 +24,7 @@ const DIRT_DARK = '#783C00';
 const CLOUD = '#ECEEEC';
 
 // =============================================================
-// 工具函数
+// 宸ュ叿鍑芥暟
 // =============================================================
 
 function setPx(pixels, x, y, hex) {
@@ -48,7 +48,7 @@ function drawSprite(pixels, spriteKey, dx, dy, flip = false, scale = 1) {
     }
     return;
   }
-  // 缩放: 用最近邻采样
+  // 缂╂斁: 鐢ㄦ渶杩戦偦閲囨牱
   const dw = Math.max(1, Math.round(w * scale));
   const dh = Math.max(1, Math.round(h * scale));
   for (let dyy = 0; dyy < dh; dyy++) {
@@ -63,7 +63,7 @@ function drawSprite(pixels, spriteKey, dx, dy, flip = false, scale = 1) {
 }
 
 // =============================================================
-// 背景: 用 bg.tile 真实像素背景横向循环平铺
+// 鑳屾櫙: 鐢?bg.tile 鐪熷疄鍍忕礌鑳屾櫙妯悜寰幆骞抽摵
 // =============================================================
 
 function drawBackground(pixels, scrollX, bgYOffset = 0) {
@@ -71,9 +71,9 @@ function drawBackground(pixels, scrollX, bgYOffset = 0) {
   if (!tile) return;
   const { w: tw, h: th, p: tp } = tile;
 
-  // 背景 48x82, 屏幕 64x64
-  // bgYOffset 控制背景在屏幕中的 Y 位置
-  // 默认 srcYOffset = th - SCREEN_H = 18, 即底部对齐
+  // 鑳屾櫙 48x82, 灞忓箷 64x64
+  // bgYOffset 鎺у埗鑳屾櫙鍦ㄥ睆骞曚腑鐨?Y 浣嶇疆
+  // 榛樿 srcYOffset = th - SCREEN_H = 18, 鍗冲簳閮ㄥ榻?
   const srcYOffset = (th - SCREEN_H) + bgYOffset;
 
   const sx = Math.floor(scrollX);
@@ -89,41 +89,41 @@ function drawBackground(pixels, scrollX, bgYOffset = 0) {
 }
 
 // =============================================================
-// 角色 sprite key 选择
+// 瑙掕壊 sprite key 閫夋嫨
 // =============================================================
 
 function getCharSpriteKey(state, frame) {
-  // 磕到优先级最高 (滑板撞石头后的弹起+下落动画)
+  // 纾曞埌浼樺厛绾ф渶楂?(婊戞澘鎾炵煶澶村悗鐨勫脊璧?涓嬭惤鍔ㄧ敾)
   if (state.stumbleT > 0) return 'higgins.stumble';
   
-  // 投掷: 只显示 frame3 这一帧 (滑板状态下不切换sprite, 仍画滑板)
+  // 鎶曟幏: 鍙樉绀?frame3 杩欎竴甯?(婊戞澘鐘舵€佷笅涓嶅垏鎹prite, 浠嶇敾婊戞澘)
   if (state.throwT > 0 && state.type !== 'skateboard') {
     return 'higgins.throw.3';
   }
   
-  // 滑板
+  // 婊戞澘
   if (state.type === 'skateboard') {
     if (state.jumping) {
-      // 滑板跳跃全程用 skateboard_land.0
+      // 婊戞澘璺宠穬鍏ㄧ▼鐢?skateboard_land.0
       return 'higgins.skateboard_land.0';
     }
     if (state.landing > 0) return 'higgins.skateboard_land.0';
     return `higgins.skateboard.${Math.floor(frame / 8) % 2}`;
   }
   
-  // 普通跑步状态下跳跃: 用 throw.2 (脸朝前)
+  // 鏅€氳窇姝ョ姸鎬佷笅璺宠穬: 鐢?throw.2 (鑴告湞鍓?
   if (state.jumping) return 'higgins.throw.2';
   
-  // 跑步循环
+  // 璺戞寰幆
   return `higgins.run.${Math.floor(frame / 6) % 3}`;
 }
 
 // =============================================================
-// 主渲染
+// 涓绘覆鏌?
 // =============================================================
 
 /**
- * @param {object} sceneState - 完整场景状态
+ * @param {object} sceneState - 瀹屾暣鍦烘櫙鐘舵€?
  *   {
  *     frame: number,
  *     scrollX: number,
@@ -145,10 +145,10 @@ export function renderAdventureIslandScene(sceneState, layoutOpts = {}) {
     fruitScale = 1,
   } = layoutOpts;
   
-  // 1. 背景
+  // 1. 鑳屾櫙
   drawBackground(pixels, scrollX, bgYOffset);
   
-  // 2. 实体（敌人/障碍/蛋/水果）
+  // 2. 瀹炰綋锛堟晫浜?闅滅/铔?姘存灉锛?
   for (const e of entities) {
     drawEntity(pixels, e, groundY, {
       obstacleScale, enemyScale, itemScale, fruitScale,
@@ -157,13 +157,13 @@ export function renderAdventureIslandScene(sceneState, layoutOpts = {}) {
     });
   }
   
-  // 3. 飞行斧头
+  // 3. 椋炶鏂уご
   for (const a of axes) {
     const animSpeed = layoutOpts.axeAnimSpeed || 3;
-    // 帧顺序: 1 → 2 → 3 → 0 → 循环
+    // 甯ч『搴? 1 鈫?2 鈫?3 鈫?0 鈫?寰幆
     const seq = [1, 2, 3, 0];
     const key = `item.axe.${seq[Math.floor(a.f / animSpeed) % 4]}`;
-    // 飞行斧头跟蛋里掉出来的斧头同样大小 (用 itemScale)
+    // 椋炶鏂уご璺熻泲閲屾帀鍑烘潵鐨勬枾澶村悓鏍峰ぇ灏?(鐢?itemScale)
     const axeScale = layoutOpts.itemScale || 1;
     const spr = SPRITES[key];
     if (spr) {
@@ -172,7 +172,7 @@ export function renderAdventureIslandScene(sceneState, layoutOpts = {}) {
     }
   }
   
-  // 4. 角色
+  // 4. 瑙掕壊
   const charKey = getCharSpriteKey(ch, frame);
   const charSpr = SPRITES[charKey];
   if (charSpr) {
@@ -180,7 +180,7 @@ export function renderAdventureIslandScene(sceneState, layoutOpts = {}) {
     drawSprite(pixels, charKey, charX, cy);
   }
   
-  // 5. 仙女跟随
+  // 5. 浠欏コ璺熼殢
   if (ch.fairyT > 0) {
     const fy = Math.sin(frame * 0.15) * 3;
     const fairyOffsetY = layoutOpts.fairyOffsetY != null ? layoutOpts.fairyOffsetY : 36;
@@ -188,7 +188,7 @@ export function renderAdventureIslandScene(sceneState, layoutOpts = {}) {
     drawSprite(pixels, 'item.fairy', charX + fairyOffsetX, groundY - fairyOffsetY + Math.round(fy));
   }
   
-  // 6. HUD 时钟 (灯笼 + 数字)
+  // 6. HUD 鏃堕挓 (鐏 + 鏁板瓧)
   if (layoutOpts.showClock !== false) {
     drawClock(pixels, layoutOpts);
   }
@@ -197,16 +197,16 @@ export function renderAdventureIslandScene(sceneState, layoutOpts = {}) {
 }
 
 // =============================================================
-// HUD 时钟: HH:MM, 每位 = 灯笼底 (16x16) + 数字 (8x8) 居中叠加
+// HUD 鏃堕挓: HH:MM, 姣忎綅 = 鐏搴?(16x16) + 鏁板瓧 (8x8) 灞呬腑鍙犲姞
 // =============================================================
 
 function drawClock(pixels, opts) {
   const {
     clockX = 0,
     clockY = 0,
-    clockSpacing = 1,   // 数字之间间隔
-    clockColonGap = 2,  // HH 和 MM 之间额外间隔(画冒号)
-    clockColon = true,  // 是否画冒号
+    clockSpacing = 1,   // 鏁板瓧涔嬮棿闂撮殧
+    clockColonGap = 2,  // HH 鍜?MM 涔嬮棿棰濆闂撮殧(鐢诲啋鍙?
+    clockColon = true,  // 鏄惁鐢诲啋鍙?
     clockHour = null,
     clockMinute = null,
   } = opts;
@@ -229,7 +229,7 @@ function drawClock(pixels, opts) {
     drawSprite(pixels, `hud.digit.${digits[i]}`, x, clockY);
     x += 8 + clockSpacing;
     if (i === 1) {
-      // HH 完了, 留间隔, 可选画冒号
+      // HH 瀹屼簡, 鐣欓棿闅? 鍙€夌敾鍐掑彿
       if (clockColon && clockColonGap >= 2) {
         const colonX = x + Math.floor((clockColonGap - 2) / 2);
         const colonY = clockY + 2;
@@ -251,7 +251,7 @@ function drawEntity(pixels, e, groundY, scales = {}) {
   
   if (e.type === 'enemy') {
     if (e.dying) {
-      // 死亡: 蜗牛/乌鸦用翻转 dead sprite, 蛇/野猪用首帧
+      // 姝讳骸: 铚楃墰/涔岄甫鐢ㄧ炕杞?dead sprite, 铔?閲庣尓鐢ㄩ甯?
       if (e.sub === 'snail') key = 'enemy.snail.dead';
       else if (e.sub === 'crow') key = 'enemy.crow.dead';
       else key = `enemy.${e.sub}.0`;
@@ -282,7 +282,7 @@ function drawEntity(pixels, e, groundY, scales = {}) {
     scale = scales.itemScale || 1;
   } else if (e.type === 'fruit') {
     key = `fruit.${e.sub}`;
-    // 水果全部空中, 高度由 layoutOpts.fruitAirY 实时控制
+    // 姘存灉鍏ㄩ儴绌轰腑, 楂樺害鐢?layoutOpts.fruitAirY 瀹炴椂鎺у埗
     yOff = -(scales.fruitAirY != null ? scales.fruitAirY : 28);
     scale = scales.fruitScale || 1;
   }
@@ -291,14 +291,14 @@ function drawEntity(pixels, e, groundY, scales = {}) {
   const spr = SPRITES[key];
   if (!spr) return;
   const drawH = Math.round(spr.h * scale);
-  // 死亡偏移 (相对原位置, 让敌人独立做抛物线 + 穿过地面)
+  // 姝讳骸鍋忕Щ (鐩稿鍘熶綅缃? 璁╂晫浜虹嫭绔嬪仛鎶涚墿绾?+ 绌胯繃鍦伴潰)
   const dyOffX = e.dying ? Math.round(e.dyOffX || 0) : 0;
   const dyOffY = e.dying ? Math.round(e.dyOffY || 0) : 0;
   drawSprite(pixels, key, Math.floor(e.x) + dyOffX, groundY + yOff - drawH + dyOffY, false, scale);
 }
 
 // =============================================================
-// 场景状态机 (供页面驱动)
+// 鍦烘櫙鐘舵€佹満 (渚涢〉闈㈤┍鍔?
 // =============================================================
 
 export function createInitialState() {
@@ -314,20 +314,19 @@ export function createInitialState() {
       throwT: 0,
       landing: 0,
       fairyT: 0,
-      stumbleT: 0,    // 磕到滑板的停顿帧 (>0 时显示 stumble sprite)
-      skateJumpOverCount: 0, // 滑板态下成功跳过的障碍物计数; >=5 时下一颗石头必撞
-    },
+      stumbleT: 0,    // 纾曞埌婊戞澘鐨勫仠椤垮抚 (>0 鏃舵樉绀?stumble sprite)
+      skateJumpOverCount: 0, // 婊戞澘鎬佷笅鎴愬姛璺宠繃鐨勯殰纰嶇墿璁℃暟; >=5 鏃朵笅涓€棰楃煶澶村繀鎾?    },
     entities: [],
     axes: [],
-    spawnCooldown: 60,    // 开局 2 秒就先出斧蛋, 不等抽签
+    spawnCooldown: 60,    // 寮€灞€ 2 绉掑氨鍏堝嚭鏂ц泲, 涓嶇瓑鎶界
     eggCooldown: 0,
     firstAxeSpawned: false,
-    eggSeq: 0,            // 蛋出现顺序计数器: 0=斧, 1=滑板, 2=仙女, 3=滑板, 4=仙女...
+    eggSeq: 0,            // 铔嬪嚭鐜伴『搴忚鏁板櫒: 0=鏂? 1=婊戞澘, 2=浠欏コ, 3=婊戞澘, 4=浠欏コ...
   };
 }
 
 /**
- * 推进一帧
+ * 鎺ㄨ繘涓€甯?
  */
 export function tickScene(state, params = {}) {
   const {
@@ -336,17 +335,17 @@ export function tickScene(state, params = {}) {
     jumpHeight = 14,
     autoMode = true,
     charX = CHAR_X,
-    spawnInterval = 300,    // 主生成间隔 (帧, 30fps下 300=10s)
-    spawnJitter = 60,       // 生成抖动 ±2s
-    eggCooldownFrames = 5400, // 蛋(滑板/仙女)最小帧数 (90s @30fps); 开局斧蛋走单独支路, 不受影响
-    eggSkipPercent = 50,    // 抽签到"蛋"段时再掷一次, 50% 跳过本次出蛋
-    rightZoneClear = 40,    // 右侧多少 px 内有实体则跳过本次
-    minJumpYToAirFruit = 8, // 跳到多高才能吃水果(水果在天上)
-    crowYOffset = 28,       // 乌鸦距地高度
+    spawnInterval = 300,    // 涓荤敓鎴愰棿闅?(甯? 30fps涓?300=10s)
+    spawnJitter = 60,       // 鐢熸垚鎶栧姩 卤2s
+    eggCooldownFrames = 5400, // 铔?婊戞澘/浠欏コ)鏈€灏忓抚鏁?(90s @30fps); 寮€灞€鏂ц泲璧板崟鐙敮璺? 涓嶅彈褰卞搷
+    eggSkipPercent = 50,    // 鎶界鍒?铔?娈垫椂鍐嶆幏涓€娆? 50% 璺宠繃鏈鍑鸿泲
+    rightZoneClear = 40,    // 鍙充晶澶氬皯 px 鍐呮湁瀹炰綋鍒欒烦杩囨湰娆?
+    minJumpYToAirFruit = 8, // 璺冲埌澶氶珮鎵嶈兘鍚冩按鏋?姘存灉鍦ㄥぉ涓?
+    crowYOffset = 28,       // 涔岄甫璺濆湴楂樺害
   } = params;
   
   state.frame++;
-  // 滑板状态下整体加速 2 倍 (bg + ent 同步加速)
+  // 婊戞澘鐘舵€佷笅鏁翠綋鍔犻€?2 鍊?(bg + ent 鍚屾鍔犻€?
   const skateboardBoost = (state.character.type === 'skateboard') ? 2.0 : 1.0;
   const bgSpeedNow = bgSpeed * skateboardBoost;
   const entSpeedNow = entSpeed * skateboardBoost;
@@ -354,7 +353,7 @@ export function tickScene(state, params = {}) {
   
   const ch = state.character;
   
-  // 跳跃物理
+  // 璺宠穬鐗╃悊
   if (ch.jumping) {
     ch.jumpY += ch.jumpV;
     ch.jumpV -= 0.5;
@@ -368,25 +367,25 @@ export function tickScene(state, params = {}) {
   if (ch.landing > 0) ch.landing--;
   if (ch.throwT > 0) {
     ch.throwT--;
-    // 注意: throwT 自然结束不再覆盖 type, 保留滑板等状态
+    // 娉ㄦ剰: throwT 鑷劧缁撴潫涓嶅啀瑕嗙洊 type, 淇濈暀婊戞澘绛夌姸鎬?
   }
   if (ch.fairyT > 0) ch.fairyT--;
   if (ch.stumbleT > 0) ch.stumbleT--;
   
-  // 实体移动
+  // 瀹炰綋绉诲姩
   const totalSpeed = entSpeedNow + bgSpeedNow;
   for (let i = state.entities.length - 1; i >= 0; i--) {
     const e = state.entities[i];
     e.f++;
     
-    // 死亡中的敌人: 独立运动 (不跟场景滚动), 重力下落
+    // 姝讳骸涓殑鏁屼汉: 鐙珛杩愬姩 (涓嶈窡鍦烘櫙婊氬姩), 閲嶅姏涓嬭惤
     if (e.dying) {
       e.dyT++;
       e.dyOffX = (e.dyOffX || 0) + e.dyVx;
       e.dyOffY = (e.dyOffY || 0) + e.dyVy;
-      e.dyVy += 0.7;   // 重力
-      // 死亡 entity 不跟场景滚动 (e.x 锁死, 只用 dyOff 偏移)
-      // 离屏移除: 超出屏幕底部 32px 或 飞出屏幕
+      e.dyVy += 0.7;   // 閲嶅姏
+      // 姝讳骸 entity 涓嶈窡鍦烘櫙婊氬姩 (e.x 閿佹, 鍙敤 dyOff 鍋忕Щ)
+      // 绂诲睆绉婚櫎: 瓒呭嚭灞忓箷搴曢儴 32px 鎴?椋炲嚭灞忓箷
       if (e.dyOffY > 64 || e.x + e.dyOffX < -32 || e.x + e.dyOffX > 96) {
         state.entities.splice(i, 1);
       }
@@ -397,7 +396,7 @@ export function tickScene(state, params = {}) {
     
     const eRight = e.x + 16;
     
-    // 滑板态下: 障碍物越过角色右侧, 计 +1 (用于 15 次必栽阈值)
+    // 婊戞澘鎬佷笅: 闅滅鐗╄秺杩囪鑹插彸渚? 璁?+1 (鐢ㄤ簬 15 娆″繀鏍介槇鍊?
     if (ch.type === 'skateboard' && e.type === 'obs' && !e.passedByChar) {
       if (eRight <= charX) {
         e.passedByChar = true;
@@ -405,7 +404,7 @@ export function tickScene(state, params = {}) {
       }
     }
     
-    // 蛋阶段: rolling → flying (抛物线右飞) → cracking (蛋碎) → item (道具)
+    // 铔嬮樁娈? rolling 鈫?flying (鎶涚墿绾垮彸椋? 鈫?cracking (铔嬬) 鈫?item (閬撳叿)
     if (e.type === 'egg') {
       if (e.stage === undefined) e.stage = 'rolling';
       
@@ -413,17 +412,17 @@ export function tickScene(state, params = {}) {
         if (eRight > charX && e.x < charX + CHAR_HIT_W) {
           e.stage = 'flying';
           e.flyT = 0;
-          e.flyDuration = 8;   // 飞 8 帧落地
+          e.flyDuration = 8;   // 椋?8 甯ц惤鍦?
           e.flyStartX = e.x;
           e.flyVx = 1.6;
         }
       } else if (e.stage === 'flying') {
-        // 抵消默认场景滚, 自己以抛物线右飞
+        // 鎶垫秷榛樿鍦烘櫙婊? 鑷繁浠ユ姏鐗╃嚎鍙抽
         e.x += totalSpeed + e.flyVx;
         e.flyT++;
-        // 抛物线高度: 0 → max → 0, 用 flyY 偏移渲染
+        // 鎶涚墿绾块珮搴? 0 鈫?max 鈫?0, 鐢?flyY 鍋忕Щ娓叉煋
         const t = e.flyT / e.flyDuration;        // 0..1
-        e.flyY = -16 * 4 * t * (1 - t);          // 最大高度 16, 中间最高
+        e.flyY = -16 * 4 * t * (1 - t);          // 鏈€澶ч珮搴?16, 涓棿鏈€楂?
         if (e.flyT >= e.flyDuration) {
           e.stage = 'cracking';
           e.flyY = 0;
@@ -431,7 +430,7 @@ export function tickScene(state, params = {}) {
         }
       } else if (e.stage === 'cracking') {
         e.crackT++;
-        // 蛋碎动画 4 帧后变道具
+        // 铔嬬鍔ㄧ敾 4 甯у悗鍙橀亾鍏?
         if (e.crackT >= 4) {
           e.stage = 'item';
         }
@@ -451,39 +450,39 @@ export function tickScene(state, params = {}) {
     
     if (eRight > charX && e.x < charX + CHAR_HIT_W) {
       if (e.dying) {
-        // 死亡中的敌人不参与任何角色碰撞
+        // 姝讳骸涓殑鏁屼汉涓嶅弬涓庝换浣曡鑹茬鎾?
       } else if (e.type === 'fruit') {
-        // 水果在天上, 角色必须跳到一定高度才能吃到
+        // 姘存灉鍦ㄥぉ涓? 瑙掕壊蹇呴』璺冲埌涓€瀹氶珮搴︽墠鑳藉悆鍒?
         if (ch.jumpY < minJumpYToAirFruit) {
-          // 跳得不够高, 不吃
+          // 璺冲緱涓嶅楂? 涓嶅悆
         } else {
           state.entities.splice(i, 1);
           continue;
         }
       }
       if (e.type === 'enemy' && ch.fairyT > 0) {
-        // 仙女撞到敌人: 敌人和仙女都消失
+        // 浠欏コ鎾炲埌鏁屼汉: 鏁屼汉鍜屼粰濂抽兘娑堝け
         state.entities.splice(i, 1);
         ch.fairyT = 0;
         continue;
       }
-      // 仙女期间撞到障碍物也消失
+      // 浠欏コ鏈熼棿鎾炲埌闅滅鐗╀篃娑堝け
       if (e.type === 'obs' && ch.fairyT > 0) {
         state.entities.splice(i, 1);
         ch.fairyT = 0;
         continue;
       }
-      // 滑板撞到石头(达到阈值后强制不跳): 被石头顶起到障碍物高度 → 自由落体, 显示 stumble
-      // 必须角色还在地面 (jumpY 接近 0) 才算撞到 — 跳起来时 Y 高于石头, 算跳过
+      // 婊戞澘鎾炲埌鐭冲ご(杈惧埌闃堝€煎悗寮哄埗涓嶈烦): 琚煶澶撮《璧峰埌闅滅鐗╅珮搴?鈫?鑷敱钀戒綋, 鏄剧ず stumble
+      // 蹇呴』瑙掕壊杩樺湪鍦伴潰 (jumpY 鎺ヨ繎 0) 鎵嶇畻鎾炲埌 鈥?璺宠捣鏉ユ椂 Y 楂樹簬鐭冲ご, 绠楄烦杩?
       if (e.type === 'obs' && e.sub === 'rock' && ch.type === 'skateboard' && ch.jumpY < 4) {
-        ch.type = 'run';            // 滑板没了
+        ch.type = 'run';            // 婊戞澘娌′簡
         ch.skateJumpOverCount = 0;
-        ch.stumbleT = 24;           // stumble 动画持续, 落地后清零
-        // 被石头顶起: 弹到障碍物高度 12, 然后自由落体
+        ch.stumbleT = 24;           // stumble 鍔ㄧ敾鎸佺画, 钀藉湴鍚庢竻闆?
+        // 琚煶澶撮《璧? 寮瑰埌闅滅鐗╅珮搴?12, 鐒跺悗鑷敱钀戒綋
         ch.jumping = true;
-        ch.jumpY = 12;              // 立刻在顶
-        ch.jumpV = 0;               // 重力下一帧 -0.5
-        state.entities.splice(i, 1); // 石头消失
+        ch.jumpY = 12;              // 绔嬪埢鍦ㄩ《
+        ch.jumpV = 0;               // 閲嶅姏涓嬩竴甯?-0.5
+        state.entities.splice(i, 1); // 鐭冲ご娑堝け
         continue;
       }
     }
@@ -491,22 +490,22 @@ export function tickScene(state, params = {}) {
     if (e.x < -32) state.entities.splice(i, 1);
   }
   
-  // 飞行斧头
+  // 椋炶鏂уご
   for (let i = state.axes.length - 1; i >= 0; i--) {
     state.axes[i].x += (params.axeSpeed != null ? params.axeSpeed : 2);
     state.axes[i].f++;
     for (let j = state.entities.length - 1; j >= 0; j--) {
       const e = state.entities[j];
       if (e.type !== 'enemy') continue;
-      if (e.dying) continue;   // 死亡中的不再被斧打
+      if (e.dying) continue;   // 姝讳骸涓殑涓嶅啀琚枾鎵?
       const enemyY = e.sub === 'crow' ? crowYOffset : 0;
       if (Math.abs(e.x - state.axes[i].x) < 14 && Math.abs(enemyY - state.axes[i].y) < 20) {
-        // 命中: 进入死亡状态
+        // 鍛戒腑: 杩涘叆姝讳骸鐘舵€?
         e.dying = true;
         e.dyT = 0;
         e.dyOffX = 0;
         e.dyOffY = 0;
-        // 速度: 蜗牛/乌鸦 → 向右; 蛇/野猪 → 向左
+        // 閫熷害: 铚楃墰/涔岄甫 鈫?鍚戝彸; 铔?閲庣尓 鈫?鍚戝乏
         if (e.sub === 'crow') {
           e.dyVx = 1.5;
           e.dyVy = -2.0;
@@ -514,7 +513,7 @@ export function tickScene(state, params = {}) {
           e.dyVx = 1.5;
           e.dyVy = -2.5;
         } else {
-          // 蛇/野猪 向左
+          // 铔?閲庣尓 鍚戝乏
           e.dyVx = -1.5;
           e.dyVy = -2.5;
         }
@@ -525,12 +524,12 @@ export function tickScene(state, params = {}) {
     if (state.axes[i] && state.axes[i].x > 70) state.axes.splice(i, 1);
   }
   
-  // 自动事件
+  // 鑷姩浜嬩欢
   if (autoMode) {
     if (state.spawnCooldown > 0) state.spawnCooldown--;
     if (state.eggCooldown > 0) state.eggCooldown--;
     
-    // 检查右侧空闲: 地面/空中分开检查 (天上水果可以跟地上障碍同屏)
+    // 妫€鏌ュ彸渚х┖闂? 鍦伴潰/绌轰腑鍒嗗紑妫€鏌?(澶╀笂姘存灉鍙互璺熷湴涓婇殰纰嶅悓灞?
     function isAirEntity(e) {
       if (e.type === 'fruit') return true;
       if (e.type === 'enemy' && e.sub === 'crow') return true;
@@ -540,22 +539,22 @@ export function tickScene(state, params = {}) {
     const rightGroundBusy = state.entities.some(e => !e.dying && e.x > SCREEN_W - rightZoneClear && !isAirEntity(e));
     
     if (state.spawnCooldown <= 0) {
-      // 开局必先出一个斧蛋, 让角色拿到斧再开始正常抽签
+      // 寮€灞€蹇呭厛鍑轰竴涓枾铔? 璁╄鑹叉嬁鍒版枾鍐嶅紑濮嬫甯告娊绛?
       if (!state.firstAxeSpawned) {
         if (!rightGroundBusy) {
           spawnEgg(state, 'axe');
           state.eggCooldown = eggCooldownFrames;
           state.firstAxeSpawned = true;
-          state.eggSeq = 1;  // 下一个蛋是滑板
+          state.eggSeq = 1;  // 涓嬩竴涓泲鏄粦鏉?
           const jitter = Math.floor((Math.random() * 2 - 1) * spawnJitter);
           state.spawnCooldown = spawnInterval + jitter;
         } else {
-          // 右侧地面忙, 等下帧重试
+          // 鍙充晶鍦伴潰蹇? 绛変笅甯ч噸璇?
           state.spawnCooldown = 1;
         }
       } else {
-        // 抽签 + 区分空中/地面 busy
-        // 权重: 水果 25 / 障碍 25 / 敌人 30 / 蛋 20 (总和 100, 无 skip)
+        // 鎶界 + 鍖哄垎绌轰腑/鍦伴潰 busy
+        // 鏉冮噸: 姘存灉 25 / 闅滅 25 / 鏁屼汉 30 / 铔?20 (鎬诲拰 100, 鏃?skip)
         const r = Math.random() * 100;
         if (r < 25 && !rightAirBusy) {
           spawnFruit(state);
@@ -569,13 +568,13 @@ export function tickScene(state, params = {}) {
             state.entities.push({ type: 'enemy', sub, x: SCREEN_W, f: 0 });
           }
         } else if (!rightGroundBusy && state.eggCooldown <= 0) {
-          // 90 秒冷却到点了也不一定出蛋: eggSkipPercent% 跳过, 让下次抽签机会再来
-          // (跳过时不重置 eggCooldown, 这样玩家不必再等 90 秒, 但确实不一定立刻出)
+          // 90 绉掑喎鍗村埌鐐逛簡涔熶笉涓€瀹氬嚭铔? eggSkipPercent% 璺宠繃, 璁╀笅娆℃娊绛炬満浼氬啀鏉?
+          // (璺宠繃鏃朵笉閲嶇疆 eggCooldown, 杩欐牱鐜╁涓嶅繀鍐嶇瓑 90 绉? 浣嗙‘瀹炰笉涓€瀹氱珛鍒诲嚭)
           if (Math.random() * 100 < eggSkipPercent) {
-            // skip 本次出蛋
+            // skip 鏈鍑鸿泲
           } else {
-            // 蛋固定顺序: 没斧 → 必出斧; 有斧 → 滑板/仙女交替
-            // 但角色已经踩滑板时, 不再出滑板, 只出仙女
+            // 铔嬪浐瀹氶『搴? 娌℃枾 鈫?蹇呭嚭鏂? 鏈夋枾 鈫?婊戞澘/浠欏コ浜ゆ浛
+            // 浣嗚鑹插凡缁忚俯婊戞澘鏃? 涓嶅啀鍑烘粦鏉? 鍙嚭浠欏コ
             let contains;
             if (!ch.hasAxe) {
               contains = 'axe';
@@ -584,7 +583,7 @@ export function tickScene(state, params = {}) {
               contains = 'fairy';
               state.eggSeq++;
             } else {
-              // eggSeq 1=滑板, 2=仙女, 3=滑板, 4=仙女...
+              // eggSeq 1=婊戞澘, 2=浠欏コ, 3=婊戞澘, 4=浠欏コ...
               contains = (state.eggSeq % 2 === 1) ? 'skateboard' : 'fairy';
               state.eggSeq++;
             }
@@ -598,11 +597,11 @@ export function tickScene(state, params = {}) {
       }
     }
     
-    // 自动避障 + 投掷
+    // 鑷姩閬块殰 + 鎶曟幏
     const jumpV0 = jumpHeight / 4;
     const jumpFrames = Math.ceil(jumpV0 / 0.5) * 2;
-    // reachFactor: 起跳提前量 (0.5=原版, 越大越提前)
-    // 默认 0.5; 滑板状态默认 0.6 (略提前一点, 但不要早到落到障碍上)
+    // reachFactor: 璧疯烦鎻愬墠閲?(0.5=鍘熺増, 瓒婂ぇ瓒婃彁鍓?
+    // 榛樿 0.5; 婊戞澘鐘舵€侀粯璁?0.6 (鐣ユ彁鍓嶄竴鐐? 浣嗕笉瑕佹棭鍒拌惤鍒伴殰纰嶄笂)
     const userReachFactor = params.reachFactor;
     const reachFactor = userReachFactor != null
       ? userReachFactor
@@ -612,12 +611,12 @@ export function tickScene(state, params = {}) {
     const triggerEnd = reachDist + 4;
     
     for (const e of state.entities) {
-      if (e.dying) continue;   // 死亡中的敌人不再触发任何 AI
+      if (e.dying) continue;   // 姝讳骸涓殑鏁屼汉涓嶅啀瑙﹀彂浠讳綍 AI
       const distToChar = e.x - charX;
       
-      // 跳跃: 障碍物 / 没斧时的地面敌人 / 吃水果(必须跳)
-      // 仙女无敌期间不跳, 直接撞过去触发"撞掉仙女"流程
-      // 滑板状态下也要主动跳避障/避地面敌人, 不然会被撞掉滑板
+      // 璺宠穬: 闅滅鐗?/ 娌℃枾鏃剁殑鍦伴潰鏁屼汉 / 鍚冩按鏋?蹇呴』璺?
+      // 浠欏コ鏃犳晫鏈熼棿涓嶈烦, 鐩存帴鎾炶繃鍘昏Е鍙?鎾炴帀浠欏コ"娴佺▼"
+      // 婊戞澘鐘舵€佷笅涔熻涓诲姩璺抽伩闅?閬垮湴闈㈡晫浜? 涓嶇劧浼氳鎾炴帀婊戞澘
       const isGroundEnemy = e.type === 'enemy' && e.sub !== 'crow';
       const needJumpForFruit = e.type === 'fruit';
       const needJumpOver = ch.fairyT === 0 && (
@@ -628,14 +627,13 @@ export function tickScene(state, params = {}) {
       
       if (distToChar > triggerStart && distToChar < triggerEnd) {
         if ((needJumpOver || needJumpForFruit) && !ch.jumping) {
-          // 滑板 + 石头障碍: 跳过足够多障碍后强制不跳, 防止角色一直滑板态
-          // 若 skateJumpOverCount >= 5, 则强制不跳 (必撞)
-          // (e.failChecked 标记本次已检查, 不重复)
+          // 婊戞澘 + 鐭冲ご闅滅: 璺宠繃瓒冲澶氶殰纰嶅悗寮哄埗涓嶈烦, 闃叉瑙掕壊涓€鐩存粦鏉挎€?          // 鑻?skateJumpOverCount >= 5, 鍒欏己鍒朵笉璺?(蹇呮挒)
+          // (e.failChecked 鏍囪鏈宸叉鏌? 涓嶉噸澶?
           if (ch.type === 'skateboard' && e.type === 'obs' && e.sub === 'rock' && !e.failChecked) {
             e.failChecked = true;
             const forceWipeout = (ch.skateJumpOverCount || 0) >= 5;
             if (forceWipeout) {
-              // 这次不跳, 让石头撞上来 (碰撞段会掉滑板)
+              // 杩欐涓嶈烦, 璁╃煶澶存挒涓婃潵 (纰版挒娈典細鎺夋粦鏉?
             } else {
               triggerJump(ch, jumpHeight);
             }
@@ -645,7 +643,7 @@ export function tickScene(state, params = {}) {
         }
       }
       
-      // 投掷
+      // 鎶曟幏
       if (e.type === 'enemy' && ch.hasAxe && ch.throwT === 0) {
         const throwCenter = params.throwDist != null ? params.throwDist : 32;
         const throwRange = params.throwRange != null ? params.throwRange : 16;
@@ -655,16 +653,16 @@ export function tickScene(state, params = {}) {
         const jumpRange = params.crowJumpRange != null ? params.crowJumpRange : 12;
         
         if (e.sub === 'crow') {
-          // 乌鸦在天上: 跳起来扔
+          // 涔岄甫鍦ㄥぉ涓? 璺宠捣鏉ユ墧
           if (distToChar > jumpCenter - jumpRange && distToChar < jumpCenter + jumpRange && !ch.jumping) {
             triggerJump(ch, jumpHeight);
           }
-          // 在跳跃最高点附近扔斧 (jumpV 接近 0, 上升结束/下落初始)
+          // 鍦ㄨ烦璺冩渶楂樼偣闄勮繎鎵旀枾 (jumpV 鎺ヨ繎 0, 涓婂崌缁撴潫/涓嬭惤鍒濆)
           if (distToChar > throwLo && distToChar < throwHi && ch.jumping && Math.abs(ch.jumpV) < 1.0) {
             triggerThrow(ch, state, charX, ch.jumpY);
           }
         } else {
-          // 地面敌人: 站着扔, 不跳
+          // 鍦伴潰鏁屼汉: 绔欑潃鎵? 涓嶈烦
           if (distToChar > throwLo && distToChar < throwHi && !ch.jumping) {
             triggerThrow(ch, state, charX, 0);
           }
@@ -685,11 +683,11 @@ export function triggerJump(ch, jumpHeight = 14) {
 
 export function triggerThrow(ch, state, charX = CHAR_X, jumpY = 0) {
   if (!ch.hasAxe) return;
-  // 同屏只允许 1 把斧头
+  // 鍚屽睆鍙厑璁?1 鎶婃枾澶?
   if (state.axes.length > 0) return;
-  // 不再修改 ch.type, 用 throwT 单独控制投掷动画时长
+  // 涓嶅啀淇敼 ch.type, 鐢?throwT 鍗曠嫭鎺у埗鎶曟幏鍔ㄧ敾鏃堕暱
   ch.throwT = 4;
-  // 斧子 y 跟随角色当前高度
+  // 鏂у瓙 y 璺熼殢瑙掕壊褰撳墠楂樺害
   state.axes.push({ x: charX + 16, y: jumpY, f: 0 });
 }
 

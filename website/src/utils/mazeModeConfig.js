@@ -1,3 +1,4 @@
+import { getStorage, setStorage } from '@/utils/browser-platform.js'
 const MAZE_MODE_CONFIG_KEY = "maze_mode_config";
 
 const DEFAULT_MAZE_MODE_CONFIG = Object.freeze({
@@ -112,7 +113,7 @@ function cloneMazeModeConfig(config) {
 }
 
 function readSavedMazeModeConfig() {
-  return createMazeModeConfig(uni.getStorageSync(MAZE_MODE_CONFIG_KEY));
+  return createMazeModeConfig(getStorage(MAZE_MODE_CONFIG_KEY));
 }
 
 function writeSavedMazeModeConfig(config) {
@@ -120,7 +121,7 @@ function writeSavedMazeModeConfig(config) {
   if (!normalized) {
     throw new Error("迷宫颜色配置无效");
   }
-  uni.setStorageSync(MAZE_MODE_CONFIG_KEY, normalized);
+  setStorage(MAZE_MODE_CONFIG_KEY, normalized);
   return cloneMazeModeConfig(normalized);
 }
 

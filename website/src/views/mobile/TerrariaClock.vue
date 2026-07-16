@@ -1,4 +1,4 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/clock-editor/terraria-clock.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/clock-editor/terraria-clock.vue -->
 <template>
   <div class="clock-editor-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
@@ -45,7 +45,7 @@
           <span
             class="auto-rotate-badge"
             :class="config.terraria.autoRotate.enabled ? 'auto-rotate-badge--on' : 'auto-rotate-badge--off'"
-          >{{ config.terraria.autoRotate.enabled ? '轮播已开启' : '轮播已关闭' }}</span>
+          >{{ config.terraria.autoRotate.enabled ? '杞挱宸插紑鍚? : '杞挱宸插叧闂? }}</span>
         </div>
         <div class="preview-actions">
           <div
@@ -54,7 +54,7 @@
             @click="sendToDevice"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
@@ -67,11 +67,11 @@
     >
       <div class="content-wrapper glx-scroll-stack">
 
-        <!-- Tab 1: 时间设置 -->
+        <!-- Tab 1: 鏃堕棿璁剧疆 -->
         <ClockTextSettingsCard
           v-show="currentTab === 1"
           icon-name="time"
-          title="时间显示"
+          title="鏃堕棿鏄剧ず"
           :section="config.time"
           :preset-colors="presetColors"
           :show-font-size="true"
@@ -86,7 +86,7 @@
           @set-align="handleTimeAlign"
         />
 
-        <!-- Tab 2: 字体设置 -->
+        <!-- Tab 2: 瀛椾綋璁剧疆 -->
         <ClockFontPanel
           v-show="currentTab === 2"
           :font-options="fontOptions"
@@ -97,18 +97,18 @@
           @set-hour-format="setHourFormat"
         />
 
-        <!-- Tab 3: 角色配置 -->
+        <!-- Tab 3: 瑙掕壊閰嶇疆 -->
         <div v-show="currentTab === 3" class="settings-card">
 
-          <!-- 子 tabs: 套装 / 武器 / 面具 / 翅膀 -->
+          <!-- 瀛?tabs: 濂楄 / 姝﹀櫒 / 闈㈠叿 / 缈呰唨 -->
           <div class="equip-tabs">
-            <div class="equip-tab" :class="{ active: equipTab === 0 }" @click="onEquipTab(0)"><span>套装</span></div>
-            <div class="equip-tab" :class="{ active: equipTab === 1 }" @click="onEquipTab(1)"><span>武器</span></div>
-            <div class="equip-tab" :class="{ active: equipTab === 2 }" @click="onEquipTab(2)"><span>面具</span></div>
-            <div class="equip-tab" :class="{ active: equipTab === 3 }" @click="onEquipTab(3)"><span>翅膀</span></div>
+            <div class="equip-tab" :class="{ active: equipTab === 0 }" @click="onEquipTab(0)"><span>濂楄</span></div>
+            <div class="equip-tab" :class="{ active: equipTab === 1 }" @click="onEquipTab(1)"><span>姝﹀櫒</span></div>
+            <div class="equip-tab" :class="{ active: equipTab === 2 }" @click="onEquipTab(2)"><span>闈㈠叿</span></div>
+            <div class="equip-tab" :class="{ active: equipTab === 3 }" @click="onEquipTab(3)"><span>缈呰唨</span></div>
           </div>
 
-          <!-- 套装列表 -->
+          <!-- 濂楄鍒楄〃 -->
           <div v-if="equipTab === 0" class="weapon-grid">
             <div
               v-for="ch in characterList"
@@ -121,7 +121,7 @@
             </div>
           </div>
 
-          <!-- 武器列表 -->
+          <!-- 姝﹀櫒鍒楄〃 -->
           <div v-if="equipTab === 1" class="weapon-grid">
             <div
               v-for="w in allWeapons"
@@ -134,14 +134,14 @@
             </div>
           </div>
 
-          <!-- 面具列表 -->
+          <!-- 闈㈠叿鍒楄〃 -->
           <div v-if="equipTab === 2" class="weapon-grid">
             <div
               class="weapon-btn"
               :class="{ active: !config.terraria.maskId }"
               @click="selectMask(0)"
             >
-              <span>默认</span>
+              <span>榛樿</span>
             </div>
             <div
               v-for="m in maskList"
@@ -154,7 +154,7 @@
             </div>
           </div>
 
-          <!-- 翅膀列表 -->
+          <!-- 缈呰唨鍒楄〃 -->
           <div v-if="equipTab === 3" class="weapon-grid">
             <div
               v-for="wing in wingList"
@@ -169,16 +169,16 @@
 
         </div>
 
-        <!-- Tab 4: 地形 + Boss -->
+        <!-- Tab 4: 鍦板舰 + Boss -->
         <div v-show="currentTab === 4" class="settings-card">
 
-          <!-- 子 tabs: 地形 / Boss -->
+          <!-- 瀛?tabs: 鍦板舰 / Boss -->
           <div class="equip-tabs">
-            <div class="equip-tab" :class="{ active: terrainTab === 0 }" @click="onTerrainTab(0)"><span>地形</span></div>
+            <div class="equip-tab" :class="{ active: terrainTab === 0 }" @click="onTerrainTab(0)"><span>鍦板舰</span></div>
             <div class="equip-tab" :class="{ active: terrainTab === 1 }" @click="onTerrainTab(1)"><span>Boss</span></div>
           </div>
 
-          <!-- 地形列表 -->
+          <!-- 鍦板舰鍒楄〃 -->
           <div v-if="terrainTab === 0" class="weapon-grid">
             <div
               v-for="b in biomeList"
@@ -191,7 +191,7 @@
             </div>
           </div>
 
-          <!-- Boss 列表 -->
+          <!-- Boss 鍒楄〃 -->
           <div v-if="terrainTab === 1" class="weapon-grid">
             <div
               v-for="bs in availableBosses"
@@ -204,69 +204,69 @@
             </div>
           </div>
 
-            <!-- Boss 位置 + 缩放 已隐藏 (数据保留) -->
+            <!-- Boss 浣嶇疆 + 缂╂斁 宸查殣钘?(鏁版嵁淇濈暀) -->
 
         </div>
 
-        <!-- Tab 5: 轮播设置 -->
+        <!-- Tab 5: 杞挱璁剧疆 -->
         <div v-show="currentTab === 5" class="settings-card">
 
-          <!-- 总开关 -->
+          <!-- 鎬诲紑鍏?-->
           <div class="setting-item-row">
-            <span class="setting-label">自动轮播</span>
+            <span class="setting-label">鑷姩杞挱</span>
             <div class="setting-control-buttons">
               <div class="weapon-btn" :class="{ active: config.terraria.autoRotate.enabled }" style="padding:8rpx 24rpx" @click="toggleAutoRotate">
-                <span>{{ config.terraria.autoRotate.enabled ? '开启' : '关闭' }}</span>
+                <span>{{ config.terraria.autoRotate.enabled ? '寮€鍚? : '鍏抽棴' }}</span>
               </div>
             </div>
           </div>
 
-          <!-- 模式切换 -->
+          <!-- 妯″紡鍒囨崲 -->
           <div class="equip-tabs">
-            <div class="equip-tab" :class="{ active: config.terraria.autoRotate.mode === 'element' }" @click="setRotateMode('element')"><span>元素随机</span></div>
-            <div class="equip-tab" :class="{ active: config.terraria.autoRotate.mode === 'combo' }" @click="setRotateMode('combo')"><span>组合轮播</span></div>
+            <div class="equip-tab" :class="{ active: config.terraria.autoRotate.mode === 'element' }" @click="setRotateMode('element')"><span>鍏冪礌闅忔満</span></div>
+            <div class="equip-tab" :class="{ active: config.terraria.autoRotate.mode === 'combo' }" @click="setRotateMode('combo')"><span>缁勫悎杞挱</span></div>
           </div>
 
-          <!-- 元素随机模式: 只 2 个轴 (角色 / Boss) -->
+          <!-- 鍏冪礌闅忔満妯″紡: 鍙?2 涓酱 (瑙掕壊 / Boss) -->
           <div v-if="config.terraria.autoRotate.mode === 'element'">
             <div v-for="item in rotateElements" :key="item.key" class="setting-item-row">
               <span class="setting-label">{{ item.label }}</span>
               <div class="setting-control-buttons" style="gap:8rpx">
-                <div class="weapon-btn" :class="{ active: config.terraria.autoRotate.strategies[item.key] === 'random' }" style="padding:6rpx 16rpx" @click="setStrategy(item.key, 'random')"><span>随机</span></div>
-                <div class="weapon-btn" :class="{ active: config.terraria.autoRotate.strategies[item.key] === 'sequential' }" style="padding:6rpx 16rpx" @click="setStrategy(item.key, 'sequential')"><span>顺序</span></div>
+                <div class="weapon-btn" :class="{ active: config.terraria.autoRotate.strategies[item.key] === 'random' }" style="padding:6rpx 16rpx" @click="setStrategy(item.key, 'random')"><span>闅忔満</span></div>
+                <div class="weapon-btn" :class="{ active: config.terraria.autoRotate.strategies[item.key] === 'sequential' }" style="padding:6rpx 16rpx" @click="setStrategy(item.key, 'sequential')"><span>椤哄簭</span></div>
               </div>
             </div>
             <div class="setting-item-row" style="display:block;padding:8rpx 0 0">
               <span style="font-size:24rpx;color:#888;line-height:1.4;display:block">
-                角色变 → 武器和翅膀自动用该角色的固定搭配。Boss 变 → 地形自动跟随该 Boss 出现的场景。
+                瑙掕壊鍙?鈫?姝﹀櫒鍜岀繀鑶€鑷姩鐢ㄨ瑙掕壊鐨勫浐瀹氭惌閰嶃€侭oss 鍙?鈫?鍦板舰鑷姩璺熼殢璇?Boss 鍑虹幇鐨勫満鏅€?
               </span>
             </div>
           </div>
 
-          <!-- 组合轮播模式 -->
+          <!-- 缁勫悎杞挱妯″紡 -->
           <div v-if="config.terraria.autoRotate.mode === 'combo'">
             <div class="setting-item-row">
-              <span class="setting-label">切换方式</span>
+              <span class="setting-label">鍒囨崲鏂瑰紡</span>
               <div class="setting-control-buttons" style="gap:8rpx">
-                <div class="weapon-btn" :class="{ active: config.terraria.autoRotate.comboStrategy === 'random' }" style="padding:6rpx 16rpx" @click="setComboStrategy('random')"><span>随机</span></div>
-                <div class="weapon-btn" :class="{ active: config.terraria.autoRotate.comboStrategy === 'sequential' }" style="padding:6rpx 16rpx" @click="setComboStrategy('sequential')"><span>顺序</span></div>
+                <div class="weapon-btn" :class="{ active: config.terraria.autoRotate.comboStrategy === 'random' }" style="padding:6rpx 16rpx" @click="setComboStrategy('random')"><span>闅忔満</span></div>
+                <div class="weapon-btn" :class="{ active: config.terraria.autoRotate.comboStrategy === 'sequential' }" style="padding:6rpx 16rpx" @click="setComboStrategy('sequential')"><span>椤哄簭</span></div>
               </div>
             </div>
-            <!-- 收藏列表 -->
+            <!-- 鏀惰棌鍒楄〃 -->
             <div v-for="(combo, idx) in config.terraria.autoRotate.combos" :key="idx" class="setting-item-row">
               <span class="setting-label">{{ combo.name }}</span>
               <div class="setting-control-buttons">
-                <div class="weapon-btn" style="padding:6rpx 16rpx;background:#ff4444" @click="removeCombo(idx)"><span style="color:#fff">删除</span></div>
+                <div class="weapon-btn" style="padding:6rpx 16rpx;background:#ff4444" @click="removeCombo(idx)"><span style="color:#fff">鍒犻櫎</span></div>
               </div>
             </div>
             <div class="setting-item-row" v-if="config.terraria.autoRotate.combos.length < 20">
-              <div class="weapon-btn" style="padding:12rpx 24rpx;width:100%;text-align:center" @click="addCurrentAsCombo"><span>+ 收藏当前配置</span></div>
+              <div class="weapon-btn" style="padding:12rpx 24rpx;width:100%;text-align:center" @click="addCurrentAsCombo"><span>+ 鏀惰棌褰撳墠閰嶇疆</span></div>
             </div>
           </div>
 
-          <!-- 切换间隔 -->
+          <!-- 鍒囨崲闂撮殧 -->
           <div style="margin-top:16rpx">
-            <span class="setting-label" style="margin-bottom:8rpx;display:block">切换间隔</span>
+            <span class="setting-label" style="margin-bottom:8rpx;display:block">鍒囨崲闂撮殧</span>
             <div class="weapon-grid">
               <div v-for="iv in intervalOptions" :key="iv.value" class="weapon-btn" :class="{ active: config.terraria.autoRotate.interval === iv.value }" @click="setRotateInterval(iv.value)">
                 <span>{{ iv.label }}</span>
@@ -279,7 +279,7 @@
       </div>
     </div>
 
-    <!-- 底部 Tab 切换 -->
+    <!-- 搴曢儴 Tab 鍒囨崲 -->
     <div class="bottom-tabs">
       <div
         v-for="tab in tabDefinitions"
@@ -316,6 +316,7 @@
 </template>
 
 <script>
+import { getStorage, setStorage, getSystemInfo, createDomQuery, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import { useDeviceStore } from "@/stores/device.js";
 import { useToast } from "@/composables/useToast.js";
@@ -337,7 +338,7 @@ import { applyTerrariaClockBorder } from "@/utils/clockTerrariaBorder.js";
 import { BIOME_LIST } from "@/utils/terrariaBiome.js";
 import { getBossesForBiome } from "@/utils/terrariaBosses.js";
 
-// 各字段调节范围 (有变化才放这, 别的字段不限制)
+// 鍚勫瓧娈佃皟鑺傝寖鍥?(鏈夊彉鍖栨墠鏀捐繖, 鍒殑瀛楁涓嶉檺鍒?
 const TERRARIA_RANGE = {
   playerX:        { min: 0,    max: 63  },
   playerY:        { min: 0,    max: 63  },
@@ -410,11 +411,11 @@ export default {
 
       currentTab: 3,
       tabDefinitions: [
-        { index: 3, label: "角色", icon: "user" },
-        { index: 4, label: "地形", icon: "map" },
-        { index: 5, label: "轮播", icon: "refresh" },
-        // { index: 1, label: "时间", icon: "time" },
-        // { index: 2, label: "字体", icon: "text" },
+        { index: 3, label: "瑙掕壊", icon: "user" },
+        { index: 4, label: "鍦板舰", icon: "map" },
+        { index: 5, label: "杞挱", icon: "refresh" },
+        // { index: 1, label: "鏃堕棿", icon: "time" },
+        // { index: 2, label: "瀛椾綋", icon: "text" },
       ],
 
       characterList: Object.keys(CHARACTERS).map(id => ({
@@ -449,7 +450,7 @@ export default {
         terraria: {
           characterId: "warrior",
           weaponId: 4956,
-          maskId: 0,  // 0 = 使用套装头甲, >0 = boss 面具 ID
+          maskId: 0,  // 0 = 浣跨敤濂楄澶寸敳, >0 = boss 闈㈠叿 ID
           playerX: 14,
           playerY: 51,
           playerScale: 27,
@@ -467,15 +468,15 @@ export default {
           weaponRotate: 0,
           wingSpeedPct: 50,
           wingId: 29,
-          // 地形 + Boss
+          // 鍦板舰 + Boss
           biome: "forest",
           bossEnabled: true,
           bossId: "king_slime",
           bossX: 53,
           bossY: 41,
           bossScale: 27,
-          // 每个 boss 独立保存自己的 X/Y/scale (slug -> {x, y, scale})
-          // 切 boss 时从这里加载, 调整 X/Y/scale 时写回这里
+          // 姣忎釜 boss 鐙珛淇濆瓨鑷繁鐨?X/Y/scale (slug -> {x, y, scale})
+          // 鍒?boss 鏃朵粠杩欓噷鍔犺浇, 璋冩暣 X/Y/scale 鏃跺啓鍥炶繖閲?
           bossOverrides: {
             king_slime:        { x: 53, y: 41, scale: 27 },  // 1
             eye_of_cthulhu:    { x: 53, y: 22, scale: 27 },  // 2
@@ -511,17 +512,17 @@ export default {
             dark_mage:         { x: 48, y: 35, scale: 25 },  // 32
             ogre:              { x: 54, y: 35, scale: 25 },  // 33
           },
-          // 时钟边框色
+          // 鏃堕挓杈规鑹?
           clockBgInner: "#63971f",
           clockBgOuter: "#8FD71D",
-          // 轮播配置
+          // 杞挱閰嶇疆
           autoRotate: {
-            // 总开关 + 模式
+            // 鎬诲紑鍏?+ 妯″紡
             enabled: false,
             mode: 'element',
             interval: 60,
-            // 元素轮播只 2 个轴: 角色(随机/顺序), Boss(随机/顺序)
-            // 武器/翅膀跟随角色固定搭配, 地形跟随 Boss 关联场景
+            // 鍏冪礌杞挱鍙?2 涓酱: 瑙掕壊(闅忔満/椤哄簭), Boss(闅忔満/椤哄簭)
+            // 姝﹀櫒/缈呰唨璺熼殢瑙掕壊鍥哄畾鎼厤, 鍦板舰璺熼殢 Boss 鍏宠仈鍦烘櫙
             strategies: {
               character: 'random',
               boss: 'random',
@@ -535,18 +536,18 @@ export default {
       biomeList: BIOME_LIST,
 
       presetColors: [
-        { name: "麦色", hex: "#d9cd82" },
-        { name: "青色", hex: "#64c8ff" },
-        { name: "绿色", hex: "#00ff9d" },
-        { name: "黄色", hex: "#ffdc00" },
-        { name: "白色", hex: "#ffffff" },
+        { name: "楹﹁壊", hex: "#d9cd82" },
+        { name: "闈掕壊", hex: "#64c8ff" },
+        { name: "缁胯壊", hex: "#00ff9d" },
+        { name: "榛勮壊", hex: "#ffdc00" },
+        { name: "鐧借壊", hex: "#ffffff" },
       ],
     };
   },
 
   computed: {
-    pageHeaderTitle() { return "泰拉瑞亚时钟"; },
-    previewPanelTitle() { return "模拟预览"; },
+    pageHeaderTitle() { return "娉版媺鐟炰簹鏃堕挓"; },
+    previewPanelTitle() { return "妯℃嫙棰勮"; },
     previewCanvasBoxStyle() {
       const size = this.previewContainerSize?.height || 320;
       return { height: `${size}px` };
@@ -556,7 +557,7 @@ export default {
       return ch ? ch.weapons : [];
     },
     allWeapons() {
-      // 所有 20 把武器(用户可自由选)
+      // 鎵€鏈?20 鎶婃鍣?鐢ㄦ埛鍙嚜鐢遍€?
       const all = [];
       for (const ch of Object.values(CHARACTERS)) {
         for (const w of ch.weapons) {
@@ -567,27 +568,27 @@ export default {
     },
     maskList() {
       return [
-        { id: 164, name: '史莱姆王' },
-        { id: 154, name: '克苏鲁之眼' },
-        { id: 153, name: '世界吞噬者' },
-        { id: 146, name: '克苏鲁之脑' },
-        { id: 150, name: '蜂王' },
-        { id: 98,  name: '骷髅王' },
-        { id: 276, name: '巨鹿' },
-        { id: 147, name: '血肉墙' },
-        { id: 260, name: '史莱姆女皇' },
-        { id: 148, name: '双子魔眼' },
-        { id: 155, name: '毁灭者' },
-        { id: 149, name: '机械骷髅王' },
-        { id: 151, name: '世纪之花' },
-        { id: 152, name: '石巨人' },
-        { id: 168, name: '巨鱼公爵' },
-        { id: 251, name: '光之女皇' },
-        { id: 186, name: '邪教徒' },
-        { id: 174, name: '火星生物' },
-        { id: 187, name: '月亮领主' },
-        { id: 137, name: '南瓜王' },
-        { id: 141, name: '树面具' },
+        { id: 164, name: '鍙茶幈濮嗙帇' },
+        { id: 154, name: '鍏嬭嫃椴佷箣鐪? },
+        { id: 153, name: '涓栫晫鍚炲櫖鑰? },
+        { id: 146, name: '鍏嬭嫃椴佷箣鑴? },
+        { id: 150, name: '铚傜帇' },
+        { id: 98,  name: '楠烽珔鐜? },
+        { id: 276, name: '宸ㄩ箍' },
+        { id: 147, name: '琛€鑲夊' },
+        { id: 260, name: '鍙茶幈濮嗗コ鐨? },
+        { id: 148, name: '鍙屽瓙榄旂溂' },
+        { id: 155, name: '姣佺伃鑰? },
+        { id: 149, name: '鏈烘楠烽珔鐜? },
+        { id: 151, name: '涓栫邯涔嬭姳' },
+        { id: 152, name: '鐭冲法浜? },
+        { id: 168, name: '宸ㄩ奔鍏埖' },
+        { id: 251, name: '鍏変箣濂崇殗' },
+        { id: 186, name: '閭暀寰? },
+        { id: 174, name: '鐏槦鐢熺墿' },
+        { id: 187, name: '鏈堜寒棰嗕富' },
+        { id: 137, name: '鍗楃摐鐜? },
+        { id: 141, name: '鏍戦潰鍏? },
       ];
     },
     hasGuardian() {
@@ -598,21 +599,21 @@ export default {
       return getBossesForBiome(this.config.terraria.biome) || [];
     },
     rotateElements() {
-      // 元素轮播只 2 个轴: 角色和 Boss
-      // 武器/翅膀由角色决定, 地形由 Boss 决定 (固定关联)
+      // 鍏冪礌杞挱鍙?2 涓酱: 瑙掕壊鍜?Boss
+      // 姝﹀櫒/缈呰唨鐢辫鑹插喅瀹? 鍦板舰鐢?Boss 鍐冲畾 (鍥哄畾鍏宠仈)
       return [
-        { key: 'character', label: '角色' },
+        { key: 'character', label: '瑙掕壊' },
         { key: 'boss', label: 'Boss' },
       ];
     },
     intervalOptions() {
       return [
-        { value: 30, label: '30秒' },
-        { value: 60, label: '1分钟' },
-        { value: 300, label: '5分钟' },
-        { value: 600, label: '10分钟' },
-        { value: 1800, label: '30分钟' },
-        { value: 3600, label: '1小时' },
+        { value: 30, label: '30绉? },
+        { value: 60, label: '1鍒嗛挓' },
+        { value: 300, label: '5鍒嗛挓' },
+        { value: 600, label: '10鍒嗛挓' },
+        { value: 1800, label: '30鍒嗛挓' },
+        { value: 3600, label: '1灏忔椂' },
       ];
     },
   },
@@ -627,16 +628,16 @@ export default {
 
     try {
       const loaded = preloadTerrariaSprites();
-      console.log('[terraria] 预加载 sprite 完成', loaded);
+      console.log('[terraria] 棰勫姞杞?sprite 瀹屾垚', loaded);
     } catch (e) {
-      console.error('[terraria] 预加载 sprite 异常', e);
+      console.error('[terraria] 棰勫姞杞?sprite 寮傚父', e);
     }
 
     this.deviceStore = useDeviceStore();
     this.deviceStore.init();
     this.toast = useToast();
 
-    const systemInfo = uni.getSystemInfoSync();
+    const systemInfo = getSystemInfo();
     const statusBarHeight = systemInfo.statusBarHeight || 0;
     const headerHeight = 56;
     this.contentHeight = `${systemInfo.windowHeight - statusBarHeight - headerHeight - 360}px`;
@@ -659,7 +660,7 @@ export default {
   },
 
   watch: {
-    // 任何配置变化都自动持久化（debounce 200ms 避免频繁写入）
+    // 浠讳綍閰嶇疆鍙樺寲閮借嚜鍔ㄦ寔涔呭寲锛坉ebounce 200ms 閬垮厤棰戠箒鍐欏叆锛?
     config: {
       handler() {
         if (this._configSaveTimer) {
@@ -748,8 +749,8 @@ export default {
       this.config.terraria.maskId = maskId || 0;
       this.scheduleRender();
     },
-    // 用户手动改了角色/武器/翅膀/面具/Boss/地形 — 立即关闭轮播,
-    //   预览卡上的"轮播已开启/关闭"徽标会立刻同步反映,所见即所得。
+    // 鐢ㄦ埛鎵嬪姩鏀逛簡瑙掕壊/姝﹀櫒/缈呰唨/闈㈠叿/Boss/鍦板舰 鈥?绔嬪嵆鍏抽棴杞挱,
+    //   棰勮鍗′笂鐨?杞挱宸插紑鍚?鍏抽棴"寰芥爣浼氱珛鍒诲悓姝ュ弽鏄?鎵€瑙佸嵆鎵€寰椼€?"
     _disableAutoRotateOnEdit() {
       const ar = this.config.terraria.autoRotate;
       if (ar && ar.enabled) {
@@ -765,14 +766,14 @@ export default {
       }
       if (next !== cur) {
         this.config.terraria[key] = next;
-        // boss 字段 (bossX/Y/Scale) 同步写回 bossOverrides[bossId]
+        // boss 瀛楁 (bossX/Y/Scale) 鍚屾鍐欏洖 bossOverrides[bossId]
         if (key === 'bossX' || key === 'bossY' || key === 'bossScale') {
           this._saveBossOverride();
         }
         this.scheduleRender();
       }
     },
-    // 把当前 bossX/Y/Scale 存到 bossOverrides[bossId]
+    // 鎶婂綋鍓?bossX/Y/Scale 瀛樺埌 bossOverrides[bossId]
     _saveBossOverride() {
       const t = this.config.terraria;
       if (!t.bossId) return;
@@ -782,7 +783,7 @@ export default {
       };
     },
     _saveTerrariaConfig() {
-      uni.setStorageSync('terraria_clock_config', {
+      setStorage('terraria_clock_config', {
         font: this.config.font,
         hourFormat: this.config.hourFormat,
         showSeconds: this.config.showSeconds,
@@ -791,7 +792,7 @@ export default {
       });
     },
     _loadTerrariaConfig() {
-      const saved = uni.getStorageSync('terraria_clock_config');
+      const saved = getStorage('terraria_clock_config');
       if (saved && typeof saved === 'object') {
         if (saved.font) this.config.font = saved.font;
         if (saved.hourFormat) this.config.hourFormat = saved.hourFormat;
@@ -799,15 +800,15 @@ export default {
         if (saved.time) Object.assign(this.config.time, saved.time);
         if (saved.terraria) {
           Object.assign(this.config.terraria, saved.terraria);
-          // 4 柱默认 y 已从 23 调到 13(往上移 10), 强制刷掉老缓存里的旧值
+          // 4 鏌遍粯璁?y 宸蹭粠 23 璋冨埌 13(寰€涓婄Щ 10), 寮哄埗鍒锋帀鑰佺紦瀛橀噷鐨勬棫鍊?
           const t = this.config.terraria;
           if (t.bossOverrides) {
             for (const slug of ['solar_pillar', 'nebula_pillar', 'stardust_pillar', 'vortex_pillar']) {
               if (t.bossOverrides[slug]) t.bossOverrides[slug].y = 13;
             }
           }
-          // 旧 autoRotate.strategies 字段已废弃 (armor/weapon/wing/biome/boss + 'fixed' 选项)
-          // 一律重置为新结构 (character/boss + 只随机/顺序), 避免旧数据污染
+          // 鏃?autoRotate.strategies 瀛楁宸插簾寮?(armor/weapon/wing/biome/boss + 'fixed' 閫夐」)
+          // 涓€寰嬮噸缃负鏂扮粨鏋?(character/boss + 鍙殢鏈?椤哄簭), 閬垮厤鏃ф暟鎹薄鏌?
           const ar = this.config.terraria.autoRotate;
           if (ar) {
             const newStrategies = { character: 'random', boss: 'random' };
@@ -820,7 +821,7 @@ export default {
               newStrategies.boss = oldBoss;
             }
             ar.strategies = newStrategies;
-            // 旧 comboStrategy 'fixed' 不再支持
+            // 鏃?comboStrategy 'fixed' 涓嶅啀鏀寔
             if (ar.comboStrategy !== 'random' && ar.comboStrategy !== 'sequential') {
               ar.comboStrategy = 'random';
             }
@@ -828,7 +829,7 @@ export default {
         }
       }
     },
-    // 从 bossOverrides[slug] 加载到 bossX/Y/Scale, 如果没有就用默认 48/32/25
+    // 浠?bossOverrides[slug] 鍔犺浇鍒?bossX/Y/Scale, 濡傛灉娌℃湁灏辩敤榛樿 48/32/25
     _loadBossOverride(slug) {
       const t = this.config.terraria;
       const o = t.bossOverrides && t.bossOverrides[slug];
@@ -843,7 +844,7 @@ export default {
       }
     },
     _biomeToIndex(biome) {
-      // 跟 BIOME_LIST 顺序对齐, 板载 sprites_tiles.h getBiomeTile 用同样的 index
+      // 璺?BIOME_LIST 椤哄簭瀵归綈, 鏉胯浇 sprites_tiles.h getBiomeTile 鐢ㄥ悓鏍风殑 index
       const map = {
         forest: 0, corruption: 1, crimson: 2, jungle: 3, snow: 4,
         dungeon: 5, underworld: 6, hallow: 7, ocean: 8, temple: 9,
@@ -859,7 +860,7 @@ export default {
       if (this.config.terraria.biome === biomeId) return;
       this._disableAutoRotateOnEdit();
       this.config.terraria.biome = biomeId;
-      // 切地形时 boss 列表会变, 自动选第一个
+      // 鍒囧湴褰㈡椂 boss 鍒楄〃浼氬彉, 鑷姩閫夌涓€涓?
       const list = getBossesForBiome(biomeId);
       if (list.length > 0) {
         this.config.terraria.bossId = list[0].slug;
@@ -879,7 +880,7 @@ export default {
       this.scheduleRender();
     },
 
-    // ===== 直接覆盖 mixin 的 sendToDevice (terraria 走独立 ws.startTerrariaClock) =====
+    // ===== 鐩存帴瑕嗙洊 mixin 鐨?sendToDevice (terraria 璧扮嫭绔?ws.startTerrariaClock) =====
     async sendToDevice() {
       if (!this.guardBeforeSend(this.deviceStore.connected)) return;
 
@@ -921,14 +922,14 @@ export default {
           clockTextColor: this.config.time.color,
           clockBgInner: t.clockBgInner,
           clockBgOuter: t.clockBgOuter,
-          // 轮播配置: 无论开/关都发完整对象,关闭时板载也能立刻停止轮播
-          // (之前 enabled=false 时发 undefined → 板载 if (containsKey "autoRotate")
-          //  跳过 → 旧轮播状态残留继续转)
+          // 杞挱閰嶇疆: 鏃犺寮€/鍏抽兘鍙戝畬鏁村璞?鍏抽棴鏃舵澘杞戒篃鑳界珛鍒诲仠姝㈣疆鎾?
+          // (涔嬪墠 enabled=false 鏃跺彂 undefined 鈫?鏉胯浇 if (containsKey "autoRotate")
+          //  璺宠繃 鈫?鏃ц疆鎾姸鎬佹畫鐣欑户缁浆)
           autoRotate: {
             enabled: !!t.autoRotate.enabled,
             mode: t.autoRotate.mode === 'combo' ? 1 : 0,
             interval: t.autoRotate.interval,
-            // 板载 RotateStrategy: random=0, sequential=1 (固定选项已去掉)
+            // 鏉胯浇 RotateStrategy: random=0, sequential=1 (鍥哄畾閫夐」宸插幓鎺?
             strategies: {
               character: t.autoRotate.strategies.character === 'sequential' ? 1 : 0,
               boss: t.autoRotate.strategies.boss === 'sequential' ? 1 : 0,
@@ -943,13 +944,13 @@ export default {
             comboStrategy: t.autoRotate.comboStrategy === 'sequential' ? 1 : 0,
           },
         });
-        this.showSendSuccess("已应用");
+        this.showSendSuccess("宸插簲鐢?")";"
         this._saveTerrariaConfig();
       } catch (err) {
         await this.deviceStore.rollbackBusinessMode(previousMode, {
           expectedMode: "terraria_clock",
         });
-        console.error("发送泰拉瑞亚时钟失败:", err);
+        console.error("鍙戦€佹嘲鎷夌憺浜氭椂閽熷け璐?", err);
         this.showSendFailure(err);
       } finally {
         this.endSendUi();
@@ -957,8 +958,8 @@ export default {
     },
 
     captureSendingPreview() {
-      // 快照只复制当前 previewPixels, 不重新渲染 (避免发送瞬间卡顿)
-      // 如果还没有有效像素就用空 Map (loading 占位会盖住)
+      // 蹇収鍙鍒跺綋鍓?previewPixels, 涓嶉噸鏂版覆鏌?(閬垮厤鍙戦€佺灛闂村崱椤?
+      // 濡傛灉杩樻病鏈夋湁鏁堝儚绱犲氨鐢ㄧ┖ Map (loading 鍗犱綅浼氱洊浣?
       const frozen = this.previewPixels instanceof Map ? this.previewPixels : new Map();
       this.sendingPreviewPixels = new Map(frozen);
       this.sendingPreviewTick += 1;
@@ -969,14 +970,14 @@ export default {
     },
     beginSendUi() {
       this.captureSendingPreview();
-      // 发送期间暂停动画循环, 避免 await 卡顿期间 setTimeout 任务堆积
-      // 等事务返回后一次性补跑导致动画"二倍速跳跃"
+      // 鍙戦€佹湡闂存殏鍋滃姩鐢诲惊鐜? 閬垮厤 await 鍗￠】鏈熼棿 setTimeout 浠诲姟鍫嗙Н
+      // 绛変簨鍔¤繑鍥炲悗涓€娆℃€цˉ璺戝鑷村姩鐢?浜屽€嶉€熻烦璺?
       this.stopAnimLoop();
       deviceSendUxMixin.methods.beginSendUi.call(this);
     },
     endSendUi() {
       deviceSendUxMixin.methods.endSendUi.call(this);
-      // 恢复动画循环 — 重置 animStartTs 避免时间戳跳跃造成二倍速感
+      // 鎭㈠鍔ㄧ敾寰幆 鈥?閲嶇疆 animStartTs 閬垮厤鏃堕棿鎴宠烦璺冮€犳垚浜屽€嶉€熸劅
       if (this.previewCanvasReady && !this.animLoopHandle) {
         this.animStartTs = Date.now();
         this.animTimeSec = 0;
@@ -989,7 +990,7 @@ export default {
       try {
         scenePixels = renderTerrariaScene(this.config.terraria, this.animTimeSec);
       } catch (e) {
-        console.error('[terraria] renderTerrariaScene 异常', e);
+        console.error('[terraria] renderTerrariaScene 寮傚父', e);
         scenePixels = new Map();
       }
 
@@ -1041,7 +1042,7 @@ export default {
     startAnimLoop() {
       if (this.animLoopHandle) return;
       this.animStartTs = Date.now();
-      // 200ms 一帧 (5fps) — 小程序 Map 大量 set 性能差, 不需要 60fps
+      // 200ms 涓€甯?(5fps) 鈥?灏忕▼搴?Map 澶ч噺 set 鎬ц兘宸? 涓嶉渶瑕?60fps
       const FRAME_INTERVAL_MS = 200;
       const tick = () => {
         if (!this.previewCanvasReady) {
@@ -1075,11 +1076,11 @@ export default {
     },
 
     initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
+      const systemInfo = getSystemInfo();
       const statusBarHeight = systemInfo.statusBarHeight || 0;
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query.select(".canvas-section").boundingClientRect((sectionRect) => {
             if (!sectionRect || !sectionRect.height) return;
             const nextHeight = systemInfo.windowHeight - statusBarHeight - 88 - sectionRect.height;
@@ -1128,7 +1129,7 @@ export default {
         ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) }
         : { r: 255, g: 255, b: 255 };
     },
-    handleBack() { uni.navigateBack(); },
+    handleBack() { navigateBack(); },
   },
 };
 </script>
@@ -1258,7 +1259,7 @@ export default {
   padding: 0 0 56rpx;
 }
 
-/* 复用同组页 settings-card 风格 */
+/* 澶嶇敤鍚岀粍椤?settings-card 椋庢牸 */
 .settings-card {
   background: var(--bg-secondary);
   border: 2rpx solid var(--nb-ink);
@@ -1278,7 +1279,7 @@ export default {
   color: var(--text-primary);
 }
 
-/* 4 职业按钮网格 */
+/* 4 鑱屼笟鎸夐挳缃戞牸 */
 .character-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1310,7 +1311,7 @@ export default {
 }
 .character-btn.active .character-set { color: #000; }
 
-/* 武器 */
+/* 姝﹀櫒 */
 .weapon-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -1332,7 +1333,7 @@ export default {
 }
 .weapon-btn.active text { color: #000; font-weight: 700; }
 
-/* 横向 tabs (套装/武器/面具/翅膀) */
+/* 妯悜 tabs (濂楄/姝﹀櫒/闈㈠叿/缈呰唨) */
 .equip-tabs {
   display: flex;
   gap: 0;
@@ -1383,7 +1384,7 @@ export default {
 }
 .htab-item.active text { color: #000; font-weight: 700; }
 
-/* 地形网格 (Tab 4) */
+/* 鍦板舰缃戞牸 (Tab 4) */
 .biome-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1400,7 +1401,7 @@ export default {
 .biome-btn text { font-size: 22rpx; color: var(--text-primary); }
 .biome-btn.active text { color: #000; font-weight: 700; }
 
-/* Boss 网格 */
+/* Boss 缃戞牸 */
 .boss-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1422,7 +1423,7 @@ export default {
 .boss-btn.active text { color: #000; font-weight: 700; }
 .boss-btn.active .boss-size { color: #333; }
 
-/* Boss 开关 */
+/* Boss 寮€鍏?*/
 .toggle-btn {
   margin-left: auto;
   padding: 6rpx 18rpx;
@@ -1434,7 +1435,7 @@ export default {
 .toggle-btn text { font-size: 22rpx; color: var(--text-primary); }
 .toggle-btn.active text { color: #000; font-weight: 700; }
 
-/* 复用 setting-item-row 样式 (同组其他页公共块) */
+/* 澶嶇敤 setting-item-row 鏍峰紡 (鍚岀粍鍏朵粬椤靛叕鍏卞潡) */
 .setting-item-row {
   display: flex;
   align-items: center;
@@ -1475,7 +1476,7 @@ export default {
   text-align: center;
 }
 
-/* 底部 Tab 栏 */
+/* 搴曢儴 Tab 鏍?*/
 .bottom-tabs {
   display: flex;
   flex-shrink: 0;

@@ -1,4 +1,4 @@
-export const DEVICE_PANEL_SIZE = 64;
+﻿export const DEVICE_PANEL_SIZE = 64;
 
 export function clamp(value, min, max) {
   if (value < min) {
@@ -12,11 +12,11 @@ export function clamp(value, min, max) {
 
 export function normalizeHexColor(value) {
   if (typeof value !== "string") {
-    throw new Error("颜色值无效");
+    throw new Error("棰滆壊鍊兼棤鏁?")";"
   }
   const body = value.trim().replace(/^#/, "");
   if (!/^[0-9a-fA-F]{6}$/.test(body)) {
-    throw new Error("颜色值无效");
+    throw new Error("棰滆壊鍊兼棤鏁?")";"
   }
   return `#${body.toLowerCase()}`;
 }

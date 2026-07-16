@@ -1,9 +1,9 @@
-<template>
+﻿<template>
   <section class="clock-section">
     <div class="clock-section__head">
       <div>
-        <h3 class="clock-section__title">字体样式</h3>
-        <p class="clock-section__meta">沿用 uniapp 的时钟字模，网站端预览和设备端落字保持同一套字宽逻辑。</p>
+        <h3 class="clock-section__title">瀛椾綋鏍峰紡</h3>
+        <p class="clock-section__meta">娌跨敤 uniapp 鐨勬椂閽熷瓧妯★紝缃戠珯绔瑙堝拰璁惧绔惤瀛椾繚鎸佸悓涓€濂楀瓧瀹介€昏緫銆?</p>
       </div>
     </div>
 
@@ -25,18 +25,18 @@
 
     <div class="clock-setting-pair">
       <div class="clock-setting-box">
-        <span class="clock-row__label">秒钟</span>
+        <span class="clock-row__label">绉掗挓</span>
         <div class="glx-tabs">
-          <button type="button" class="glx-tab" :class="{ 'is-active': showSeconds === false }" @click="$emit('set-show-seconds', false)">关闭</button>
-          <button type="button" class="glx-tab" :class="{ 'is-active': showSeconds === true }" @click="$emit('set-show-seconds', true)">显示</button>
+          <button type="button" class="glx-tab" :class="{ 'is-active': showSeconds === false }" @click="$emit('set-show-seconds', false)">鍏抽棴</button>
+          <button type="button" class="glx-tab" :class="{ 'is-active': showSeconds === true }" @click="$emit('set-show-seconds', true)">鏄剧ず</button>
         </div>
       </div>
 
       <div class="clock-setting-box">
-        <span class="clock-row__label">小时制式</span>
+        <span class="clock-row__label">灏忔椂鍒跺紡</span>
         <div class="glx-tabs">
-          <button type="button" class="glx-tab" :class="{ 'is-active': hourFormat === 24 }" @click="$emit('set-hour-format', 24)">24 小时</button>
-          <button type="button" class="glx-tab" :class="{ 'is-active': hourFormat === 12 }" @click="$emit('set-hour-format', 12)">12 小时</button>
+          <button type="button" class="glx-tab" :class="{ 'is-active': hourFormat === 24 }" @click="$emit('set-hour-format', 24)">24 灏忔椂</button>
+          <button type="button" class="glx-tab" :class="{ 'is-active': hourFormat === 12 }" @click="$emit('set-hour-format', 12)">12 灏忔椂</button>
         </div>
       </div>
     </div>

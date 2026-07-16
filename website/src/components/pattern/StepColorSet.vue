@@ -1,6 +1,6 @@
-<template>
+﻿<template>
   <div class="step-color-set">
-    <h2 class="step-title">选择 Artkal 拼豆套装</h2>
+    <h2 class="step-title">閫夋嫨 Artkal 鎷艰眴濂楄</h2>
     
     <div class="preset-grid">
       <div
@@ -11,12 +11,12 @@
         @click="$emit('update:modelValue', preset.key)"
       >
         <h3>{{ preset.name }}</h3>
-        <p>{{ preset.count }} 种颜色</p>
+        <p>{{ preset.count }} 绉嶉鑹?</p>
       </div>
     </div>
     
     <div class="info-box">
-      <p>套装包含精心挑选的 Artkal 拼豆颜色，适合各种创作需求</p>
+      <p>濂楄鍖呭惈绮惧績鎸戦€夌殑 Artkal 鎷艰眴棰滆壊锛岄€傚悎鍚勭鍒涗綔闇€姹?</p>
     </div>
   </div>
 </template>

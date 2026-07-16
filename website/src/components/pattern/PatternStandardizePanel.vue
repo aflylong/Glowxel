@@ -1,8 +1,8 @@
-<template>
+﻿<template>
   <div class="standardize-panel">
     <div class="panel-head">
-      <h2>标准化替换</h2>
-      <span>{{ groups.length }} 组颜色偏差</span>
+      <h2>鏍囧噯鍖栨浛鎹?</h2>
+      <span>{{ groups.length }} 缁勯鑹插亸宸?</span>
     </div>
 
     <div v-if="groups.length" class="group-list">
@@ -10,19 +10,18 @@
         <div class="group-top">
           <div class="color-pair">
             <span class="color-badge" :style="{ backgroundColor: group.sourceHex }">{{ group.sourceCode }}</span>
-            <span class="arrow">→</span>
+            <span class="arrow">鈫?</span>
             <span class="color-badge" :style="{ backgroundColor: group.targetHex }">{{ group.targetCode }}</span>
           </div>
-          <strong>{{ group.count }} 处</strong>
+          <strong>{{ group.count }} 澶?</strong>
         </div>
 
         <p class="group-meta">
-          实拍校验里这组颜色最常见，优先考虑替换成观察色，或者选一个更标准的相近色。
-        </p>
+          瀹炴媿鏍￠獙閲岃繖缁勯鑹叉渶甯歌锛屼紭鍏堣€冭檻鏇挎崲鎴愯瀵熻壊锛屾垨鑰呴€変竴涓洿鏍囧噯鐨勭浉杩戣壊銆?        </p>
 
         <div class="group-stats">
-          <span>局部可减少 {{ group.estimatedFixCount }} 处偏差</span>
-          <span>当前图纸共 {{ group.globalSourceCount }} 处 {{ group.sourceCode }}</span>
+          <span>灞€閮ㄥ彲鍑忓皯 {{ group.estimatedFixCount }} 澶勫亸宸?</span>
+          <span>褰撳墠鍥剧焊鍏?{{ group.globalSourceCount }} 澶?{{ group.sourceCode }}</span>
         </div>
 
         <div class="action-row">
@@ -31,19 +30,18 @@
             type="button"
             @click="$emit('apply-group-replacement', group, group.targetCode, 'group')"
           >
-            仅替换这 {{ group.count }} 处
-          </button>
+            浠呮浛鎹㈣繖 {{ group.count }} 澶?          </button>
           <button
             class="action-btn"
             type="button"
             @click="$emit('apply-group-replacement', group, group.targetCode, 'global')"
           >
-            全图替换 {{ group.sourceCode }}
+            鍏ㄥ浘鏇挎崲 {{ group.sourceCode }}
           </button>
         </div>
 
         <div v-if="group.similarOptions.length" class="similar-box">
-          <span class="similar-label">相近备选</span>
+          <span class="similar-label">鐩歌繎澶囬€?</span>
           <div class="similar-grid">
             <button
               v-for="option in group.similarOptions"
@@ -61,8 +59,7 @@
     </div>
 
     <div v-else class="empty-state">
-      还没有可聚合的颜色偏差。导入实拍图后，这里会把最常见的颜色误差收敛成可替换建议。
-    </div>
+      杩樻病鏈夊彲鑱氬悎鐨勯鑹插亸宸€傚鍏ュ疄鎷嶅浘鍚庯紝杩欓噷浼氭妸鏈€甯歌鐨勯鑹茶宸敹鏁涙垚鍙浛鎹㈠缓璁€?    </div>
   </div>
 </template>
 

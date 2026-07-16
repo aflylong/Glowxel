@@ -1,45 +1,44 @@
-<template>
+﻿<template>
   <div class="glx-page-shell">
     <section class="glx-page-shell__hero">
       <span class="glx-page-shell__eyebrow">Cloud Sync</span>
-      <h1 class="glx-page-shell__title">云端同步</h1>
+      <h1 class="glx-page-shell__title">浜戠鍚屾</h1>
       <p class="glx-page-shell__desc">
-        云端同步页负责承接项目列表和同步状态，不应该被直接从网站端拿掉。
-      </p>
+        浜戠鍚屾椤佃礋璐ｆ壙鎺ラ」鐩垪琛ㄥ拰鍚屾鐘舵€侊紝涓嶅簲璇ヨ鐩存帴浠庣綉绔欑鎷挎帀銆?      </p>
       <div class="glx-hero-metrics">
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">云端项目</span>
+          <span class="glx-hero-metric__label">浜戠椤圭洰</span>
           <strong class="glx-hero-metric__value">{{ projectStore.totalProjects }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">草稿</span>
+          <span class="glx-hero-metric__label">鑽夌</span>
           <strong class="glx-hero-metric__value">{{ projectStore.draftProjects.length }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">已发布</span>
+          <span class="glx-hero-metric__label">宸插彂甯?</span>
           <strong class="glx-hero-metric__value">{{ projectStore.publishedProjects.length }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">最近同步</span>
+          <span class="glx-hero-metric__label">鏈€杩戝悓姝?</span>
           <strong class="glx-hero-metric__value">{{ lastSyncText }}</strong>
         </article>
       </div>
       <div class="glx-inline-actions">
         <button type="button" class="glx-button glx-button--ghost" :disabled="loading" @click="reloadAll">
-          {{ loading ? "刷新中..." : "刷新同步状态" }}
+          {{ loading ? "鍒锋柊涓?.."" : "鍒锋柊鍚屾鐘舵€?"" }}"
         </button>
       </div>
     </section>
 
     <section class="glx-section-card glx-section-card--stack">
       <div class="glx-section-head">
-        <h2 class="glx-section-title">云端项目列表</h2>
-        <span class="glx-section-meta">共 {{ projectStore.totalProjects }} 个</span>
+        <h2 class="glx-section-title">浜戠椤圭洰鍒楄〃</h2>
+        <span class="glx-section-meta">鍏?{{ projectStore.totalProjects }} 涓?</span>
       </div>
 
       <div v-if="projectStore.projects.length === 0" class="glx-empty-card">
-        <strong class="glx-section-title">当前没有云端项目</strong>
-        <p class="glx-page-shell__desc">去工作台保存草稿后，这里会显示同步到云端的项目列表。</p>
+        <strong class="glx-section-title">褰撳墠娌℃湁浜戠椤圭洰</strong>
+        <p class="glx-page-shell__desc">鍘诲伐浣滃彴淇濆瓨鑽夌鍚庯紝杩欓噷浼氭樉绀哄悓姝ュ埌浜戠鐨勯」鐩垪琛ㄣ€?</p>
       </div>
 
       <div v-else class="glx-stack">
@@ -49,8 +48,8 @@
             <span class="glx-list-card__desc">{{ projectMeta(item) }}</span>
           </div>
           <div class="glx-inline-actions">
-            <router-link :to="`/overview/${item.id}`" class="glx-button glx-button--ghost">总览</router-link>
-            <router-link :to="`/editor/${item.id}`" class="glx-button glx-button--ghost">编辑</router-link>
+            <router-link :to="`/overview/${item.id}`" class="glx-button glx-button--ghost">鎬昏</router-link>
+            <router-link :to="`/editor/${item.id}`" class="glx-button glx-button--ghost">缂栬緫</router-link>
           </div>
         </article>
       </div>
@@ -80,14 +79,14 @@ function projectName(item) {
   if (typeof item.name === "string" && item.name.length > 0) {
     return item.name;
   }
-  return "未命名项目";
+  return "鏈懡鍚嶉」鐩?";"
 }
 
 function projectMeta(item) {
   const parts = [];
 
   if (typeof item.width === "number" && typeof item.height === "number") {
-    parts.push(`${item.width} × ${item.height}`);
+    parts.push(`${item.width} 脳 ${item.height}`);
   }
 
   if (typeof item.status === "string" && item.status.length > 0) {
@@ -98,7 +97,7 @@ function projectMeta(item) {
     parts.push(item.updated_at.slice(0, 10));
   }
 
-  return parts.join(" · ");
+  return parts.join(" 路 ");
 }
 
 async function reloadAll() {

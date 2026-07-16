@@ -1,7 +1,7 @@
-<!-- 冒险岛 1 代 主题预览 (定档无参数模式) -->
+﻿<!-- 鍐掗櫓宀?1 浠?涓婚棰勮 (瀹氭。鏃犲弬鏁版ā寮? -->
 <template>
   <div class="adventure-page glx-page-shell game-mode-page">
-    <PcModeTopbar title="冒险岛 1 代" />
+    <PcModeTopbar title="鍐掗櫓宀?1 浠?" /">"
 
     <section class="adventure-layout game-mode-layout">
       <article
@@ -10,7 +10,7 @@
         <div class="adventure-preview-card__head">
           <div>
             <p class="adventure-preview-card__eyebrow">Device Mode</p>
-            <h2 class="adventure-preview-card__title">冒险岛预览</h2>
+            <h2 class="adventure-preview-card__title">鍐掗櫓宀涢瑙?</h2>
           </div>
         </div>
 
@@ -22,14 +22,14 @@
               :disabled="isSending"
               @click="sendToDevice"
             >
-              {{ isSending ? "发送中..." : "发送到设备" }}
+              {{ isSending ? "鍙戦€佷腑..." : "鍙戦€佸埌璁惧" }}
             </button>
           </div>
           <span
             class="glx-chip"
             :class="deviceStore && deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
           >
-            {{ deviceStore && deviceStore.connected ? "已连接" : "未连接" }}
+            {{ deviceStore && deviceStore.connected ? "宸茶繛鎺? : "鏈繛鎺? }}
           </span>
         </div>
 
@@ -55,14 +55,14 @@
 
         <div class="adventure-summary-grid">
           <article class="adventure-summary-card">
-            <span class="adventure-summary-card__label">角色状态</span>
+            <span class="adventure-summary-card__label">瑙掕壊鐘舵€?</span>
             <strong class="adventure-summary-card__value">{{ statusText || "--" }}</strong>
-            <span class="adventure-summary-card__meta">静态预览沿用板载布局常量</span>
+            <span class="adventure-summary-card__meta">闈欐€侀瑙堟部鐢ㄦ澘杞藉竷灞€甯搁噺</span>
           </article>
           <article class="adventure-summary-card">
-            <span class="adventure-summary-card__label">画布尺寸</span>
+            <span class="adventure-summary-card__label">鐢诲竷灏哄</span>
             <strong class="adventure-summary-card__value">64 x 64</strong>
-            <span class="adventure-summary-card__meta">像素预览与设备模式一致</span>
+            <span class="adventure-summary-card__meta">鍍忕礌棰勮涓庤澶囨ā寮忎竴鑷?</span>
           </article>
         </div>
       </article>
@@ -70,8 +70,8 @@
       <div class="adventure-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">模式配置</h2>
-            <span class="glx-section-meta">说明 / 状态</span>
+            <h2 class="glx-section-title">妯″紡閰嶇疆</h2>
+            <span class="glx-section-meta">璇存槑 / 鐘舵€?</span>
           </div>
           <DeviceModeTabs v-model="activeTab" :items="tabItems" />
         </article>
@@ -81,37 +81,37 @@
           class="glx-section-card glx-section-card--stack"
         >
           <div class="glx-section-head">
-            <h2 class="glx-section-title">模式说明</h2>
-            <span class="glx-section-meta">固定主题屏保</span>
+            <h2 class="glx-section-title">妯″紡璇存槑</h2>
+            <span class="glx-section-meta">鍥哄畾涓婚灞忎繚</span>
           </div>
 
           <div class="adventure-note-grid">
             <div class="adventure-note-card">
-              <strong>主题内容</strong>
-              <p>高桥名人冒险岛主题，主角会踩滑板、跳跃、投斧子并自动奔跑。</p>
+              <strong>涓婚鍐呭</strong>
+              <p>楂樻ˉ鍚嶄汉鍐掗櫓宀涗富棰橈紝涓昏浼氳俯婊戞澘銆佽烦璺冦€佹姇鏂у瓙骞惰嚜鍔ㄥ璺戙€?</p>
             </div>
             <div class="adventure-note-card">
-              <strong>场景元素</strong>
-              <p>随机生成蜗牛、乌鸦、野猪、蛇、石头、火堆、蛋和水果。</p>
+              <strong>鍦烘櫙鍏冪礌</strong>
+              <p>闅忔満鐢熸垚铚楃墰銆佷箤楦︺€侀噹鐚€佽泧銆佺煶澶淬€佺伀鍫嗐€佽泲鍜屾按鏋溿€?</p>
             </div>
           </div>
         </article>
 
         <article v-else class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">当前状态</h2>
-            <span class="glx-section-meta">预览摘要</span>
+            <h2 class="glx-section-title">褰撳墠鐘舵€?</h2>
+            <span class="glx-section-meta">棰勮鎽樿</span>
           </div>
 
           <div class="glx-kv-grid">
             <div class="glx-kv-card">
-              <span class="glx-kv-card__label">角色状态</span>
+              <span class="glx-kv-card__label">瑙掕壊鐘舵€?</span>
               <strong class="glx-kv-card__value">{{ statusText || "--" }}</strong>
             </div>
             <div class="glx-kv-card">
-              <span class="glx-kv-card__label">连接状态</span>
+              <span class="glx-kv-card__label">杩炴帴鐘舵€?</span>
               <strong class="glx-kv-card__value">{{
-                deviceStore && deviceStore.connected ? "已连接" : "未连接"
+                deviceStore && deviceStore.connected ? "宸茶繛鎺? : "鏈繛鎺?
               }}</strong>
             </div>
           </div>
@@ -132,6 +132,7 @@
 </template>
 
 <script>
+import { createDomQuery } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from '@/mixins/uniLifecycleAdapter.js';
 import deviceSendUxMixin from '@/mixins/deviceSendUxMixin.js';
 import { useDeviceStore } from '@/stores/device.js';
@@ -171,8 +172,8 @@ export default {
       animHandle: null,
       activeTab: 'intro',
       tabItems: [
-        { value: 'intro', label: '说明' },
-        { value: 'status', label: '状态' },
+        { value: 'intro', label: '璇存槑' },
+        { value: 'status', label: '鐘舵€? },
       ],
     };
   },
@@ -180,10 +181,10 @@ export default {
     statusText() {
       const ch = this.sceneState?.character;
       if (!ch || !ch.type) return '';
-      const parts = [`状态: ${ch.type}`];
-      if (ch.hasAxe) parts.push('持斧');
-      if (ch.fairyT > 0) parts.push(`无敌 ${Math.ceil(ch.fairyT / 30)}s`);
-      return parts.join(' · ');
+      const parts = [`鐘舵€? ${ch.type}`];
+      if (ch.hasAxe) parts.push('鎸佹枾');
+      if (ch.fairyT > 0) parts.push(`鏃犳晫 ${Math.ceil(ch.fairyT / 30)}s`);
+      return parts.join(' 路 ');
     },
     previewCanvasBoxStyle() {
       return { height: `${this.previewContainerSize.height}px` };
@@ -211,7 +212,7 @@ export default {
     initPreviewCanvas() {
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query.select('.preview-canvas-container').boundingClientRect((data) => {
             if (data && data.width > 0) {
               this.previewContainerSize = { width: data.width, height: data.width };
@@ -278,12 +279,12 @@ export default {
       try {
         const ws = this.deviceStore.getWebSocket();
         await ws.startAdventureIsland();
-        this.showSendSuccess('已应用');
+        this.showSendSuccess('宸插簲鐢?);
       } catch (err) {
         await this.deviceStore.rollbackBusinessMode?.(previousMode, {
           expectedMode: 'adventure_island',
         });
-        console.error('[adventure-island] 发送失败', err);
+        console.error('[adventure-island] 鍙戦€佸け璐?, err);
         this.showSendFailure(err);
       } finally {
         this.endSendUi();

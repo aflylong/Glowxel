@@ -1,4 +1,4 @@
-import { defineStore } from "pinia";
+﻿import { defineStore } from "pinia";
 import {
   clonePatternDocument,
   createPatternDocument,
@@ -43,7 +43,7 @@ export const usePatternWorkbenchStore = defineStore("patternWorkbench", {
       snapshots: [
         createPatternSnapshot({
           id: "snapshot-initial",
-          label: "初始空白版本",
+          label: "鍒濆绌虹櫧鐗堟湰",
           stage: "draft",
           document: serializePatternDocument(initialDocument),
         }),
@@ -143,7 +143,7 @@ export const usePatternWorkbenchStore = defineStore("patternWorkbench", {
       this.lastImportReport = result.report || null;
       this.applyCurrentDocument(
         result.document,
-        snapshotLabel || `生成图纸 ${result.document.name}`,
+        snapshotLabel || `鐢熸垚鍥剧焊 ${result.document.name}`,
         stage,
       );
       return true;
@@ -253,39 +253,39 @@ export const usePatternWorkbenchStore = defineStore("patternWorkbench", {
 
       if (actionType === "reference") {
         this.setDocumentPixel(nextDocument, x, y, referenceCode);
-        this.commitPatchedDocument(nextDocument, `按参考修正 ${issue.title}`, "patched");
+        this.commitPatchedDocument(nextDocument, `鎸夊弬鑰冧慨姝?${issue.title}`, "patched");
         return true;
       }
 
       if (actionType === "remove") {
         this.setDocumentPixel(nextDocument, x, y, "");
-        this.commitPatchedDocument(nextDocument, `删除像素 ${issue.title}`, "patched");
+        this.commitPatchedDocument(nextDocument, `鍒犻櫎鍍忕礌 ${issue.title}`, "patched");
         return true;
       }
 
       if (actionType === "neighbor") {
         this.setDocumentPixel(nextDocument, x, y, dominantNeighborCode);
-        this.commitPatchedDocument(nextDocument, `合并邻域主色 ${issue.title}`, "patched");
+        this.commitPatchedDocument(nextDocument, `鍚堝苟閭诲煙涓昏壊 ${issue.title}`, "patched");
         return true;
       }
 
       if (actionType === "suggestion") {
-        if (issue.type === "缺失点" || issue.type === "颜色偏差") {
+        if (issue.type === "缂哄け鐐? || issue.type === "棰滆壊鍋忓樊") {"
           this.setDocumentPixel(nextDocument, x, y, referenceCode);
-          this.commitPatchedDocument(nextDocument, `应用建议 ${issue.title}`, "patched");
+          this.commitPatchedDocument(nextDocument, `搴旂敤寤鸿 ${issue.title}`, "patched");
           return true;
         }
 
-        if (issue.type === "多余点") {
+        if (issue.type === "澶氫綑鐐?) {"
           this.setDocumentPixel(nextDocument, x, y, "");
-          this.commitPatchedDocument(nextDocument, `应用建议 ${issue.title}`, "patched");
+          this.commitPatchedDocument(nextDocument, `搴旂敤寤鸿 ${issue.title}`, "patched");
           return true;
         }
 
-        if (issue.type === "孤立点") {
+        if (issue.type === "瀛ょ珛鐐?) {"
           const nextCode = referenceCode || dominantNeighborCode;
           this.setDocumentPixel(nextDocument, x, y, nextCode);
-          this.commitPatchedDocument(nextDocument, `应用建议 ${issue.title}`, "patched");
+          this.commitPatchedDocument(nextDocument, `搴旂敤寤鸿 ${issue.title}`, "patched");
           return true;
         }
       }
@@ -340,15 +340,15 @@ export const usePatternWorkbenchStore = defineStore("patternWorkbench", {
         }
 
         if (actionType === "suggestion") {
-          if (issue.type === "缺失点" || issue.type === "颜色偏差") {
+          if (issue.type === "缂哄け鐐? || issue.type === "棰滆壊鍋忓樊") {"
             this.setDocumentPixel(nextDocument, x, y, referenceCode);
             return;
           }
-          if (issue.type === "多余点") {
+          if (issue.type === "澶氫綑鐐?) {"
             this.setDocumentPixel(nextDocument, x, y, "");
             return;
           }
-          if (issue.type === "孤立点") {
+          if (issue.type === "瀛ょ珛鐐?) {"
             this.setDocumentPixel(nextDocument, x, y, referenceCode || dominantNeighborCode);
           }
         }
@@ -356,7 +356,7 @@ export const usePatternWorkbenchStore = defineStore("patternWorkbench", {
 
       this.commitPatchedDocument(
         nextDocument,
-        `批量处理 ${matchedIssues.length} 个问题`,
+        `鎵归噺澶勭悊 ${matchedIssues.length} 涓棶棰榒,
         "patched",
       );
       return true;
@@ -392,7 +392,7 @@ export const usePatternWorkbenchStore = defineStore("patternWorkbench", {
 
       this.commitPatchedDocument(
         nextDocument,
-        `区域处理 ${positions.length} 个点`,
+        `鍖哄煙澶勭悊 ${positions.length} 涓偣`,
         "patched",
       );
       return true;
@@ -410,7 +410,7 @@ export const usePatternWorkbenchStore = defineStore("patternWorkbench", {
 
       this.commitPatchedDocument(
         nextDocument,
-        `区域填充 ${positions.length} 个点`,
+        `鍖哄煙濉厖 ${positions.length} 涓偣`,
         "patched",
       );
       return true;
@@ -434,7 +434,7 @@ export const usePatternWorkbenchStore = defineStore("patternWorkbench", {
 
       this.commitPatchedDocument(
         nextDocument,
-        `${actionType === "erase" ? "橡皮擦除" : "画笔绘制"} ${positions.length} 个点`,
+        `${actionType === "erase" ? "姗＄毊鎿﹂櫎" : "鐢荤瑪缁樺埗"} ${positions.length} 涓偣`,
         "patched",
       );
       return true;
@@ -457,7 +457,7 @@ export const usePatternWorkbenchStore = defineStore("patternWorkbench", {
         });
         this.commitPatchedDocument(
           nextDocument,
-          `区域替换颜色 ${sourceCode} -> ${targetCode}`,
+          `鍖哄煙鏇挎崲棰滆壊 ${sourceCode} -> ${targetCode}`,
           "patched",
         );
         return true;
@@ -471,7 +471,7 @@ export const usePatternWorkbenchStore = defineStore("patternWorkbench", {
 
       this.commitPatchedDocument(
         nextDocument,
-        `全图替换颜色 ${sourceCode} -> ${targetCode}`,
+        `鍏ㄥ浘鏇挎崲棰滆壊 ${sourceCode} -> ${targetCode}`,
         "patched",
       );
       return true;
@@ -488,7 +488,7 @@ export const usePatternWorkbenchStore = defineStore("patternWorkbench", {
         return false;
       }
       this.document = deserializePatternDocument(snapshot.document);
-      this.pushSnapshot(`恢复版本 ${snapshot.label}`, "restored", this.document);
+      this.pushSnapshot(`鎭㈠鐗堟湰 ${snapshot.label}`, "restored", this.document);
       this.rebuildAnalysis();
       return true;
     },
@@ -499,7 +499,7 @@ export const usePatternWorkbenchStore = defineStore("patternWorkbench", {
       try {
         const result = await importPatternFromImage(file, options);
         this.lastImportReport = result.report || null;
-        this.applyCurrentDocument(result.document, `导入图片 ${result.document.name}`, "generated");
+        this.applyCurrentDocument(result.document, `瀵煎叆鍥剧墖 ${result.document.name}`, "generated");
       } catch (error) {
         this.error = error.message;
         throw error;
@@ -530,7 +530,7 @@ export const usePatternWorkbenchStore = defineStore("patternWorkbench", {
         this.lastImportReport = result.report;
         this.applyCurrentDocument(
           result.document,
-          `识别编号图纸 ${result.document.name}`,
+          `璇嗗埆缂栧彿鍥剧焊 ${result.document.name}`,
           "generated",
         );
       } catch (error) {
@@ -545,7 +545,7 @@ export const usePatternWorkbenchStore = defineStore("patternWorkbench", {
       this.error = "";
       this.lastImportReport = null;
       const document = importPatternFromCsv(text, options);
-      this.applyCurrentDocument(document, `导入 CSV ${document.name}`, "imported");
+      this.applyCurrentDocument(document, `瀵煎叆 CSV ${document.name}`, "imported");
     },
 
     importCurrentJson(text) {
@@ -553,7 +553,7 @@ export const usePatternWorkbenchStore = defineStore("patternWorkbench", {
       this.lastImportReport = null;
       const parsed = JSON.parse(text);
       const document = deserializePatternDocument(parsed);
-      this.applyCurrentDocument(document, `导入 JSON ${document.name}`, "imported");
+      this.applyCurrentDocument(document, `瀵煎叆 JSON ${document.name}`, "imported");
     },
 
     importReferenceCsv(text, options = {}) {

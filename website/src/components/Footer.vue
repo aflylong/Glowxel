@@ -1,51 +1,46 @@
-<template>
+﻿<template>
   <footer class="site-footer">
     <div class="footer-container">
       <div class="footer-content">
         <div class="footer-section footer-brand">
           <BrandLogo variant="footer" :show-tagline="false" />
           <div class="footer-business">
-            <h3 class="footer-title">业务简介</h3>
+            <h3 class="footer-title">涓氬姟绠€浠?</h3>
             <p class="footer-desc">
-              光格像素工坊是一个专注于像素艺术创作与智能硬件设备连接的综合平台。
-              我们提供在线像素画编辑器、GIF动画制作、时钟主题定制等创作工具，
-              支持用户通过WiFi连接ESP32像素屏设备，实时预览和展示创作内容。
-              平台集成社区分享、作品展示、挑战活动等功能，为像素艺术爱好者和创客提供一站式创作与交流体验。
-            </p>
+              鍏夋牸鍍忕礌宸ュ潑鏄竴涓笓娉ㄤ簬鍍忕礌鑹烘湳鍒涗綔涓庢櫤鑳界‖浠惰澶囪繛鎺ョ殑缁煎悎骞冲彴銆?              鎴戜滑鎻愪緵鍦ㄧ嚎鍍忕礌鐢荤紪杈戝櫒銆丟IF鍔ㄧ敾鍒朵綔銆佹椂閽熶富棰樺畾鍒剁瓑鍒涗綔宸ュ叿锛?              鏀寔鐢ㄦ埛閫氳繃WiFi杩炴帴ESP32鍍忕礌灞忚澶囷紝瀹炴椂棰勮鍜屽睍绀哄垱浣滃唴瀹广€?              骞冲彴闆嗘垚绀惧尯鍒嗕韩銆佷綔鍝佸睍绀恒€佹寫鎴樻椿鍔ㄧ瓑鍔熻兘锛屼负鍍忕礌鑹烘湳鐖卞ソ鑰呭拰鍒涘鎻愪緵涓€绔欏紡鍒涗綔涓庝氦娴佷綋楠屻€?            </p>
           </div>
         </div>
 
         <div class="footer-section footer-links">
-          <h3 class="footer-title">快速链接</h3>
+          <h3 class="footer-title">蹇€熼摼鎺?</h3>
           <ul class="footer-nav">
-            <li><router-link to="/">首页</router-link></li>
-            <li><router-link to="/community">社区</router-link></li>
-            <li><router-link to="/workspace">工作台</router-link></li>
-            <li><router-link to="/device-control">设备</router-link></li>
+            <li><router-link to="/">棣栭〉</router-link></li>
+            <li><router-link to="/community">绀惧尯</router-link></li>
+            <li><router-link to="/workspace">宸ヤ綔鍙?/router-link></li>
+            <li><router-link to="/device-control">璁惧</router-link></li>
           </ul>
         </div>
 
         <div class="footer-section footer-contact">
-          <h3 class="footer-title">联系我们</h3>
+          <h3 class="footer-title">鑱旂郴鎴戜滑</h3>
           <ul class="footer-nav">
-            <li><span>联系电话：176-7105-1481</span></li>
-            <li><span>联系邮箱：1922733758@qq.com</span></li>
-            <li><span>办公地址：广东省深圳市罗湖区笋岗街道田心社区宝安北路3039号笋岗仓库十号库5层505A-3B91</span></li>
-            <li><a href="#">用户协议</a></li>
-            <li><a href="#">隐私政策</a></li>
+            <li><span>鑱旂郴鐢佃瘽锛?76-7105-1481</span></li>
+            <li><span>鑱旂郴閭锛?922733758@qq.com</span></li>
+            <li><span>鍔炲叕鍦板潃锛氬箍涓滅渷娣卞湷甯傜綏婀栧尯绗嬪矖琛楅亾鐢板績绀惧尯瀹濆畨鍖楄矾3039鍙风瑡宀椾粨搴撳崄鍙峰簱5灞?05A-3B91</span></li>
+            <li><a href="#">鐢ㄦ埛鍗忚</a></li>
+            <li><a href="#">闅愮鏀跨瓥</a></li>
           </ul>
         </div>
       </div>
 
       <div class="footer-bottom">
         <div class="footer-copyright">
-          <p>&copy; 2024-2026 光格像素工坊 版权所有</p>
+          <p>&copy; 2024-2026 鍏夋牸鍍忕礌宸ュ潑 鐗堟潈鎵€鏈?</p>
         </div>
         <div class="footer-beian">
           <p>
             <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
-              粤ICP备2026049160号
-            </a>
+              绮CP澶?026049160鍙?            </a>
           </p>
         </div>
       </div>
@@ -56,10 +51,10 @@
     v-if="isBackToTopVisible"
     class="back-to-top"
     type="button"
-    aria-label="返回顶部"
+    aria-label="杩斿洖椤堕儴"
     @click="scrollToTop"
   >
-    <span class="back-to-top__arrow">↑</span>
+    <span class="back-to-top__arrow">鈫?</span>
   </button>
 </template>
 

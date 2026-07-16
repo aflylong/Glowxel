@@ -1,6 +1,6 @@
-<template>
+﻿<template>
   <div class="kof-page glx-page-shell game-mode-page">
-    <PcModeTopbar title="拳皇 97" />
+    <PcModeTopbar title="鎷崇殗 97" />
 
     <section class="kof-layout game-mode-layout">
       <article
@@ -9,7 +9,7 @@
         <div class="kof-preview-card__head">
           <div>
             <p class="kof-preview-card__eyebrow">Device Mode</p>
-            <h2 class="kof-preview-card__title">拳皇 97 预览</h2>
+            <h2 class="kof-preview-card__title">鎷崇殗 97 棰勮</h2>
           </div>
         </div>
 
@@ -21,14 +21,14 @@
               :disabled="isSending || isLoading || !isSceneReady"
               @click="sendToDevice"
             >
-              {{ isSending ? "发送中..." : "发送到设备" }}
+              {{ isSending ? "鍙戦€佷腑..." : "鍙戦€佸埌璁惧" }}
             </button>
           </div>
           <span
             class="glx-chip"
             :class="deviceStore && deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
           >
-            {{ deviceStore && deviceStore.connected ? "已连接" : "未连接" }}
+            {{ deviceStore && deviceStore.connected ? "宸茶繛鎺? : "鏈繛鎺? }}
           </span>
         </div>
 
@@ -46,25 +46,25 @@
               :grid-visible="true"
               :is-dark-mode="true"
             />
-            <div v-if="isLoading" class="kof-preview-loading">正在加载原始像素数据...</div>
+            <div v-if="isLoading" class="kof-preview-loading">姝ｅ湪鍔犺浇鍘熷鍍忕礌鏁版嵁...</div>
           </div>
         </div>
 
         <div class="kof-summary-grid">
           <article class="kof-summary-card">
-            <span class="kof-summary-card__label">场景状态</span>
+            <span class="kof-summary-card__label">鍦烘櫙鐘舵€?</span>
             <strong class="kof-summary-card__value">{{ statusText }}</strong>
-            <span class="kof-summary-card__meta">预览使用网页端还原的角色像素帧</span>
+            <span class="kof-summary-card__meta">棰勮浣跨敤缃戦〉绔繕鍘熺殑瑙掕壊鍍忕礌甯?</span>
           </article>
           <article class="kof-summary-card">
-            <span class="kof-summary-card__label">当前缩放</span>
+            <span class="kof-summary-card__label">褰撳墠缂╂斁</span>
             <strong class="kof-summary-card__value">P1 {{ p1ScaleText }} / P2 {{ p2ScaleText }}</strong>
-            <span class="kof-summary-card__meta">角色基线 Y：{{ charY }}</span>
+            <span class="kof-summary-card__meta">瑙掕壊鍩虹嚎 Y锛歿{ charY }}</span>
           </article>
           <article class="kof-summary-card">
-            <span class="kof-summary-card__label">加载状态</span>
-            <strong class="kof-summary-card__value">{{ isLoading ? "加载中" : "已就绪" }}</strong>
-            <span class="kof-summary-card__meta">{{ isSceneReady ? "可以发送到设备" : "等待场景准备完成" }}</span>
+            <span class="kof-summary-card__label">鍔犺浇鐘舵€?</span>
+            <strong class="kof-summary-card__value">{{ isLoading ? "鍔犺浇涓? : "宸插氨缁? }}</strong>
+            <span class="kof-summary-card__meta">{{ isSceneReady ? "鍙互鍙戦€佸埌璁惧" : "绛夊緟鍦烘櫙鍑嗗瀹屾垚" }}</span>
           </article>
         </div>
       </article>
@@ -72,8 +72,8 @@
       <div class="kof-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">模式配置</h2>
-            <span class="glx-section-meta">调节 / 状态</span>
+            <h2 class="glx-section-title">妯″紡閰嶇疆</h2>
+            <span class="glx-section-meta">璋冭妭 / 鐘舵€?</span>
           </div>
           <DeviceModeTabs v-model="activeTab" :items="tabItems" />
         </article>
@@ -83,13 +83,13 @@
           class="glx-section-card glx-section-card--stack"
         >
           <div class="glx-section-head">
-            <h2 class="glx-section-title">角色调节</h2>
-            <span class="glx-section-meta">P1 / P2 缩放与基线位置</span>
+            <h2 class="glx-section-title">瑙掕壊璋冭妭</h2>
+            <span class="glx-section-meta">P1 / P2 缂╂斁涓庡熀绾夸綅缃?</span>
           </div>
 
           <div class="kof-control-stack">
             <label class="kof-control">
-              <span class="kof-control__label">P1 缩放 {{ p1ScaleText }}</span>
+              <span class="kof-control__label">P1 缂╂斁 {{ p1ScaleText }}</span>
               <input
                 v-model.number="p1Scale"
                 class="kof-control__range"
@@ -101,7 +101,7 @@
             </label>
 
             <label class="kof-control">
-              <span class="kof-control__label">P2 缩放 {{ p2ScaleText }}</span>
+              <span class="kof-control__label">P2 缂╂斁 {{ p2ScaleText }}</span>
               <input
                 v-model.number="p2Scale"
                 class="kof-control__range"
@@ -113,7 +113,7 @@
             </label>
 
             <label class="kof-control">
-              <span class="kof-control__label">角色 Y {{ charY }}</span>
+              <span class="kof-control__label">瑙掕壊 Y {{ charY }}</span>
               <input
                 v-model.number="charY"
                 class="kof-control__range"
@@ -128,30 +128,30 @@
 
         <article v-else class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">当前状态</h2>
-            <span class="glx-section-meta">加载 / 角色 / 场景</span>
+            <h2 class="glx-section-title">褰撳墠鐘舵€?</h2>
+            <span class="glx-section-meta">鍔犺浇 / 瑙掕壊 / 鍦烘櫙</span>
           </div>
 
           <div class="glx-kv-grid">
             <div class="glx-kv-card">
-              <span class="glx-kv-card__label">状态摘要</span>
+              <span class="glx-kv-card__label">鐘舵€佹憳瑕?</span>
               <strong class="glx-kv-card__value">{{ statusText }}</strong>
             </div>
             <div class="glx-kv-card">
-              <span class="glx-kv-card__label">连接状态</span>
+              <span class="glx-kv-card__label">杩炴帴鐘舵€?</span>
               <strong class="glx-kv-card__value">{{
-                deviceStore && deviceStore.connected ? "已连接" : "未连接"
+                deviceStore && deviceStore.connected ? "宸茶繛鎺? : "鏈繛鎺?
               }}</strong>
             </div>
             <div class="glx-kv-card">
-              <span class="glx-kv-card__label">背景像素</span>
+              <span class="glx-kv-card__label">鑳屾櫙鍍忕礌</span>
               <strong class="glx-kv-card__value">{{
                 Array.isArray(screenBackgroundPixels) ? screenBackgroundPixels.length : 0
               }}</strong>
             </div>
             <div class="glx-kv-card">
-              <span class="glx-kv-card__label">角色资源</span>
-              <strong class="glx-kv-card__value">{{ stances ? "已加载" : "未加载" }}</strong>
+              <span class="glx-kv-card__label">瑙掕壊璧勬簮</span>
+              <strong class="glx-kv-card__value">{{ stances ? "宸插姞杞? : "鏈姞杞? }}</strong>
             </div>
           </div>
         </article>
@@ -171,6 +171,7 @@
 </template>
 
 <script>
+import { createDomQuery } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from '@/mixins/uniLifecycleAdapter.js';
 import deviceSendUxMixin from '@/mixins/deviceSendUxMixin.js';
 import { useDeviceStore } from '@/stores/device.js';
@@ -285,8 +286,8 @@ export default {
       charYMax: CHAR_Y_MAX,
       activeTab: 'controls',
       tabItems: [
-        { value: 'controls', label: '调节' },
-        { value: 'status', label: '状态' },
+        { value: 'controls', label: '璋冭妭' },
+        { value: 'status', label: '鐘舵€? },
       ],
     };
   },
@@ -296,10 +297,10 @@ export default {
     },
     statusText() {
       if (this.isLoading) {
-        return '正在加载角色数据';
+        return '姝ｅ湪鍔犺浇瑙掕壊鏁版嵁';
       }
       if (!this.sceneState) {
-        return '预览未启动';
+        return '棰勮鏈惎鍔?;
       }
       const p1Key = KOF_CHAR_KEYS[this.sceneState.selectP1] || '-';
       const p2Key = KOF_CHAR_KEYS[this.sceneState.selectP2] || '-';
@@ -371,7 +372,7 @@ export default {
     initPreviewCanvas() {
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query
             .select('.preview-canvas-container')
             .boundingClientRect((data) => {
@@ -429,7 +430,7 @@ export default {
       try {
         const ws = this.deviceStore.getWebSocket();
         await ws.startKof97();
-        this.showSendSuccess('已应用');
+        this.showSendSuccess('宸插簲鐢?);
       } catch (error) {
         console.error('[kof97] send failed', error);
         this.showSendFailure(error);

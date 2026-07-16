@@ -1,41 +1,41 @@
-<template>
+﻿<template>
   <div class="glx-page-shell device-flash-page">
     <section class="glx-page-shell__hero">
-      <h1 class="glx-page-shell__title">设备烧录</h1>
+      <h1 class="glx-page-shell__title">璁惧鐑у綍</h1>
       <p class="glx-page-shell__desc">
-        通过浏览器连接 Glowxel PixelBoard 的 USB 串口并写入固件。这里走的是 USB
-        数据线，
+        閫氳繃娴忚鍣ㄨ繛鎺?Glowxel PixelBoard 鐨?USB 涓插彛骞跺啓鍏ュ浐浠躲€傝繖閲岃蛋鐨勬槸 USB
+        鏁版嵁绾匡紝
       </p>
       <div class="glx-hero-metrics">
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">连接方式</span>
-          <strong class="glx-hero-metric__value">USB 串口</strong>
+          <span class="glx-hero-metric__label">杩炴帴鏂瑰紡</span>
+          <strong class="glx-hero-metric__value">USB 涓插彛</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">推荐浏览器</span>
+          <span class="glx-hero-metric__label">鎺ㄨ崘娴忚鍣?</span>
           <strong class="glx-hero-metric__value">Chrome / Edge</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">页面环境</span>
+          <span class="glx-hero-metric__label">椤甸潰鐜</span>
           <strong class="glx-hero-metric__value">HTTPS / localhost</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">设备控制连接</span>
-          <strong class="glx-hero-metric__value">不需要 WS</strong>
+          <span class="glx-hero-metric__label">璁惧鎺у埗杩炴帴</span>
+          <strong class="glx-hero-metric__value">涓嶉渶瑕?WS</strong>
         </article>
       </div>
       <div class="glx-inline-actions">
         <router-link to="/device-control" class="glx-button glx-button--ghost"
-          >返回设备控制</router-link
+          >杩斿洖璁惧鎺у埗</router-link
         >
       </div>
     </section>
 
     <section class="glx-grid glx-grid--two">
       <DeviceParamsSection
-        title="开始烧录"
+        title="寮€濮嬬儳褰?"
         meta="USB Web Serial"
-        description="连接设备 USB 数据线后点击按钮，浏览器会弹出串口选择窗口。"
+        description="杩炴帴璁惧 USB 鏁版嵁绾垮悗鐐瑰嚮鎸夐挳锛屾祻瑙堝櫒浼氬脊鍑轰覆鍙ｉ€夋嫨绐楀彛銆?"
       >
         <div class="device-flash-page__install-box">
           <esp-web-install-button :manifest="manifestPath">
@@ -44,67 +44,63 @@
               class="glx-button glx-button--primary device-flash-page__install-button"
               type="button"
             >
-              连接 USB 并开始烧录
-            </button>
+              杩炴帴 USB 骞跺紑濮嬬儳褰?            </button>
             <div slot="unsupported" class="device-flash-page__tip-box">
-              当前浏览器不支持 Web Serial，请换用 Chrome 或 Edge 桌面版。
-            </div>
+              褰撳墠娴忚鍣ㄤ笉鏀寔 Web Serial锛岃鎹㈢敤 Chrome 鎴?Edge 妗岄潰鐗堛€?            </div>
             <div slot="not-allowed" class="device-flash-page__tip-box">
-              当前页面不是安全上下文，请使用 HTTPS 或 localhost。
-            </div>
+              褰撳墠椤甸潰涓嶆槸瀹夊叏涓婁笅鏂囷紝璇蜂娇鐢?HTTPS 鎴?localhost銆?            </div>
           </esp-web-install-button>
         </div>
         <div class="device-flash-page__tip-box">
-          如果浏览器没有弹出串口选择窗口，先检查 USB
-          数据线、串口驱动和页面安全环境。
-        </div>
+          濡傛灉娴忚鍣ㄦ病鏈夊脊鍑轰覆鍙ｉ€夋嫨绐楀彛锛屽厛妫€鏌?USB
+          鏁版嵁绾裤€佷覆鍙ｉ┍鍔ㄥ拰椤甸潰瀹夊叏鐜銆?        </div>
       </DeviceParamsSection>
 
       <DeviceParamsSection
-        title="烧录前确认"
-        meta="减少失败率"
-        description="这些检查只针对 USB 串口烧录，不涉及设备 WiFi 或 WebSocket。"
+        title="鐑у綍鍓嶇‘璁?"
+        meta="鍑忓皯澶辫触鐜?"
+        description="杩欎簺妫€鏌ュ彧閽堝 USB 涓插彛鐑у綍锛屼笉娑夊強璁惧 WiFi 鎴?WebSocket銆?"
       >
         <ul class="device-flash-page__checklist">
-          <li>使用可以传输数据的 USB 线，不要使用只能充电的线。</li>
-          <li>确认系统已经安装 CH340 / CP2102 等对应串口驱动。</li>
-          <li>关闭串口监视器、PlatformIO 上传窗口等占用端口的程序。</li>
-          <li>如果连接失败，可以按住 BOOT 后再点击连接，开始写入后松开。</li>
+          <li>浣跨敤鍙互浼犺緭鏁版嵁鐨?USB 绾匡紝涓嶈浣跨敤鍙兘鍏呯數鐨勭嚎銆?/li>
+          <li>纭绯荤粺宸茬粡瀹夎 CH340 / CP2102 绛夊搴斾覆鍙ｉ┍鍔ㄣ€?/li>
+          <li>鍏抽棴涓插彛鐩戣鍣ㄣ€丳latformIO 涓婁紶绐楀彛绛夊崰鐢ㄧ鍙ｇ殑绋嬪簭銆?/li>
+          <li>濡傛灉杩炴帴澶辫触锛屽彲浠ユ寜浣?BOOT 鍚庡啀鐐瑰嚮杩炴帴锛屽紑濮嬪啓鍏ュ悗鏉惧紑銆?/li>
         </ul>
       </DeviceParamsSection>
     </section>
 
     <section class="glx-grid glx-grid--two">
       <DeviceParamsSection
-        title="弹窗英文对照"
-        meta="第三方控件"
-        description="ESP Web Tools 的系统弹窗暂时不能完全改成中文，页面先提供操作对照。"
+        title="寮圭獥鑻辨枃瀵圭収"
+        meta="绗笁鏂规帶浠?"
+        description="ESP Web Tools 鐨勭郴缁熷脊绐楁殏鏃朵笉鑳藉畬鍏ㄦ敼鎴愪腑鏂囷紝椤甸潰鍏堟彁渚涙搷浣滃鐓с€?"
       >
         <div class="device-flash-page__guide-grid">
           <span>Connect / Select Port</span>
-          <strong>选择设备串口</strong>
+          <strong>閫夋嫨璁惧涓插彛</strong>
           <span>Install / Next</span>
-          <strong>继续下一步</strong>
+          <strong>缁х画涓嬩竴姝?</strong>
           <span>Installing</span>
-          <strong>正在写入程序，不要拔线</strong>
+          <strong>姝ｅ湪鍐欏叆绋嬪簭锛屼笉瑕佹嫈绾?</strong>
           <span>Done / Finish</span>
-          <strong>烧录完成，等待设备重启</strong>
+          <strong>鐑у綍瀹屾垚锛岀瓑寰呰澶囬噸鍚?</strong>
         </div>
       </DeviceParamsSection>
 
       <DeviceParamsSection
-        title="完成后"
-        meta="重新连接设备"
-        description="烧录完成后设备会重启。等屏幕恢复显示或设备重新联网后，再回到设备控制页连接设备。"
+        title="瀹屾垚鍚?"
+        meta="閲嶆柊杩炴帴璁惧"
+        description="鐑у綍瀹屾垚鍚庤澶囦細閲嶅惎銆傜瓑灞忓箷鎭㈠鏄剧ず鎴栬澶囬噸鏂拌仈缃戝悗锛屽啀鍥炲埌璁惧鎺у埗椤佃繛鎺ヨ澶囥€?"
       >
         <div class="device-flash-page__action-row">
           <router-link
             to="/device-control"
             class="glx-button glx-button--primary"
-            >回到设备控制</router-link
+            >鍥炲埌璁惧鎺у埗</router-link
           >
           <router-link to="/ble-config" class="glx-button glx-button--ghost"
-            >需要时重新配网</router-link
+            >闇€瑕佹椂閲嶆柊閰嶇綉</router-link
           >
         </div>
       </DeviceParamsSection>

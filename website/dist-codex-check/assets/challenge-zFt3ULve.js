@@ -1,0 +1,1 @@
+import{O as i,P as t}from"./index-DvLGkGAL.js";const n=s=>i("/api/challenge/list",s),o=s=>i(`/api/challenge/${s}`),l=s=>t(`/api/challenge/${s}/join`),c=(s,a)=>t(`/api/challenge/${s}/submit`,{artworkId:a}),g=(s,a)=>i(`/api/challenge/${s}/submissions`,a);export{o as a,g as b,n as g,l as j,c as s};

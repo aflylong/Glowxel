@@ -73,6 +73,12 @@ export default {
   },
   
   emits: ['update:visible', 'close', 'open'],
+
+  data() {
+    return {
+      previousBodyOverflow: ''
+    }
+  },
   
   computed: {
     modalClasses() {
@@ -110,15 +116,16 @@ export default {
     
     preventScroll() {
       // 微信小程序中防止背景滚动
-      // #ifdef MP-WEIXIN
-      wx.pageScrollTo({
-        scrollTop: 0,
-        duration: 0
-      })
-      // #endif
+      if (typeof document !== 'undefined' && document.body) {
+        this.previousBodyOverflow = document.body.style.overflow
+        document.body.style.overflow = 'hidden'
+      }
     },
     
     restoreScroll() {
+      if (typeof document !== 'undefined' && document.body) {
+        document.body.style.overflow = this.previousBodyOverflow
+      }
       // 恢复滚动（如果需要的话）
     }
   }

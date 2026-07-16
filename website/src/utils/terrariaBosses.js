@@ -1,9 +1,10 @@
+﻿import { base64ToArrayBuffer } from '@/utils/browser-platform.js'
 // ============================================================
-// Boss 渲染 v3 — 跟板载完全一致
-//   数据源: uniapp/static/terraria/bosses_compact.js
-//           (build-boss-firmware.js v5 生成, 跟 firmware sprites_bosses.h 同源)
-//   数据格式: base + delta(set + clear), 都已预渲染到 64×64 屏幕坐标
-//   渲染算法 = 板载 drawSpriteAnimFrame 的 JS 翻译
+// Boss 娓叉煋 v3 鈥?璺熸澘杞藉畬鍏ㄤ竴鑷?
+//   鏁版嵁婧? uniapp/static/terraria/bosses_compact.js
+//           (build-boss-firmware.js v5 鐢熸垚, 璺?firmware sprites_bosses.h 鍚屾簮)
+//   鏁版嵁鏍煎紡: base + delta(set + clear), 閮藉凡棰勬覆鏌撳埌 64脳64 灞忓箷鍧愭爣
+//   娓叉煋绠楁硶 = 鏉胯浇 drawSpriteAnimFrame 鐨?JS 缈昏瘧
 // ============================================================
 
 import BOSSES_COMPACT_RAW from '../assets/static/terraria/bosses_compact.js';
@@ -16,16 +17,10 @@ function getBossesCompact() {
 }
 
 function _b64ToU8(b64) {
-  if (typeof uni !== 'undefined' && uni.base64ToArrayBuffer) {
-    return new Uint8Array(uni.base64ToArrayBuffer(b64));
-  }
-  const bin = atob(b64);
-  const u8 = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
-  return u8;
+  return new Uint8Array(base64ToArrayBuffer(b64));
 }
 
-// 解码缓存: slug → { base: {set: [{x,y,r,g,b}], clear: [{x,y}]}, deltas: [...] }
+// 瑙ｇ爜缂撳瓨: slug 鈫?{ base: {set: [{x,y,r,g,b}], clear: [{x,y}]}, deltas: [...] }
 const _decodedCache = new Map();
 function decodeBoss(slug) {
   if (_decodedCache.has(slug)) return _decodedCache.get(slug);
@@ -69,7 +64,7 @@ function decodeBoss(slug) {
   return decoded;
 }
 
-// ============ 公共 API ============
+// ============ 鍏叡 API ============
 
 export function getBossCatalog() {
   const all = getBossesCompact();
@@ -92,9 +87,9 @@ export function getBossInfo(slug) {
   return all[slug] || null;
 }
 
-// ============ 颜色滤除 (针对特定 boss 的资产脏边) ============
-//   queen_slime sprite 在转换时残留了一圈 #5A5A5E (90,90,94) / #69696D (105,105,109)
-//   的灰色描边伪影 — 不是游戏原本的颜色, 是缩放抗锯齿副产物, 直接当透明丢掉
+// ============ 棰滆壊婊ら櫎 (閽堝鐗瑰畾 boss 鐨勮祫浜ц剰杈? ============
+//   queen_slime sprite 鍦ㄨ浆鎹㈡椂娈嬬暀浜嗕竴鍦?#5A5A5E (90,90,94) / #69696D (105,105,109)
+//   鐨勭伆鑹叉弿杈逛吉褰?鈥?涓嶆槸娓告垙鍘熸湰鐨勯鑹? 鏄缉鏀炬姉閿娇鍓骇鐗? 鐩存帴褰撻€忔槑涓㈡帀
 function shouldDropPixel(slug, r, g, b) {
   if (slug === 'queen_slime') {
     if (r >= 85 && r <= 95 && g >= 85 && g <= 95 && b >= 88 && b <= 98) return true;   // #5A5A5E
@@ -103,31 +98,31 @@ function shouldDropPixel(slug, r, g, b) {
   return false;
 }
 
-// ============ Boss 后处理动效 ============
-// 静态 boss 在反编译源码里其实有 AI 行为, 但用整体晃动会很丑.
-// 改用"亮度脉冲"模拟发光体的呼吸感, 只在关键 boss 用细微位移
+// ============ Boss 鍚庡鐞嗗姩鏁?============
+// 闈欐€?boss 鍦ㄥ弽缂栬瘧婧愮爜閲屽叾瀹炴湁 AI 琛屼负, 浣嗙敤鏁翠綋鏅冨姩浼氬緢涓?
+// 鏀圭敤"浜害鑴夊啿"妯℃嫙鍙戝厜浣撶殑鍛煎惛鎰? 鍙湪鍏抽敭 boss 鐢ㄧ粏寰綅绉?
 //
-// 返回 { dx, dy, brightness, eyePulse, eyeColorMatch }
-//   brightness: 整体亮度倍数 (0.7..1.1)
-//   eyePulse: 0..1, 用于"眼部/发光像素"额外加亮 (基于色彩匹配)
-//   eyeColorMatch: (r,g,b) → bool, 判断像素是否为该 boss 的发光像素
+// 杩斿洖 { dx, dy, brightness, eyePulse, eyeColorMatch }
+//   brightness: 鏁翠綋浜害鍊嶆暟 (0.7..1.1)
+//   eyePulse: 0..1, 鐢ㄤ簬"鐪奸儴/鍙戝厜鍍忕礌"棰濆鍔犱寒 (鍩轰簬鑹插僵鍖归厤)
+//   eyeColorMatch: (r,g,b) 鈫?bool, 鍒ゆ柇鍍忕礌鏄惁涓鸿 boss 鐨勫彂鍏夊儚绱?
 function getBossDynamicFx(slug, animTimeSec) {
   const t = animTimeSec || 0;
-  // 慢呼吸 0..1 (周期 2s)
+  // 鎱㈠懠鍚?0..1 (鍛ㄦ湡 2s)
   const breathSlow = 0.5 + 0.5 * Math.sin(t * Math.PI * 2 / 2.0);
-  // 中速呼吸 (周期 1.2s)
+  // 涓€熷懠鍚?(鍛ㄦ湡 1.2s)
   const breathMid = 0.5 + 0.5 * Math.sin(t * Math.PI * 2 / 1.2);
-  // 快闪烁 (周期 0.8s)
+  // 蹇棯鐑?(鍛ㄦ湡 0.8s)
   const flashFast = 0.5 + 0.5 * Math.sin(t * Math.PI * 2 / 0.8);
-  // 晶体闪烁 (周期 1.5s)
+  // 鏅朵綋闂儊 (鍛ㄦ湡 1.5s)
   const breathCrystal = 0.5 + 0.5 * Math.sin(t * Math.PI * 2 / 1.5);
 
   switch (slug) {
     case 'eater_of_worlds':
-      // 完全静态, 不加效果
+      // 瀹屽叏闈欐€? 涓嶅姞鏁堟灉
       return { dx: 0, dy: 0, brightness: 1.0, eyePulse: 0, eyeColorMatch: null };
     case 'destroyer':
-      // 机械蠕虫: 红眼像素脉冲 (机械红 RGB ≈ FF3333), 不位移
+      // 鏈烘锠曡櫕: 绾㈢溂鍍忕礌鑴夊啿 (鏈烘绾?RGB 鈮?FF3333), 涓嶄綅绉?
       return {
         dx: 0,
         dy: 0,
@@ -136,26 +131,26 @@ function getBossDynamicFx(slug, animTimeSec) {
         eyeColorMatch: (r, g, b) => r > 180 && g < 100 && b < 100,
       };
     case 'skeletron':
-      // 完全静态, 不加效果
+      // 瀹屽叏闈欐€? 涓嶅姞鏁堟灉
       return { dx: 0, dy: 0, brightness: 1.0, eyePulse: 0, eyeColorMatch: null };
     case 'golem':
-      // 眼部红橙脉冲 (跟之前一致)
+      // 鐪奸儴绾㈡鑴夊啿 (璺熶箣鍓嶄竴鑷?
       return {
         dx: 0, dy: 0, brightness: 1.0,
         eyePulse: breathMid,
         eyeColorMatch: (r, g, b) => r > 200 && g > 60 && g < 200 && b < 80,
       };
     case 'solar_pillar':
-      // 红橙能量柱: 整体亮度 0.85..1.05
+      // 绾㈡鑳介噺鏌? 鏁翠綋浜害 0.85..1.05
       return { dx: 0, dy: 0, brightness: 0.85 + 0.20 * breathSlow, eyePulse: 0, eyeColorMatch: null };
     case 'nebula_pillar':
-      // 紫粉星云柱
+      // 绱矇鏄熶簯鏌?
       return { dx: 0, dy: 0, brightness: 0.85 + 0.20 * breathSlow, eyePulse: 0, eyeColorMatch: null };
     case 'stardust_pillar':
-      // 蓝白星辰柱
+      // 钃濈櫧鏄熻景鏌?
       return { dx: 0, dy: 0, brightness: 0.85 + 0.20 * breathSlow, eyePulse: 0, eyeColorMatch: null };
     case 'vortex_pillar':
-      // 绿涡能柱
+      // 缁挎丁鑳芥煴
       return { dx: 0, dy: 0, brightness: 0.85 + 0.20 * breathSlow, eyePulse: 0, eyeColorMatch: null };
     default:
       return { dx: 0, dy: 0, brightness: 1.0, eyePulse: 0, eyeColorMatch: null };
@@ -164,22 +159,22 @@ function getBossDynamicFx(slug, animTimeSec) {
 
 function applyFx(r, g, b, fx, x, y) {
   let cr = r, cg = g, cb = b;
-  // 1) 整体亮度
+  // 1) 鏁翠綋浜害
   if (fx.brightness !== 1.0) {
     cr = Math.max(0, Math.min(255, Math.round(cr * fx.brightness)));
     cg = Math.max(0, Math.min(255, Math.round(cg * fx.brightness)));
     cb = Math.max(0, Math.min(255, Math.round(cb * fx.brightness)));
   }
-  // 2) 眼部/发光像素脉冲 (匹配像素额外加亮 30%)
+  // 2) 鐪奸儴/鍙戝厜鍍忕礌鑴夊啿 (鍖归厤鍍忕礌棰濆鍔犱寒 30%)
   if (fx.eyePulse > 0 && fx.eyeColorMatch && fx.eyeColorMatch(r, g, b)) {
     const k = 1.0 + 0.3 * fx.eyePulse;
     cr = Math.min(255, Math.round(r * k));
     cg = Math.min(255, Math.round(g * k));
     cb = Math.min(255, Math.round(b * k));
   }
-  // 3) 注入发光: 在指定区域的暗像素混入彩色 (按 eyePulse 强度混合)
+  // 3) 娉ㄥ叆鍙戝厜: 鍦ㄦ寚瀹氬尯鍩熺殑鏆楀儚绱犳贩鍏ュ僵鑹?(鎸?eyePulse 寮哄害娣峰悎)
   if (fx.injectGlow && fx.eyePulse > 0 && fx.injectGlow.match(r, g, b, x, y)) {
-    const k = fx.eyePulse;  // 0..1 混合权重
+    const k = fx.eyePulse;  // 0..1 娣峰悎鏉冮噸
     const [tr, tg, tb] = fx.injectGlow.color;
     cr = Math.round(cr * (1 - k) + tr * k);
     cg = Math.round(cg * (1 - k) + tg * k);
@@ -188,19 +183,19 @@ function applyFx(r, g, b, fx, x, y) {
   return [cr, cg, cb];
 }
 
-// ============ drawBoss — 跟板载 drawSpriteAnimFrame 算法严格一致 ============
+// ============ drawBoss 鈥?璺熸澘杞?drawSpriteAnimFrame 绠楁硶涓ユ牸涓€鑷?============
 //
-// 入参:
-//   targetMap: Map<"x,y", "#hex">  目标像素表
+// 鍏ュ弬:
+//   targetMap: Map<"x,y", "#hex">  鐩爣鍍忕礌琛?
 //   slug: boss key
-//   animTimeSec: 动画时间秒
-//   bgPainter(x, y) → "#hex"  背景色查询函数 (用于 clear 段擦回)
-//   userPos: { bossX, bossY }  用户 UI 调节后的位置, 跟 sprite 烘焙坐标 dec.x/y 求差作整体偏移
+//   animTimeSec: 鍔ㄧ敾鏃堕棿绉?
+//   bgPainter(x, y) 鈫?"#hex"  鑳屾櫙鑹叉煡璇㈠嚱鏁?(鐢ㄤ簬 clear 娈垫摝鍥?
+//   userPos: { bossX, bossY }  鐢ㄦ埛 UI 璋冭妭鍚庣殑浣嶇疆, 璺?sprite 鐑樼剻鍧愭爣 dec.x/y 姹傚樊浣滄暣浣撳亸绉?
 //
-// 注意:
-//   - 板载像素已是屏幕绝对坐标 (0..63), 不再走 scale/center
-//   - 跟板载 drawSpriteAnimFrame 一样: 先画 base, 再 clear (画背景), 再 set
-//   - 静态 boss (frameCount=1) 走后处理 fx; 多帧 boss 用 sprite 自身动画
+// 娉ㄦ剰:
+//   - 鏉胯浇鍍忕礌宸叉槸灞忓箷缁濆鍧愭爣 (0..63), 涓嶅啀璧?scale/center
+//   - 璺熸澘杞?drawSpriteAnimFrame 涓€鏍? 鍏堢敾 base, 鍐?clear (鐢昏儗鏅?, 鍐?set
+//   - 闈欐€?boss (frameCount=1) 璧板悗澶勭悊 fx; 澶氬抚 boss 鐢?sprite 鑷韩鍔ㄧ敾
 export function drawBoss(targetMap, slug, animTimeSec, bgPainter, userPos) {
   if (!slug) return;
   const dec = decodeBoss(slug);
@@ -210,13 +205,13 @@ export function drawBoss(targetMap, slug, animTimeSec, bgPainter, userPos) {
   const frameCount = Math.max(1, dec.frameCount);
   const frameIdx = Math.floor(tick / 9) % frameCount;
 
-  // 后处理 fx 适用范围:
-  //   静态 boss: 全部依赖 fx 加动效 (柱子/世界吞噬者等)
-  //   多帧 boss: queen_slime 等少数也叠加 fx (晶体脉冲), 不影响 sprite 自身动画
+  // 鍚庡鐞?fx 閫傜敤鑼冨洿:
+  //   闈欐€?boss: 鍏ㄩ儴渚濊禆 fx 鍔犲姩鏁?(鏌卞瓙/涓栫晫鍚炲櫖鑰呯瓑)
+  //   澶氬抚 boss: queen_slime 绛夊皯鏁颁篃鍙犲姞 fx (鏅朵綋鑴夊啿), 涓嶅奖鍝?sprite 鑷韩鍔ㄧ敾
   const fx = getBossDynamicFx(slug, animTimeSec || 0);
   const hasFx = (fx.brightness !== 1.0 || fx.eyePulse > 0 || fx.dx !== 0 || fx.dy !== 0 || fx.injectGlow);
 
-  // 用户位置偏移 (UI 调 bossX/Y 跟 sprite 烘焙坐标的差)
+  // 鐢ㄦ埛浣嶇疆鍋忕Щ (UI 璋?bossX/Y 璺?sprite 鐑樼剻鍧愭爣鐨勫樊)
   let userDx = 0, userDy = 0;
   if (userPos && typeof userPos.bossX === 'number' && typeof userPos.bossY === 'number') {
     userDx = userPos.bossX - dec.x;
@@ -235,12 +230,12 @@ export function drawBoss(targetMap, slug, animTimeSec, bgPainter, userPos) {
     targetMap.set(`${px},${py}`, hex);
   };
 
-  // 1) 画 base
+  // 1) 鐢?base
   for (const px of dec.base.set) {
     writePixel(px.x, px.y, px.r, px.g, px.b);
   }
 
-  // 2) 画 delta (frame > 0)
+  // 2) 鐢?delta (frame > 0)
   if (frameIdx > 0 && frameIdx - 1 < dec.deltas.length) {
     const delta = dec.deltas[frameIdx - 1];
     if (typeof bgPainter === 'function') {

@@ -1,10 +1,10 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/clock-editor/theme-clock.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/clock-editor/theme-clock.vue -->
 <template>
   <div class="clock-editor-page glx-page-shell">
-    <!-- 状态栏占位 -->
+    <!-- 鐘舵€佹爮鍗犱綅 -->
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
 
-    <!-- 头部 -->
+    <!-- 澶撮儴 -->
     <div class="navbar glx-topbar glx-page-shell__fixed">
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
@@ -13,7 +13,7 @@
       <div class="nav-right"></div>
     </div>
 
-    <!-- 主题图片展示区 -->
+    <!-- 涓婚鍥剧墖灞曠ず鍖?-->
     <div class="canvas-section">
       <div class="canvas-container theme-image-stage" ref="canvasContainer">
         <img
@@ -23,7 +23,7 @@
           mode="aspectFit"
         />
         <div v-else class="theme-image-stage__empty">
-          <span class="theme-image-stage__empty-text">请选择主题</span>
+          <span class="theme-image-stage__empty-text">璇烽€夋嫨涓婚</span>
         </div>
       </div>
       <div class="preview-caption glx-preview-panel">
@@ -37,13 +37,13 @@
             @click="sendToDevice"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 主内容：当前 Tab 的表单 -->
+    <!-- 涓诲唴瀹癸細褰撳墠 Tab 鐨勮〃鍗?-->
     <div data-scroll-view
       scroll-y
       class="content glx-scroll-region glx-page-shell__content"
@@ -87,6 +87,7 @@
 </template>
 
 <script>
+import { getStorage, getSystemInfo, createDomQuery, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import { useDeviceStore } from "@/stores/device.js";
 import { useToast } from "@/composables/useToast.js";
@@ -127,23 +128,21 @@ export default {
       deviceStore: null,
       toast: null,
       isReady: false,
-      clockMode: "theme", // theme=主题模式
-      gifAnimationData: null, // GIF 动画数据 { frameCount, frames }
-      gifRenderedFrameMaps: null, // GIF 所有帧的像素 Map 数组
-      gifFrameIndex: 0, // 当前播放帧索引
-      gifTimer: null, // GIF 动画定时器
-      gifIsPlaying: false, // 是否正在播放
-      gifPlaySpeed: 1.0, // 播放速度倍率
+      clockMode: "theme", // theme=涓婚妯″紡
+      gifAnimationData: null, // GIF 鍔ㄧ敾鏁版嵁 { frameCount, frames }
+      gifRenderedFrameMaps: null, // GIF 鎵€鏈夊抚鐨勫儚绱?Map 鏁扮粍
+      gifFrameIndex: 0, // 褰撳墠鎾斁甯х储寮?      gifTimer: null, // GIF 鍔ㄧ敾瀹氭椂鍣?      gifIsPlaying: false, // 鏄惁姝ｅ湪鎾斁
+      gifPlaySpeed: 1.0, // 鎾斁閫熷害鍊嶇巼
       lastAppliedClockThemeId: "",
       deviceThemeId: "",
-      _gifParser: null, // GIF 解析器实例，改宽高时重新生成数据
+      _gifParser: null, // GIF 瑙ｆ瀽鍣ㄥ疄渚嬶紝鏀瑰楂樻椂閲嶆柊鐢熸垚鏁版嵁
       _imageConvertToken: 0,
 
       contentHeight: "calc(100vh - 112rpx - 120rpx - 80rpx)",
 
       imagePixels: null,
 
-      // PixelCanvas 视图控制
+      // PixelCanvas 瑙嗗浘鎺у埗
       zoom: 4,
       pan: { x: 0, y: 0 },
       containerSize: { width: 320, height: 320 },
@@ -151,7 +150,7 @@ export default {
       previewTick: 0,
       previewClockTimer: null,
 
-      // loading 动画定时器（实例变量，方便清理）
+      // loading 鍔ㄧ敾瀹氭椂鍣紙瀹炰緥鍙橀噺锛屾柟渚挎竻鐞嗭級
       loadingTimer: null,
       loadingActive: false,
 
@@ -212,7 +211,7 @@ export default {
       return "#4F7FFF";
     },
     pageHeaderTitle() {
-      return "主题模式";
+      return "涓婚妯″紡";
     },
     displayClockThemeId() {
       return this.lastAppliedClockThemeId;
@@ -236,7 +235,7 @@ export default {
       return false;
     },
     previewPanelTitle() {
-      return "主题展示";
+      return "涓婚灞曠ず";
     },
   },
 
@@ -252,7 +251,7 @@ export default {
     this.clockMode = "theme";
 
     this.loadConfig();
-    const savedDeviceThemeId = uni.getStorageSync(CLOCK_DEVICE_THEME_ID_KEY);
+    const savedDeviceThemeId = getStorage(CLOCK_DEVICE_THEME_ID_KEY);
     if (typeof savedDeviceThemeId === "string") {
       this.deviceThemeId = savedDeviceThemeId;
     }
@@ -262,7 +261,7 @@ export default {
     this.deviceStore.init();
     this.toast = useToast();
 
-    const systemInfo = uni.getSystemInfoSync();
+    const systemInfo = getSystemInfo();
     const statusBarHeight = systemInfo.statusBarHeight || 0;
     const headerHeight = 56;
     this.contentHeight = `${systemInfo.windowHeight - statusBarHeight - headerHeight - 360}px`;
@@ -282,12 +281,12 @@ export default {
 
   methods: {
     initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
+      const systemInfo = getSystemInfo();
       const statusBarHeight = systemInfo.statusBarHeight || 0;
 
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query.select(".canvas-section").boundingClientRect((sectionRect) => {
             if (!sectionRect || !sectionRect.height) {
               return;
@@ -340,7 +339,7 @@ export default {
         : { r: 255, g: 255, b: 255 };
     },
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
     ensureValidThemeSelection() {
       if (this.clockThemePresets.length === 0) {
@@ -742,7 +741,7 @@ export default {
   padding: 0 0 56rpx;
 }
 
-/* 底部 Tab 栏：与拼豆辅助页底部控制区风格一致 */
+/* 搴曢儴 Tab 鏍忥細涓庢嫾璞嗚緟鍔╅〉搴曢儴鎺у埗鍖洪鏍间竴鑷?*/
 .bottom-tabs {
   display: flex;
   flex-shrink: 0;
@@ -1058,7 +1057,7 @@ export default {
   background-color: #d92d20;
 }
 
-/* 传输遮罩弹窗 */
+/* 浼犺緭閬僵寮圭獥 */
 .sending-overlay {
   position: fixed;
   top: 0;

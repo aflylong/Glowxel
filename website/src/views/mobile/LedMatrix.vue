@@ -1,4 +1,4 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/led-matrix/led-matrix.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/led-matrix/led-matrix.vue -->
 <template>
   <div class="led-matrix-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
@@ -7,7 +7,7 @@
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
-      <span class="nav-title glx-topbar__title">像素场景集</span>
+      <span class="nav-title glx-topbar__title">鍍忕礌鍦烘櫙闆?</span>
       <div class="nav-right"></div>
     </div>
 
@@ -43,7 +43,7 @@
       </div>
       <div class="preview-caption glx-preview-panel">
         <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-caption-title">预览效果</span>
+          <span class="preview-caption-title">棰勮鏁堟灉</span>
         </div>
         <div class="preview-actions">
           <div
@@ -52,7 +52,7 @@
             @click="saveAndApply"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
@@ -67,7 +67,7 @@
         <div class="tab-panel glx-tab-panel">
           <div class="card glx-panel-card glx-editor-card">
             <div class="card-title-section glx-panel-head">
-              <span class="card-title glx-panel-title">场景选择</span>
+              <span class="card-title glx-panel-title">鍦烘櫙閫夋嫨</span>
             </div>
             <div class="demo-grid">
               <div
@@ -86,32 +86,31 @@
         <div class="tab-panel glx-tab-panel">
           <div class="card glx-panel-card glx-editor-card">
             <div class="card-title-section glx-panel-head">
-              <span class="card-title glx-panel-title">参数</span>
+              <span class="card-title glx-panel-title">鍙傛暟</span>
             </div>
             <div v-if="showSpeedControl" class="form-row">
-              <span class="form-label">速度 {{ speed }}</span>
+              <span class="form-label">閫熷害 {{ speed }}</span>
               <GlxStepper :value="speed" :min="1" :max="10" :step="1" @change="handleSpeedChange" />
             </div>
             <div v-if="showDensityControl" class="form-row">
-              <span class="form-label">密度 {{ density }}</span>
+              <span class="form-label">瀵嗗害 {{ density }}</span>
               <GlxSlider :value="density" :min="10" :max="100" :step="1" @change="handleDensityChange" />
             </div>
             <div v-if="showIntensityControl" class="form-row">
-              <span class="form-label">强度 {{ intensity }}</span>
+              <span class="form-label">寮哄害 {{ intensity }}</span>
               <GlxSlider :value="intensity" :min="10" :max="100" :step="1" @change="handleIntensityChange" />
             </div>
             <div v-if="showColorControl" class="form-row color-picker-row">
-              <span class="form-label">颜色</span>
+              <span class="form-label">棰滆壊</span>
               <ColorPanelPicker
                 :value="color"
-                label="雨滴颜色"
+                label="闆ㄦ淮棰滆壊"
                 :preset-colors="rainPresetColors"
                 @change="handleRainColorChange"
               />
             </div>
             <div v-if="!hasParameterControl" class="empty-state-text">
-              这个场景没有可调参数，直接预览后发送即可。
-            </div>
+              杩欎釜鍦烘櫙娌℃湁鍙皟鍙傛暟锛岀洿鎺ラ瑙堝悗鍙戦€佸嵆鍙€?            </div>
           </div>
         </div>
       </div>
@@ -142,6 +141,7 @@
 </template>
 
 <script>
+import { getStorage, setStorage, getSystemInfo, createDomQuery, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
@@ -327,15 +327,15 @@ export default {
       deviceSendUxMixin.methods.endSendUi.call(this);
     },
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
     initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
+      const systemInfo = getSystemInfo();
       const statusBarHeight = systemInfo.statusBarHeight || 0;
 
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query.select(".canvas-section").boundingClientRect((sectionRect) => {
             if (!sectionRect || !sectionRect.height) {
               return;
@@ -465,7 +465,7 @@ export default {
       this.color = value;
     },
     loadSavedConfig() {
-      const saved = uni.getStorageSync(LED_MATRIX_CONFIG_KEY);
+      const saved = getStorage(LED_MATRIX_CONFIG_KEY);
       if (!saved || typeof saved !== "object") {
         return;
       }
@@ -489,7 +489,7 @@ export default {
       }
     },
     saveConfig() {
-      uni.setStorageSync(LED_MATRIX_CONFIG_KEY, {
+      setStorage(LED_MATRIX_CONFIG_KEY, {
         demoId: this.selectedDemoId,
         speed: this.speed,
         intensity: this.intensity,
@@ -515,7 +515,7 @@ export default {
           color: this.color,
         });
         if (sendPlan.type !== "command") {
-          throw new Error("LED 演示集仅支持板载原生命令");
+          throw new Error("LED 婕旂ず闆嗕粎鏀寔鏉胯浇鍘熺敓鍛戒护");
         }
         expectedMode = sendPlan.deviceMode;
 
@@ -533,7 +533,7 @@ export default {
             pieces: sendPlan.command.pieces,
           });
         } else {
-          throw new Error("未支持的像素场景发送命令");
+          throw new Error("不支持的像素场景发送命令");
         }
 
         this.saveConfig();
@@ -542,7 +542,7 @@ export default {
         await this.deviceStore.rollbackBusinessMode(previousMode, {
           expectedMode,
         });
-        console.error("发送 LED Matrix 演示失败:", error);
+        console.error("鍙戦€?LED Matrix 婕旂ず澶辫触:", error);
         this.showSendFailure(error);
       } finally {
         this.endSendUi();

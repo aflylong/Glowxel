@@ -1,39 +1,39 @@
-import { clamp, hexToRgb, setPixel } from "@/utils/device-mode-core.js";
+﻿import { clamp, hexToRgb, setPixel } from "@/utils/device-mode-core.js";
 import { DEVICE_CLOCK_FONTS, drawClockTextToMap, getCurrentTimeText } from "@/utils/device-mode-clock.js";
 
 export const PLANET_PAGE_STORAGE_KEY = "planet_screensaver_page_state";
 export const PLANET_SCREEN_PRESETS = Object.freeze([
-  { id: "terran_wet", label: "湿润行星" },
-  { id: "terran_dry", label: "干旱行星" },
-  { id: "islands", label: "群岛行星" },
-  { id: "gas_giant_1", label: "风暴巨星" },
-  { id: "gas_giant_2", label: "星环巨星" },
-  { id: "ice_world", label: "冰封行星" },
-  { id: "lava_world", label: "熔核行星" },
-  { id: "black_hole", label: "黑洞" },
-  // { id: "galaxy", label: "星系" },
-  { id: "star", label: "恒星" },
+  { id: "terran_wet", label: "婀挎鼎琛屾槦" },
+  { id: "terran_dry", label: "骞叉棻琛屾槦" },
+  { id: "islands", label: "缇ゅ矝琛屾槦" },
+  { id: "gas_giant_1", label: "椋庢毚宸ㄦ槦" },
+  { id: "gas_giant_2", label: "鏄熺幆宸ㄦ槦" },
+  { id: "ice_world", label: "鍐板皝琛屾槦" },
+  { id: "lava_world", label: "鐔旀牳琛屾槦" },
+  { id: "black_hole", label: "榛戞礊" },
+  // { id: "galaxy", label: "鏄熺郴" },
+  { id: "star", label: "鎭掓槦" },
 ]);
 export const PLANET_SIZE_OPTIONS = Object.freeze([
-  { id: "small", label: "小" },
-  { id: "medium", label: "中" },
-  { id: "large", label: "大" },
+  { id: "small"", label: "灏?" },"
+  { id: "medium"", label: "涓?" },"
+  { id: "large"", label: "澶?" },"
 ]);
 export const PLANET_DIRECTION_OPTIONS = Object.freeze([
-  { id: "left", label: "左转" },
-  { id: "right", label: "右转" },
+  { id: "left", label: "宸﹁浆" },
+  { id: "right", label: "鍙宠浆" },
 ]);
 export const PLANET_PREVIEW_MIN_SPEED = 1;
 export const PLANET_PREVIEW_MAX_SPEED = 7;
 export const PLANET_PREVIEW_PLAYBACK_INTERVAL_MS = 120;
 export const PLANET_TIME_COLOR_OPTIONS = Object.freeze([
-  { label: "青色", value: "#64c8ff" },
-  { label: "绿色", value: "#00ff9d" },
-  { label: "黄色", value: "#ffdc00" },
-  { label: "橙色", value: "#ffa500" },
-  { label: "红色", value: "#ff6464" },
-  { label: "紫色", value: "#c864ff" },
-  { label: "白色", value: "#ffffff" },
+  { label: "闈掕壊", value: "#64c8ff" },
+  { label: "缁胯壊", value: "#00ff9d" },
+  { label: "榛勮壊", value: "#ffdc00" },
+  { label: "姗欒壊", value: "#ffa500" },
+  { label: "绾㈣壊", value: "#ff6464" },
+  { label: "绱壊", value: "#c864ff" },
+  { label: "鐧借壊", value: "#ffffff" },
 ]);
 
 function paletteForPreset(preset) {

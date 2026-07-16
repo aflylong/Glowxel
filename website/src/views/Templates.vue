@@ -1,11 +1,10 @@
-<template>
+﻿<template>
   <div class="glx-page-shell">
     <section class="glx-page-shell__hero">
       <span class="glx-page-shell__eyebrow">Templates</span>
-      <h1 class="glx-page-shell__title">边框素材</h1>
+      <h1 class="glx-page-shell__title">杈规绱犳潗</h1>
       <p class="glx-page-shell__desc">
-        这里保留的是边框式拼豆参考，不是整张成品模板。中间主体由你自己决定，周边做花边或装饰。
-      </p>
+        杩欓噷淇濈暀鐨勬槸杈规寮忔嫾璞嗗弬鑰冿紝涓嶆槸鏁村紶鎴愬搧妯℃澘銆備腑闂翠富浣撶敱浣犺嚜宸卞喅瀹氾紝鍛ㄨ竟鍋氳姳杈规垨瑁呴グ銆?      </p>
     </section>
 
     <section class="glx-grid glx-grid--three">
@@ -17,16 +16,16 @@
           class="template-cover"
         />
         <div v-else class="glx-empty-card">
-          <strong class="glx-section-title">暂无封面</strong>
-          <p class="glx-page-shell__desc">当前边框素材没有可展示的封面图。</p>
+          <strong class="glx-section-title">鏆傛棤灏侀潰</strong>
+          <p class="glx-page-shell__desc">褰撳墠杈规绱犳潗娌℃湁鍙睍绀虹殑灏侀潰鍥俱€?</p>
         </div>
         <div class="glx-section-head">
-          <strong class="glx-section-title">{{ typeof item.name === "string" && item.name.length > 0 ? item.name : "未命名边框" }}</strong>
-          <span class="glx-chip glx-chip--blue">{{ typeof item.category === "string" && item.category.length > 0 ? item.category : "边框" }}</span>
+          <strong class="glx-section-title"">{{ typeof item.name === "string" && item.name.length" > 0 ? item.name" : "鏈懡鍚嶈竟妗?"" }}</strong">"
+          <span class="glx-chip glx-chip--blue">{{ typeof item.category === "string" && item.category.length > 0 ? item.category : "杈规" }}</span>
         </div>
-        <p class="glx-page-shell__desc">当前网站只保留边框素材浏览与套用入口，不再拆成另一套旧模板壳。</p>
+        <p class="glx-page-shell__desc">褰撳墠缃戠珯鍙繚鐣欒竟妗嗙礌鏉愭祻瑙堜笌濂楃敤鍏ュ彛锛屼笉鍐嶆媶鎴愬彟涓€濂楁棫妯℃澘澹炽€?</p>
         <div class="glx-inline-actions">
-          <button type="button" class="glx-button glx-button--primary" @click="handleUse(item)">套用边框</button>
+          <button type="button" class="glx-button glx-button--primary" @click="handleUse(item)">濂楃敤杈规</button>
         </div>
       </article>
     </section>

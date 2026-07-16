@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div v-if="visible" class="modal-overlay" @click="handleCancel">
     <div class="modal-content" @click.stop>
       <div class="modal-header">
@@ -23,7 +23,7 @@
           />
         </div>
 
-        <!-- 连接状态 -->
+        <!-- 杩炴帴鐘舵€?-->
         <div v-if="connecting" class="status-box connecting">
           <GlxInlineLoader
             class="status-loader"
@@ -31,8 +31,8 @@
             size="sm"
           />
           <div class="status-copy">
-            <span class="status-text">正在连接设备</span>
-            <span class="status-tip">请稍候，连接成功后会自动关闭弹窗</span>
+            <span class="status-text">姝ｅ湪杩炴帴璁惧</span>
+            <span class="status-tip">璇风◢鍊欙紝杩炴帴鎴愬姛鍚庝細鑷姩鍏抽棴寮圭獥</span>
           </div>
         </div>
 
@@ -44,14 +44,14 @@
 
       <div class="modal-footer">
         <div class="modal-btn cancel-btn" @click="handleCancel">
-          <span class="btn-text">取消</span>
+          <span class="btn-text">鍙栨秷</span>
         </div>
         <div
           class="modal-btn confirm-btn"
           :class="{ disabled: !inputValue || connecting }"
           @click="handleConfirm"
         >
-          <span class="btn-text">{{ connecting ? "连接中" : "连接" }}</span>
+          <span class="btn-text"">{{ connecting ? "杩炴帴涓?" : "杩炴帴""" }}</span">"
         </div>
       </div>
     </div>
@@ -74,11 +74,11 @@ export default {
     },
     title: {
       type: String,
-      default: "连接设备",
+      default: "杩炴帴璁惧",
     },
     description: {
       type: String,
-      default: "请输入 Glowxel PixelBoard 的 IP 地址",
+      default: "璇疯緭鍏?Glowxel PixelBoard 鐨?IP 鍦板潃",
     },
     placeholder: {
       type: String,
@@ -113,7 +113,7 @@ export default {
     },
 
     inputValue() {
-      // 清除错误提示
+      // 娓呴櫎閿欒鎻愮ず
       if (this.error) {
         this.error = "";
       }
@@ -127,11 +127,10 @@ export default {
       this.connecting = true;
       this.error = "";
 
-      // 首连现在会经过运行态预检 + 最多两次握手尝试，UI 超时需要覆盖整条链路
-      this.timeoutTimer = setTimeout(() => {
+      // 棣栬繛鐜板湪浼氱粡杩囪繍琛屾€侀妫€ + 鏈€澶氫袱娆℃彙鎵嬪皾璇曪紝UI 瓒呮椂闇€瑕佽鐩栨暣鏉￠摼璺?      this.timeoutTimer = setTimeout(() => {
         if (this.connecting) {
           this.connecting = false;
-          this.error = "连接超时，请重试";
+          this.error = "杩炴帴瓒呮椂锛岃閲嶈瘯";
           this.$emit("timeout");
         }
       }, 40000);
@@ -150,12 +149,11 @@ export default {
       this.$emit("cancel");
       this.$emit("update:visible", false);
 
-      // 直接关闭弹窗
+      // 鐩存帴鍏抽棴寮圭獥
       this.$parent.showConnectModal = false;
     },
 
-    // 外部调用：连接成功
-    onSuccess() {
+    // 澶栭儴璋冪敤锛氳繛鎺ユ垚鍔?    onSuccess() {
       this.connecting = false;
       this.error = "";
       if (this.timeoutTimer) {
@@ -164,16 +162,15 @@ export default {
       }
       this.$emit("update:visible", false);
 
-      // 直接关闭弹窗
+      // 鐩存帴鍏抽棴寮圭獥
       if (this.$parent && this.$parent.showConnectModal !== undefined) {
         this.$parent.showConnectModal = false;
       }
     },
 
-    // 外部调用：连接失败
-    onError(message) {
+    // 澶栭儴璋冪敤锛氳繛鎺ュけ璐?    onError(message) {
       this.connecting = false;
-      this.error = message || "连接失败，请检查 IP 地址";
+      this.error = message || "杩炴帴澶辫触锛岃妫€鏌?IP 鍦板潃";
       if (this.timeoutTimer) {
         clearTimeout(this.timeoutTimer);
         this.timeoutTimer = null;

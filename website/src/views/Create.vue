@@ -1,15 +1,15 @@
-<template>
+﻿<template>
   <div class="create-page">
     <div class="create-shell">
       <header class="topbar">
-        <button class="back-btn" type="button" @click="handleBack" aria-label="返回">
+        <button class="back-btn" type="button" @click="handleBack" aria-label="杩斿洖">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
             <path d="M15 18l-6-6 6-6"/>
           </svg>
         </button>
         <div class="topbar-copy">
-          <h1 class="page-title">新建画布</h1>
-          <p class="page-desc">先选一种开始方式，再进入对应流程</p>
+          <h1 class="page-title">鏂板缓鐢诲竷</h1>
+          <p class="page-desc">鍏堥€変竴绉嶅紑濮嬫柟寮忥紝鍐嶈繘鍏ュ搴旀祦绋?</p>
         </div>
       </header>
 
@@ -48,16 +48,16 @@
 
       <section class="advanced-card">
         <div class="advanced-copy">
-          <strong>拼豆图纸生成</strong>
-          <span>如果你上传的是带编号的拼豆图纸，走这个入口会更合适。</span>
+          <strong>鎷艰眴鍥剧焊鐢熸垚</strong>
+          <span>濡傛灉浣犱笂浼犵殑鏄甫缂栧彿鐨勬嫾璞嗗浘绾革紝璧拌繖涓叆鍙ｄ細鏇村悎閫傘€?</span>
         </div>
         <button class="advanced-btn" type="button" @click="openPatternWorkbench">
-          进入图纸流程
+          杩涘叆鍥剧焊娴佺▼
         </button>
       </section>
 
       <footer class="action-bar">
-        <button class="secondary-btn" type="button" @click="handleBack">上一步</button>
+        <button class="secondary-btn" type="button" @click="handleBack">涓婁竴姝?</button>
         <button class="primary-btn" type="button" @click="handleContinue">
           {{ currentMode.actionText }}
         </button>
@@ -76,26 +76,26 @@ const route = useRoute()
 const createModes = [
   {
     value: 'blank',
-    title: '新建画布',
-    subtitle: '从空白开始创作',
-    summaryTag: '空白开始',
-    summaryTitle: '直接进入画布开始绘制',
-    summaryText: '适合从零开始画图，先进入编辑器，再按你的想法自由创作。',
-    points: ['直接进入画布', '适合手动绘制', '流程更轻'],
-    actionText: '开始新建',
+    title: '鏂板缓鐢诲竷',
+    subtitle: '浠庣┖鐧藉紑濮嬪垱浣?,
+    summaryTag: '绌虹櫧寮€濮?,
+    summaryTitle: '鐩存帴杩涘叆鐢诲竷寮€濮嬬粯鍒?,
+    summaryText: '閫傚悎浠庨浂寮€濮嬬敾鍥撅紝鍏堣繘鍏ョ紪杈戝櫒锛屽啀鎸変綘鐨勬兂娉曡嚜鐢卞垱浣溿€?,
+    points: ['鐩存帴杩涘叆鐢诲竷', '閫傚悎鎵嬪姩缁樺埗', '娴佺▼鏇磋交'],
+    actionText: '寮€濮嬫柊寤?,
     target: '/editor',
     colorClass: 'blue',
     icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
   },
   {
     value: 'image',
-    title: '导入图片',
-    subtitle: '转换为像素画',
-    summaryTag: '图片生成',
-    summaryTitle: '上传图片后按步骤生成',
-    summaryText: '适合把照片、插画或现成图片转换成像素图，再进入后续编辑。',
-    points: ['支持上传图片', '调整尺寸与预览', '完成后继续编辑'],
-    actionText: '选择图片',
+    title: '瀵煎叆鍥剧墖',
+    subtitle: '杞崲涓哄儚绱犵敾',
+    summaryTag: '鍥剧墖鐢熸垚',
+    summaryTitle: '涓婁紶鍥剧墖鍚庢寜姝ラ鐢熸垚',
+    summaryText: '閫傚悎鎶婄収鐗囥€佹彃鐢绘垨鐜版垚鍥剧墖杞崲鎴愬儚绱犲浘锛屽啀杩涘叆鍚庣画缂栬緫銆?,
+    points: ['鏀寔涓婁紶鍥剧墖', '璋冩暣灏哄涓庨瑙?, '瀹屾垚鍚庣户缁紪杈?],
+    actionText: '閫夋嫨鍥剧墖',
     target: '/pattern-workbench',
     colorClass: 'green',
     icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`,

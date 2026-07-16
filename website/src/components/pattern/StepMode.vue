@@ -1,15 +1,15 @@
-<template>
+﻿<template>
   <div class="step-mode">
-    <h2 class="step-title">选择创作模式</h2>
+    <h2 class="step-title">閫夋嫨鍒涗綔妯″紡</h2>
     <div class="mode-options">
       <div 
         class="mode-card"
         :class="{ active: modelValue === 'blank' }"
         @click="$emit('update:modelValue', 'blank')"
       >
-        <div class="mode-icon">画布</div>
-        <h3>空白画布</h3>
-        <p>从零开始创作您的像素艺术</p>
+        <div class="mode-icon">鐢诲竷</div>
+        <h3>绌虹櫧鐢诲竷</h3>
+        <p>浠庨浂寮€濮嬪垱浣滄偍鐨勫儚绱犺壓鏈?</p>
       </div>
       
       <div 
@@ -17,9 +17,9 @@
         :class="{ active: modelValue === 'image' }"
         @click="$emit('update:modelValue', 'image')"
       >
-        <div class="mode-icon">图片</div>
-        <h3>导入图片</h3>
-        <p>上传图片并转换为像素艺术</p>
+        <div class="mode-icon">鍥剧墖</div>
+        <h3>瀵煎叆鍥剧墖</h3>
+        <p>涓婁紶鍥剧墖骞惰浆鎹负鍍忕礌鑹烘湳</p>
       </div>
     </div>
   </div>

@@ -1,10 +1,10 @@
-<template>
+﻿<template>
   <ClockStandardEditor
     mode="clock"
     eyebrow="Clock"
-    title="静态时钟"
-    description="按 uniapp `clock-editor` 页面族复刻静态时钟设置页，保留时间、字体、图片、日期、星期五段式编辑路径。"
-    preview-title="时钟预览"
+    title="闈欐€佹椂閽?"
+    description="鎸?uniapp `clock-editor` 椤甸潰鏃忓鍒婚潤鎬佹椂閽熻缃〉锛屼繚鐣欐椂闂淬€佸瓧浣撱€佸浘鐗囥€佹棩鏈熴€佹槦鏈熶簲娈靛紡缂栬緫璺緞銆?"
+    preview-title="鏃堕挓棰勮"
   />
 </template>
 

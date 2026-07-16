@@ -1,3 +1,4 @@
+import { getSystemInfo } from '@/utils/browser-platform.js'
 // Status bar mixin for handling status bar height across different platforms
 export default {
   data() {
@@ -11,7 +12,7 @@ export default {
   },
 
   onShow() {
-    // tabBar 页面切换时不触发 onLoad，需在 onShow 里补充初始化
+    // tabBar 页面切换时不触发 onLoad，需�?onShow 里补充初始化
     if (!this.statusBarHeight) {
       this.initStatusBar()
     }
@@ -19,7 +20,7 @@ export default {
 
   methods: {
     initStatusBar() {
-      const systemInfo = uni.getSystemInfoSync()
+      const systemInfo = getSystemInfo()
       this.statusBarHeight = systemInfo.statusBarHeight || 0
     }
   }

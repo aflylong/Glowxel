@@ -1,4 +1,4 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/rick-morty-portal/rick-morty-portal.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/rick-morty-portal/rick-morty-portal.vue -->
 <template>
   <div class="clock-editor-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
@@ -7,7 +7,7 @@
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
-      <span class="nav-title glx-topbar__title">传送门</span>
+      <span class="nav-title glx-topbar__title">浼犻€侀棬</span>
       <div class="nav-right"></div>
     </div>
 
@@ -44,7 +44,7 @@
             class="portal-rotate-badge"
             :class="config.autoRotate.enabled ? 'portal-rotate-badge--on' : 'portal-rotate-badge--off'"
           >{{ autoRotateStatusText }}</span>
-          <span class="preview-caption-title">预览效果</span>
+          <span class="preview-caption-title">棰勮鏁堟灉</span>
         </div>
         <div class="preview-actions">
           <div
@@ -53,7 +53,7 @@
             @click="handleSend"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
@@ -68,7 +68,7 @@
         <div v-show="currentTab === 0" class="tab-panel glx-tab-panel">
           <div class="card glx-panel-card glx-editor-card">
             <div class="card-title-section glx-panel-head">
-              <span class="glx-panel-title">传送门颜色</span>
+              <span class="glx-panel-title">浼犻€侀棬棰滆壊</span>
             </div>
             <div class="option-row option-row-triple">
               <div
@@ -84,17 +84,17 @@
               </div>
             </div>
             <span class="portal-rotate-note">
-              {{ config.autoRotate.enabled ? `当前按 ${autoRotateIntervalLabel} 随机切换三种颜色` : "当前固定显示手动选择的颜色" }}
+              {{ config.autoRotate.enabled ? `褰撳墠鎸?${autoRotateIntervalLabel} 闅忔満鍒囨崲涓夌棰滆壊` : "褰撳墠鍥哄畾鏄剧ず鎵嬪姩閫夋嫨鐨勯鑹?"" }}"
             </span>
           </div>
 
           <div class="card glx-panel-card glx-editor-card">
             <div class="card-title-section glx-panel-head">
-              <span class="glx-panel-title">参数</span>
+              <span class="glx-panel-title">鍙傛暟</span>
             </div>
 <!-- 
             <div class="form-row">
-              <span class="form-label">水平位置 {{ config.portalX }}</span>
+              <span class="form-label">姘村钩浣嶇疆 {{ config.portalX }}</span>
               <GlxStepper
                 :value="config.portalX"
                 :min="0"
@@ -105,7 +105,7 @@
             </div>
 
             <div class="form-row">
-              <span class="form-label">垂直位置 {{ config.portalY }}</span>
+              <span class="form-label">鍨傜洿浣嶇疆 {{ config.portalY }}</span>
               <GlxStepper
                 :value="config.portalY"
                 :min="0"
@@ -122,12 +122,12 @@
                 @click="handlePortalCenter"
               >
                 <Icon name="target" :size="32" color="var(--nb-ink)" />
-                <span>快速居中</span>
+                <span>蹇€熷眳涓?</span>
               </div>
             </div> -->
 
             <!-- <div class="option-stack">
-              <span class="form-label">传送门大小</span>
+              <span class="form-label">浼犻€侀棬澶у皬</span>
               <div class="option-row option-row-triple">
                 <div
                   v-for="option in sizeOptions"
@@ -145,7 +145,7 @@
 
             <div class="option-stack portal-rotate-panel">
               <div class="portal-rotate-panel__head">
-                <span class="form-label">随机轮播</span>
+                <span class="form-label">闅忔満杞挱</span>
                 <span
                   class="portal-rotate-badge"
                   :class="config.autoRotate.enabled ? 'portal-rotate-badge--on' : 'portal-rotate-badge--off'"
@@ -157,14 +157,14 @@
                   :class="{ active: config.autoRotate.enabled }"
                   @click="setAutoRotateEnabled(true)"
                 >
-                  <span class="glx-feature-option__label">开启</span>
+                  <span class="glx-feature-option__label">寮€鍚?</span>
                 </div>
                 <div
                   class="option-btn glx-feature-option"
                   :class="{ active: !config.autoRotate.enabled }"
                   @click="setAutoRotateEnabled(false)"
                 >
-                  <span class="glx-feature-option__label">关闭</span>
+                  <span class="glx-feature-option__label">鍏抽棴</span>
                 </div>
               </div>
               <div class="option-row option-row-rotate">
@@ -185,7 +185,7 @@
         <div v-show="currentTab === 1" class="tab-panel glx-tab-panel">
           <ClockTextSettingsCard
             icon-name="time"
-            title="时间显示"
+            title="鏃堕棿鏄剧ず"
             :section="clockConfig.time"
             :preset-colors="timeColorOptions"
             :show-font-size="true"
@@ -252,6 +252,7 @@
 </template>
 
 <script>
+import { getStorage, setStorage, getSystemInfo, createDomQuery, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
@@ -293,7 +294,7 @@ const PORTAL_TIME_FONT_IDS = new Set(
 );
 const PORTAL_PRESET_IDS = new Set(PORTAL_COLOR_OPTIONS.map((item) => item.id));
 const PORTAL_SIZE_IDS = new Set(PORTAL_SIZE_OPTIONS.map((item) => item.id));
-// 传送门固定 60 秒生命周期(打开 → 旋涡 → 关闭),与板载渲染对齐
+// 浼犻€侀棬鍥哄畾 60 绉掔敓鍛藉懆鏈?鎵撳紑 鈫?鏃嬫丁 鈫?鍏抽棴),涓庢澘杞芥覆鏌撳榻?
 const PORTAL_CYCLE_DURATION_MS = 60000;
 const PORTAL_PREVIEW_FRAME_COUNT = 48;
 
@@ -333,9 +334,9 @@ export default {
       timeColorOptions: PORTAL_TIME_COLOR_OPTIONS,
       currentTab: 0,
       tabDefinitions: [
-        // { index: 0, label: "传送门", icon: "refresh" },
-        // { index: 1, label: "时间", icon: "time" },
-        // { index: 2, label: "字体", icon: "text" },
+        // { index: 0, label: "浼犻€侀棬", icon: "refresh" },
+        // { index: 1, label: "鏃堕棿", icon: "time" },
+        // { index: 2, label: "瀛椾綋", icon: "text" },
       ],
       config,
     };
@@ -360,7 +361,7 @@ export default {
       return this.deviceStore.isConnected;
     },
     autoRotateStatusText() {
-      return this.config.autoRotate.enabled ? "轮播已开启" : "轮播已关闭";
+      return this.config.autoRotate.enabled ? "杞挱宸插紑鍚? : "杞挱宸插叧闂?;
     },
     autoRotateIntervalLabel() {
       const matched = this.rotateIntervalOptions.find(
@@ -388,7 +389,7 @@ export default {
     this.deviceStore.init();
     this.toast = useToast();
     const savedState = normalizePortalPageState(
-      uni.getStorageSync(PORTAL_PAGE_STORAGE_KEY),
+      getStorage(PORTAL_PAGE_STORAGE_KEY),
     );
     this.config = savedState.config;
     this.clockConfig = savedState.clockConfig;
@@ -428,10 +429,10 @@ export default {
       deviceSendUxMixin.methods.endSendUi.call(this);
     },
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
     persistLocalState() {
-      uni.setStorageSync(PORTAL_PAGE_STORAGE_KEY, {
+      setStorage(PORTAL_PAGE_STORAGE_KEY, {
         config: {
           preset: this.config.preset,
           size: this.config.size,
@@ -611,19 +612,19 @@ export default {
         await this.deviceStore.rollbackBusinessMode(previousMode, {
           expectedMode: "rick_morty_portal",
         });
-        console.error("发送传送门失败:", error);
+        console.error("鍙戦€佷紶閫侀棬澶辫触:", error);
         this.showSendFailure(error);
       } finally {
         this.endSendUi();
       }
     },
     initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
+      const systemInfo = getSystemInfo();
       const statusBarHeight = systemInfo.statusBarHeight || 0;
 
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query.select(".canvas-section").boundingClientRect((sectionRect) => {
             if (!sectionRect || !sectionRect.height) {
               return;

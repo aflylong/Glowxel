@@ -1,10 +1,10 @@
-<template>
+﻿<template>
   <ClockStandardEditor
     mode="animation"
     eyebrow="Animation Clock"
-    title="动态时钟"
-    description="按 uniapp `animation-clock` 复刻动态时钟页，页面骨架、预览入口和五段式参数编辑保持同一家族语义。"
-    preview-title="动态图预览"
+    title="鍔ㄦ€佹椂閽?"
+    description="鎸?uniapp `animation-clock` 澶嶅埢鍔ㄦ€佹椂閽熼〉锛岄〉闈㈤鏋躲€侀瑙堝叆鍙ｅ拰浜旀寮忓弬鏁扮紪杈戜繚鎸佸悓涓€瀹舵棌璇箟銆?"
+    preview-title="鍔ㄦ€佸浘棰勮"
   />
 </template>
 

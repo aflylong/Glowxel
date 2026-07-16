@@ -1,38 +1,18 @@
-<template>
-  <div class="glx-page-shell device-mode-page">
-    <section class="glx-page-shell__hero">
-      <span class="glx-page-shell__eyebrow">LED Matrix</span>
-      <h1 class="glx-page-shell__title">矩阵流光</h1>
-      <p class="glx-page-shell__desc">
-        这里完整承接 `uniapp/led-matrix` 的板载场景控制：场景选择、本地预览、参数调节和设备发送都走同一条 store 发送链。
-      </p>
-      <div class="glx-hero-metrics">
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">当前场景</span>
-          <strong class="glx-hero-metric__value">{{ selectedDemoLabel }}</strong>
-        </article>
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">连接状态</span>
-          <strong class="glx-hero-metric__value">{{ deviceStore.connected ? "已连接" : "未连接" }}</strong>
-        </article>
-        <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">发送模式</span>
-          <strong class="glx-hero-metric__value">板载原生</strong>
-        </article>
-      </div>
-    </section>
+﻿<template>
+  <div class="glx-page-shell device-mode-page game-mode-page">
+    <PcModeTopbar title="鐭╅樀娴佸厜" />
 
-    <section class="device-mode-layout">
-      <article class="glx-section-card glx-section-card--stack device-preview-card">
+    <section class="device-mode-layout game-mode-layout">
+      <article class="glx-section-card glx-section-card--stack device-preview-card game-preview-card">
         <div class="device-preview-card__head">
           <div>
-            <h2 class="glx-section-title">预览效果</h2>
-            <p class="device-preview-card__desc">黑底预览舞台与设备发送参数同源，刷新后保留上次选择。</p>
+            <h2 class="glx-section-title">棰勮鏁堟灉</h2>
+            <p class="device-preview-card__desc">榛戝簳棰勮鑸炲彴涓庤澶囧彂閫佸弬鏁板悓婧愶紝鍒锋柊鍚庝繚鐣欎笂娆￠€夋嫨銆?</p>
           </div>
           <span class="glx-chip glx-chip--blue">{{ selectedDemoLabel }}</span>
         </div>
 
-        <div class="device-preview-stage">
+        <div class="device-preview-stage game-preview-stage">
           <DevicePixelBoard :pixels="currentPixels" :grid-visible="true" />
           <DeviceSendingOverlay
             :visible="isSending"
@@ -45,17 +25,17 @@
 
         <div class="glx-inline-actions">
           <button type="button" class="glx-button glx-button--primary" :disabled="isSending" @click="handleSend">
-            {{ isSending ? "发送中..." : "发送到设备" }}
+            {{ isSending ? "鍙戦€佷腑..." : "鍙戦€佸埌璁惧" }}
           </button>
-          <button type="button" class="glx-button glx-button--ghost" @click="refreshPreview">刷新预览</button>
+          <button type="button" class="glx-button glx-button--ghost" @click="refreshPreview">鍒锋柊棰勮</button>
         </div>
       </article>
 
-      <div class="device-mode-stack">
+      <div class="device-mode-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">场景选择</h2>
-            <span class="glx-section-meta">{{ demos.length }} 个场景</span>
+            <h2 class="glx-section-title">鍦烘櫙閫夋嫨</h2>
+            <span class="glx-section-meta">{{ demos.length }} 涓満鏅?</span>
           </div>
           <div class="mode-grid">
             <button
@@ -74,33 +54,32 @@
 
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">参数</h2>
-            <span class="glx-section-meta">与 uniapp 同步</span>
+            <h2 class="glx-section-title">鍙傛暟</h2>
+            <span class="glx-section-meta">涓?uniapp 鍚屾</span>
           </div>
 
-          <div v-if="showSpeedControl" class="mode-row">
-            <span class="mode-row__label">速度</span>
+          <div v-if="showSpeedControl" class="mode-row game-row">
+            <span class="mode-row__label">閫熷害</span>
             <DeviceModeStepper v-model="config.speed" :min="1" :max="10" />
           </div>
 
-          <div v-if="showIntensityControl" class="mode-row">
-            <span class="mode-row__label">强度</span>
+          <div v-if="showIntensityControl" class="mode-row game-row">
+            <span class="mode-row__label">寮哄害</span>
             <DeviceModeStepper v-model="config.intensity" :min="10" :max="100" />
           </div>
 
-          <div v-if="showDensityControl" class="mode-row">
-            <span class="mode-row__label">密度</span>
+          <div v-if="showDensityControl" class="mode-row game-row">
+            <span class="mode-row__label">瀵嗗害</span>
             <DeviceModeStepper v-model="config.density" :min="10" :max="100" />
           </div>
 
           <div v-if="showColorControl" class="mode-block">
-            <span class="mode-row__label">雨滴颜色</span>
+            <span class="mode-row__label">闆ㄦ淮棰滆壊</span>
             <DeviceColorSwatches v-model="config.color" :items="rainColorOptions" />
           </div>
 
           <p v-if="hasParameterControl === false" class="mode-note">
-            这个场景没有额外参数，直接预览后发送即可。
-          </p>
+            杩欎釜鍦烘櫙娌℃湁棰濆鍙傛暟锛岀洿鎺ラ瑙堝悗鍙戦€佸嵆鍙€?          </p>
         </article>
       </div>
     </section>
@@ -115,6 +94,7 @@ import { usePixelPreviewPlayer } from "@/composables/usePixelPreviewPlayer.js";
 import DeviceColorSwatches from "@/components/device/modes/DeviceColorSwatches.vue";
 import DeviceModeStepper from "@/components/device/modes/DeviceModeStepper.vue";
 import DevicePixelBoard from "@/components/device/modes/DevicePixelBoard.vue";
+import PcModeTopbar from "@/components/device/modes/PcModeTopbar.vue";
 import { useDeviceLegacyStore } from "@/stores/deviceLegacy.js";
 import { readStorageJson, writeStorageJson } from "@/utils/device-mode-core.js";
 import {
@@ -145,12 +125,12 @@ const INTENSITY_ENABLED_IDS = Object.freeze([
 ]);
 const demos = getLedMatrixDemoItems();
 const rainColorOptions = Object.freeze([
-  { label: "青色", value: "#64c8ff" },
-  { label: "浅青", value: "#89dcff" },
-  { label: "冰蓝", value: "#36cfff" },
-  { label: "亮蓝", value: "#4f7fff" },
-  { label: "薄荷", value: "#8ee7f2" },
-  { label: "天蓝", value: "#7fd8ff" },
+  { label: "闈掕壊", value: "#64c8ff" },
+  { label: "娴呴潚", value: "#89dcff" },
+  { label: "鍐拌摑", value: "#36cfff" },
+  { label: "浜摑", value: "#4f7fff" },
+  { label: "钖勮嵎", value: "#8ee7f2" },
+  { label: "澶╄摑", value: "#7fd8ff" },
 ]);
 
 const savedConfig = readStorageJson(STORAGE_KEY);

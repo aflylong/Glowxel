@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="design-system-page">
     <div class="container">
       <div class="ds-shell">
@@ -6,25 +6,25 @@
           <div class="ds-page-head__brand">
             <BrandLogo variant="page" />
             <div class="ds-page-head__copy">
-              <span class="ds-page-head__eyebrow">光格像素工坊组件规范站</span>
-              <h1 class="ds-page-head__title">官网内正式组件页</h1>
-              <p class="ds-page-head__desc">只保留正式组件覆盖、状态和规则，不再堆多余解释块。</p>
+              <span class="ds-page-head__eyebrow">鍏夋牸鍍忕礌宸ュ潑缁勪欢瑙勮寖绔?</span>
+              <h1 class="ds-page-head__title">瀹樼綉鍐呮寮忕粍浠堕〉</h1>
+              <p class="ds-page-head__desc">鍙繚鐣欐寮忕粍浠惰鐩栥€佺姸鎬佸拰瑙勫垯锛屼笉鍐嶅爢澶氫綑瑙ｉ噴鍧椼€?</p>
             </div>
           </div>
 
           <div class="ds-page-head__meta">
-            <span class="ds-page-head__meta-label">当前基线</span>
-            <strong class="ds-page-head__meta-title">上一版真实结构 + 更轻阴影</strong>
-            <p class="ds-page-head__meta-copy">左侧切组，右侧直接看正式组件与 uniapp 约束。</p>
+            <span class="ds-page-head__meta-label">褰撳墠鍩虹嚎</span>
+            <strong class="ds-page-head__meta-title">涓婁竴鐗堢湡瀹炵粨鏋?+ 鏇磋交闃村奖</strong>
+            <p class="ds-page-head__meta-copy">宸︿晶鍒囩粍锛屽彸渚х洿鎺ョ湅姝ｅ紡缁勪欢涓?uniapp 绾︽潫銆?</p>
           </div>
         </section>
 
         <div class="ds-workspace">
           <aside class="ds-sidebar">
             <div class="ds-sidebar__head">
-              <span class="ds-sidebar__eyebrow">分组导航</span>
-              <h2 class="ds-sidebar__title">组件目录</h2>
-              <p class="ds-sidebar__desc">优先补覆盖，不讲空话。</p>
+              <span class="ds-sidebar__eyebrow">鍒嗙粍瀵艰埅</span>
+              <h2 class="ds-sidebar__title">缁勪欢鐩綍</h2>
+              <p class="ds-sidebar__desc">浼樺厛琛ヨ鐩栵紝涓嶈绌鸿瘽銆?</p>
             </div>
 
             <DesignSystemTabs v-model="activeTab" :tabs="tabs" />
@@ -32,7 +32,7 @@
 
           <div class="ds-content">
             <section class="ds-content__intro">
-              <span class="ds-content__eyebrow">当前分组</span>
+              <span class="ds-content__eyebrow">褰撳墠鍒嗙粍</span>
               <h2 class="ds-content__title">{{ currentTab.label }}</h2>
               <p class="ds-content__desc">{{ currentTab.description }}</p>
             </section>
@@ -59,16 +59,16 @@ import DesignSystemFeedbackPanel from "@/components/design-system/DesignSystemFe
 import "@/assets/styles/design-system.css";
 
 const tabs = [
-  { key: "overview", label: "总览", description: "先看正式色、图标和壳层语法。" },
-  { key: "colors", label: "色彩与风格", description: "主操作黄、编辑蓝和四类状态色统一收口。" },
-  { key: "icons", label: "图标与底板", description: "图标、底板和品牌语法在这里集中看。" },
-  { key: "headers", label: "头部与导航", description: "官网导航、顶部 tabs、页头和列表入口都在这一组。" },
-  { key: "buttons", label: "按钮系统", description: "按钮尺寸、阴影和语义 modifier 全部可复用。" },
-  { key: "controls", label: "控件系统", description: "输入、选择、开关、滑块、步进和勾选组直接可操作。" },
-  { key: "lists", label: "列表与卡片", description: "入口卡、列表行和空状态继续沿用旧结构。" },
-  { key: "skeletons", label: "骨架与加载", description: "骨架、彩色 loader 和动作轻遮罩统一看。" },
-  { key: "feedback", label: "弹窗与反馈", description: "Toast、Dialog 和状态反馈全部回到标准语义。" },
-  { key: "rules", label: "统一规则", description: "集中看 uniapp 已锁定的样式硬约束。" },
+  { key: "overview"", label: "鎬昏"", description: "鍏堢湅姝ｅ紡鑹层€佸浘鏍囧拰澹冲眰璇硶銆?" },"
+  { key: "colors", label: "鑹插僵涓庨鏍?, description: "涓绘搷浣滈粍銆佺紪杈戣摑鍜屽洓绫荤姸鎬佽壊缁熶竴鏀跺彛銆? },
+  { key: "icons", label: "鍥炬爣涓庡簳鏉?, description: "鍥炬爣銆佸簳鏉垮拰鍝佺墝璇硶鍦ㄨ繖閲岄泦涓湅銆? },
+  { key: "headers", label: "澶撮儴涓庡鑸?, description: "瀹樼綉瀵艰埅銆侀《閮?tabs銆侀〉澶村拰鍒楄〃鍏ュ彛閮藉湪杩欎竴缁勩€? },
+  { key: "buttons"", label: "鎸夐挳绯荤粺"", description: "鎸夐挳灏哄銆侀槾褰卞拰璇箟 modifier 鍏ㄩ儴鍙鐢ㄣ€?" },"
+  { key: "controls"", label: "鎺т欢绯荤粺"", description: "杈撳叆銆侀€夋嫨銆佸紑鍏炽€佹粦鍧椼€佹杩涘拰鍕鹃€夌粍鐩存帴鍙搷浣溿€?" },"
+  { key: "lists", label: "鍒楄〃涓庡崱鐗?, description: "鍏ュ彛鍗°€佸垪琛ㄨ鍜岀┖鐘舵€佺户缁部鐢ㄦ棫缁撴瀯銆? },
+  { key: "skeletons", label: "楠ㄦ灦涓庡姞杞?, description: "楠ㄦ灦銆佸僵鑹?loader 鍜屽姩浣滆交閬僵缁熶竴鐪嬨€? },
+  { key: "feedback", label: "寮圭獥涓庡弽棣?, description: "Toast銆丏ialog 鍜岀姸鎬佸弽棣堝叏閮ㄥ洖鍒版爣鍑嗚涔夈€? },
+  { key: "rules"", label: "缁熶竴瑙勫垯"", description: "闆嗕腑鐪?uniapp 宸查攣瀹氱殑鏍峰紡纭害鏉熴€?" },"
 ];
 
 const activeTab = ref("overview");

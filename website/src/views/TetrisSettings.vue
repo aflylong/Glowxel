@@ -1,6 +1,6 @@
-<template>
+﻿<template>
   <div class="tetris-page glx-page-shell game-mode-page">
-    <PcModeTopbar title="俄罗斯方块屏保" />
+    <PcModeTopbar title="淇勭綏鏂柟鍧楀睆淇?" /">"
 
     <section class="tetris-layout game-mode-layout">
       <article
@@ -9,7 +9,7 @@
         <div class="tetris-preview-card__head">
           <div>
             <p class="tetris-preview-card__eyebrow">Device Mode</p>
-            <h2 class="tetris-preview-card__title">俄罗斯方块屏保预览</h2>
+            <h2 class="tetris-preview-card__title">淇勭綏鏂柟鍧楀睆淇濋瑙?</h2>
           </div>
         </div>
 
@@ -20,13 +20,13 @@
             :disabled="isSending"
             @click="handleSend"
           >
-            {{ isSending ? "发送中..." : "发送到设备" }}
+            {{ isSending ? "鍙戦€佷腑..." : "鍙戦€佸埌璁惧" }}
           </button>
           <span
             class="glx-chip"
             :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
           >
-            {{ deviceStore.connected ? "已连接" : "未连接" }}
+            {{ deviceStore.connected ? "宸茶繛鎺? : "鏈繛鎺? }}
           </span>
         </div>
 
@@ -35,8 +35,8 @@
             <DevicePixelBoard :pixels="displayPixels" :grid-visible="true" />
             <DeviceSendingOverlay
               :visible="isSending"
-              title="正在发送俄罗斯方块屏保"
-              description="发送期间锁定当前预览快照，等待设备完成屏保参数事务提交。"
+              title="姝ｅ湪鍙戦€佷縿缃楁柉鏂瑰潡灞忎繚"
+              description="鍙戦€佹湡闂撮攣瀹氬綋鍓嶉瑙堝揩鐓э紝绛夊緟璁惧瀹屾垚灞忎繚鍙傛暟浜嬪姟鎻愪氦銆?"
             >
               <div class="tetris-preview-sending">
                 <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
@@ -47,17 +47,17 @@
 
         <div class="tetris-summary-grid">
           <article class="tetris-summary-card">
-            <span class="tetris-summary-card__label">模式</span>
+            <span class="tetris-summary-card__label">妯″紡</span>
             <strong class="tetris-summary-card__value">{{ selectedClearModeLabel }}</strong>
-            <span class="tetris-summary-card__meta">方块 {{ selectedCellSizeLabel }}</span>
+            <span class="tetris-summary-card__meta">鏂瑰潡 {{ selectedCellSizeLabel }}</span>
           </article>
           <article class="tetris-summary-card">
-            <span class="tetris-summary-card__label">速度</span>
+            <span class="tetris-summary-card__label">閫熷害</span>
             <strong class="tetris-summary-card__value">{{ selectedSpeedLabel }}</strong>
             <span class="tetris-summary-card__meta">{{ TETRIS_SPEED_OPTIONS[config.speed] }} ms</span>
           </article>
           <article class="tetris-summary-card">
-            <span class="tetris-summary-card__label">时间</span>
+            <span class="tetris-summary-card__label">鏃堕棿</span>
             <strong class="tetris-summary-card__value">{{ selectedShowClockLabel }}</strong>
             <span class="tetris-summary-card__meta">{{ selectedHourFormatLabel }}</span>
           </article>
@@ -67,8 +67,8 @@
       <div class="tetris-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">模式配置</h2>
-            <span class="glx-section-meta">屏保 / 时间 / 字体</span>
+            <h2 class="glx-section-title">妯″紡閰嶇疆</h2>
+            <span class="glx-section-meta">灞忎繚 / 鏃堕棿 / 瀛椾綋</span>
           </div>
           <DeviceModeTabs v-model="currentTab" :items="tabItems" />
         </article>
@@ -76,8 +76,8 @@
         <template v-if="currentTab === 'screensaver'">
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">模式</h2>
-              <span class="glx-section-meta">消除 / 满屏</span>
+              <h2 class="glx-section-title">妯″紡</h2>
+              <span class="glx-section-meta">娑堥櫎 / 婊″睆</span>
             </div>
             <div class="game-choice-grid game-choice-grid--double">
               <button
@@ -95,7 +95,7 @@
 
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">方块大小</h2>
+              <h2 class="glx-section-title">鏂瑰潡澶у皬</h2>
               <span class="glx-section-meta">1px / 2px / 3px</span>
             </div>
             <div class="game-choice-grid game-choice-grid--triple">
@@ -114,8 +114,8 @@
 
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">下落速度</h2>
-              <span class="glx-section-meta">慢 / 中 / 快</span>
+              <h2 class="glx-section-title">涓嬭惤閫熷害</h2>
+              <span class="glx-section-meta">鎱?/ 涓?/ 蹇?</span>
             </div>
             <div class="game-choice-grid game-choice-grid--triple">
               <button
@@ -133,8 +133,8 @@
 
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">时间显示</h2>
-              <span class="glx-section-meta">显示 / 隐藏</span>
+              <h2 class="glx-section-title">鏃堕棿鏄剧ず</h2>
+              <span class="glx-section-meta">鏄剧ず / 闅愯棌</span>
             </div>
             <div class="game-choice-grid game-choice-grid--double">
               <button
@@ -153,8 +153,8 @@
 
         <article v-else-if="currentTab === 'time'" class="glx-section-card glx-section-card--stack">
           <ClockTextSettingsSection
-            title="时间显示"
-            description="时间层控制和 uniapp 保持同一套位置、字号、颜色与对齐语义。"
+            title="鏃堕棿鏄剧ず"
+            description="鏃堕棿灞傛帶鍒跺拰 uniapp 淇濇寔鍚屼竴濂椾綅缃€佸瓧鍙枫€侀鑹蹭笌瀵归綈璇箟銆?"
             :section="effectiveTimeSection"
             :preset-colors="presetColors"
             :show-font-size="true"
@@ -172,8 +172,8 @@
 
         <article v-else class="glx-section-card glx-section-card--stack">
           <GameModeFontSelector
-            title="字体样式"
-            description="保留秒钟和 12/24 小时切换，预览与发送统一走当前字宽计算。"
+            title="瀛椾綋鏍峰紡"
+            description="淇濈暀绉掗挓鍜?12/24 灏忔椂鍒囨崲锛岄瑙堜笌鍙戦€佺粺涓€璧板綋鍓嶅瓧瀹借绠椼€?"
             :font-options="fontOptions"
             :selected-font="clockConfig.font"
             :show-seconds="clockConfig.showSeconds"
@@ -227,36 +227,36 @@ const TETRIS_OVERLAY_CLOCK_CONFIG_STORAGE_KEY = "tetris_overlay_clock_config";
 const fontOptions = getDeviceClockFontOptions();
 const fontIds = Object.freeze(fontOptions.map((item) => item.id));
 const tabItems = Object.freeze([
-  { value: "screensaver", label: "屏保" },
-  { value: "time", label: "时间" },
-  { value: "font", label: "字体" },
+  { value: "screensaver", label: "灞忎繚" },
+  { value: "time", label: "鏃堕棿" },
+  { value: "font", label: "瀛椾綋" },
 ]);
 const clearModeOptions = Object.freeze([
-  { value: true, label: "消除模式" },
-  { value: false, label: "满屏模式" },
+  { value: true, label: "娑堥櫎妯″紡" },
+  { value: false, label: "婊″睆妯″紡" },
 ]);
 const cellSizeOptions = Object.freeze([
-  { value: 1, label: "小 (1px)" },
-  { value: 2, label: "中 (2px)" },
-  { value: 3, label: "大 (3px)" },
+  { value: 1, label: "灏?(1px)" },
+  { value: 2, label: "涓?(2px)" },
+  { value: 3, label: "澶?(3px)" },
 ]);
 const speedOptions = Object.freeze([
-  { value: "slow", label: "慢" },
-  { value: "normal", label: "中" },
-  { value: "fast", label: "快" },
+  { value: "slow"", label: "鎱?" },"
+  { value: "normal"", label: "涓?" },"
+  { value: "fast"", label: "蹇?" },"
 ]);
 const showClockOptions = Object.freeze([
-  { value: true, label: "显示时间" },
-  { value: false, label: "隐藏时间" },
+  { value: true, label: "鏄剧ず鏃堕棿" },
+  { value: false, label: "闅愯棌鏃堕棿" },
 ]);
 const presetColors = Object.freeze([
-  { name: "青色", hex: "#64c8ff" },
-  { name: "绿色", hex: "#00ff9d" },
-  { name: "黄色", hex: "#ffdc00" },
-  { name: "橙色", hex: "#ffa500" },
-  { name: "红色", hex: "#ff6464" },
-  { name: "紫色", hex: "#c864ff" },
-  { name: "白色", hex: "#ffffff" },
+  { name: "闈掕壊", hex: "#64c8ff" },
+  { name: "缁胯壊", hex: "#00ff9d" },
+  { name: "榛勮壊", hex: "#ffdc00" },
+  { name: "姗欒壊", hex: "#ffa500" },
+  { name: "绾㈣壊", hex: "#ff6464" },
+  { name: "绱壊", hex: "#c864ff" },
+  { name: "鐧借壊", hex: "#ffffff" },
 ]);
 
 const deviceStore = useDeviceLegacyStore();
@@ -299,7 +299,7 @@ const selectedShowClockLabel = computed(() => {
 });
 
 const selectedHourFormatLabel = computed(() => {
-  return clockConfig.hourFormat === 12 ? "12 小时" : "24 小时";
+  return clockConfig.hourFormat === 12 ? "12 灏忔椂" : "24 灏忔椂";
 });
 
 const effectiveTimeSection = computed(() => {
@@ -702,7 +702,7 @@ function saveConfigsBeforeSend(nextConfig, nextClockConfig) {
 
 async function handleSend() {
   if (deviceStore.connected !== true) {
-    feedback.warning("设备未连接", "请先返回设备控制页建立连接。");
+    feedback.warning("璁惧鏈繛鎺?, "璇峰厛杩斿洖璁惧鎺у埗椤靛缓绔嬭繛鎺ャ€?);
     return;
   }
 
@@ -718,7 +718,7 @@ async function handleSend() {
 
   isSending.value = true;
   sendingPixels.value = new Map(currentPreviewMap.value);
-  feedback.showBlocking("发送俄罗斯方块", "正在把当前俄罗斯方块屏保发送到设备。");
+  feedback.showBlocking("鍙戦€佷縿缃楁柉鏂瑰潡"", "姝ｅ湪鎶婂綋鍓嶄縿缃楁柉鏂瑰潡灞忎繚鍙戦€佸埌璁惧銆?")";"
   try {
     await deviceStore.startTetris({
       clearMode: nextConfig.clearMode,
@@ -728,12 +728,12 @@ async function handleSend() {
       pieces: nextConfig.pieces,
       config: buildTetrisClockPayload(nextClockConfig),
     });
-    feedback.success("发送成功", "俄罗斯方块屏保已发送到设备。");
+    feedback.success("鍙戦€佹垚鍔?, "淇勭綏鏂柟鍧楀睆淇濆凡鍙戦€佸埌璁惧銆?);
   } catch (error) {
     if (error instanceof Error) {
-      feedback.error("发送失败", error.message);
+      feedback.error("鍙戦€佸け璐?", error.message")";"
     } else {
-      feedback.error("发送失败", "俄罗斯方块屏保发送失败。");
+      feedback.error("鍙戦€佸け璐?, "淇勭綏鏂柟鍧楀睆淇濆彂閫佸け璐ャ€?);
     }
   } finally {
     feedback.hideBlocking();

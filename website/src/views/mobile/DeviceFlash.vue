@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div
     class="device-flash-page glx-device-shell glx-device-shell--desktop-stack"
   >
@@ -11,7 +11,7 @@
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
-      <span class="nav-title glx-topbar__title">设备烧录</span>
+      <span class="nav-title glx-topbar__title">璁惧鐑у綍</span>
       <div class="nav-right"></div>
     </div>
 
@@ -24,7 +24,7 @@
         <div class="device-flash-column">
           <section class="section-block">
             <div class="section-header glx-section-head">
-              <span class="section-title glx-section-title">开始烧录</span>
+              <span class="section-title glx-section-title">寮€濮嬬儳褰?</span>
               <span class="section-meta">USB Web Serial</span>
             </div>
 
@@ -36,43 +36,35 @@
                     type="button"
                     class="flash-primary-btn"
                   >
-                    连接 USB 并开始烧录
-                  </button>
+                    杩炴帴 USB 骞跺紑濮嬬儳褰?                  </button>
                   <div slot="unsupported" class="tip-card tip-card--soft">
-                    当前浏览器不支持 Web Serial，请使用 Chrome 或 Edge 桌面版。
-                  </div>
+                    褰撳墠娴忚鍣ㄤ笉鏀寔 Web Serial锛岃浣跨敤 Chrome 鎴?Edge 妗岄潰鐗堛€?                  </div>
                   <div slot="not-allowed" class="tip-card tip-card--soft">
-                    当前页面不是安全上下文，请使用 HTTPS 或 localhost。
-                  </div>
+                    褰撳墠椤甸潰涓嶆槸瀹夊叏涓婁笅鏂囷紝璇蜂娇鐢?HTTPS 鎴?localhost銆?                  </div>
                 </esp-web-install-button>
               </div>
 
               <div class="tip-card tip-card--soft">
-                如果没有弹出串口选择窗口，先检查 USB
-                数据线、串口驱动和页面安全环境。
-              </div>
+                濡傛灉娌℃湁寮瑰嚭涓插彛閫夋嫨绐楀彛锛屽厛妫€鏌?USB
+                鏁版嵁绾裤€佷覆鍙ｉ┍鍔ㄥ拰椤甸潰瀹夊叏鐜銆?              </div>
             </div>
           </section>
 
           <section class="section-block">
             <div class="section-header glx-section-head">
-              <span class="section-title glx-section-title">烧录前确认</span>
-              <span class="section-meta">减少失败率</span>
+              <span class="section-title glx-section-title">鐑у綍鍓嶇‘璁?</span>
+              <span class="section-meta">鍑忓皯澶辫触鐜?</span>
             </div>
 
             <div class="panel-card checklist-panel">
               <div class="check-card">
-                使用可以传输数据的 USB 线，不要使用只能充电的线。
-              </div>
+                浣跨敤鍙互浼犺緭鏁版嵁鐨?USB 绾匡紝涓嶈浣跨敤鍙兘鍏呯數鐨勭嚎銆?              </div>
               <div class="check-card">
-                确认系统已经安装 CH340 / CP2102 等对应串口驱动。
-              </div>
+                纭绯荤粺宸茬粡瀹夎 CH340 / CP2102 绛夊搴斾覆鍙ｉ┍鍔ㄣ€?              </div>
               <div class="check-card">
-                关闭串口监视器、PlatformIO 上传窗口等会占用端口的程序。
-              </div>
+                鍏抽棴涓插彛鐩戣鍣ㄣ€丳latformIO 涓婁紶绐楀彛绛変細鍗犵敤绔彛鐨勭▼搴忋€?              </div>
               <div class="check-card">
-                如果连接失败，可以按住 BOOT 后再点击连接，开始写入后松开。
-              </div>
+                濡傛灉杩炴帴澶辫触锛屽彲浠ユ寜浣?BOOT 鍚庡啀鐐瑰嚮杩炴帴锛屽紑濮嬪啓鍏ュ悗鏉惧紑銆?              </div>
             </div>
           </section>
         </div>
@@ -80,42 +72,38 @@
         <div class="device-flash-column">
           <section class="section-block">
             <div class="section-header glx-section-head">
-              <span class="section-title glx-section-title">环境要求</span>
-              <span class="section-meta">浏览器与系统</span>
+              <span class="section-title glx-section-title">鐜瑕佹眰</span>
+              <span class="section-meta">娴忚鍣ㄤ笌绯荤粺</span>
             </div>
 
             <div class="panel-card notes-panel">
               <div class="note-card">
-                <span class="note-label">桌面浏览器</span>
+                <span class="note-label">妗岄潰娴忚鍣?</span>
                 <span class="note-desc">
-                  PC 端推荐使用最新版 Chrome 或 Edge，体验更稳定。
-                </span>
+                  PC 绔帹鑽愪娇鐢ㄦ渶鏂扮増 Chrome 鎴?Edge锛屼綋楠屾洿绋冲畾銆?                </span>
               </div>
               <div class="note-card">
-                <span class="note-label">页面安全</span>
+                <span class="note-label">椤甸潰瀹夊叏</span>
                 <span class="note-desc">
-                  必须在 HTTPS 或 localhost 环境下，浏览器才会开放串口接口。
-                </span>
+                  蹇呴』鍦?HTTPS 鎴?localhost 鐜涓嬶紝娴忚鍣ㄦ墠浼氬紑鏀句覆鍙ｆ帴鍙ｃ€?                </span>
               </div>
               <div class="note-card">
-                <span class="note-label">连接关系</span>
+                <span class="note-label">杩炴帴鍏崇郴</span>
                 <span class="note-desc">
-                  烧录时不依赖设备先联网，也不需要先连接设备控制页面。
-                </span>
+                  鐑у綍鏃朵笉渚濊禆璁惧鍏堣仈缃戯紝涔熶笉闇€瑕佸厛杩炴帴璁惧鎺у埗椤甸潰銆?                </span>
               </div>
             </div>
           </section>
 
           <section class="section-block">
             <div class="section-header glx-section-head">
-              <span class="section-title glx-section-title">完成后</span>
-              <span class="section-meta">重新连接设备</span>
+              <span class="section-title glx-section-title">瀹屾垚鍚?</span>
+              <span class="section-meta">閲嶆柊杩炴帴璁惧</span>
             </div>
 
             <div class="panel-card finish-panel">
               <div class="tip-card">
-                烧录完成后设备会重启。等屏幕恢复显示或设备重新联网后，再回到设备控制页面重新连接设备。
-              </div>
+                鐑у綍瀹屾垚鍚庤澶囦細閲嶅惎銆傜瓑灞忓箷鎭㈠鏄剧ず鎴栬澶囬噸鏂拌仈缃戝悗锛屽啀鍥炲埌璁惧鎺у埗椤甸潰閲嶆柊杩炴帴璁惧銆?              </div>
 
               <div class="action-grid">
                 <button
@@ -123,14 +111,14 @@
                   class="flash-primary-btn"
                   @click="goDeviceControl"
                 >
-                  回到设备控制
+                  鍥炲埌璁惧鎺у埗
                 </button>
                 <button
                   type="button"
                   class="flash-secondary-btn"
                   @click="goBleConfig"
                 >
-                  需要时重新配网
+                  闇€瑕佹椂閲嶆柊閰嶇綉
                 </button>
               </div>
             </div>
@@ -144,6 +132,7 @@
 </template>
 
 <script>
+import { navigateTo, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import Icon from "@/components/uni/Icon.vue";
@@ -180,13 +169,13 @@ export default {
       document.head.appendChild(script);
     },
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
     goDeviceControl() {
-      uni.navigateTo({ url: "/device-control" });
+      navigateTo({ url: "/device-control" });
     },
     goBleConfig() {
-      uni.navigateTo({ url: "/ble-config" });
+      navigateTo({ url: "/ble-config" });
     },
   },
 };

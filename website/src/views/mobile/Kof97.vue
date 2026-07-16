@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="clock-editor-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
 
@@ -6,7 +6,7 @@
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
-      <span class="nav-title glx-topbar__title">拳皇 97</span>
+      <span class="nav-title glx-topbar__title">鎷崇殗 97</span>
       <div class="nav-right"></div>
     </div>
 
@@ -24,12 +24,12 @@
           :grid-visible="true"
           :is-dark-mode="true"
         />
-        <div v-if="isLoading" class="preview-loading">正在加载原始像素数据...</div>
+        <div v-if="isLoading" class="preview-loading">姝ｅ湪鍔犺浇鍘熷鍍忕礌鏁版嵁...</div>
       </div>
 
       <div class="preview-caption glx-preview-panel">
         <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-caption-title">网页预览</span>
+          <span class="preview-caption-title">缃戦〉棰勮</span>
           <!-- <span class="preview-caption-sub">{{ statusText }}</span> -->
         </div>
         <div class="preview-actions">
@@ -39,7 +39,7 @@
             @click="sendToDevice"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
@@ -49,15 +49,15 @@
       <div class="content-wrapper glx-scroll-stack">
         <div class="card glx-panel-card glx-editor-card">
           <div class="card-title-section glx-panel-head">
-            <span class="glx-panel-title">说明</span>
+            <span class="glx-panel-title">璇存槑</span>
           </div>
           <p class="desc-text">
-            当前网页端加载原始角色帧像素，页面解包基准帧和差异帧后再按下面的比例投影到 64x64 预览里。
-            这里不会把每一帧提前压成同一个宽高，方便继续确认角色大小、脚底位置和动作节奏。
+            褰撳墠缃戦〉绔姞杞藉師濮嬭鑹插抚鍍忕礌锛岄〉闈㈣В鍖呭熀鍑嗗抚鍜屽樊寮傚抚鍚庡啀鎸変笅闈㈢殑姣斾緥鎶曞奖鍒?64x64 棰勮閲屻€?
+            杩欓噷涓嶄細鎶婃瘡涓€甯ф彁鍓嶅帇鎴愬悓涓€涓楂橈紝鏂逛究缁х画纭瑙掕壊澶у皬銆佽剼搴曚綅缃拰鍔ㄤ綔鑺傚銆?
           </p>
           <div class="scale-controls">
             <label class="scale-control">
-              <span class="scale-control__label">P1 缩放 {{ p1ScaleText }}</span>
+              <span class="scale-control__label">P1 缂╂斁 {{ p1ScaleText }}</span>
               <input
                 v-model.number="p1Scale"
                 class="scale-control__range"
@@ -68,7 +68,7 @@
               />
             </label>
             <label class="scale-control">
-              <span class="scale-control__label">P2 缩放 {{ p2ScaleText }}</span>
+              <span class="scale-control__label">P2 缂╂斁 {{ p2ScaleText }}</span>
               <input
                 v-model.number="p2Scale"
                 class="scale-control__range"
@@ -79,7 +79,7 @@
               />
             </label>
             <label class="scale-control">
-              <span class="scale-control__label">角色 Y {{ charY }}</span>
+              <span class="scale-control__label">瑙掕壊 Y {{ charY }}</span>
               <input
                 v-model.number="charY"
                 class="scale-control__range"
@@ -107,6 +107,7 @@
 </template>
 
 <script>
+import { createDomQuery } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from '@/mixins/uniLifecycleAdapter.js';
 import statusBarMixin from '@/mixins/statusBar.js';
 import deviceSendUxMixin from '@/mixins/deviceSendUxMixin.js';
@@ -226,10 +227,10 @@ export default {
     },
     statusText() {
       if (this.isLoading) {
-        return '正在加载角色数据';
+        return '姝ｅ湪鍔犺浇瑙掕壊鏁版嵁';
       }
       if (!this.sceneState) {
-        return '预览未启动';
+        return '棰勮鏈惎鍔?;
       }
       const p1Key = KOF_CHAR_KEYS[this.sceneState.selectP1] || '-';
       const p2Key = KOF_CHAR_KEYS[this.sceneState.selectP2] || '-';
@@ -308,7 +309,7 @@ export default {
     initPreviewCanvas() {
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query
             .select('.preview-canvas-container')
             .boundingClientRect((data) => {
@@ -366,7 +367,7 @@ export default {
       try {
         const ws = this.deviceStore.getWebSocket();
         await ws.startKof97();
-        this.showSendSuccess('已应用');
+        this.showSendSuccess('宸插簲鐢?);
       } catch (error) {
         console.error('[kof97] send failed', error);
         this.showSendFailure(error);

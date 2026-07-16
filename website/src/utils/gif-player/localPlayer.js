@@ -1,4 +1,4 @@
-import { buildConfettiDemoMaps } from "../led-matrix-demos/confettiDemo.js";
+﻿import { buildConfettiDemoMaps } from "../led-matrix-demos/confettiDemo.js";
 import { clamp, normalizeIntensity, normalizeSpeed } from "../led-matrix-demos/common.js";
 import { buildMatrixFireDemoMaps } from "../led-matrix-demos/matrixFireDemo.js";
 import { buildShadertoyHeartDemoMaps } from "../led-matrix-demos/shadertoyHeartDemo.js";
@@ -6,21 +6,21 @@ import { buildShadertoyHeartDemoMaps } from "../led-matrix-demos/shadertoyHeartD
 const PLAYER_SCENE_ITEMS = [
   {
     id: "matrix_fire",
-    label: "矩阵火焰",
+    label: "鐭╅樀鐏劙",
     source: "MatrixFireFast/Fire",
-    hint: "离线素材，优先用于板载播放器压测与日常屏保播放。",
+    hint: "绂荤嚎绱犳潗锛屼紭鍏堢敤浜庢澘杞芥挱鏀惧櫒鍘嬫祴涓庢棩甯稿睆淇濇挱鏀俱€?,"
   },
   {
     id: "confetti_party",
-    label: "彩纸粒子",
+    label: "褰╃焊绮掑瓙",
     source: "oledAnimations/Confetti",
-    hint: "离线粒子素材，适合验证短帧循环和色彩稳定性。",
+    hint: "绂荤嚎绮掑瓙绱犳潗锛岄€傚悎楠岃瘉鐭抚寰幆鍜岃壊褰╃ǔ瀹氭€с€?,"
   },
   {
     id: "heart_shader",
-    label: "心形波场",
+    label: "蹇冨舰娉㈠満",
     source: "led-matrix/Shadertoy",
-    hint: "离线着色场景，适合验证高对比场景的播放节奏。",
+    hint: "绂荤嚎鐫€鑹插満鏅紝閫傚悎楠岃瘉楂樺姣斿満鏅殑鎾斁鑺傚銆?,"
   },
 ];
 

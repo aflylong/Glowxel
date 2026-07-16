@@ -1,22 +1,21 @@
-<template>
+﻿<template>
   <div class="glx-page-shell publish-page">
     <section class="glx-page-shell__hero">
       <span class="glx-page-shell__eyebrow">Publish</span>
-      <h1 class="glx-page-shell__title">发布作品</h1>
+      <h1 class="glx-page-shell__title">鍙戝竷浣滃搧</h1>
       <p class="glx-page-shell__desc">
-        发布页需要保留，这里继续承接项目到社区作品的正式发布链路。
-      </p>
+        鍙戝竷椤甸渶瑕佷繚鐣欙紝杩欓噷缁х画鎵挎帴椤圭洰鍒扮ぞ鍖轰綔鍝佺殑姝ｅ紡鍙戝竷閾捐矾銆?      </p>
       <div class="glx-hero-metrics">
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">项目</span>
+          <span class="glx-hero-metric__label">椤圭洰</span>
           <strong class="glx-hero-metric__value">{{ projectName }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">尺寸</span>
+          <span class="glx-hero-metric__label">灏哄</span>
           <strong class="glx-hero-metric__value">{{ projectSize }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">颜色数</span>
+          <span class="glx-hero-metric__label">棰滆壊鏁?</span>
           <strong class="glx-hero-metric__value">{{ colorCount }}</strong>
         </article>
       </div>
@@ -25,40 +24,40 @@
     <section class="glx-grid glx-grid--two">
       <article class="glx-section-card glx-section-card--stack">
         <div class="glx-section-head">
-          <h2 class="glx-section-title">预览</h2>
-          <span class="glx-section-meta">发布封面</span>
+          <h2 class="glx-section-title">棰勮</h2>
+          <span class="glx-section-meta">鍙戝竷灏侀潰</span>
         </div>
         <canvas ref="previewCanvasRef" class="publish-preview"></canvas>
       </article>
 
       <article class="glx-section-card glx-section-card--stack">
         <div class="glx-section-head">
-          <h2 class="glx-section-title">发布信息</h2>
-          <span class="glx-section-meta">作品内容</span>
+          <h2 class="glx-section-title">鍙戝竷淇℃伅</h2>
+          <span class="glx-section-meta">浣滃搧鍐呭</span>
         </div>
         <div class="glx-form-grid">
           <label class="glx-field">
-            <span class="glx-field__label">标题</span>
-            <input v-model="form.title" class="glx-input" placeholder="请输入作品标题" />
+            <span class="glx-field__label">鏍囬</span>
+            <input v-model="form.title" class="glx-input" placeholder="璇疯緭鍏ヤ綔鍝佹爣棰?" /">"
           </label>
           <label class="glx-field">
-            <span class="glx-field__label">简介</span>
-            <textarea v-model="form.description" class="glx-textarea" placeholder="介绍一下这件作品"></textarea>
+            <span class="glx-field__label">绠€浠?</span>
+            <textarea v-model="form.description" class="glx-textarea" placeholder="浠嬬粛涓€涓嬭繖浠朵綔鍝?"></textarea>"
           </label>
           <label class="glx-field">
-            <span class="glx-field__label">标签</span>
-            <input v-model="form.tagsInput" class="glx-input" placeholder="使用逗号分隔多个标签" />
+            <span class="glx-field__label">鏍囩</span>
+            <input v-model="form.tagsInput" class="glx-input" placeholder="浣跨敤閫楀彿鍒嗛殧澶氫釜鏍囩" />
           </label>
           <label class="glx-field">
-            <span class="glx-field__label">难度</span>
-            <input v-model="form.difficulty" class="glx-input" placeholder="例如 easy / medium / hard" />
+            <span class="glx-field__label">闅惧害</span>
+            <input v-model="form.difficulty" class="glx-input" placeholder="渚嬪 easy / medium / hard" />
           </label>
         </div>
         <div class="glx-inline-actions">
           <button type="button" class="glx-button glx-button--primary" :disabled="publishing" @click="publishProject">
-            {{ publishing ? "发布中..." : "确认发布" }}
+            {{ publishing ? "鍙戝竷涓?.." : "纭鍙戝竷" }}
           </button>
-          <router-link :to="`/overview/${route.params.id}`" class="glx-button glx-button--ghost">回总览</router-link>
+          <router-link :to="`/overview/${route.params.id}`" class="glx-button glx-button--ghost">鍥炴€昏</router-link>
         </div>
       </article>
     </section>
@@ -97,12 +96,12 @@ const projectName = computed(() => {
   if (typeof currentProject.value.name === "string" && currentProject.value.name.length > 0) {
     return currentProject.value.name;
   }
-  return "未命名项目";
+  return "鏈懡鍚嶉」鐩?";"
 });
 
 const projectSize = computed(() => {
   if (typeof currentProject.value.width === "number" && typeof currentProject.value.height === "number") {
-    return `${currentProject.value.width} × ${currentProject.value.height}`;
+    return `${currentProject.value.width} 脳 ${currentProject.value.height}`;
   }
   return "--";
 });
@@ -227,12 +226,12 @@ function drawPreview() {
 
 async function publishProject() {
   if (form.title.trim().length === 0) {
-    feedback.error("标题不能为空", "请输入作品标题后再发布。");
+    feedback.error("鏍囬涓嶈兘涓虹┖"", "璇疯緭鍏ヤ綔鍝佹爣棰樺悗鍐嶅彂甯冦€?")";"
     return;
   }
 
   if (projectStore.currentPixels == null || typeof projectStore.currentPixels !== "object") {
-    feedback.error("项目为空", "当前项目没有可发布的像素数据。");
+    feedback.error("椤圭洰涓虹┖"", "褰撳墠椤圭洰娌℃湁鍙彂甯冪殑鍍忕礌鏁版嵁銆?")";"
     return;
   }
 
@@ -240,12 +239,12 @@ async function publishProject() {
     typeof currentProject.value.width !== "number" ||
     typeof currentProject.value.height !== "number"
   ) {
-    feedback.error("尺寸缺失", "当前项目尺寸没有成功读取。");
+    feedback.error("灏哄缂哄け"", "褰撳墠椤圭洰灏哄娌℃湁鎴愬姛璇诲彇銆?")";"
     return;
   }
 
   publishing.value = true;
-  feedback.showBlocking("发布中", "正在把当前项目发布到社区。");
+  feedback.showBlocking("鍙戝竷涓?, "姝ｅ湪鎶婂綋鍓嶉」鐩彂甯冨埌绀惧尯銆?);
 
   try {
     const payload = {
@@ -273,7 +272,7 @@ async function publishProject() {
 
     const response = await artworkAPI.publish(payload);
     if (!response.success) {
-      feedback.error("发布失败", "作品没有成功发布。");
+      feedback.error("鍙戝竷澶辫触"", "浣滃搧娌℃湁鎴愬姛鍙戝竷銆?")";"
       return;
     }
 
@@ -285,11 +284,11 @@ async function publishProject() {
     ) {
       const submitResponse = await challengeAPI.submit(route.query.challengeId, response.data.artworkId);
       if (!submitResponse.success) {
-        feedback.warning("投稿未完成", "作品已发布，但挑战投稿没有成功提交。");
+        feedback.warning("鎶曠鏈畬鎴?, "浣滃搧宸插彂甯冿紝浣嗘寫鎴樻姇绋挎病鏈夋垚鍔熸彁浜ゃ€?);
       }
     }
 
-    feedback.success("发布成功", "作品已经发布到社区。");
+    feedback.success("鍙戝竷鎴愬姛"", "浣滃搧宸茬粡鍙戝竷鍒扮ぞ鍖恒€?")";"
     if (response.data != null && typeof response.data.artworkId !== "undefined") {
       router.push(`/artwork/${response.data.artworkId}`);
       return;
@@ -305,7 +304,7 @@ async function publishProject() {
 onMounted(async () => {
   const response = await projectStore.loadProjectDetail(route.params.id);
   if (!response.success) {
-    feedback.error("项目加载失败", "发布页没有成功读取项目内容。");
+    feedback.error("椤圭洰鍔犺浇澶辫触"", "鍙戝竷椤垫病鏈夋垚鍔熻鍙栭」鐩唴瀹广€?")";"
     return;
   }
 

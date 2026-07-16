@@ -1,6 +1,6 @@
-<template>
+﻿<template>
   <div class="theme-mode-page glx-page-shell game-mode-page">
-    <PcModeTopbar title="主题模式" />
+    <PcModeTopbar title="涓婚妯″紡" />
 
     <section class="theme-mode-layout game-mode-layout">
       <article
@@ -9,7 +9,7 @@
         <div class="theme-preview-card__head">
           <div>
             <p class="theme-preview-card__eyebrow">Theme Clock</p>
-            <h2 class="theme-preview-card__title">主题展示</h2>
+            <h2 class="theme-preview-card__title">涓婚灞曠ず</h2>
           </div>
         </div>
 
@@ -21,21 +21,21 @@
               :disabled="isSending"
               @click="handleSend"
             >
-              {{ isSending ? "发送中..." : "发送到设备" }}
+              {{ isSending ? "鍙戦€佷腑..." : "鍙戦€佸埌璁惧" }}
             </button>
             <button
               type="button"
               class="glx-button glx-button--ghost"
               @click="resetTheme"
             >
-              恢复默认主题
+              鎭㈠榛樿涓婚
             </button>
           </div>
           <span
             class="glx-chip"
             :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
           >
-            {{ deviceStore.connected ? "已连接" : "未连接" }}
+            {{ deviceStore.connected ? "宸茶繛鎺? : "鏈繛鎺? }}
           </span>
         </div>
 
@@ -50,8 +50,8 @@
             <ClockPixelCanvas v-else :frame="previewFrame" rounded />
             <DeviceSendingOverlay
               :visible="isSending"
-              title="正在发送主题模式"
-              description="发送期间锁定当前主题快照，等待设备完成主题模式事务提交。"
+              title="姝ｅ湪鍙戦€佷富棰樻ā寮?"
+              description="鍙戦€佹湡闂撮攣瀹氬綋鍓嶄富棰樺揩鐓э紝绛夊緟璁惧瀹屾垚涓婚妯″紡浜嬪姟鎻愪氦銆?"
             >
               <img
                 v-if="sendingPreviewImage.length > 0"
@@ -68,19 +68,19 @@
 
         <div class="theme-summary-grid">
           <article class="theme-summary-card">
-            <span class="theme-summary-card__label">选中主题</span>
+            <span class="theme-summary-card__label">閫変腑涓婚</span>
             <strong class="theme-summary-card__value">{{ activePresetName }}</strong>
             <span class="theme-summary-card__meta">{{ activePreset?.styleTag || "--" }}</span>
           </article>
           <article class="theme-summary-card">
-            <span class="theme-summary-card__label">设备主题</span>
+            <span class="theme-summary-card__label">璁惧涓婚</span>
             <strong class="theme-summary-card__value">{{ currentDeviceThemeName }}</strong>
             <span class="theme-summary-card__meta">
-              {{ activePreviewImage.length > 0 ? "主题资源图" : "本地生成" }}
+              {{ activePreviewImage.length > 0 ? "涓婚璧勬簮鍥?" : "鏈湴鐢熸垚""" }}"
             </span>
           </article>
           <article class="theme-summary-card">
-            <span class="theme-summary-card__label">风格</span>
+            <span class="theme-summary-card__label">椋庢牸</span>
             <strong class="theme-summary-card__value">
               {{ activePreset?.config.font || "--" }}
             </strong>
@@ -94,8 +94,8 @@
       <div class="theme-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">模式配置</h2>
-            <span class="glx-section-meta">主题库 / 当前主题说明</span>
+            <h2 class="glx-section-title">妯″紡閰嶇疆</h2>
+            <span class="glx-section-meta">涓婚搴?/ 褰撳墠涓婚璇存槑</span>
           </div>
           <DeviceModeTabs v-model="currentTab" :items="tabItems" />
         </article>
@@ -105,8 +105,8 @@
           class="glx-section-card glx-section-card--stack"
         >
           <div class="glx-section-head">
-            <h2 class="glx-section-title">主题库</h2>
-            <span class="glx-section-meta">{{ presets.length }} 个主题</span>
+            <h2 class="glx-section-title">涓婚搴?</h2>
+            <span class="glx-section-meta">{{ presets.length }} 涓富棰?</span>
           </div>
           <ClockThemePresetGrid
             :presets="presets"
@@ -118,13 +118,13 @@
 
         <article v-else class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">当前主题说明</h2>
-            <span class="glx-section-meta">uniapp 对齐</span>
+            <h2 class="glx-section-title">褰撳墠涓婚璇存槑</h2>
+            <span class="glx-section-meta">uniapp 瀵归綈</span>
           </div>
           <div v-if="activePreset" class="theme-copy">
             <strong>{{ activePreset.name }}</strong>
             <p>{{ activePreset.description }}</p>
-            <p>当前网站端使用与 uniapp 一致的 preset 配置和字模宽度，主差异只剩设备发送链与状态回显。</p>
+            <p>褰撳墠缃戠珯绔娇鐢ㄤ笌 uniapp 涓€鑷寸殑 preset 閰嶇疆鍜屽瓧妯″搴︼紝涓诲樊寮傚彧鍓╄澶囧彂閫侀摼涓庣姸鎬佸洖鏄俱€?</p>
           </div>
         </article>
       </div>
@@ -134,12 +134,16 @@
 
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-import { useDeviceLegacyStore } from "@/stores/deviceLegacy.js";
+import { useDeviceStore } from "@/stores/device.js";
 import { useFeedback } from "@/composables/useFeedback.js";
 import DeviceSendingOverlay from "@/components/device/DeviceSendingOverlay.vue";
 import PcModeTopbar from "@/components/device/modes/PcModeTopbar.vue";
 import DeviceModeTabs from "@/components/device/modes/DeviceModeTabs.vue";
-import { buildDeviceClockPayload, renderDeviceClockFrame } from "@/utils/device-clock-core.js";
+import { renderDeviceClockFrame } from "@/utils/device-clock-core.js";
+import {
+  DEVICE_CLOCK_SEND_MODES,
+  sendDeviceClockMode,
+} from "@/utils/device-clock-protocol.js";
 import ClockPixelCanvas from "./ClockPixelCanvas.vue";
 import ClockThemePresetGrid from "./ClockThemePresetGrid.vue";
 import {
@@ -148,12 +152,12 @@ import {
   getWebsiteClockThemePresets,
 } from "@/utils/device-clock-presets.js";
 
-const deviceStore = useDeviceLegacyStore();
+const deviceStore = useDeviceStore();
 const feedback = useFeedback();
 const presets = getWebsiteClockThemePresets();
 const tabItems = Object.freeze([
-  { value: "themes", label: "主题库" },
-  { value: "about", label: "当前主题说明" },
+  { value: "themes"", label: "涓婚搴?" },"
+  { value: "about", label: "褰撳墠涓婚璇存槑" },
 ]);
 const currentTab = ref("themes");
 const selectedThemeId = ref(presets[0]?.id || "");
@@ -244,33 +248,36 @@ function handleSend() {
   }
 
   if (!deviceStore.connected) {
-    feedback.warning("设备未连接", "先去设备控制页建立 WebSocket，再从这里发送主题模式。");
+    feedback.warning("璁惧鏈繛鎺?, "鍏堝幓璁惧鎺у埗椤靛缓绔?WebSocket锛屽啀浠庤繖閲屽彂閫佷富棰樻ā寮忋€?);
     return;
   }
 
   if (activePreset.value === null) {
-    feedback.error("发送失败", "请先选择主题。");
+    feedback.error("鍙戦€佸け璐?, "璇峰厛閫夋嫨涓婚銆?);
     return;
   }
 
   isSending.value = true;
   sendingPreviewImage.value = activePreviewImage.value;
   sendingFrame.value = previewFrame.value;
-  feedback.showBlocking("发送主题", "正在把主题模式和主题配置发送到设备。");
-  deviceStore
-    .applyThemeMode(
-      buildDeviceClockPayload(activePreset.value.config, previewNow.value),
-      activePreset.value.id,
-    )
+  feedback.showBlocking("鍙戦€佷富棰?, "姝ｅ湪鎶婁富棰樻ā寮忓拰涓婚閰嶇疆鍙戦€佸埌璁惧銆?);
+  sendDeviceClockMode(
+    deviceStore.getWebSocket(),
+    {
+      mode: DEVICE_CLOCK_SEND_MODES.THEME,
+      themeId: activePreset.value.id,
+    },
+  )
     .then(() => {
-      feedback.success("发送成功", `${activePreset.value.name} 已经发送到设备。`);
+      localStorage.setItem("clock_device_theme_id", activePreset.value.id);
+      feedback.success("鍙戦€佹垚鍔?, `${activePreset.value.name"} 宸茬粡鍙戦€佸埌璁惧銆俙")";"
     })
     .catch((error) => {
       if (error instanceof Error) {
-        feedback.error("发送失败", error.message);
+        feedback.error("鍙戦€佸け璐?", error.message")";"
         return;
       }
-      feedback.error("发送失败", "主题模式发送失败。");
+      feedback.error("鍙戦€佸け璐?, "涓婚妯″紡鍙戦€佸け璐ャ€?);
     })
     .finally(() => {
       isSending.value = false;

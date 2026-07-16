@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="clock-mode-page glx-page-shell game-mode-page">
     <PcModeTopbar :title="title" />
 
@@ -21,21 +21,21 @@
               :disabled="isSending"
               @click="sendToDevice"
             >
-              {{ isSending ? "发送中..." : "发送到设备" }}
+              {{ isSending ? "鍙戦€佷腑..." : "鍙戦€佸埌璁惧" }}
             </button>
             <button
               type="button"
               class="glx-button glx-button--ghost"
               @click="resetConfig"
             >
-              恢复默认
+              鎭㈠榛樿
             </button>
           </div>
           <span
             class="glx-chip"
             :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
           >
-            {{ deviceStore.connected ? "已连接" : "未连接" }}
+            {{ deviceStore.connected ? "宸茶繛鎺? : "鏈繛鎺? }}
           </span>
         </div>
 
@@ -44,8 +44,8 @@
             <ClockPixelCanvas :frame="previewFrame" rounded />
             <DeviceSendingOverlay
               :visible="isSending"
-              title="正在发送时钟配置"
-              description="发送期间锁定当前预览快照，等待设备完成模式切换和事务提交。"
+              title="姝ｅ湪鍙戦€佹椂閽熼厤缃?"
+              description="鍙戦€佹湡闂撮攣瀹氬綋鍓嶉瑙堝揩鐓э紝绛夊緟璁惧瀹屾垚妯″紡鍒囨崲鍜屼簨鍔℃彁浜ゃ€?"
             >
               <div class="clock-preview-sending">
                 <ClockPixelCanvas :frame="sendingFrame" rounded />
@@ -56,21 +56,21 @@
 
         <div class="clock-summary-grid">
           <article class="clock-summary-card">
-            <span class="clock-summary-card__label">模式</span>
+            <span class="clock-summary-card__label">妯″紡</span>
             <strong class="clock-summary-card__value">{{ modeLabel }}</strong>
             <span class="clock-summary-card__meta">{{ imageSendCapabilityText }}</span>
           </article>
           <article class="clock-summary-card">
-            <span class="clock-summary-card__label">字体</span>
+            <span class="clock-summary-card__label">瀛椾綋</span>
             <strong class="clock-summary-card__value">{{ selectedFontName }}</strong>
             <span class="clock-summary-card__meta">
-              {{ config.hourFormat === 24 ? "24 小时" : "12 小时" }}
+              {{ config.hourFormat === 24 ? "24 灏忔椂" : "12 灏忔椂" }}
             </span>
           </article>
           <article class="clock-summary-card">
-            <span class="clock-summary-card__label">秒钟</span>
+            <span class="clock-summary-card__label">绉掗挓</span>
             <strong class="clock-summary-card__value">
-              {{ config.showSeconds ? "显示" : "隐藏" }}
+              {{ config.showSeconds ? "鏄剧ず" : "闅愯棌" }}
             </strong>
             <span class="clock-summary-card__meta">{{ sendHint }}</span>
           </article>
@@ -80,8 +80,8 @@
       <div class="clock-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">模式配置</h2>
-            <span class="glx-section-meta">时间 / 字体 / 图片 / 日期 / 星期</span>
+            <h2 class="glx-section-title">妯″紡閰嶇疆</h2>
+            <span class="glx-section-meta">鏃堕棿 / 瀛椾綋 / 鍥剧墖 / 鏃ユ湡 / 鏄熸湡</span>
           </div>
           <div class="glx-tabs">
             <button
@@ -100,8 +100,8 @@
         <article class="glx-section-card glx-section-card--stack">
           <ClockTextSettingsSection
             v-if="activeTab === 'time'"
-            title="时间显示"
-            description="复刻 uniapp 静态/动态时钟页的时间块调节方式。"
+            title="鏃堕棿鏄剧ず"
+            description="澶嶅埢 uniapp 闈欐€?鍔ㄦ€佹椂閽熼〉鐨勬椂闂村潡璋冭妭鏂瑰紡銆?"
             :section="config.time"
             :preset-colors="presetColors"
             :show-font-size="true"
@@ -147,8 +147,8 @@
 
           <ClockTextSettingsSection
             v-else-if="activeTab === 'date'"
-            title="日期显示"
-            description="和 uniapp 日期页一致，保留字号、位置、对齐和颜色控制。"
+            title="鏃ユ湡鏄剧ず"
+            description="鍜?uniapp 鏃ユ湡椤典竴鑷达紝淇濈暀瀛楀彿銆佷綅缃€佸榻愬拰棰滆壊鎺у埗銆?"
             :section="config.date"
             :preset-colors="presetColors"
             :show-font-size="true"
@@ -162,8 +162,8 @@
 
           <ClockTextSettingsSection
             v-else
-            title="星期显示"
-            description="星期沿用同一套字模，只保留显示开关、位置、对齐和颜色。"
+            title="鏄熸湡鏄剧ず"
+            description="鏄熸湡娌跨敤鍚屼竴濂楀瓧妯★紝鍙繚鐣欐樉绀哄紑鍏炽€佷綅缃€佸榻愬拰棰滆壊銆?"
             :section="config.week"
             :preset-colors="presetColors"
             :show-font-size="false"
@@ -176,13 +176,13 @@
 
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">页面说明</h2>
-            <span class="glx-section-meta">复刻边界</span>
+            <h2 class="glx-section-title">椤甸潰璇存槑</h2>
+            <span class="glx-section-meta">澶嶅埢杈圭晫</span>
           </div>
           <div class="clock-note-list">
-            <p>预览区保留 uniapp 页面的主入口语义，但改成更适合桌面的双栏布局。</p>
-            <p>时间、字体、图片、日期、星期五个分区顺序与 uniapp 保持一致。</p>
-            <p>发送链继续沿用现有事务协议：`set_mode / set_clock_config / tx_commit`，静态图和 GIF 都复用已存在的二进制封包能力。</p>
+            <p>棰勮鍖轰繚鐣?uniapp 椤甸潰鐨勪富鍏ュ彛璇箟锛屼絾鏀规垚鏇撮€傚悎妗岄潰鐨勫弻鏍忓竷灞€銆?</p>
+            <p>鏃堕棿銆佸瓧浣撱€佸浘鐗囥€佹棩鏈熴€佹槦鏈熶簲涓垎鍖洪『搴忎笌 uniapp 淇濇寔涓€鑷淬€?</p>
+            <p>鍙戦€侀摼缁х画娌跨敤鐜版湁浜嬪姟鍗忚锛歚set_mode / set_clock_config / tx_commit`锛岄潤鎬佸浘鍜?GIF 閮藉鐢ㄥ凡瀛樺湪鐨勪簩杩涘埗灏佸寘鑳藉姏銆?</p>
           </div>
         </article>
       </div>
@@ -194,7 +194,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { GIFParser } from "../../../../../uniapp/utils/gifParser.js";
 import { useFeedback } from "@/composables/useFeedback.js";
-import { useDeviceLegacyStore } from "@/stores/deviceLegacy.js";
+import { useDeviceStore } from "@/stores/device.js";
 import DeviceSendingOverlay from "@/components/device/DeviceSendingOverlay.vue";
 import PcModeTopbar from "@/components/device/modes/PcModeTopbar.vue";
 import ClockFontSelector from "./ClockFontSelector.vue";
@@ -203,7 +203,6 @@ import ClockPixelCanvas from "./ClockPixelCanvas.vue";
 import ClockTextSettingsSection from "./ClockTextSettingsSection.vue";
 import {
   DEVICE_CLOCK_COLOR_PRESETS,
-  buildDeviceClockPayload,
   cloneClockConfig,
   createDefaultClockConfig,
   getDeviceClockFontOptions,
@@ -213,6 +212,10 @@ import {
   renderDeviceClockFrame,
   setClockSectionAlignment,
 } from "@/utils/device-clock-core.js";
+import {
+  DEVICE_CLOCK_BINARY_KINDS,
+  sendDeviceClockMode,
+} from "@/utils/device-clock-protocol.js";
 
 const props = defineProps({
   mode: {
@@ -237,16 +240,16 @@ const props = defineProps({
   },
 });
 
-const deviceStore = useDeviceLegacyStore();
+const deviceStore = useDeviceStore();
 const feedback = useFeedback();
 const fontOptions = getDeviceClockFontOptions();
 const presetColors = DEVICE_CLOCK_COLOR_PRESETS;
 const tabs = [
-  { key: "time", label: "时间" },
-  { key: "font", label: "字体" },
-  { key: "image", label: "图片" },
-  { key: "date", label: "日期" },
-  { key: "week", label: "星期" },
+  { key: "time", label: "鏃堕棿" },
+  { key: "font", label: "瀛椾綋" },
+  { key: "image", label: "鍥剧墖" },
+  { key: "date", label: "鏃ユ湡" },
+  { key: "week", label: "鏄熸湡" },
 ];
 
 const activeTab = ref("time");
@@ -280,50 +283,50 @@ const selectedFontName = computed(() => {
 
 const imageSectionTitle = computed(() => {
   if (props.mode === "animation") {
-    return "动图素材";
+    return "鍔ㄥ浘绱犳潗";
   }
-  return "背景图片";
+  return "鑳屾櫙鍥剧墖";
 });
 
 const imageSectionDescription = computed(() => {
   if (props.mode === "animation") {
-    return "动态时钟对齐 uniapp 动图链路，支持 GIF 本地播放预览、尺寸位置调节和事务发送。";
+    return "鍔ㄦ€佹椂閽熷榻?uniapp 鍔ㄥ浘閾捐矾锛屾敮鎸?GIF 鏈湴鎾斁棰勮銆佸昂瀵镐綅缃皟鑺傚拰浜嬪姟鍙戦€併€?";"
   }
-  return "静态时钟保留图片背景编辑链路，支持本地预览、尺寸位置调节和事务发送。";
+  return "闈欐€佹椂閽熶繚鐣欏浘鐗囪儗鏅紪杈戦摼璺紝鏀寔鏈湴棰勮銆佸昂瀵镐綅缃皟鑺傚拰浜嬪姟鍙戦€併€?";"
 });
 
 const imageEmptyDescription = computed(() => {
   if (props.mode === "animation") {
-    return "网站端支持本地预览静态图和 GIF 动图，并按 uniapp 语义发送到设备。";
+    return "缃戠珯绔敮鎸佹湰鍦伴瑙堥潤鎬佸浘鍜?GIF 鍔ㄥ浘锛屽苟鎸?uniapp 璇箟鍙戦€佸埌璁惧銆?";"
   }
-  return "网站端支持本地预览静态图片，并按静态时钟语义发送到设备。";
+  return "缃戠珯绔敮鎸佹湰鍦伴瑙堥潤鎬佸浘鐗囷紝骞舵寜闈欐€佹椂閽熻涔夊彂閫佸埌璁惧銆?";"
 });
 
 const modeLabel = computed(() => {
   if (props.mode === "animation") {
-    return "动态时钟";
+    return "鍔ㄦ€佹椂閽?";"
   }
-  return "静态时钟";
+  return "闈欐€佹椂閽?";"
 });
 
 const imageSendCapabilityText = computed(() => {
   if (imageSource.value === null) {
-    return "已接入";
+    return "宸叉帴鍏?";"
   }
   if (imageSource.value.isGif === true && props.mode === "animation") {
-    return "GIF 已接入";
+    return "GIF 宸叉帴鍏?";"
   }
   if (imageSource.value.isGif === true) {
-    return "GIF 仅动态时钟";
+    return "GIF 浠呭姩鎬佹椂閽?";"
   }
-  return "已接入";
+  return "宸叉帴鍏?";"
 });
 
 const sendHint = computed(() => {
   if (props.mode === "animation") {
-    return "动态时钟页已经接上事务发送链，纯文字、静态图片和 GIF 动图都会按模式事务一起发送。";
+    return "鍔ㄦ€佹椂閽熼〉宸茬粡鎺ヤ笂浜嬪姟鍙戦€侀摼锛岀函鏂囧瓧銆侀潤鎬佸浘鐗囧拰 GIF 鍔ㄥ浘閮戒細鎸夋ā寮忎簨鍔′竴璧峰彂閫併€?";"
   }
-  return "静态时钟页已经接上事务发送链，纯文字与静态图片图层会按模式事务一起发送。";
+  return "闈欐€佹椂閽熼〉宸茬粡鎺ヤ笂浜嬪姟鍙戦€侀摼锛岀函鏂囧瓧涓庨潤鎬佸浘鐗囧浘灞備細鎸夋ā寮忎簨鍔′竴璧峰彂閫併€?";"
 });
 
 watch(
@@ -481,7 +484,7 @@ async function handleSelectFile(file) {
   try {
     const asset = await loadDeviceClockImageFile(file);
     if (asset.isGif === true && props.mode !== "animation") {
-      feedback.warning("静态时钟不支持 GIF", "静态时钟页只接受静态图片背景，请改用动态时钟页发送 GIF。");
+      feedback.warning("闈欐€佹椂閽熶笉鏀寔 GIF"", "闈欐€佹椂閽熼〉鍙帴鍙楅潤鎬佸浘鐗囪儗鏅紝璇锋敼鐢ㄥ姩鎬佹椂閽熼〉鍙戦€?GIF銆?")";"
       return;
     }
 
@@ -495,8 +498,8 @@ async function handleSelectFile(file) {
     };
     await rebuildImageLayer();
   } catch (error) {
-    const message = error instanceof Error ? error.message : "图片读取失败";
-    feedback.error("图片读取失败", message);
+    const message = error instanceof Error ? error.message : "鍥剧墖璇诲彇澶辫触";
+    feedback.error("鍥剧墖璇诲彇澶辫触", message);
   }
 }
 
@@ -549,20 +552,26 @@ async function sendToDevice() {
   }
 
   if (!deviceStore.connected) {
-    feedback.warning("设备未连接", "先去设备控制页建立 WebSocket，再从这里发送时钟配置。");
+    feedback.warning("璁惧鏈繛鎺?, "鍏堝幓璁惧鎺у埗椤靛缓绔?WebSocket锛屽啀浠庤繖閲屽彂閫佹椂閽熼厤缃€?);
     return;
   }
 
   if (imageSource.value !== null && imageSource.value.isGif === true && props.mode !== "animation") {
-    feedback.error("发送失败", "静态时钟页不支持 GIF 动图，请改用动态时钟页。");
+    feedback.error("鍙戦€佸け璐?, "闈欐€佹椂閽熼〉涓嶆敮鎸?GIF 鍔ㄥ浘锛岃鏀圭敤鍔ㄦ€佹椂閽熼〉銆?);
     return;
   }
 
   isSending.value = true;
   sendingFrame.value = previewFrame.value;
-  feedback.showBlocking("发送配置", "正在切换模式并发送时钟参数。");
+  feedback.showBlocking("鍙戦€侀厤缃?, "姝ｅ湪鍒囨崲妯″紡骞跺彂閫佹椂閽熷弬鏁般€?);
   try {
-    let binaryPayload = null;
+    const ws = deviceStore.getWebSocket();
+    const sendRequest = {
+      mode: props.mode,
+      config: config.value,
+      now: previewNow.value,
+      binaryKind: DEVICE_CLOCK_BINARY_KINDS.NONE,
+    };
 
     if (
       props.mode === "animation" &&
@@ -571,45 +580,22 @@ async function sendToDevice() {
       gifParser.value !== null &&
       gifRenderedFrames.value.length > 0
     ) {
-      const animationData = gifParser.value.generateESP32Data(
-        config.value.image.width,
-        config.value.image.height,
-        20,
-        null,
-        config.value.image.x,
-        config.value.image.y,
-        gifRenderedFrames.value,
-        gifPlaySpeed.value,
-      );
-      binaryPayload = deviceStore.buildCompactAnimationBinaryBuffer(animationData.frames);
+      sendRequest.binaryKind = DEVICE_CLOCK_BINARY_KINDS.GIF_ANIMATION;
+      sendRequest.gifParser = gifParser.value;
+      sendRequest.gifRenderedFrames = gifRenderedFrames.value;
+      sendRequest.gifPlaySpeed = gifPlaySpeed.value;
     } else if (config.value.image.show && imageLayer.value !== null) {
-      const imagePixels = [];
-      imageLayer.value.pixels.forEach((color, key) => {
-        const parts = key.split(",");
-        const x = Number(parts[0]);
-        const y = Number(parts[1]);
-        imagePixels.push({
-          x,
-          y,
-          r: parseInt(color.slice(1, 3), 16),
-          g: parseInt(color.slice(3, 5), 16),
-          b: parseInt(color.slice(5, 7), 16),
-        });
-      });
-      binaryPayload = deviceStore.buildPixelBinaryFromObjects(imagePixels);
+      sendRequest.binaryKind = DEVICE_CLOCK_BINARY_KINDS.STATIC_IMAGE;
+      sendRequest.imagePixelMap = imageLayer.value.pixels;
     }
 
-    await deviceStore.applyClockMode(
-      props.mode,
-      buildDeviceClockPayload(config.value, previewNow.value),
-      binaryPayload,
-    );
-    feedback.success("发送成功", `${modeLabel.value} 配置已经发送到设备。`);
+    await sendDeviceClockMode(ws, sendRequest);
+    feedback.success("鍙戦€佹垚鍔?, `${modeLabel.value"} 閰嶇疆宸茬粡鍙戦€佸埌璁惧銆俙")";"
   } catch (error) {
     if (error instanceof Error) {
-      feedback.error("发送失败", error.message);
+      feedback.error("鍙戦€佸け璐?", error.message")";"
     } else {
-      feedback.error("发送失败", "时钟配置发送失败。");
+      feedback.error("鍙戦€佸け璐?, "鏃堕挓閰嶇疆鍙戦€佸け璐ャ€?);
     }
   } finally {
     isSending.value = false;

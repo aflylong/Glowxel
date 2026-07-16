@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="color-panel-picker">
     <div class="picker-header">
       <div class="picker-preview">
@@ -39,12 +39,12 @@
           left: `${saturation}%`,
           top: `${100 - brightness}%`,
           backgroundColor: currentHex,
-        }"
+        }""
       ></div>
     </div>
 
     <div class="channel-row">
-      <span class="channel-label">色相</span>
+      <span class="channel-label">鑹茬浉</span>
       <div
         :id="hueTrackId"
         class="hue-track"
@@ -56,7 +56,7 @@
           :style="{
             left: `${huePercent}%`,
             backgroundColor: hueColor,
-          }"
+          }""
         ></div>
       </div>
     </div>
@@ -125,6 +125,7 @@
 </template>
 
 <script>
+import { createDomQuery } from '@/utils/browser-platform.js'
 function clamp(value, min, max) {
   if (value < min) {
     return min;
@@ -143,7 +144,7 @@ export default {
     },
     label: {
       type: String,
-      default: "颜色",
+      default: "棰滆壊",
     },
     presetColors: {
       type: Array,
@@ -208,7 +209,7 @@ export default {
       this.cacheHueRect();
     },
     cachePanelRect() {
-      const query = uni.createSelectorQuery().in(this);
+      const query = createDomQuery().in(this);
       query
         .select(`#${this.panelId}`)
         .boundingClientRect((rect) => {
@@ -219,7 +220,7 @@ export default {
         .exec();
     },
     cacheHueRect() {
-      const query = uni.createSelectorQuery().in(this);
+      const query = createDomQuery().in(this);
       query
         .select(`#${this.hueTrackId}`)
         .boundingClientRect((rect) => {
@@ -235,7 +236,7 @@ export default {
           resolve(this.panelRect);
           return;
         }
-        const query = uni.createSelectorQuery().in(this);
+        const query = createDomQuery().in(this);
         query
           .select(`#${this.panelId}`)
           .boundingClientRect((rect) => {
@@ -253,7 +254,7 @@ export default {
           resolve(this.hueRect);
           return;
         }
-        const query = uni.createSelectorQuery().in(this);
+        const query = createDomQuery().in(this);
         query
           .select(`#${this.hueTrackId}`)
           .boundingClientRect((rect) => {

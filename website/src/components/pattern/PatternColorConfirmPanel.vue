@@ -1,21 +1,21 @@
-<template>
+﻿<template>
   <div class="confirm-panel">
     <div class="panel-head">
-      <h2>颜色确认</h2>
-      <span>{{ groups.length }} 组颜色</span>
+      <h2>棰滆壊纭</h2>
+      <span>{{ groups.length }} 缁勯鑹?</span>
     </div>
 
     <div v-if="report" class="report-card">
       <div class="report-row">
-        <span>网格识别</span>
-        <strong>{{ report.width }} × {{ report.height }}</strong>
+        <span>缃戞牸璇嗗埆</span>
+        <strong>{{ report.width }} 脳 {{ report.height }}</strong>
       </div>
       <div class="report-row">
-        <span>裁剪区域</span>
-        <strong>{{ report.cropWidth }} × {{ report.cropHeight }}</strong>
+        <span>瑁佸壀鍖哄煙</span>
+        <strong>{{ report.cropWidth }} 脳 {{ report.cropHeight }}</strong>
       </div>
       <div class="report-row">
-        <span>编号辅助</span>
+        <span>缂栧彿杈呭姪</span>
         <strong>{{ report.recognizedCellCount }}/{{ report.totalCells }}</strong>
       </div>
     </div>
@@ -35,11 +35,11 @@
               <p>{{ group.name }}</p>
             </div>
           </div>
-          <em>{{ group.count }} 格</em>
+          <em>{{ group.count }} 鏍?</em>
         </div>
 
         <div class="similar-box">
-          <span class="similar-label">感觉不对时，直接换成相近色</span>
+          <span class="similar-label">鎰熻涓嶅鏃讹紝鐩存帴鎹㈡垚鐩歌繎鑹?</span>
           <div class="similar-grid">
             <button
               v-for="option in group.similarOptions"
@@ -57,8 +57,7 @@
     </div>
 
     <div v-else class="empty-state">
-      先导入图纸后，这里会按颜色分组，用户可以直接确认或替换。
-    </div>
+      鍏堝鍏ュ浘绾稿悗锛岃繖閲屼細鎸夐鑹插垎缁勶紝鐢ㄦ埛鍙互鐩存帴纭鎴栨浛鎹€?    </div>
   </div>
 </template>
 

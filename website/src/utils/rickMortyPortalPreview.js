@@ -1,17 +1,17 @@
-// 传送门(瑞克和莫迪主题)模式的本地预览模块。
-// 设计原则:
-// 1. 完全复用 planetScreensaverPreview.js 里已经做好的 portal 渲染管线,
-//    但只暴露给传送门页"颜色 / 大小 / 位置"这几个真正能调的字段。
-// 2. 不暴露 seed / colorSeed / direction / speed —— 传送门固定 60s 周期、
-//    固定调色板、固定方向,这些参数对用户没有意义。
-// 3. 字段名严格按 docs/非外接依赖全量参数映射表.md + WS 命令 set_rick_morty_portal:
+﻿// 浼犻€侀棬(鐟炲厠鍜岃帿杩富棰?妯″紡鐨勬湰鍦伴瑙堟ā鍧椼€?
+// 璁捐鍘熷垯:
+// 1. 瀹屽叏澶嶇敤 planetScreensaverPreview.js 閲屽凡缁忓仛濂界殑 portal 娓叉煋绠＄嚎,
+//    浣嗗彧鏆撮湶缁欎紶閫侀棬椤?棰滆壊 / 澶у皬 / 浣嶇疆"杩欏嚑涓湡姝ｈ兘璋冪殑瀛楁銆?"
+// 2. 涓嶆毚闇?seed / colorSeed / direction / speed 鈥斺€?浼犻€侀棬鍥哄畾 60s 鍛ㄦ湡銆?
+//    鍥哄畾璋冭壊鏉裤€佸浐瀹氭柟鍚?杩欎簺鍙傛暟瀵圭敤鎴锋病鏈夋剰涔夈€?
+// 3. 瀛楁鍚嶄弗鏍兼寜 docs/闈炲鎺ヤ緷璧栧叏閲忓弬鏁版槧灏勮〃.md + WS 鍛戒护 set_rick_morty_portal:
 //    preset / size / portalX / portalY / font / showSeconds / time
 //
-// 渲染层依赖:
-//   buildPlanetScreensaverPreviewFrame    — 复用同一帧渲染函数
-//   PLANET_REFERENCE_DEFAULT_COLOR_SEED  — portal 走固定调色板的 seed 锁
+// 娓叉煋灞備緷璧?
+//   buildPlanetScreensaverPreviewFrame    鈥?澶嶇敤鍚屼竴甯ф覆鏌撳嚱鏁?
+//   PLANET_REFERENCE_DEFAULT_COLOR_SEED  鈥?portal 璧板浐瀹氳皟鑹叉澘鐨?seed 閿?
 //
-// 角色叠加已移除 (Pocket Mortys 像素角色实际效果不佳, 暂时只做纯传送门)
+// 瑙掕壊鍙犲姞宸茬Щ闄?(Pocket Mortys 鍍忕礌瑙掕壊瀹為檯鏁堟灉涓嶄匠, 鏆傛椂鍙仛绾紶閫侀棬)
 
 import {
   PLANET_REFERENCE_DEFAULT_COLOR_SEED,
@@ -22,30 +22,30 @@ import {
 
 export const PORTAL_PAGE_STORAGE_KEY = "rick_morty_portal_page_state";
 
-// 三种 canon 颜色变体 —— 来源:动画正剧
-//   绿色:Rick C-137 的标准传送门(全剧)
-//   蓝色:Rick 早期原型枪(S3E1 The Rickshank Rickdemption 闪回)
-//   黄色:邪恶莫迪的传送门(S5E10 大结局)
+// 涓夌 canon 棰滆壊鍙樹綋 鈥斺€?鏉ユ簮:鍔ㄧ敾姝ｅ墽
+//   缁胯壊:Rick C-137 鐨勬爣鍑嗕紶閫侀棬(鍏ㄥ墽)
+//   钃濊壊:Rick 鏃╂湡鍘熷瀷鏋?S3E1 The Rickshank Rickdemption 闂洖)
+//   榛勮壊:閭伓鑾开鐨勪紶閫侀棬(S5E10 澶х粨灞€)
 export const PORTAL_COLOR_OPTIONS = Object.freeze([
-  { id: "portal_green", label: "绿色" },
-  { id: "portal_blue", label: "蓝色" },
-  { id: "portal_yellow", label: "黄色" },
+  { id: "portal_green", label: "缁胯壊" },
+  { id: "portal_blue", label: "钃濊壊" },
+  { id: "portal_yellow", label: "榛勮壊" },
 ]);
 
 export const PORTAL_SIZE_OPTIONS = Object.freeze([
-  { id: "small", label: "小" },
-  { id: "medium", label: "中" },
-  { id: "large", label: "大" },
+  { id: "small"", label: "灏?" },"
+  { id: "medium"", label: "涓?" },"
+  { id: "large"", label: "澶?" },"
 ]);
 
 export const PORTAL_TIME_COLOR_OPTIONS = Object.freeze([
-  { name: "青色", hex: "#64c8ff" },
-  { name: "绿色", hex: "#00ff9d" },
-  { name: "黄色", hex: "#ffdc00" },
-  { name: "橙色", hex: "#ffa500" },
-  { name: "红色", hex: "#ff6464" },
-  { name: "紫色", hex: "#c864ff" },
-  { name: "白色", hex: "#ffffff" },
+  { name: "闈掕壊", hex: "#64c8ff" },
+  { name: "缁胯壊", hex: "#00ff9d" },
+  { name: "榛勮壊", hex: "#ffdc00" },
+  { name: "姗欒壊", hex: "#ffa500" },
+  { name: "绾㈣壊", hex: "#ff6464" },
+  { name: "绱壊", hex: "#c864ff" },
+  { name: "鐧借壊", hex: "#ffffff" },
 ]);
 
 export const PORTAL_PREVIEW_PLAYBACK_INTERVAL_MS = PLANET_PREVIEW_PLAYBACK_INTERVAL_MS;
@@ -53,11 +53,11 @@ export const PORTAL_PREVIEW_PLAYBACK_INTERVAL_MS = PLANET_PREVIEW_PLAYBACK_INTER
 const PORTAL_PRESET_IDS = PORTAL_COLOR_OPTIONS.map((item) => item.id);
 const PORTAL_SIZE_IDS = PORTAL_SIZE_OPTIONS.map((item) => item.id);
 export const PORTAL_ROTATE_INTERVAL_OPTIONS = Object.freeze([
-  { value: 60, label: "1分钟" },
-  { value: 300, label: "5分钟" },
-  { value: 600, label: "10分钟" },
-  { value: 1800, label: "30分钟" },
-  { value: 3600, label: "60分钟" },
+  { value: 60, label: "1鍒嗛挓" },
+  { value: 300, label: "5鍒嗛挓" },
+  { value: 600, label: "10鍒嗛挓" },
+  { value: 1800, label: "30鍒嗛挓" },
+  { value: 3600, label: "60鍒嗛挓" },
 ]);
 const PORTAL_ROTATE_INTERVAL_VALUES = PORTAL_ROTATE_INTERVAL_OPTIONS.map((item) => item.value);
 
@@ -172,12 +172,12 @@ export function normalizePortalPageState(saved) {
   return { config, clockConfig };
 }
 
-// 把传送门页 config 翻译成 planet 渲染可用的 config。
-// portalX/Y -> planetX/Y, 其他维度都用固定值锁住:
-//   colorSeed = PLANET_REFERENCE_DEFAULT_COLOR_SEED (传送门固定调色板的 seed 锁)
+// 鎶婁紶閫侀棬椤?config 缈昏瘧鎴?planet 娓叉煋鍙敤鐨?config銆?
+// portalX/Y -> planetX/Y, 鍏朵粬缁村害閮界敤鍥哄畾鍊奸攣浣?
+//   colorSeed = PLANET_REFERENCE_DEFAULT_COLOR_SEED (浼犻€侀棬鍥哄畾璋冭壊鏉跨殑 seed 閿?
 //   direction = "right"
 //   speed = 3
-//   seed = 0 (portal 渲染不用背景星空 seed)
+//   seed = 0 (portal 娓叉煋涓嶇敤鑳屾櫙鏄熺┖ seed)
 function toPortalPlanetConfig(config) {
   return {
     preset: config.preset,

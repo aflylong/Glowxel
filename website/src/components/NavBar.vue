@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <nav class="navbar">
     <div class="nav-container">
       <router-link to="/" class="logo">
@@ -30,7 +30,7 @@
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
-          新建
+          鏂板缓
         </router-link>
         <router-link
           v-if="!isLoggedIn"
@@ -39,7 +39,7 @@
           @click="closeMobileMenu"
           style="display: none;"
         >
-          登录
+          鐧诲綍
         </router-link>
         <router-link
           v-else
@@ -48,7 +48,7 @@
           @click="closeMobileMenu"
           style="display: none;"
         >
-          我的
+          鎴戠殑
         </router-link>
       </div>
 
@@ -56,7 +56,7 @@
         class="mobile-menu-btn"
         @click="toggleMobileMenu"
         :aria-expanded="mobileMenuOpen"
-        aria-label="菜单"
+        aria-label="鑿滃崟"
       >
         <svg
           v-if="!mobileMenuOpen"
@@ -99,13 +99,13 @@ const route = useRoute();
 const mobileMenuOpen = ref(false);
 const isLoggedIn = computed(() => !!localStorage.getItem("auth_token"));
 const navItems = [
-  { key: "home", label: "首页", to: "/" },
-  // { key: "workspace", label: "工作台", to: "/workspace" },
-  { key: "device", label: "设备", to: "/device-control" },
-  // { key: "community", label: "社区", to: "/community" },
-  // { key: "templates", label: "控件库", to: "/templates" },
-  // { key: "challenges", label: "边框", to: "/challenges" },
-  // { key: "workbench", label: "拼豆", to: "/pattern-workbench" },
+  { key: "home", label: "棣栭〉", to: "/" },
+  // { key: "workspace"", label: "宸ヤ綔鍙?", to: "/workspace"" },"
+  { key: "device", label: "璁惧", to: "/device-control" },
+  // { key: "community", label: "绀惧尯", to: "/community" },
+  // { key: "templates"", label: "鎺т欢搴?", to: "/templates"" },"
+  // { key: "challenges", label: "杈规", to: "/challenges" },
+  // { key: "workbench", label: "鎷艰眴", to: "/pattern-workbench" },
 ];
 
 const activeNavKey = computed(() => {

@@ -1,16 +1,16 @@
-const SEND_BUSY_MESSAGE = "正在传输中，请等待完成";
-const SEND_DISCONNECTED_MESSAGE = "设备未连接";
-const SEND_SUCCESS_MESSAGE = "已发送到设备";
-const SEND_FAILURE_PREFIX = "发送失败：";
-const SEND_OVERLAY_TITLE = "正在发送到设备...";
-const SEND_OVERLAY_TIP = "请保持连接稳定，完成后会自动恢复交互";
+﻿const SEND_BUSY_MESSAGE = "姝ｅ湪浼犺緭涓紝璇风瓑寰呭畬鎴?";"
+const SEND_DISCONNECTED_MESSAGE = "璁惧鏈繛鎺?";"
+const SEND_SUCCESS_MESSAGE = "宸插彂閫佸埌璁惧";
+const SEND_FAILURE_PREFIX = "鍙戦€佸け璐ワ細";
+const SEND_OVERLAY_TITLE = "姝ｅ湪鍙戦€佸埌璁惧...";
+const SEND_OVERLAY_TIP = "璇蜂繚鎸佽繛鎺ョǔ瀹氾紝瀹屾垚鍚庝細鑷姩鎭㈠浜や簰";
 
 function resolveSendErrorMessage(error) {
   if (error && typeof error.message === "string" && error.message.length > 0) {
     return error.message;
   }
 
-  return "未知错误";
+  return "鏈煡閿欒";
 }
 
 export default {

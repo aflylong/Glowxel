@@ -1,9 +1,9 @@
-<template>
+﻿<template>
   <section class="ds-section">
     <div class="ds-section__head">
       <div>
-        <h2 class="ds-section__title">按钮与控件</h2>
-        <p class="ds-section__meta">先把语义、尺寸、阴影和基础控件摆完整，解释文字只保留最少量。</p>
+        <h2 class="ds-section__title">鎸夐挳涓庢帶浠?</h2>
+        <p class="ds-section__meta">鍏堟妸璇箟銆佸昂瀵搞€侀槾褰卞拰鍩虹鎺т欢鎽嗗畬鏁达紝瑙ｉ噴鏂囧瓧鍙繚鐣欐渶灏戦噺銆?</p>
       </div>
     </div>
 
@@ -22,14 +22,14 @@
 
     <div v-if="showButtons" class="ds-section__head ds-section__head--spaced">
       <div>
-        <h3 class="ds-section__title ds-section__title--sub">尺寸与阴影类</h3>
-        <p class="ds-section__meta">按钮大小和阴影强度都必须能直接走类名 modifier。</p>
+        <h3 class="ds-section__title ds-section__title--sub">灏哄涓庨槾褰辩被</h3>
+        <p class="ds-section__meta">鎸夐挳澶у皬鍜岄槾褰卞己搴﹂兘蹇呴』鑳界洿鎺ヨ蛋绫诲悕 modifier銆?</p>
       </div>
     </div>
 
     <div v-if="showButtons" class="ds-grid ds-grid--two">
       <article class="ds-card">
-        <span class="ds-card__label">按钮尺寸</span>
+        <span class="ds-card__label">鎸夐挳灏哄</span>
         <div class="ds-demo-stack">
           <div v-for="item in buttonSizes" :key="item.label" class="ds-demo-row">
             <button type="button" class="ds-btn ds-btn--primary ds-shadow--sm" :class="item.className">
@@ -42,7 +42,7 @@
       </article>
 
       <article class="ds-card">
-        <span class="ds-card__label">阴影等级</span>
+        <span class="ds-card__label">闃村奖绛夌骇</span>
         <div class="ds-demo-stack">
           <div v-for="item in shadowLevels" :key="item.label" class="ds-demo-row">
             <button type="button" class="ds-btn ds-btn--edit ds-btn--md" :class="item.className">
@@ -57,8 +57,8 @@
 
     <div v-if="showButtons" class="ds-section__head ds-section__head--spaced">
       <div>
-        <h3 class="ds-section__title ds-section__title--sub">按钮状态</h3>
-        <p class="ds-section__meta">默认、加载和禁用至少要先摆成一组正式语法。</p>
+        <h3 class="ds-section__title ds-section__title--sub">鎸夐挳鐘舵€?</h3>
+        <p class="ds-section__meta">榛樿銆佸姞杞藉拰绂佺敤鑷冲皯瑕佸厛鎽嗘垚涓€缁勬寮忚娉曘€?</p>
       </div>
     </div>
 
@@ -79,14 +79,14 @@
 
     <div v-if="showControls" class="ds-section__head ds-section__head--spaced">
       <div>
-        <h3 class="ds-section__title ds-section__title--sub">基础控件预演</h3>
-        <p class="ds-section__meta">保留真实交互，后面继续补覆盖时直接沿用这里的组件结构。</p>
+        <h3 class="ds-section__title ds-section__title--sub">鍩虹鎺т欢棰勬紨</h3>
+        <p class="ds-section__meta">淇濈暀鐪熷疄浜や簰锛屽悗闈㈢户缁ˉ瑕嗙洊鏃剁洿鎺ユ部鐢ㄨ繖閲岀殑缁勪欢缁撴瀯銆?</p>
       </div>
     </div>
 
     <div v-if="showControls" class="ds-form-grid">
       <div class="ds-field">
-        <label class="ds-field__label" for="ds-search-field">搜索框</label>
+        <label class="ds-field__label" for="ds-search-field">鎼滅储妗?</label>
         <div class="ds-search">
           <DesignSystemGlyph name="search" />
           <input id="ds-search-field" v-model="searchValue" class="ds-input ds-input--bare" />
@@ -94,23 +94,23 @@
       </div>
 
       <div class="ds-field">
-        <label class="ds-field__label" for="ds-select-field">选择框</label>
+        <label class="ds-field__label" for="ds-select-field">閫夋嫨妗?</label>
         <div class="ds-select">
           <select id="ds-select-field" v-model="selectedMode">
-            <option value="canvas">画板模式</option>
-            <option value="pattern">拼豆工作台</option>
-            <option value="device">设备参数</option>
+            <option value="canvas">鐢绘澘妯″紡</option>
+            <option value="pattern">鎷艰眴宸ヤ綔鍙?/option>
+            <option value="device">璁惧鍙傛暟</option>
           </select>
           <DesignSystemGlyph name="arrow-down" />
         </div>
       </div>
 
       <div class="ds-field">
-        <span class="ds-field__label">开关</span>
+        <span class="ds-field__label">寮€鍏?</span>
         <div class="ds-switch">
           <div class="ds-switch__copy">
-            <strong>自动同步</strong>
-            <span class="ds-switch__state">{{ syncEnabled ? "已开启" : "已关闭" }}</span>
+            <strong>鑷姩鍚屾</strong>
+            <span class="ds-switch__state">{{ syncEnabled ? "宸插紑鍚? : "宸插叧闂? }}</span>
           </div>
           <button
             type="button"
@@ -124,10 +124,10 @@
       </div>
 
       <div class="ds-field">
-        <span class="ds-field__label">滑块</span>
+        <span class="ds-field__label">婊戝潡</span>
         <div class="ds-card ds-card--compact">
           <div class="ds-slider__head">
-            <span>亮度</span>
+            <span>浜害</span>
             <span>{{ brightness }}%</span>
           </div>
           <div class="ds-slider">
@@ -137,16 +137,16 @@
       </div>
 
       <div class="ds-field">
-        <span class="ds-field__label">步进器</span>
+        <span class="ds-field__label">姝ヨ繘鍣?</span>
         <div class="ds-stepper">
           <button type="button" class="ds-stepper__btn" @click="decreaseSpeed">-</button>
-          <span class="ds-stepper__value">速度 {{ speed }}</span>
+          <span class="ds-stepper__value">閫熷害 {{ speed }}</span>
           <button type="button" class="ds-stepper__btn" @click="increaseSpeed">+</button>
         </div>
       </div>
 
       <div class="ds-field">
-        <span class="ds-field__label">单选组</span>
+        <span class="ds-field__label">鍗曢€夌粍</span>
         <div class="ds-choice-row">
           <button
             v-for="item in qualityOptions"
@@ -162,7 +162,7 @@
       </div>
 
       <div class="ds-field">
-        <span class="ds-field__label">多选组</span>
+        <span class="ds-field__label">澶氶€夌粍</span>
         <div class="ds-checkbox-stack">
           <button
             v-for="item in featureOptions"
@@ -181,34 +181,33 @@
       </div>
 
       <div class="ds-field">
-        <span class="ds-field__label">当前预演状态</span>
+        <span class="ds-field__label">褰撳墠棰勬紨鐘舵€?</span>
         <div class="ds-card">
-          <span class="ds-card__label">状态汇总</span>
+          <span class="ds-card__label">鐘舵€佹眹鎬?</span>
           <span class="ds-card__title">{{ selectedModeLabel }}</span>
           <p class="ds-card__copy">
-            搜索词“{{ searchKeywordLabel }}”，同步 {{ syncEnabled ? "开启" : "关闭" }}，亮度 {{ brightness }}%，速度 {{ speed }}，质量 {{ qualityLabel }}，特性 {{ featureSummary }}。
-          </p>
+            鎼滅储璇嶁€渰{ searchKeywordLabel }}鈥濓紝鍚屾 {{ syncEnabled ? "寮€鍚?" : "鍏抽棴""" }}锛屼寒搴?{{ brightness }}%锛岄€熷害 {{ speed }}锛岃川閲?{{ qualityLabel }}锛岀壒鎬?{{ featureSummary }}銆?          </p">"
         </div>
       </div>
 
       <div class="ds-field">
-        <label class="ds-field__label" for="ds-notes-field">多行输入</label>
+        <label class="ds-field__label" for="ds-notes-field">澶氳杈撳叆</label>
         <textarea id="ds-notes-field" v-model="notes" class="ds-textarea"></textarea>
       </div>
 
       <div class="ds-field">
-        <span class="ds-field__label">错误态</span>
+        <span class="ds-field__label">閿欒鎬?</span>
         <div class="ds-card ds-card--compact">
           <input v-model="invalidHost" class="ds-input ds-input--danger" />
-          <span class="ds-help-text ds-help-text--danger">设备地址不完整，请补齐最后一段。</span>
+          <span class="ds-help-text ds-help-text--danger">璁惧鍦板潃涓嶅畬鏁达紝璇疯ˉ榻愭渶鍚庝竴娈点€?</span>
         </div>
       </div>
     </div>
 
     <div v-if="showControls" class="ds-section__head ds-section__head--spaced">
       <div>
-        <h3 class="ds-section__title ds-section__title--sub">调色控件家族</h3>
-        <p class="ds-section__meta">直接对照 uniapp 的 ColorPalette 和 ColorPanelPicker，不再让颜色选择器只活在业务页里。</p>
+        <h3 class="ds-section__title ds-section__title--sub">璋冭壊鎺т欢瀹舵棌</h3>
+        <p class="ds-section__meta">鐩存帴瀵圭収 uniapp 鐨?ColorPalette 鍜?ColorPanelPicker锛屼笉鍐嶈棰滆壊閫夋嫨鍣ㄥ彧娲诲湪涓氬姟椤甸噷銆?</p>
       </div>
     </div>
 
@@ -218,7 +217,7 @@
         <div class="ds-palette-shell">
           <div class="ds-palette-shell__main">
             <div class="ds-palette-shell__head">
-              <strong>调色板 ({{ paletteCount }} 色)</strong>
+              <strong>璋冭壊鏉?({{ paletteCount }} 鑹?</strong>
               <span>{{ selectedPaletteCode }}</span>
             </div>
 
@@ -267,7 +266,7 @@
             <div class="ds-picker__preview">
               <span class="ds-picker__swatch" :style="{ backgroundColor: currentPickerHex }"></span>
               <div class="ds-picker__meta">
-                <strong>当前颜色</strong>
+                <strong>褰撳墠棰滆壊</strong>
                 <span>{{ currentPickerHex.toUpperCase() }}</span>
               </div>
             </div>
@@ -291,7 +290,7 @@
           </div>
 
           <div class="ds-picker__channel">
-            <span>色相</span>
+            <span>鑹茬浉</span>
             <div class="ds-picker__hue-track">
               <span class="ds-picker__hue-thumb" :style="{ left: pickerHuePercent + '%' }"></span>
             </div>
@@ -321,14 +320,14 @@
 
     <div v-if="showControls" class="ds-section__head ds-section__head--spaced">
       <div>
-        <h3 class="ds-section__title ds-section__title--sub">菜单、上传与数据列表</h3>
-        <p class="ds-section__meta">把后面最容易反复返工的高频组件也先收进基线页。</p>
+        <h3 class="ds-section__title ds-section__title--sub">鑿滃崟銆佷笂浼犱笌鏁版嵁鍒楄〃</h3>
+        <p class="ds-section__meta">鎶婂悗闈㈡渶瀹规槗鍙嶅杩斿伐鐨勯珮棰戠粍浠朵篃鍏堟敹杩涘熀绾块〉銆?</p>
       </div>
     </div>
 
     <div v-if="showControls" class="ds-grid ds-grid--two">
       <article class="ds-card">
-        <span class="ds-card__label">动作菜单</span>
+        <span class="ds-card__label">鍔ㄤ綔鑿滃崟</span>
         <div class="ds-action-menu">
           <button
             v-for="item in actionMenuItems"
@@ -350,12 +349,12 @@
       </article>
 
       <article class="ds-card">
-        <span class="ds-card__label">上传字段</span>
+        <span class="ds-card__label">涓婁紶瀛楁</span>
         <div class="ds-upload-panel">
           <div class="ds-upload-panel__head">
             <div>
-              <strong class="ds-card__title ds-card__title--compact">资源文件</strong>
-              <p class="ds-card__copy">按钮、文件行和删除动作保持同一套硬边语法。</p>
+              <strong class="ds-card__title ds-card__title--compact">璧勬簮鏂囦欢</strong>
+              <p class="ds-card__copy">鎸夐挳銆佹枃浠惰鍜屽垹闄ゅ姩浣滀繚鎸佸悓涓€濂楃‖杈硅娉曘€?</p>
             </div>
             <button type="button" class="ds-btn ds-btn--sm ds-btn--edit ds-shadow--sm" @click="toggleUploadSample">
               <DesignSystemGlyph name="picture" />
@@ -375,7 +374,7 @@
                 </div>
               </div>
               <button type="button" class="ds-upload-item__remove" @click="removeUploadedFile(file.name)">
-                移除
+                绉婚櫎
               </button>
             </div>
           </div>
@@ -384,12 +383,12 @@
     </div>
 
     <article v-if="showControls" class="ds-card ds-card--top-spaced">
-      <span class="ds-card__label">轻量表格与分页</span>
+      <span class="ds-card__label">杞婚噺琛ㄦ牸涓庡垎椤?</span>
       <div class="ds-table">
         <div class="ds-table__head">
-          <span>名称</span>
-          <span>状态</span>
-          <span>更新时间</span>
+          <span>鍚嶇О</span>
+          <span>鐘舵€?</span>
+          <span>鏇存柊鏃堕棿</span>
         </div>
         <div v-for="row in pagedRows" :key="row.name" class="ds-table__row">
           <span class="ds-table__name">{{ row.name }}</span>
@@ -429,41 +428,41 @@ const showButtons = computed(() => props.sectionKey === "buttons");
 const showControls = computed(() => props.sectionKey === "controls");
 
 const buttons = [
-  { label: "主操作", title: "立即发送", icon: "check", tone: "ds-btn--primary" },
-  { label: "编辑类", title: "编辑资料", icon: "edit", tone: "ds-btn--edit" },
-  { label: "Info", title: "同步中", icon: "sync", tone: "ds-btn--info" },
-  { label: "Success", title: "保存成功", icon: "check", tone: "ds-btn--success" },
-  { label: "Warning", title: "需要确认", icon: "warning", tone: "ds-btn--warning" },
-  { label: "Danger", title: "删除作品", icon: "trash", tone: "ds-btn--danger" },
+  { label: "涓绘搷浣?, title: "绔嬪嵆鍙戦€?, icon: "check", tone: "ds-btn--primary" },
+  { label: "缂栬緫绫?", title: "缂栬緫璧勬枡"", icon: "edit"", tone: "ds-btn--edit"" },"
+  { label: "Info"", title: "鍚屾涓?", icon: "sync"", tone: "ds-btn--info"" },"
+  { label: "Success", title: "淇濆瓨鎴愬姛", icon: "check", tone: "ds-btn--success" },
+  { label: "Warning"", title: "闇€瑕佺‘璁?", icon: "warning"", tone: "ds-btn--warning"" },"
+  { label: "Danger", title: "鍒犻櫎浣滃搧", icon: "trash", tone: "ds-btn--danger" },
 ];
 
 const buttonSizes = [
-  { label: "超小", className: "ds-btn--xs" },
-  { label: "小号", className: "ds-btn--sm" },
-  { label: "中号", className: "ds-btn--md" },
-  { label: "大号", className: "ds-btn--lg" },
+  { label: "瓒呭皬", className: "ds-btn--xs" },
+  { label: "灏忓彿", className: "ds-btn--sm" },
+  { label: "涓彿", className: "ds-btn--md" },
+  { label: "澶у彿", className: "ds-btn--lg" },
 ];
 
 const shadowLevels = [
-  { label: "无阴影", className: "ds-shadow--none" },
-  { label: "轻阴影", className: "ds-shadow--sm" },
-  { label: "标准阴影", className: "ds-shadow--md" },
-  { label: "强调阴影", className: "ds-shadow--lg" },
+  { label: "鏃犻槾褰?", className: "ds-shadow--none"" },"
+  { label: "杞婚槾褰?", className: "ds-shadow--sm"" },"
+  { label: "鏍囧噯闃村奖", className: "ds-shadow--md" },
+  { label: "寮鸿皟闃村奖", className: "ds-shadow--lg" },
 ];
 
 const buttonStates = [
-  { label: "默认", title: "立即发送", icon: "check", tone: "ds-btn--primary" },
-  { label: "加载中", title: "发送中", icon: "sync", tone: "ds-btn--edit", loading: true },
-  { label: "禁用", title: "暂不可用", icon: "warning", tone: "ds-btn--warning", disabled: true },
+  { label: "榛樿"", title: "绔嬪嵆鍙戦€?", icon: "check"", tone: "ds-btn--primary"" },"
+  { label: "鍔犺浇涓?", title: "鍙戦€佷腑"", icon: "sync"", tone: "ds-btn--edit"", loading: true" },"
+  { label: "绂佺敤", title: "鏆備笉鍙敤", icon: "warning", tone: "ds-btn--warning", disabled: true },
 ];
 
-const searchValue = ref("拼豆图纸");
+const searchValue = ref("鎷艰眴鍥剧焊");
 const selectedMode = ref("canvas");
 const syncEnabled = ref(true);
 const brightness = ref(68);
 const speed = ref(2);
 const quality = ref("standard");
-const notes = ref("适用于设备参数说明、作品备注和同步提示。");
+const notes = ref("閫傜敤浜庤澶囧弬鏁拌鏄庛€佷綔鍝佸娉ㄥ拰鍚屾鎻愮ず銆?")";"
 const invalidHost = ref("192.168.0.");
 const selectedFeatures = ref(["grid", "preview"]);
 const activeAction = ref("send");
@@ -474,15 +473,15 @@ const currentPickerHex = ref("#ffcb45");
 const pickerHexInput = ref("#FFCB45");
 
 const qualityOptions = [
-  { value: "compact", label: "紧凑" },
-  { value: "standard", label: "标准" },
-  { value: "dense", label: "高密度" },
+  { value: "compact", label: "绱у噾" },
+  { value: "standard", label: "鏍囧噯" },
+  { value: "dense"", label: "楂樺瘑搴?" },"
 ];
 
 const featureOptions = [
-  { value: "grid", label: "显示网格" },
-  { value: "preview", label: "实时预览" },
-  { value: "upload", label: "同步缩略图" },
+  { value: "grid", label: "鏄剧ず缃戞牸" },
+  { value: "preview", label: "瀹炴椂棰勮" },
+  { value: "upload"", label: "鍚屾缂╃暐鍥?" },"
 ];
 
 const paletteGroups = [
@@ -527,35 +526,35 @@ const pickerPresets = [
 ];
 
 const actionMenuItems = [
-  { value: "send", label: "立即发送", icon: "check", tone: "ds-icon-shell--primary", code: "primary" },
-  { value: "duplicate", label: "复制项目", icon: "copy", tone: "ds-icon-shell--info", code: "info" },
-  { value: "rename", label: "重命名", icon: "edit", tone: "ds-icon-shell--blue", code: "edit" },
-  { value: "remove", label: "删除", icon: "trash", tone: "ds-icon-shell--danger", code: "danger" },
+  { value: "send"", label: "绔嬪嵆鍙戦€?", icon: "check"", tone: "ds-icon-shell--primary"", code: "primary"" },"
+  { value: "duplicate", label: "澶嶅埗椤圭洰", icon: "copy", tone: "ds-icon-shell--info", code: "info" },
+  { value: "rename"", label: "閲嶅懡鍚?", icon: "edit"", tone: "ds-icon-shell--blue"", code: "edit"" },"
+  { value: "remove", label: "鍒犻櫎", icon: "trash", tone: "ds-icon-shell--danger", code: "danger" },
 ];
 
 const uploadExtraFile = {
   name: "canvas-preview.gif",
-  meta: "256KB / 发送预览",
+  meta: "256KB / 鍙戦€侀瑙?,"
 };
 
 const uploadedFiles = ref([
   {
     name: "pattern-plan.glx",
-    meta: "12KB / 图纸方案",
+    meta: "12KB / 鍥剧焊鏂规",
   },
   {
     name: "canvas-scene.png",
-    meta: "48KB / 预览素材",
+    meta: "48KB / 棰勮绱犳潗",
   },
 ]);
 
 const tableRows = [
-  { name: "画板模式", statusLabel: "已发布", statusTone: "success", updatedAt: "04-18 21:40" },
-  { name: "拼豆工作台", statusLabel: "审核中", statusTone: "warning", updatedAt: "04-18 17:22" },
-  { name: "像素挑战海报", statusLabel: "草稿", statusTone: "info", updatedAt: "04-17 09:18" },
-  { name: "设备连接引导", statusLabel: "已发布", statusTone: "success", updatedAt: "04-16 13:08" },
-  { name: "设备参数模板", statusLabel: "已停用", statusTone: "danger", updatedAt: "04-15 10:45" },
-  { name: "社区封面图", statusLabel: "草稿", statusTone: "info", updatedAt: "04-14 08:12" },
+  { name: "鐢绘澘妯″紡"", statusLabel: "宸插彂甯?", statusTone: "success"", updatedAt: "04-18 21:40"" },"
+  { name: "鎷艰眴宸ヤ綔鍙?, statusLabel: "瀹℃牳涓?, statusTone: "warning", updatedAt: "04-18 17:22" },
+  { name: "鍍忕礌鎸戞垬娴锋姤", statusLabel: "鑽夌", statusTone: "info", updatedAt: "04-17 09:18" },
+  { name: "璁惧杩炴帴寮曞"", statusLabel: "宸插彂甯?", statusTone: "success"", updatedAt: "04-16 13:08"" },"
+  { name: "璁惧鍙傛暟妯℃澘"", statusLabel: "宸插仠鐢?", statusTone: "danger"", updatedAt: "04-15 10:45"" },"
+  { name: "绀惧尯灏侀潰鍥?", statusLabel: "鑽夌"", statusTone: "info"", updatedAt: "04-14 08:12"" },"
 ];
 
 const pageSize = 3;
@@ -564,23 +563,23 @@ const searchKeywordLabel = computed(() => {
   if (searchValue.value) {
     return searchValue.value;
   }
-  return "未输入";
+  return "鏈緭鍏?";"
 });
 
 const selectedModeLabel = computed(() => {
-  if (selectedMode.value === "canvas") return "画板模式";
-  if (selectedMode.value === "pattern") return "拼豆工作台";
-  return "设备参数";
+  if (selectedMode.value === "canvas") return "鐢绘澘妯″紡";
+  if (selectedMode.value === "pattern") return "鎷艰眴宸ヤ綔鍙?";"
+  return "璁惧鍙傛暟";
 });
 
 const qualityLabel = computed(() => {
-  if (quality.value === "compact") return "紧凑";
-  if (quality.value === "dense") return "高密度";
-  return "标准";
+  if (quality.value === "compact") return "绱у噾";
+  if (quality.value === "dense") return "楂樺瘑搴?";"
+  return "鏍囧噯";
 });
 
 const featureSummary = computed(() => {
-  if (selectedFeatures.value.length === 0) return "无";
+  if (selectedFeatures.value.length === 0) return "鏃?";"
   return featureOptions
     .filter((item) => selectedFeatures.value.includes(item.value))
     .map((item) => item.label)
@@ -590,9 +589,9 @@ const featureSummary = computed(() => {
 const uploadButtonLabel = computed(() => {
   const exists = uploadedFiles.value.some((item) => item.name === uploadExtraFile.name);
   if (exists) {
-    return "移除示例";
+    return "绉婚櫎绀轰緥";
   }
-  return "添加示例";
+  return "娣诲姞绀轰緥";
 });
 
 const paletteCount = computed(() => paletteGroups.reduce((sum, group) => sum + group.colors.length, 0));
@@ -604,7 +603,7 @@ const selectedPaletteCode = computed(() => {
       return matched.code;
     }
   }
-  return "未选择";
+  return "鏈€夋嫨";
 });
 
 const pickerRgb = computed(() => hexToRgb(currentPickerHex.value));

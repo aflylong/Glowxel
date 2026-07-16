@@ -1,4 +1,4 @@
-<!-- 冒险岛 1 代 主题预览 (定档无参数模式) -->
+﻿<!-- 鍐掗櫓宀?1 浠?涓婚棰勮 (瀹氭。鏃犲弬鏁版ā寮? -->
 <template>
   <div class="clock-editor-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
@@ -7,7 +7,7 @@
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
-      <span class="nav-title glx-topbar__title">冒险岛 1 代</span>
+      <span class="nav-title glx-topbar__title">鍐掗櫓宀?1 浠?</span>
       <div class="nav-right"></div>
     </div>
 
@@ -28,7 +28,7 @@
       </div>
       <div class="preview-caption glx-preview-panel">
         <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-caption-title">模拟预览</span>
+          <span class="preview-caption-title">妯℃嫙棰勮</span>
           <span class="preview-caption-sub">{{ statusText }}</span>
         </div>
         <div class="preview-actions">
@@ -38,7 +38,7 @@
             @click="sendToDevice"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
@@ -48,13 +48,13 @@
       <div class="content-wrapper glx-scroll-stack">
         <div class="card glx-panel-card glx-editor-card">
           <div class="card-title-section glx-panel-head">
-            <span class="glx-panel-title">说明</span>
+            <span class="glx-panel-title">璇存槑</span>
           </div>
           <p style="font-size: 24rpx; line-height: 1.6; padding: 12rpx 0;">
-            高桥名人冒险岛主题。<br>
-            主角踩滑板 / 跳跃 / 投斧子, 自动 AI 无尽奔跑屏保。<br>
-            随机生成蜗牛 / 乌鸦 / 野猪 / 蛇 / 石头 / 火堆 / 蛋 / 水果。<br>
-            点"发送"上板。
+            楂樻ˉ鍚嶄汉鍐掗櫓宀涗富棰樸€?br>
+            涓昏韪╂粦鏉?/ 璺宠穬 / 鎶曟枾瀛? 鑷姩 AI 鏃犲敖濂旇窇灞忎繚銆?br>
+            闅忔満鐢熸垚铚楃墰 / 涔岄甫 / 閲庣尓 / 铔?/ 鐭冲ご / 鐏爢 / 铔?/ 姘存灉銆?br>
+            鐐?鍙戦€?涓婃澘銆?
           </p>
         </div>
       </div>
@@ -73,6 +73,7 @@
 </template>
 
 <script>
+import { createDomQuery } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from '@/mixins/uniLifecycleAdapter.js';
 import statusBarMixin from '@/mixins/statusBar.js';
 import deviceSendUxMixin from '@/mixins/deviceSendUxMixin.js';
@@ -115,10 +116,10 @@ export default {
     statusText() {
       const ch = this.sceneState?.character;
       if (!ch || !ch.type) return '';
-      const parts = [`状态: ${ch.type}`];
-      if (ch.hasAxe) parts.push('持斧');
-      if (ch.fairyT > 0) parts.push(`无敌 ${Math.ceil(ch.fairyT / 30)}s`);
-      return parts.join(' · ');
+      const parts = [`鐘舵€? ${ch.type}`];
+      if (ch.hasAxe) parts.push('鎸佹枾');
+      if (ch.fairyT > 0) parts.push(`鏃犳晫 ${Math.ceil(ch.fairyT / 30)}s`);
+      return parts.join(' 路 ');
     },
     previewCanvasBoxStyle() {
       return { height: `${this.previewContainerSize.height}px` };
@@ -145,7 +146,7 @@ export default {
     initPreviewCanvas() {
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query.select('.preview-canvas-container').boundingClientRect((data) => {
             if (data && data.width > 0) {
               this.previewContainerSize = { width: data.width, height: data.width };
@@ -161,8 +162,8 @@ export default {
       });
     },
     startLoop() {
-      // 静态一帧: 跑一次 tick + render 拿到画面, 不再循环
-      // 板载常量 (跟 esp32-firmware/src/adventure_island_effect.cpp 一致)
+      // 闈欐€佷竴甯? 璺戜竴娆?tick + render 鎷垮埌鐢婚潰, 涓嶅啀寰幆
+      // 鏉胯浇甯搁噺 (璺?esp32-firmware/src/adventure_island_effect.cpp 涓€鑷?
       const layoutOpts = {
         bgYOffset: -12,
         charX: 6,
@@ -201,7 +202,7 @@ export default {
       this.previewPixels = renderAdventureIslandScene(this.sceneState, layoutOpts);
       this.previewTick++;
     },
-    stopLoop() { /* 静态帧无循环, 不需要 stop */ },
+    stopLoop() { /* 闈欐€佸抚鏃犲惊鐜? 涓嶉渶瑕?stop */ },
     stopLoop() {
       if (this.animHandle) {
         clearTimeout(this.animHandle);
@@ -209,7 +210,7 @@ export default {
       }
     },
 
-    // 发送到设备 - 无参数模式, 板载用预设值跑
+    // 鍙戦€佸埌璁惧 - 鏃犲弬鏁版ā寮? 鏉胯浇鐢ㄩ璁惧€艰窇
     async sendToDevice() {
       if (!this.guardBeforeSend(this.deviceStore.connected)) return;
       this.beginSendUi();
@@ -217,12 +218,12 @@ export default {
       try {
         const ws = this.deviceStore.getWebSocket();
         await ws.startAdventureIsland();
-        this.showSendSuccess('已应用');
+        this.showSendSuccess('宸插簲鐢?);
       } catch (err) {
         await this.deviceStore.rollbackBusinessMode?.(previousMode, {
           expectedMode: 'adventure_island',
         });
-        console.error('[adventure-island] 发送失败', err);
+        console.error('[adventure-island] 鍙戦€佸け璐?, err);
         this.showSendFailure(err);
       } finally {
         this.endSendUi();

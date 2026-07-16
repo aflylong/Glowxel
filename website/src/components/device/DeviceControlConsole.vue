@@ -1,11 +1,11 @@
-<template>
+﻿<template>
   <div class="device-home glx-page-shell">
     <section class="device-home__summary glx-page-shell__hero">
       <div class="device-home__summary-top">
         <span class="glx-page-shell__eyebrow">Glowxel PixelBoard</span>
         <div class="device-home__status-pill">
           <span class="glx-status-dot" :class="{ 'is-online': isDeviceConnected }"></span>
-          <span>{{ isDeviceConnected ? "已连接" : "未连接" }}</span>
+          <span>{{ isDeviceConnected ? "宸茶繛鎺? : "鏈繛鎺? }}</span>
         </div>
       </div>
 
@@ -17,9 +17,9 @@
           </div>
 
           <div class="device-home__brand-copy">
-            <h1 class="device-home__title">设备控制</h1>
+            <h1 class="device-home__title">璁惧鎺у埗</h1>
             <p class="device-home__desc">
-              网站端当前作为设备控制入口，连接设备、热点配网、读取设备参数和切换常用模式都从这里进入。
+              缃戠珯绔綋鍓嶄綔涓鸿澶囨帶鍒跺叆鍙ｏ紝杩炴帴璁惧銆佺儹鐐归厤缃戙€佽鍙栬澶囧弬鏁板拰鍒囨崲甯哥敤妯″紡閮戒粠杩欓噷杩涘叆銆?
             </p>
             <p v-if="surfaceErrorMessage.length > 0" class="device-home__inline-error">
               {{ surfaceErrorMessage }}
@@ -29,19 +29,19 @@
 
         <div class="glx-hero-metrics device-home__metrics">
           <article class="glx-hero-metric">
-            <span class="glx-hero-metric__label">设备地址</span>
+            <span class="glx-hero-metric__label">璁惧鍦板潃</span>
             <strong class="glx-hero-metric__value">{{ deviceHostText }}</strong>
           </article>
           <article class="glx-hero-metric">
-            <span class="glx-hero-metric__label">当前业务模式</span>
+            <span class="glx-hero-metric__label">褰撳墠涓氬姟妯″紡</span>
             <strong class="glx-hero-metric__value">{{ currentBusinessModeText }}</strong>
           </article>
           <article class="glx-hero-metric">
-            <span class="glx-hero-metric__label">画板尺寸</span>
+            <span class="glx-hero-metric__label">鐢绘澘灏哄</span>
             <strong class="glx-hero-metric__value">{{ boardSizeText }}</strong>
           </article>
           <article class="glx-hero-metric">
-            <span class="glx-hero-metric__label">当前亮度</span>
+            <span class="glx-hero-metric__label">褰撳墠浜害</span>
             <strong class="glx-hero-metric__value">{{ brightnessText }}</strong>
           </article>
         </div>
@@ -53,8 +53,8 @@
             <Icon unit="px" name="scanning" :size="30" />
           </div>
           <div class="device-home__entry-copy">
-            <strong class="device-home__entry-title">连接设备</strong>
-            <span class="device-home__entry-desc">输入设备 IP 地址连接</span>
+            <strong class="device-home__entry-title">杩炴帴璁惧</strong>
+            <span class="device-home__entry-desc">杈撳叆璁惧 IP 鍦板潃杩炴帴</span>
           </div>
         </button>
 
@@ -63,8 +63,8 @@
             <Icon unit="px" name="mobile-phone" :size="30" />
           </div>
           <div class="device-home__entry-copy">
-            <strong class="device-home__entry-title">热点配网</strong>
-            <span class="device-home__entry-desc">连接设备热点后打开 192.168.4.1</span>
+            <strong class="device-home__entry-title">鐑偣閰嶇綉</strong>
+            <span class="device-home__entry-desc">杩炴帴璁惧鐑偣鍚庢墦寮€ 192.168.4.1</span>
           </div>
         </router-link>
       </div>
@@ -76,14 +76,14 @@
         @click="handleDisconnect"
       >
         <Icon unit="px" name="close" :size="28" />
-        <span>断开连接</span>
+        <span>鏂紑杩炴帴</span>
       </button>
     </section>
 
     <section class="glx-section-card glx-section-card--stack">
       <div class="glx-section-head">
-        <h2 class="glx-section-title">设备工具</h2>
-        <span class="glx-section-meta">配网与参数</span>
+        <h2 class="glx-section-title">璁惧宸ュ叿</h2>
+        <span class="glx-section-meta">閰嶇綉涓庡弬鏁?</span>
       </div>
 
       <div class="device-home__tool-grid">
@@ -107,8 +107,8 @@
 
     <section class="glx-section-card glx-section-card--stack">
       <div class="glx-section-head">
-        <h2 class="glx-section-title">模式入口</h2>
-        <span class="glx-section-meta">{{ modeCatalog.length }} 个模式</span>
+        <h2 class="glx-section-title">妯″紡鍏ュ彛</h2>
+        <span class="glx-section-meta">{{ modeCatalog.length }} 涓ā寮?</span>
       </div>
 
       <div class="device-home__mode-grid">
@@ -117,13 +117,13 @@
           :key="entry.key"
           type="button"
           class="device-home__mode-card"
-          :class="[
+          :class="["
             entry.variantClass,
             {
               'is-active': currentBusinessMode === entry.key,
               'is-pending': modeSwitchingKey === entry.key,
             },
-          ]"
+          ]""
           :disabled="modeSwitchingKey.length > 0"
           @click="handleModeSelect(entry)"
         >
@@ -136,19 +136,19 @@
           <span class="device-home__mode-meta">
             {{
               entry.action === "open"
-                ? (currentBusinessMode === entry.key ? "当前模式 · 打开" : "打开页面")
+                ? (currentBusinessMode === entry.key ? "褰撳墠妯″紡 路 鎵撳紑" : "鎵撳紑椤甸潰")
                 : (currentBusinessMode === entry.key
-                    ? "当前模式"
+                    ? "褰撳墠妯″紡"
                     : modeSwitchingKey === entry.key
-                      ? "切换中..."
-                      : "点击切换")
+                      ? "鍒囨崲涓?.."
+                      : "鐐瑰嚮鍒囨崲")
             }}
           </span>
         </button>
       </div>
 
       <p class="device-home__section-note">
-        这里负责设备当前运行模式切换；如果要调参数、看预览或恢复本地缓存，请直接进入下面对应的模式页。
+        杩欓噷璐熻矗璁惧褰撳墠杩愯妯″紡鍒囨崲锛涘鏋滆璋冨弬鏁般€佺湅棰勮鎴栨仮澶嶆湰鍦扮紦瀛橈紝璇风洿鎺ヨ繘鍏ヤ笅闈㈠搴旂殑妯″紡椤点€?
       </p>
     </section>
 
@@ -176,7 +176,7 @@
             <strong class="device-home__tool-title">{{ entry.title }}</strong>
             <span class="device-home__tool-desc">{{ entry.desc }}</span>
           </div>
-          <span class="device-home__tool-cta">打开页面</span>
+          <span class="device-home__tool-cta">鎵撳紑椤甸潰</span>
         </router-link>
       </div>
     </section>
@@ -214,25 +214,25 @@ const utilityEntries = [
   {
     to: "/device-params",
     icon: "setting",
-    title: "设备参数",
-    desc: "亮度、旋转、色彩顺序和驱动参数统一在这里读取与保存。",
-    cta: "打开",
+    title: "璁惧鍙傛暟",
+    desc: "浜害銆佹棆杞€佽壊褰╅『搴忓拰椹卞姩鍙傛暟缁熶竴鍦ㄨ繖閲岃鍙栦笌淇濆瓨銆?,"
+    cta: "鎵撳紑",
     iconShellClass: "device-home__tool-icon--yellow",
   },
   {
     to: "/ble-config",
     icon: "mobile-phone",
-    title: "热点配网",
-    desc: "首次使用时连接设备热点，在浏览器里打开本地配网页完成联网。",
-    cta: "打开",
+    title: "鐑偣閰嶇綉",
+    desc: "棣栨浣跨敤鏃惰繛鎺ヨ澶囩儹鐐癸紝鍦ㄦ祻瑙堝櫒閲屾墦寮€鏈湴閰嶇綉椤靛畬鎴愯仈缃戙€?,"
+    cta: "鎵撳紑",
     iconShellClass: "device-home__tool-icon--green",
   },
   {
     to: "/device-flash",
     icon: "upload",
-    title: "设备烧录",
-    desc: "通过 USB Web Serial 写入 ESP32 固件，不走 WiFi，也不走 WebSocket。",
-    cta: "打开",
+    title: "璁惧鐑у綍",
+    desc: "閫氳繃 USB Web Serial 鍐欏叆 ESP32 鍥轰欢锛屼笉璧?WiFi锛屼篃涓嶈蛋 WebSocket銆?,"
+    cta: "鎵撳紑",
     iconShellClass: "device-home__tool-icon--orange",
   },
 ];
@@ -242,22 +242,22 @@ const pageDirectoryGroups = devicePageGroups.filter((group) => {
 });
 
 const modeCatalog = [
-  { key: "eyes", name: "桌面宠物", icon: "smile", variantClass: "device-home__mode-card--pink", action: "open", to: "/spirit-screen" },
-  { key: "clock", name: "静态时钟", icon: "time", variantClass: "device-home__mode-card--cyan", action: "open", to: "/clock" },
-  { key: "animation", name: "动态时钟", icon: "dynamic-filling", variantClass: "device-home__mode-card--teal", action: "open", to: "/animation-clock" },
-  { key: "theme", name: "主题模式", icon: "picture", variantClass: "device-home__mode-card--purple", action: "open", to: "/theme-clock" },
-  { key: "canvas", name: "画板模式", icon: "edit", variantClass: "device-home__mode-card--lime", action: "open", to: "/canvas-editor" },
-  { key: "tetris", name: "俄罗斯方块屏保", icon: "modular", variantClass: "device-home__mode-card--indigo", action: "open", to: "/tetris-settings" },
-  { key: "tetris_clock", name: "俄罗斯方块时钟", icon: "clock-filling", variantClass: "device-home__mode-card--gold", action: "open", to: "/tetris-clock-settings" },
-  { key: "maze", name: "迷宫漫游", icon: "map", variantClass: "device-home__mode-card--orange", action: "open", to: "/maze-mode" },
-  { key: "snake", name: "贪吃蛇", icon: "move", variantClass: "device-home__mode-card--green", action: "open", to: "/snake-mode" },
-  { key: "water_world", name: "水世界", icon: "layers", variantClass: "device-home__mode-card--blue", action: "open", to: "/water-world" },
-  { key: "planet_screensaver", name: "星球屏保", icon: "navigation", variantClass: "device-home__mode-card--slate", action: "open", to: "/planet-screensaver" },
-  { key: "rick_morty_portal", name: "传送门", icon: "refresh", variantClass: "device-home__mode-card--mint", action: "open", to: "/rick-morty-portal" },
-  { key: "terraria_clock", name: "泰拉瑞亚时钟", icon: "layers", variantClass: "device-home__mode-card--copper", action: "open", to: "/terraria-clock" },
-  { key: "adventure_island", name: "冒险岛", icon: "navigation", variantClass: "device-home__mode-card--orange", action: "open", to: "/adventure-island" },
-  { key: "kof97", name: "拳皇 97", icon: "modular", variantClass: "device-home__mode-card--copper", action: "open", to: "/kof97" },
-  { key: "spongebob_clock", name: "海绵宝宝时钟", icon: "time", variantClass: "device-home__mode-card--gold", action: "open", to: "/spongebob-clock" },
+  { key: "eyes", name: "妗岄潰瀹犵墿", icon: "smile", variantClass: "device-home__mode-card--pink", action: "open", to: "/spirit-screen" },
+  { key: "clock"", name: "闈欐€佹椂閽?", icon: "time"", variantClass: "device-home__mode-card--cyan"", action: "open"", to: "/clock"" },"
+  { key: "animation"", name: "鍔ㄦ€佹椂閽?", icon: "dynamic-filling"", variantClass: "device-home__mode-card--teal"", action: "open"", to: "/animation-clock"" },"
+  { key: "theme", name: "涓婚妯″紡", icon: "picture", variantClass: "device-home__mode-card--purple", action: "open", to: "/theme-clock" },
+  { key: "canvas", name: "鐢绘澘妯″紡", icon: "edit", variantClass: "device-home__mode-card--lime", action: "open", to: "/canvas-editor" },
+  { key: "tetris"", name: "淇勭綏鏂柟鍧楀睆淇?", icon: "modular"", variantClass: "device-home__mode-card--indigo"", action: "open"", to: "/tetris-settings"" },"
+  { key: "tetris_clock"", name: "淇勭綏鏂柟鍧楁椂閽?", icon: "clock-filling"", variantClass: "device-home__mode-card--gold"", action: "open"", to: "/tetris-clock-settings"" },"
+  { key: "maze", name: "杩峰婕父", icon: "map", variantClass: "device-home__mode-card--orange", action: "open", to: "/maze-mode" },
+  { key: "snake"", name: "璐悆铔?", icon: "move"", variantClass: "device-home__mode-card--green"", action: "open"", to: "/snake-mode"" },"
+  { key: "water_world"", name: "姘翠笘鐣?", icon: "layers"", variantClass: "device-home__mode-card--blue"", action: "open"", to: "/water-world"" },"
+  { key: "planet_screensaver", name: "鏄熺悆灞忎繚", icon: "navigation", variantClass: "device-home__mode-card--slate", action: "open", to: "/planet-screensaver" },
+  { key: "rick_morty_portal", name: "浼犻€侀棬", icon: "refresh", variantClass: "device-home__mode-card--mint", action: "open", to: "/rick-morty-portal" },
+  { key: "terraria_clock", name: "娉版媺鐟炰簹鏃堕挓", icon: "layers", variantClass: "device-home__mode-card--copper", action: "open", to: "/terraria-clock" },
+  { key: "adventure_island"", name: "鍐掗櫓宀?", icon: "navigation"", variantClass: "device-home__mode-card--orange"", action: "open"", to: "/adventure-island"" },"
+  { key: "kof97", name: "鎷崇殗 97", icon: "modular", variantClass: "device-home__mode-card--copper", action: "open", to: "/kof97" },
+  { key: "spongebob_clock", name: "娴风坏瀹濆疂鏃堕挓", icon: "time", variantClass: "device-home__mode-card--gold", action: "open", to: "/spongebob-clock" },
 ];
 
 const isDeviceConnected = computed(() => deviceStore.connected === true);
@@ -290,7 +290,7 @@ const boardSizeText = computed(() => {
     deviceStore.width > 0 &&
     deviceStore.height > 0
   ) {
-    return `${deviceStore.width} × ${deviceStore.height}`;
+    return `${deviceStore.width} 脳 ${deviceStore.height}`;
   }
   return "--";
 });
@@ -353,14 +353,14 @@ async function handleConnectConfirm(ip) {
   const normalizedIp = String(ip).trim();
 
   if (normalizedIp.length === 0) {
-    connectErrorMessage.value = "请输入设备 IP 地址";
+    connectErrorMessage.value = "璇疯緭鍏ヨ澶?IP 鍦板潃";
     return;
   }
 
   connectErrorMessage.value = "";
 
   try {
-    feedback.showBlocking("连接设备", "正在建立 WebSocket 连接并同步设备状态。");
+    feedback.showBlocking("杩炴帴璁惧"", "姝ｅ湪寤虹珛 WebSocket 杩炴帴骞跺悓姝ヨ澶囩姸鎬併€?")";"
     await deviceStore.connect({
       host: normalizedIp,
       port: 80,
@@ -369,7 +369,7 @@ async function handleConnectConfirm(ip) {
     await deviceStore.syncDeviceStatus();
     deviceHostValue.value = normalizedIp;
     showConnectModal.value = false;
-    feedback.success("连接成功", "已经连接到 Glowxel PixelBoard。");
+    feedback.success("杩炴帴鎴愬姛"", "宸茬粡杩炴帴鍒?Glowxel PixelBoard銆?")";"
   } catch (error) {
     connectErrorMessage.value = resolveErrorMessage(error);
   } finally {
@@ -383,20 +383,20 @@ function handleConnectCancel() {
 
 function handleDisconnect() {
   deviceStore.disconnect();
-  feedback.info("设备已断开", "当前 WebSocket 连接已经关闭。");
+  feedback.info("璁惧宸叉柇寮€"", "褰撳墠 WebSocket 杩炴帴宸茬粡鍏抽棴銆?")";"
 }
 
 async function handleModeSelect(entry) {
-  // open 类入口: 直接跳到对应编辑页 (跟 mobile 端语义一致)
-  // 编辑页内部有"发送/切换"按钮, 真正切设备模式由编辑页负责.
+  // open 绫诲叆鍙? 鐩存帴璺冲埌瀵瑰簲缂栬緫椤?(璺?mobile 绔涔変竴鑷?
+  // 缂栬緫椤靛唴閮ㄦ湁"鍙戦€?鍒囨崲"鎸夐挳, 鐪熸鍒囪澶囨ā寮忕敱缂栬緫椤佃礋璐?
   if (entry.action === "open" && typeof entry.to === "string" && entry.to.length > 0) {
     router.push(entry.to);
     return;
   }
 
-  // switch 类入口 (eyes / planet_screensaver 等无专属编辑页): 直接发 setMode
+  // switch 绫诲叆鍙?(eyes / planet_screensaver 绛夋棤涓撳睘缂栬緫椤?: 鐩存帴鍙?setMode
   if (!isDeviceConnected.value) {
-    feedback.info("请先连接设备", "连接成功后才能切换设备模式。");
+    feedback.info("璇峰厛杩炴帴璁惧"", "杩炴帴鎴愬姛鍚庢墠鑳藉垏鎹㈣澶囨ā寮忋€?")";"
     return;
   }
 
@@ -407,12 +407,12 @@ async function handleModeSelect(entry) {
   modeSwitchingKey.value = entry.key;
 
   try {
-    feedback.showBlocking("切换模式", `正在把设备切换到 ${entry.name}。`);
+    feedback.showBlocking("鍒囨崲妯″紡", `姝ｅ湪鎶婅澶囧垏鎹㈠埌 ${entry.name}銆俙);
     await deviceStore.setMode(entry.key);
     await deviceStore.syncDeviceStatus();
-    feedback.success("切换成功", `已切换到 ${entry.name}。`);
+    feedback.success("鍒囨崲鎴愬姛", `宸插垏鎹㈠埌 ${entry.name}銆俙);
   } catch (error) {
-    feedback.error("切换失败", resolveErrorMessage(error));
+    feedback.error("鍒囨崲澶辫触", resolveErrorMessage(error));
   } finally {
     feedback.hideBlocking();
     modeSwitchingKey.value = "";
@@ -431,7 +431,7 @@ function resolveErrorMessage(error) {
     }
   }
 
-  return "操作失败，请稍后重试";
+  return "鎿嶄綔澶辫触锛岃绋嶅悗閲嶈瘯";
 }
 </script>
 

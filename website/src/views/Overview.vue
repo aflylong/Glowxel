@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="glx-page-shell">
     <section class="glx-page-shell__hero">
       <span class="glx-page-shell__eyebrow">Overview</span>
@@ -6,59 +6,59 @@
       <p class="glx-page-shell__desc">{{ projectDescription }}</p>
       <div class="glx-hero-metrics">
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">尺寸</span>
+          <span class="glx-hero-metric__label">灏哄</span>
           <strong class="glx-hero-metric__value">{{ projectSize }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">颜色数</span>
+          <span class="glx-hero-metric__label">棰滆壊鏁?</span>
           <strong class="glx-hero-metric__value">{{ paletteCount }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">进度</span>
+          <span class="glx-hero-metric__label">杩涘害</span>
           <strong class="glx-hero-metric__value">{{ projectProgress }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">状态</span>
+          <span class="glx-hero-metric__label">鐘舵€?</span>
           <strong class="glx-hero-metric__value">{{ projectStatus }}</strong>
         </article>
       </div>
       <div class="glx-inline-actions">
-        <router-link :to="`/editor/${route.params.id}`" class="glx-button glx-button--primary">继续编辑</router-link>
-        <router-link :to="`/assist/${route.params.id}`" class="glx-button glx-button--ghost">辅助处理</router-link>
-        <router-link :to="`/publish-project/${route.params.id}`" class="glx-button glx-button--ghost">发布作品</router-link>
+        <router-link :to="`/editor/${route.params.id}`" class="glx-button glx-button--primary">缁х画缂栬緫</router-link>
+        <router-link :to="`/assist/${route.params.id}`" class="glx-button glx-button--ghost">杈呭姪澶勭悊</router-link>
+        <router-link :to="`/publish-project/${route.params.id}`" class="glx-button glx-button--ghost">鍙戝竷浣滃搧</router-link>
       </div>
     </section>
 
     <section class="glx-grid glx-grid--two">
       <article class="glx-section-card glx-section-card--stack">
         <div class="glx-section-head">
-          <h2 class="glx-section-title">项目预览</h2>
-          <span class="glx-section-meta">当前画布</span>
+          <h2 class="glx-section-title">椤圭洰棰勮</h2>
+          <span class="glx-section-meta">褰撳墠鐢诲竷</span>
         </div>
         <canvas ref="previewCanvasRef" class="overview-preview"></canvas>
       </article>
 
       <article class="glx-section-card glx-section-card--stack">
         <div class="glx-section-head">
-          <h2 class="glx-section-title">项目信息</h2>
-          <span class="glx-section-meta">云端详情</span>
+          <h2 class="glx-section-title">椤圭洰淇℃伅</h2>
+          <span class="glx-section-meta">浜戠璇︽儏</span>
         </div>
         <div class="glx-stack">
           <div class="glx-list-card">
             <div class="glx-list-card__copy">
-              <strong class="glx-list-card__title">最近更新时间</strong>
+              <strong class="glx-list-card__title">鏈€杩戞洿鏂版椂闂?</strong>
               <span class="glx-list-card__desc">{{ updatedAtText }}</span>
             </div>
           </div>
           <div class="glx-list-card">
             <div class="glx-list-card__copy">
-              <strong class="glx-list-card__title">补齐尺寸</strong>
+              <strong class="glx-list-card__title">琛ラ綈灏哄</strong>
               <span class="glx-list-card__desc">{{ paddedSizeText }}</span>
             </div>
           </div>
           <div class="glx-list-card">
             <div class="glx-list-card__copy">
-              <strong class="glx-list-card__title">标签</strong>
+              <strong class="glx-list-card__title">鏍囩</strong>
               <span class="glx-list-card__desc">{{ tagsText }}</span>
             </div>
           </div>
@@ -111,19 +111,19 @@ const projectName = computed(() => {
   if (typeof currentProject.value.name === "string" && currentProject.value.name.length > 0) {
     return currentProject.value.name;
   }
-  return "项目总览";
+  return "椤圭洰鎬昏";
 });
 
 const projectDescription = computed(() => {
   if (typeof currentProject.value.description === "string" && currentProject.value.description.length > 0) {
     return currentProject.value.description;
   }
-  return "这里继续承接云端项目的尺寸、配色、进度和发布入口。";
+  return "杩欓噷缁х画鎵挎帴浜戠椤圭洰鐨勫昂瀵搞€侀厤鑹层€佽繘搴﹀拰鍙戝竷鍏ュ彛銆?";"
 });
 
 const projectSize = computed(() => {
   if (typeof currentProject.value.width === "number" && typeof currentProject.value.height === "number") {
-    return `${currentProject.value.width} × ${currentProject.value.height}`;
+    return `${currentProject.value.width} 脳 ${currentProject.value.height}`;
   }
   return "--";
 });
@@ -158,9 +158,9 @@ const paddedSizeText = computed(() => {
     typeof currentProject.value.padded_width === "number" &&
     typeof currentProject.value.padded_height === "number"
   ) {
-    return `${currentProject.value.padded_width} × ${currentProject.value.padded_height}`;
+    return `${currentProject.value.padded_width} 脳 ${currentProject.value.padded_height}`;
   }
-  return "未设置";
+  return "鏈缃?";"
 });
 
 const tagsText = computed(() => {
@@ -168,7 +168,7 @@ const tagsText = computed(() => {
   if (tags.length > 0) {
     return tags.join(" / ");
   }
-  return "无标签";
+  return "鏃犳爣绛?";"
 });
 
 function drawPreview() {
@@ -236,7 +236,7 @@ function drawPreview() {
 async function loadProject() {
   const response = await projectStore.loadProjectDetail(route.params.id);
   if (!response.success) {
-    feedback.error("项目加载失败", "当前项目没有成功读取。");
+    feedback.error("椤圭洰鍔犺浇澶辫触"", "褰撳墠椤圭洰娌℃湁鎴愬姛璇诲彇銆?")";"
   }
   await nextTick();
   drawPreview();

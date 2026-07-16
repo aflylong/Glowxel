@@ -1,21 +1,21 @@
-<template>
+﻿<template>
   <div class="color-palette">
     <h3 class="section-title">
-      色系
-      <span class="color-count">291 种颜色</span>
+      鑹茬郴
+      <span class="color-count">291 绉嶉鑹?</span>
     </h3>
     
-    <!-- 颜色搜索 -->
+    <!-- 棰滆壊鎼滅储 -->
     <div class="search-container">
       <input 
         v-model="searchQuery"
         type="text"
-        placeholder="搜索颜色编号或名称..."
+        placeholder="鎼滅储棰滆壊缂栧彿鎴栧悕绉?.."
         class="search-input"
       />
     </div>
     
-    <!-- 色系分类 -->
+    <!-- 鑹茬郴鍒嗙被 -->
     <div class="series-tabs">
       <button
         v-for="series in colorSeries"
@@ -29,7 +29,7 @@
       </button>
     </div>
     
-    <!-- 颜色网格 -->
+    <!-- 棰滆壊缃戞牸 -->
     <div class="color-grid" ref="colorGridRef">
       <div
         v-for="color in filteredColors"
@@ -38,7 +38,7 @@
         :class="{ 
           active: selectedColor === color.code,
           used: usedColors.has(color.code)
-        }"
+        }""
         :style="{ backgroundColor: color.hex }"
         :title="`${color.code} - ${color.name}`"
         @click="selectColor(color.code)"
@@ -50,17 +50,17 @@
       </div>
     </div>
     
-    <!-- 使用统计 -->
+    <!-- 浣跨敤缁熻 -->
     <div v-if="usedColors.size > 0" class="usage-stats">
-      <h4>使用统计</h4>
+      <h4>浣跨敤缁熻</h4>
       <div class="stats-summary">
         <div class="stat-item">
-          <span class="stat-label">使用颜色</span>
-          <span class="stat-value">{{ usedColors.size }} 种</span>
+          <span class="stat-label">浣跨敤棰滆壊</span>
+          <span class="stat-value">{{ usedColors.size }} 绉?</span>
         </div>
         <div class="stat-item">
-          <span class="stat-label">总拼豆数</span>
-          <span class="stat-value">{{ totalBeads }} 颗</span>
+          <span class="stat-label">鎬绘嫾璞嗘暟</span>
+          <span class="stat-value">{{ totalBeads }} 棰?</span>
         </div>
       </div>
     </div>
@@ -83,36 +83,35 @@ const searchQuery = ref('')
 const selectedSeries = ref('all')
 const colorGridRef = ref(null)
 
-// 色系分类
+// 鑹茬郴鍒嗙被
 const colorSeries = [
-  { key: 'all', name: '全部', count: 291 },
-  { key: 'A', name: '系列 A', count: 26 },
-  { key: 'B', name: '系列 B', count: 32 },
-  { key: 'C', name: '系列 C', count: 29 },
-  { key: 'D', name: '系列 D', count: 26 },
-  { key: 'E', name: '系列 E', count: 24 },
-  { key: 'F', name: '系列 F', count: 25 },
-  { key: 'G', name: '系列 G', count: 21 },
-  { key: 'H', name: '系列 H', count: 23 },
-  { key: 'M', name: '系列 M', count: 15 },
-  { key: 'P', name: '系列 P', count: 23 },
-  { key: 'Q', name: '系列 Q', count: 5 },
-  { key: 'R', name: '系列 R', count: 28 },
-  { key: 'T', name: '系列 T', count: 1 },
-  { key: 'Y', name: '系列 Y', count: 5 },
-  { key: 'ZG', name: '系列 Z', count: 8 }
+  { key: 'all', name: '鍏ㄩ儴', count: 291 },
+  { key: 'A', name: '绯诲垪 A', count: 26 },
+  { key: 'B', name: '绯诲垪 B', count: 32 },
+  { key: 'C', name: '绯诲垪 C', count: 29 },
+  { key: 'D', name: '绯诲垪 D', count: 26 },
+  { key: 'E', name: '绯诲垪 E', count: 24 },
+  { key: 'F', name: '绯诲垪 F', count: 25 },
+  { key: 'G', name: '绯诲垪 G', count: 21 },
+  { key: 'H', name: '绯诲垪 H', count: 23 },
+  { key: 'M', name: '绯诲垪 M', count: 15 },
+  { key: 'P', name: '绯诲垪 P', count: 23 },
+  { key: 'Q', name: '绯诲垪 Q', count: 5 },
+  { key: 'R', name: '绯诲垪 R', count: 28 },
+  { key: 'T', name: '绯诲垪 T', count: 1 },
+  { key: 'Y', name: '绯诲垪 Y', count: 5 },
+  { key: 'ZG', name: '绯诲垪 Z', count: 8 }
 ]
 
-// 过滤后的颜色
+// 杩囨护鍚庣殑棰滆壊
 const filteredColors = computed(() => {
   let colors = ARTKAL_COLORS_FULL
   
-  // 按系列过滤
-  if (selectedSeries.value !== 'all') {
+  // 鎸夌郴鍒楄繃婊?  if (selectedSeries.value !== 'all') {
     colors = colors.filter(color => color.group === selectedSeries.value)
   }
   
-  // 按搜索关键词过滤
+  // 鎸夋悳绱㈠叧閿瘝杩囨护
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     colors = colors.filter(color => 
@@ -124,7 +123,7 @@ const filteredColors = computed(() => {
   return colors
 })
 
-// 总拼豆数
+// 鎬绘嫾璞嗘暟
 const totalBeads = computed(() => {
   let total = 0
   props.usedColors.forEach(count => {
@@ -137,7 +136,7 @@ function selectColor(colorCode) {
   emit('update:selectedColor', colorCode)
 }
 
-// 监听选中颜色变化，滚动到对应位置
+// 鐩戝惉閫変腑棰滆壊鍙樺寲锛屾粴鍔ㄥ埌瀵瑰簲浣嶇疆
 watch(() => props.selectedColor, (newColor) => {
   if (newColor && colorGridRef.value) {
     const colorElement = colorGridRef.value.querySelector(`[title*="${newColor}"]`)
@@ -350,7 +349,7 @@ watch(() => props.selectedColor, (newColor) => {
   color: #ff6b6b;
 }
 
-/* 滚动条样式 */
+/* 婊氬姩鏉℃牱寮?*/
 .series-tabs::-webkit-scrollbar,
 .color-grid::-webkit-scrollbar {
   width: 6px;

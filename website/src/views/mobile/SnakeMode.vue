@@ -1,4 +1,4 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/snake-mode/snake-mode.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/snake-mode/snake-mode.vue -->
 <template>
   <div class="clock-editor-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
@@ -7,7 +7,7 @@
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
       </div>
-      <span class="nav-title glx-topbar__title">贪吃蛇</span>
+      <span class="nav-title glx-topbar__title">璐悆铔?</span>
       <div class="nav-right"></div>
     </div>
 
@@ -39,8 +39,8 @@
       </div>
       <div class="preview-caption">
         <div class="preview-caption-info">
-          <span class="preview-caption-title">预览效果</span>
-          <span class="preview-caption-sub">发送会保存当前外观和参数</span>
+          <span class="preview-caption-title">棰勮鏁堟灉</span>
+          <span class="preview-caption-sub">鍙戦€佷細淇濆瓨褰撳墠澶栬鍜屽弬鏁?</span>
         </div>
         <div class="preview-actions">
           <div
@@ -49,7 +49,7 @@
             @click="saveAndApply"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
@@ -63,20 +63,20 @@
       <div class="content-wrapper glx-scroll-stack">
         <div v-if="currentTab === 0" class="tab-panel glx-tab-panel">
           <div class="tab-section-head glx-section-head">
-            <span class="tab-section-title glx-section-title">外观</span>
-            <span class="tab-section-meta">皮肤、字体、果子颜色</span>
+            <span class="tab-section-title glx-section-title">澶栬</span>
+            <span class="tab-section-meta">鐨偆銆佸瓧浣撱€佹灉瀛愰鑹?</span>
           </div>
 
           <div class="skin-card glx-panel-card snake-top-card">
             <div class="snake-top-head">
-              <span class="card-title glx-panel-title">蛇皮肤</span>
+              <span class="card-title glx-panel-title">铔囩毊鑲?</span>
             </div>
             <div class="skin-toolbar">
               <div
                 class="skin-toolbar-btn glx-feature-option"
                 @click="randomizeSkinColor"
               >
-                <span class="glx-feature-option__label">换个随机颜色</span>
+                <span class="glx-feature-option__label">鎹釜闅忔満棰滆壊</span>
               </div>
             </div>
             <div class="skin-grid">
@@ -102,12 +102,12 @@
 
           <div class="card glx-panel-card glx-editor-card">
             <div class="card-title-section glx-panel-head">
-              <span class="card-title glx-panel-title">颜色</span>
+              <span class="card-title glx-panel-title">棰滆壊</span>
             </div>
             <div class="form-row color-picker-row">
               <ColorPanelPicker
                 :value="foodColor"
-                label="果子颜色"
+                label="鏋滃瓙棰滆壊"
                 :preset-colors="foodPresetColors"
                 @change="handleFoodColorChange"
               />
@@ -117,13 +117,13 @@
 
         <div v-else class="tab-panel glx-tab-panel">
           <div class="tab-section-head glx-section-head">
-            <span class="tab-section-title glx-section-title">参数</span>
-            <span class="tab-section-meta">速度、蛇宽、秒钟</span>
+            <span class="tab-section-title glx-section-title">鍙傛暟</span>
+            <span class="tab-section-meta">閫熷害銆佽泧瀹姐€佺閽?</span>
           </div>
 
           <div class="card glx-panel-card glx-editor-card">
             <div class="form-row">
-              <span class="form-label">速度 {{ speed }}</span>
+              <span class="form-label">閫熷害 {{ speed }}</span>
               <GlxStepper
                 :value="speed"
                 :min="1"
@@ -133,7 +133,7 @@
               />
             </div>
             <div class="form-row">
-              <span class="form-label">蛇宽 {{ snakeWidth }}</span>
+              <span class="form-label">铔囧 {{ snakeWidth }}</span>
               <GlxStepper
                 :value="snakeWidth"
                 :min="2"
@@ -143,7 +143,7 @@
               />
             </div>
             <div class="form-row">
-              <span class="form-label">显示秒钟</span>
+              <span class="form-label">鏄剧ず绉掗挓</span>
               <GlxSwitch
                 class="glx-row-switch"
                 :checked="showSeconds"
@@ -197,6 +197,7 @@
 </template>
 
 <script>
+import { getStorage, setStorage, getSystemInfo, createDomQuery, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import statusBarMixin from "@/mixins/statusBar.js";
 import deviceSendUxMixin from "@/mixins/deviceSendUxMixin.js";
@@ -219,13 +220,13 @@ const SNAKE_FONT_IDS = Object.freeze(
   SNAKE_FONT_OPTIONS.map((item) => item.id),
 );
 const SNAKE_SKIN_OPTIONS = Object.freeze([
-  { value: "solid", label: "纯色" },
-  { value: "gradient", label: "渐变" },
-  { value: "spotted", label: "斑点" },
+  { value: "solid", label: "绾壊" },
+  { value: "gradient", label: "娓愬彉" },
+  { value: "spotted", label: "鏂戠偣" },
 ]);
 const SNAKE_TAB_DEFINITIONS = Object.freeze([
-  { index: 0, label: "外观", icon: "palette" },
-  { index: 1, label: "参数", icon: "setting" },
+  { index: 0, label: "澶栬", icon: "palette" },
+  { index: 1, label: "鍙傛暟", icon: "setting" },
 ]);
 const SNAKE_RANDOM_COLOR_MAP = Object.freeze({
   solid: [
@@ -301,7 +302,7 @@ function normalizeSavedSnakeModeConfig(saved) {
 }
 
 function readSavedSnakeModeConfig() {
-  const saved = uni.getStorageSync(SNAKE_MODE_CONFIG_KEY);
+  const saved = getStorage(SNAKE_MODE_CONFIG_KEY);
   if (!saved || typeof saved !== "object") {
     return null;
   }
@@ -504,19 +505,19 @@ export default {
       };
     },
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
     switchTab(tabIndex) {
       this.currentTab = tabIndex;
     },
     initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
+      const systemInfo = getSystemInfo();
       const statusBarHeight = systemInfo.statusBarHeight || 0;
       const fallbackBottomTabsHeight = 76;
 
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query.select(".canvas-section").boundingClientRect();
           query.select(".bottom-tabs").boundingClientRect();
           query.select(".preview-canvas-container").boundingClientRect();
@@ -678,7 +679,7 @@ export default {
     },
     saveConfig() {
       const currentConfig = this.buildCurrentConfig();
-      uni.setStorageSync(SNAKE_MODE_CONFIG_KEY, currentConfig);
+      setStorage(SNAKE_MODE_CONFIG_KEY, currentConfig);
     },
     async saveAndApply() {
       if (!this.guardBeforeSend(this.deviceStore.connected)) {
@@ -700,7 +701,7 @@ export default {
         this.saveConfig();
         this.showSendSuccess();
       } catch (error) {
-        console.error("发送贪吃蛇失败:", error);
+        console.error("鍙戦€佽椽鍚冭泧澶辫触:", error);
         this.showSendFailure(error);
       } finally {
         this.endSendUi();

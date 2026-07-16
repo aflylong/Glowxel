@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="settings-card glx-panel-card">
     <div class="card-title-section glx-panel-head">
       <Icon :name="iconName" :size="32" />
@@ -32,7 +32,7 @@
       </div>
 
       <div v-if="showSecondsControl" class="setting-item-row">
-        <span class="setting-label">显示秒钟</span>
+        <span class="setting-label">鏄剧ず绉掗挓</span>
         <GlxSwitch
           class="glx-row-switch"
           :checked="showSeconds"
@@ -67,37 +67,37 @@
       </div>
 
       <div v-if="showAlign" class="settings-block">
-        <span class="setting-label">对齐方式</span>
+        <span class="setting-label">瀵归綈鏂瑰紡</span>
         <div class="align-buttons">
           <div
             class="align-btn glx-feature-option"
             :class="{ active: section.align === 'left' }"
             @click="$emit('set-align', 'left')"
           >
-            <span class="glx-feature-option__label">左对齐</span>
+            <span class="glx-feature-option__label">宸﹀榻?</span>
           </div>
           <div
             class="align-btn glx-feature-option"
             :class="{ active: section.align === 'center' }"
             @click="$emit('set-align', 'center')"
           >
-            <span class="glx-feature-option__label">居中</span>
+            <span class="glx-feature-option__label">灞呬腑</span>
           </div>
           <div
             class="align-btn glx-feature-option"
             :class="{ active: section.align === 'right' }"
             @click="$emit('set-align', 'right')"
           >
-            <span class="glx-feature-option__label">右对齐</span>
+            <span class="glx-feature-option__label">鍙冲榻?</span>
           </div>
         </div>
       </div>
 
       <div class="settings-block">
-        <span class="setting-label">颜色</span>
+        <span class="setting-label">棰滆壊</span>
         <ColorPanelPicker
           :value="section.color"
-          :label="`${title}颜色`"
+          :label="`${title}棰滆壊`"
           :preset-colors="presetColors"
           @input="$emit('update-color', $event)"
         />
@@ -152,15 +152,15 @@ export default {
     },
     fontSizeLabel: {
       type: String,
-      default: "字体大小",
+      default: "瀛椾綋澶у皬",
     },
     xLabel: {
       type: String,
-      default: "X 位置",
+      default: "X 浣嶇疆",
     },
     yLabel: {
       type: String,
-      default: "Y 位置",
+      default: "Y 浣嶇疆",
     },
     showToggle: {
       type: Boolean,

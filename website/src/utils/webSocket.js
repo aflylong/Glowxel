@@ -1,6 +1,7 @@
+﻿import { getSystemInfo, httpRequest, getNetworkType, connectSocket } from '@/utils/browser-platform.js'
 /**
- * WebSocket 通讯工具类
- * 用于与 ESP32 LED 矩阵板进行 WebSocket 通讯
+ * WebSocket 閫氳宸ュ叿绫?
+ * 鐢ㄤ簬涓?ESP32 LED 鐭╅樀鏉胯繘琛?WebSocket 閫氳
  */
 
 const COMMAND_TIMEOUT_MS = 15000;
@@ -46,11 +47,11 @@ function shouldAbortUnfinishedTransaction(mode, binaryPayload) {
 
 function normalizeHexColor(value) {
   if (typeof value !== "string") {
-    throw new Error("颜色值无效");
+    throw new Error("棰滆壊鍊兼棤鏁?")";"
   }
   const body = value.trim().replace(/^#/, "");
   if (!/^[0-9a-fA-F]{6}$/.test(body)) {
-    throw new Error("颜色值无效");
+    throw new Error("棰滆壊鍊兼棤鏁?")";"
   }
   return `#${body.toLowerCase()}`;
 }
@@ -66,7 +67,7 @@ function hexToRgb(value) {
 
 function normalizeRgbColor(value) {
   if (!value || typeof value !== "object") {
-    throw new Error("颜色值无效");
+    throw new Error("棰滆壊鍊兼棤鏁?")";"
   }
 
   const { r, g, b } = value;
@@ -81,7 +82,7 @@ function normalizeRgbColor(value) {
     b < 0 ||
     b > 255
   ) {
-    throw new Error("颜色值无效");
+    throw new Error("棰滆壊鍊兼棤鏁?")";"
   }
 
   return { r, g, b };
@@ -162,26 +163,26 @@ function normalizeBinaryPayload(data) {
     return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
   }
 
-  throw new Error("二进制数据无效");
+  throw new Error("浜岃繘鍒舵暟鎹棤鏁?")";"
 }
 
 function buildPixelBinaryBufferFromObjects(pixels) {
   if (!Array.isArray(pixels)) {
-    throw new Error("像素数据格式无效");
+    throw new Error("鍍忕礌鏁版嵁鏍煎紡鏃犳晥");
   }
 
   const buffer = new Uint8Array(pixels.length * 5);
   for (let index = 0; index < pixels.length; index += 1) {
     const pixel = pixels[index];
     if (!pixel || typeof pixel !== "object") {
-      throw new Error(`第 ${index + 1} 个像素格式无效`);
+      throw new Error(`绗?${index + 1} 涓儚绱犳牸寮忔棤鏁坄);
     }
 
     const values = [pixel.x, pixel.y, pixel.r, pixel.g, pixel.b];
     for (let channelIndex = 0; channelIndex < values.length; channelIndex += 1) {
       const value = Number(values[channelIndex]);
       if (!Number.isInteger(value) || value < 0 || value > 255) {
-        throw new Error(`第 ${index + 1} 个像素数据无效`);
+        throw new Error(`绗?${index + 1} 涓儚绱犳暟鎹棤鏁坄);
       }
       buffer[index * 5 + channelIndex] = value;
     }
@@ -192,7 +193,7 @@ function buildPixelBinaryBufferFromObjects(pixels) {
 
 function buildPixelBinaryBufferFromPackedPixels(pixelData, width = 64, height = 64) {
   if (!Array.isArray(pixelData) || pixelData.length % 5 !== 0) {
-    throw new Error("像素数据格式无效");
+    throw new Error("鍍忕礌鏁版嵁鏍煎紡鏃犳晥");
   }
 
   const offsetX = Math.floor((64 - width) / 2);
@@ -213,7 +214,7 @@ function buildPixelBinaryBufferFromPackedPixels(pixelData, width = 64, height = 
       !Number.isInteger(g) ||
       !Number.isInteger(b)
     ) {
-      throw new Error("像素数据格式无效");
+      throw new Error("鍍忕礌鏁版嵁鏍煎紡鏃犳晥");
     }
 
     buffer[index] = x + offsetX;
@@ -248,7 +249,7 @@ function buildMessageMatcher(expectedMessages) {
 function normalizeCompactAnimationPixelBytes(pixels, totalPixels, frameIndex) {
   if (pixels instanceof Uint8Array) {
     if (pixels.length !== totalPixels * 5) {
-      throw new Error(`第 ${frameIndex + 1} 帧像素长度不匹配`);
+      throw new Error(`绗?${frameIndex + 1} 甯у儚绱犻暱搴︿笉鍖归厤`);
     }
     return pixels;
   }
@@ -260,20 +261,20 @@ function normalizeCompactAnimationPixelBytes(pixels, totalPixels, frameIndex) {
       pixels.byteLength,
     );
     if (bytes.length !== totalPixels * 5) {
-      throw new Error(`第 ${frameIndex + 1} 帧像素长度不匹配`);
+      throw new Error(`绗?${frameIndex + 1} 甯у儚绱犻暱搴︿笉鍖归厤`);
     }
     return bytes;
   }
 
   if (!Array.isArray(pixels) || pixels.length !== totalPixels) {
-    throw new Error(`第 ${frameIndex + 1} 帧像素数量不匹配`);
+    throw new Error(`绗?${frameIndex + 1} 甯у儚绱犳暟閲忎笉鍖归厤`);
   }
 
   const bytes = new Uint8Array(totalPixels * 5);
   for (let pixelIndex = 0; pixelIndex < totalPixels; pixelIndex += 1) {
     const pixel = pixels[pixelIndex];
     if (!Array.isArray(pixel) || pixel.length < 5) {
-      throw new Error(`第 ${frameIndex + 1} 帧第 ${pixelIndex + 1} 个像素格式错误`);
+      throw new Error(`绗?${frameIndex + 1} 甯х ${pixelIndex + 1} 涓儚绱犳牸寮忛敊璇痐);
     }
 
     const offset = pixelIndex * 5;
@@ -281,7 +282,7 @@ function normalizeCompactAnimationPixelBytes(pixels, totalPixels, frameIndex) {
       const value = Number(pixel[channelIndex]);
       if (!Number.isInteger(value) || value < 0 || value > 255) {
         throw new Error(
-          `第 ${frameIndex + 1} 帧第 ${pixelIndex + 1} 个像素数据无效`,
+          `绗?${frameIndex + 1} 甯х ${pixelIndex + 1} 涓儚绱犳暟鎹棤鏁坄,
         );
       }
       bytes[offset + channelIndex] = value;
@@ -293,12 +294,12 @@ function normalizeCompactAnimationPixelBytes(pixels, totalPixels, frameIndex) {
 
 function buildCompactAnimationBinaryBuffer(animationData) {
   if (!Array.isArray(animationData) || animationData.length === 0) {
-    throw new Error("动画帧不能为空");
+    throw new Error("鍔ㄧ敾甯т笉鑳戒负绌?")";"
   }
 
   const normalizedFrames = animationData.map((frame, frameIndex) => {
     if (!Array.isArray(frame) || frame.length < 4) {
-      throw new Error(`第 ${frameIndex + 1} 帧数据格式错误`);
+      throw new Error(`绗?${frameIndex + 1} 甯ф暟鎹牸寮忛敊璇痐);
     }
 
     const type = Number(frame[0]);
@@ -307,13 +308,13 @@ function buildCompactAnimationBinaryBuffer(animationData) {
     const pixels = frame[3];
 
     if (!Number.isInteger(type) || (type !== 0 && type !== 1)) {
-      throw new Error(`第 ${frameIndex + 1} 帧类型无效`);
+      throw new Error(`绗?${frameIndex + 1} 甯х被鍨嬫棤鏁坄);
     }
     if (!Number.isFinite(delay) || delay < 0 || delay > 65535) {
-      throw new Error(`第 ${frameIndex + 1} 帧延迟无效`);
+      throw new Error(`绗?${frameIndex + 1} 甯у欢杩熸棤鏁坄);
     }
     if (!Number.isInteger(totalPixels) || totalPixels < 0 || totalPixels > 65535) {
-      throw new Error(`第 ${frameIndex + 1} 帧像素数量无效`);
+      throw new Error(`绗?${frameIndex + 1} 甯у儚绱犳暟閲忔棤鏁坄);
     }
 
     return {
@@ -504,25 +505,7 @@ class WebSocket {
 
     this._debugGlobalSocketHooksBound = true;
 
-    const bindGlobalHook = (hookName, label) => {
-      if (!uni || typeof uni[hookName] !== "function") {
-        this._debugLog(this._currentSocketId, `global ${label} unavailable`);
-        return;
-      }
-
-      uni[hookName]((payload) => {
-        this._debugLog(
-          this._currentSocketId,
-          `global ${label}`,
-          this._summarizeSocketEventPayload(payload),
-        );
-      });
-    };
-
-    bindGlobalHook("onSocketOpen", "onSocketOpen");
-    bindGlobalHook("onSocketError", "onSocketError");
-    bindGlobalHook("onSocketClose", "onSocketClose");
-    bindGlobalHook("onSocketMessage", "onSocketMessage");
+    this._debugLog(this._currentSocketId, "global socket debug hooks unavailable in browser");
   }
 
   normalizeHostInput(host) {
@@ -556,12 +539,12 @@ class WebSocket {
   ) {
     const normalizedHost = this.normalizeHostInput(host);
     if (!normalizedHost) {
-      return Promise.reject(new Error("设备 IP 地址无效"));
+      return Promise.reject(new Error("璁惧 IP 鍦板潃鏃犳晥"));
     }
 
     const url = `http://${normalizedHost}:${port}/status?ts=${Date.now()}`;
     return new Promise((resolve, reject) => {
-      uni.request({
+      httpRequest({
         url,
         method: "GET",
         timeout,
@@ -572,7 +555,7 @@ class WebSocket {
             res.statusCode >= 300
           ) {
             reject(
-              new Error(`设备运行态 HTTP 不可用（${res.statusCode || "unknown"}）`),
+              new Error(`璁惧杩愯鎬?HTTP 涓嶅彲鐢紙${res.statusCode || "unknown"}锛塦),
             );
             return;
           }
@@ -582,13 +565,13 @@ class WebSocket {
             try {
               data = JSON.parse(data);
             } catch (err) {
-              reject(new Error("设备运行态状态响应不是有效 JSON"));
+              reject(new Error("璁惧杩愯鎬佺姸鎬佸搷搴斾笉鏄湁鏁?JSON"));
               return;
             }
           }
 
           if (!isRuntimeStatusPayload(data)) {
-            reject(new Error("设备运行态状态响应无效"));
+            reject(new Error("璁惧杩愯鎬佺姸鎬佸搷搴旀棤鏁?)")";"
             return;
           }
 
@@ -598,10 +581,10 @@ class WebSocket {
           const errMsg =
             err && typeof err.errMsg === "string" ? err.errMsg : "";
           if (errMsg.includes("timeout")) {
-            reject(new Error("设备运行态 HTTP 预检超时"));
+            reject(new Error("璁惧杩愯鎬?HTTP 棰勬瓒呮椂"));
             return;
           }
-          reject(new Error("设备运行态不可达，请确认设备已联网并进入运行态"));
+          reject(new Error("璁惧杩愯鎬佷笉鍙揪锛岃纭璁惧宸茶仈缃戝苟杩涘叆杩愯鎬?)")";"
         },
       });
     });
@@ -709,7 +692,7 @@ class WebSocket {
       .catch(() => {})
       .then(() => {
         if (!this.connected || !this.socket) {
-          throw new Error("未连接到设备");
+          throw new Error("鏈繛鎺ュ埌璁惧");
         }
         return task();
       });
@@ -726,7 +709,7 @@ class WebSocket {
   _createMessageWaiter(matcher, timeout) {
     if (!this.connected || !this.socket) {
       return {
-        promise: Promise.reject(new Error("未连接到设备")),
+        promise: Promise.reject(new Error("鏈繛鎺ュ埌璁惧")),
         reject: () => {},
       };
     }
@@ -770,7 +753,7 @@ class WebSocket {
         }
         if (message && (message.error || message.status === "error")) {
           finishReject(
-            new Error(message.error || message.message || "设备返回错误"),
+            new Error(message.error || message.message || "璁惧杩斿洖閿欒"),
           );
           return;
         }
@@ -785,7 +768,7 @@ class WebSocket {
       this._addMessageWaiter(waiter);
 
       timer = setTimeout(() => {
-        finishReject(new Error("等待回复超时"));
+        finishReject(new Error("绛夊緟鍥炲瓒呮椂"));
       }, timeout);
     });
 
@@ -838,18 +821,18 @@ class WebSocket {
         txId,
       });
     } catch (err) {
-      console.warn("事务中止指令发送失败:", err);
+      console.warn("浜嬪姟涓鎸囦护鍙戦€佸け璐?", err);
     }
   }
 
   async runModeTransaction(options = {}) {
     if (!options || typeof options !== "object") {
-      throw new Error("事务参数无效");
+      throw new Error("浜嬪姟鍙傛暟鏃犳晥");
     }
 
     const { mode } = options;
     if (typeof mode !== "string" || mode.length === 0) {
-      throw new Error("事务模式无效");
+      throw new Error("浜嬪姟妯″紡鏃犳晥");
     }
 
     const hasParams = Object.prototype.hasOwnProperty.call(options, "params");
@@ -860,7 +843,7 @@ class WebSocket {
         typeof options.params !== "object" ||
         Array.isArray(options.params)
       ) {
-        throw new Error("事务参数对象无效");
+        throw new Error("浜嬪姟鍙傛暟瀵硅薄鏃犳晥");
       }
       params = options.params;
     }
@@ -905,7 +888,7 @@ class WebSocket {
 
         const acceptedResponse = await acceptedWaiter.promise;
         if (!isTransactionAcceptedResponse(acceptedResponse)) {
-          throw buildTransactionError(acceptedResponse, "事务未被设备接受");
+          throw buildTransactionError(acceptedResponse, "浜嬪姟鏈璁惧鎺ュ彈");
         }
 
         accepted = true;
@@ -920,11 +903,11 @@ class WebSocket {
 
         const finalResponse = await finalWaiter.promise;
         if (!finalResponse || typeof finalResponse !== "object") {
-          throw new Error("设备事务响应无效");
+          throw new Error("璁惧浜嬪姟鍝嶅簲鏃犳晥");
         }
 
         if (finalResponse.status === TRANSACTION_FINAL_ERROR_STATUS) {
-          throw buildTransactionError(finalResponse, "设备事务执行失败");
+          throw buildTransactionError(finalResponse, "璁惧浜嬪姟鎵ц澶辫触");
         }
 
         return finalResponse;
@@ -944,9 +927,9 @@ class WebSocket {
   }
 
   /**
-   * 连接到 ESP32
-   * @param {string} host - IP 地址
-   * @param {number} port - 端口号，默认 80
+   * 杩炴帴鍒?ESP32
+   * @param {string} host - IP 鍦板潃
+   * @param {number} port - 绔彛鍙凤紝榛樿 80
    */
   connect(host, port = 80, options = {}) {
     this._ensureGlobalSocketDebugHooks();
@@ -960,7 +943,7 @@ class WebSocket {
         : CONNECT_TIMEOUT_MS;
     const normalizedHost = this.normalizeHostInput(host);
     if (!normalizedHost) {
-      const err = new Error("设备 IP 地址无效");
+      const err = new Error("璁惧 IP 鍦板潃鏃犳晥");
       this._emitError(err);
       return Promise.reject(err);
     }
@@ -1034,7 +1017,7 @@ class WebSocket {
         ? normalizedHost
         : `${normalizedHost}:${port}`;
       const url = `ws://${hostWithPort}/ws`;
-      console.log('[ws] connect →', url);
+      console.log('[ws] connect 鈫?, url);
       this._debugLog(socketId, "connect start", {
         url,
         host: normalizedHost,
@@ -1046,8 +1029,8 @@ class WebSocket {
 
       if (WS_DEBUG_VERBOSE) {
         try {
-          if (typeof uni.getSystemInfoSync === "function") {
-            const systemInfo = uni.getSystemInfoSync();
+          if (typeof getSystemInfo === "function") {
+            const systemInfo = getSystemInfo();
             this._debugLog(socketId, "system info", {
               platform: systemInfo.platform,
               hostSDKVersion: systemInfo.hostSDKVersion,
@@ -1060,8 +1043,8 @@ class WebSocket {
           this._debugLog(socketId, "getSystemInfoSync failed", err);
         }
 
-        if (typeof uni.getNetworkType === "function") {
-          uni.getNetworkType({
+        if (typeof getNetworkType === "function") {
+          getNetworkType({
             success: (res) => {
               this._debugLog(
                 socketId,
@@ -1080,7 +1063,7 @@ class WebSocket {
         }
       }
 
-      const socketTask = uni.connectSocket({
+      const socketTask = connectSocket({
         url,
         success: () => {
           this._debugLog(socketId, "connectSocket success callback");
@@ -1094,7 +1077,7 @@ class WebSocket {
             "connectSocket fail callback",
             this._summarizeSocketEventPayload(err),
           );
-          console.error("WebSocket 创建失败:", err);
+          console.error("WebSocket 鍒涘缓澶辫触:", err);
           this._setDisconnectedState("idle");
           this._emitError(err);
           finishReject(err);
@@ -1112,7 +1095,7 @@ class WebSocket {
           currentSocketId: this._currentSocketId,
           hasSocket: this.socket === socketTask,
         });
-        const err = new Error("WebSocket 连接超时");
+        const err = new Error("WebSocket 杩炴帴瓒呮椂");
         console.error(err.message);
         this._setDisconnectedState("idle");
         this._emitError(err);
@@ -1157,7 +1140,7 @@ class WebSocket {
             }
           });
         } catch (err) {
-          console.error("JSON 解析失败:", err);
+          console.error("JSON 瑙ｆ瀽澶辫触:", err);
         }
       });
 
@@ -1182,7 +1165,7 @@ class WebSocket {
         }
         this._rejectMessageWaitersForSocket(
           socketId,
-          new Error("WebSocket 连接已关闭"),
+          new Error("WebSocket 杩炴帴宸插叧闂?),"
         );
         this._setDisconnectedState("idle");
 
@@ -1192,7 +1175,7 @@ class WebSocket {
 
         if (!settled) {
           finishReject(
-            new Error(closingAfterConnectTimeout ? "WebSocket 连接超时" : "WebSocket 连接已关闭"),
+            new Error(closingAfterConnectTimeout ? "WebSocket 杩炴帴瓒呮椂" : "WebSocket 杩炴帴宸插叧闂?),"
           );
           return;
         }
@@ -1220,14 +1203,14 @@ class WebSocket {
           this._debugLog(socketId, "ignore task onError after connect timeout");
           return;
         }
-        console.error("WebSocket 错误:", err);
+        console.error("WebSocket 閿欒:", err);
         const socketError =
           err instanceof Error
             ? err
             : new Error(
                 err && typeof err.errMsg === "string"
                   ? err.errMsg
-                  : "WebSocket 错误",
+                  : "WebSocket 閿欒",
               );
         this._rejectMessageWaitersForSocket(socketId, socketError);
         this._emitError(socketError);
@@ -1242,12 +1225,12 @@ class WebSocket {
   }
 
   /**
-   * 发送命令
-   * @param {object} data - 命令数据
+   * 鍙戦€佸懡浠?
+   * @param {object} data - 鍛戒护鏁版嵁
    */
   send(data) {
     if (!this.connected || !this.socket) {
-      const err = new Error("未连接到设备");
+      const err = new Error("鏈繛鎺ュ埌璁惧");
       console.error(err.message);
       return Promise.reject(err);
     }
@@ -1259,7 +1242,7 @@ class WebSocket {
           resolve();
         },
         fail: (err) => {
-          console.error("发送失败:", err);
+          console.error("鍙戦€佸け璐?", err);
           reject(err);
         },
       });
@@ -1268,7 +1251,7 @@ class WebSocket {
 
   sendBinary(data) {
     if (!this.connected || !this.socket) {
-      const err = new Error("未连接到设备");
+      const err = new Error("鏈繛鎺ュ埌璁惧");
       console.error(err.message);
       return Promise.reject(err);
     }
@@ -1281,7 +1264,7 @@ class WebSocket {
     }
 
     if (!payload) {
-      return Promise.reject(new Error("二进制数据无效"));
+      return Promise.reject(new Error("浜岃繘鍒舵暟鎹棤鏁?)")";"
     }
 
     return new Promise((resolve, reject) => {
@@ -1289,7 +1272,7 @@ class WebSocket {
         data: payload,
         success: resolve,
         fail: (err) => {
-          console.error("二进制发送失败:", err);
+          console.error("浜岃繘鍒跺彂閫佸け璐?", err);
           reject(err);
         },
       });
@@ -1297,7 +1280,7 @@ class WebSocket {
   }
 
   /**
-   * 断开连接
+   * 鏂紑杩炴帴
    */
   disconnect() {
     this._clearReconnectTimer();
@@ -1311,7 +1294,7 @@ class WebSocket {
     this._setDisconnectedState("closing");
     this._closeSocketTask(socketTask, socketId, {
       suppressReconnect: true,
-      logClose: "WebSocket 已关闭",
+      logClose: "WebSocket 宸插叧闂?,"
     });
   }
 
@@ -1344,13 +1327,13 @@ class WebSocket {
     return this.send({ cmd: "ping" });
   }
 
-  // ========== HTTP 运行时接口 (跟 PC deviceLegacy 协议对齐) ==========
+  // ========== HTTP 杩愯鏃舵帴鍙?(璺?PC deviceLegacy 鍗忚瀵归綈) ==========
   // /clear-wifi GET, /get GET, /set POST x-www-form-urlencoded
-  // 这些是直接打设备 HTTP 端点而不是 ws, 用于设备参数读写 + 清空 WiFi 配置.
+  // 杩欎簺鏄洿鎺ユ墦璁惧 HTTP 绔偣鑰屼笉鏄?ws, 鐢ㄤ簬璁惧鍙傛暟璇诲啓 + 娓呯┖ WiFi 閰嶇疆.
   async requestRuntimeJson(pathname, init = {}) {
     const normalizedHost = this.normalizeHostInput(this.host);
     if (normalizedHost.length === 0) {
-      throw new Error("设备 IP 地址无效");
+      throw new Error("璁惧 IP 鍦板潃鏃犳晥");
     }
     const protocol = this.secure === true ? "https" : "http";
     const url = `${protocol}://${normalizedHost}:${this.port}${pathname}`;
@@ -1358,12 +1341,12 @@ class WebSocket {
     const text = await response.text();
     let data = null;
     try { data = JSON.parse(text); }
-    catch (error) { throw new Error("设备返回的不是有效 JSON"); }
+    catch (error) { throw new Error("璁惧杩斿洖鐨勪笉鏄湁鏁?JSON"); }
     if (!response.ok) {
       if (data && typeof data.error === "string" && data.error.length > 0) {
         throw new Error(data.error);
       }
-      throw new Error("设备请求失败");
+      throw new Error("璁惧璇锋眰澶辫触");
     }
     if (data && typeof data.error === "string" && data.error.length > 0) {
       throw new Error(data.error);
@@ -1520,7 +1503,7 @@ class WebSocket {
     });
   }
 
-  // 新增异步模式/效果命令时，优先走 accepted + 最终结果两阶段。
+  // 鏂板寮傛妯″紡/鏁堟灉鍛戒护鏃讹紝浼樺厛璧?accepted + 鏈€缁堢粨鏋滀袱闃舵銆?
   waitForCommandWithAccepted(
     data,
     expectedMessages,
@@ -1537,7 +1520,7 @@ class WebSocket {
   async setMode(mode, options = {}) {
     const expectedMessage = getSetModeSuccessMessage(mode);
     if (!expectedMessage) {
-      throw new Error(`未支持的模式切换确认：${mode}`);
+      throw new Error(`鏈敮鎸佺殑妯″紡鍒囨崲纭锛?{mode}`);
     }
     if (options.waitForFinal === false) {
       return this.waitForAcceptedCommand({ cmd: "set_mode", mode }, 8000);
@@ -1560,7 +1543,7 @@ class WebSocket {
 
   async applyClockMode(mode, config, binary = null, options = {}) {
     if (mode !== "clock" && mode !== "animation") {
-      throw new Error(`未支持的时钟事务模式：${mode}`);
+      throw new Error(`鏈敮鎸佺殑鏃堕挓浜嬪姟妯″紡锛?{mode}`);
     }
 
     return this.runModeTransaction({
@@ -1572,16 +1555,8 @@ class WebSocket {
     });
   }
 
-  async applyThemeMode(config, themeId, options = {}) {
-    return this.runModeTransaction({
-      mode: "theme",
-      params: {
-        config,
-        themeId,
-      },
-      acceptedTimeout: options.acceptedTimeout,
-      finalTimeout: options.finalTimeout,
-    });
+  async applyThemeMode(themeId, options = {}) {
+    return this.setThemeConfig(themeId, options);
   }
 
   async ensureCanvasMode(options = {}) {
@@ -1638,7 +1613,7 @@ class WebSocket {
             loop: config.loop,
           };
 
-    // 水世界可选透传 colorTheme 字段（板载用 4 主色派生 palette / 彩虹流转）
+    // 姘翠笘鐣屽彲閫夐€忎紶 colorTheme 瀛楁锛堟澘杞界敤 4 涓昏壊娲剧敓 palette / 褰╄櫣娴佽浆锛?
     if (isWaterWorldPreset && config.colorTheme) {
       params.colorTheme = config.colorTheme;
     }
@@ -1760,7 +1735,7 @@ class WebSocket {
       clockBgInner: normalizeHexColor(config.clockBgInner),
       clockBgOuter: normalizeHexColor(config.clockBgOuter),
     };
-    // 可选字段：板载侧 containsKey 判断（向后兼容）
+    // 鍙€夊瓧娈碉細鏉胯浇渚?containsKey 鍒ゆ柇锛堝悜鍚庡吋瀹癸級
     if (config.maskId !== undefined) params.maskId = config.maskId;
     if (config.dragonX !== undefined) params.dragonX = config.dragonX;
     if (config.dragonY !== undefined) params.dragonY = config.dragonY;
@@ -1768,7 +1743,7 @@ class WebSocket {
     if (config.bladeX !== undefined) params.bladeX = config.bladeX;
     if (config.bladeY !== undefined) params.bladeY = config.bladeY;
     if (config.bladeAngle !== undefined) params.bladeAngle = config.bladeAngle;
-    // 自动轮播配置（可选，开启时才传）
+    // 鑷姩杞挱閰嶇疆锛堝彲閫夛紝寮€鍚椂鎵嶄紶锛?
     if (config.autoRotate) {
       params.autoRotate = config.autoRotate;
     }
@@ -1781,7 +1756,7 @@ class WebSocket {
   }
 
   async startAdventureIsland(options = {}) {
-    // 冒险岛主题: 没有可调参数, 板载用编译期常量自动循环渲染
+    // 鍐掗櫓宀涗富棰? 娌℃湁鍙皟鍙傛暟, 鏉胯浇鐢ㄧ紪璇戞湡甯搁噺鑷姩寰幆娓叉煋
     return this.runModeTransaction({
       mode: "adventure_island",
       params: {},
@@ -1791,7 +1766,7 @@ class WebSocket {
   }
 
   async startKof97(options = {}) {
-    // KOF '97 主题: 没有可调参数, 板载用编译期常量自动循环渲染
+    // KOF '97 涓婚: 娌℃湁鍙皟鍙傛暟, 鏉胯浇鐢ㄧ紪璇戞湡甯搁噺鑷姩寰幆娓叉煋
     return this.runModeTransaction({
       mode: "kof97",
       params: {},
@@ -2003,5 +1978,5 @@ class WebSocket {
 }
 
 export default WebSocket;
-// 让 PC 端的 deviceLegacy.js 也能用同一个 ws 实现 (跟 mobile 同源, 不再维护双份)
+// 璁?PC 绔殑 deviceLegacy.js 涔熻兘鐢ㄥ悓涓€涓?ws 瀹炵幇 (璺?mobile 鍚屾簮, 涓嶅啀缁存姢鍙屼唤)
 export { WebSocket as DeviceWebSocket };

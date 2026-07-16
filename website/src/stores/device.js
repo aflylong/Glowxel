@@ -1,10 +1,12 @@
-// 设备连接状态管理 - 单设备 IP 直连
+import { getStorage, setStorage } from '@/utils/browser-platform.js'
+// 设备连接状态管�?- 单设�?IP 直连
 import { defineStore } from 'pinia'
 import DeviceWebSocket from '../utils/webSocket.js'
 import {
   createDefaultMazeModeConfig,
   readSavedMazeModeConfig
 } from '../utils/mazeModeConfig.js'
+import { DEVICE_BUSINESS_MODES, isDeviceBusinessMode } from '../utils/device-mode-catalog.js'
 
 const DEVICE_MODE_KEY = 'device_mode'
 const DEVICE_LAST_BUSINESS_MODE_KEY = 'device_last_business_mode'
@@ -42,24 +44,10 @@ const DEFAULT_SNAKE_MODE_PAYLOAD = Object.freeze({
   showSeconds: false,
   snakeSkin: 'gradient'
 })
-const VALID_BUSINESS_MODES = [
-  'clock',
-  'animation',
-  'theme',
-  'canvas',
-  'gif_player',
-  'led_matrix_showcase',
-  'maze',
-  'snake',
-  'tetris',
-  'tetris_clock',
-  'planet_screensaver',
-  'rick_morty_portal',
-  'eyes'
-]
+const VALID_BUSINESS_MODES = DEVICE_BUSINESS_MODES
 
 function isPersistedBusinessMode(mode) {
-  return typeof mode === 'string' && VALID_BUSINESS_MODES.includes(mode)
+  return isDeviceBusinessMode(mode)
 }
 
 function normalizeStoredTetrisModePayload(saved) {
@@ -130,13 +118,13 @@ function normalizeStoredTetrisClockModePayload(saved) {
 
 function getStoredTetrisModePayload() {
   return normalizeStoredTetrisModePayload(
-    uni.getStorageSync(TETRIS_CONFIG_STORAGE_KEY)
+    getStorage(TETRIS_CONFIG_STORAGE_KEY)
   )
 }
 
 function getStoredTetrisClockModePayload() {
   return normalizeStoredTetrisClockModePayload(
-    uni.getStorageSync(TETRIS_CLOCK_STORAGE_KEY)
+    getStorage(TETRIS_CLOCK_STORAGE_KEY)
   )
 }
 
@@ -186,7 +174,7 @@ function normalizeStoredSnakeModePayload(saved) {
 
 function getStoredSnakeModePayload() {
   return normalizeStoredSnakeModePayload(
-    uni.getStorageSync(SNAKE_MODE_CONFIG_KEY)
+    getStorage(SNAKE_MODE_CONFIG_KEY)
   )
 }
 
@@ -256,7 +244,7 @@ export const useDeviceStore = defineStore('device', {
         this.applyDeviceStatus(status)
         return status
       } catch (err) {
-        console.error('同步设备状态失败:', err)
+        console.error('同步设备状态失�?', err)
         return null
       } finally {
         this.statusSyncInFlight = false
@@ -323,7 +311,7 @@ export const useDeviceStore = defineStore('device', {
         }
         return true
       } catch (err) {
-        console.error('恢复上一次模式失败:', err)
+        console.error('恢复上一次模式失�?', err)
         return false
       }
     },
@@ -349,11 +337,11 @@ export const useDeviceStore = defineStore('device', {
       }
 
       this.deviceMode = mode
-      uni.setStorageSync(DEVICE_MODE_KEY, mode)
+      setStorage(DEVICE_MODE_KEY, mode)
 
       if (mode !== 'canvas') {
         this.lastBusinessMode = mode
-        uni.setStorageSync(DEVICE_LAST_BUSINESS_MODE_KEY, mode)
+        setStorage(DEVICE_LAST_BUSINESS_MODE_KEY, mode)
       }
 
       return true
@@ -372,25 +360,25 @@ export const useDeviceStore = defineStore('device', {
       return true
     },
 
-    // 初始化
+    // 初始�?
     init() {
       if (!this.webSocket) {
         this.webSocket = new DeviceWebSocket()
         this.setupCallbacks()
       }
 
-      // 从缓存读取设备 IP
-      const savedIp = uni.getStorageSync('device_ip')
+      // 从缓存读取设�?IP
+      const savedIp = getStorage('device_ip')
       if (savedIp) {
         this.deviceIp = savedIp
       }
 
-      const savedMode = uni.getStorageSync(DEVICE_MODE_KEY)
+      const savedMode = getStorage(DEVICE_MODE_KEY)
       if (isPersistedBusinessMode(savedMode)) {
         this.deviceMode = savedMode
       }
 
-      const savedBusinessMode = uni.getStorageSync(DEVICE_LAST_BUSINESS_MODE_KEY)
+      const savedBusinessMode = getStorage(DEVICE_LAST_BUSINESS_MODE_KEY)
       if (isPersistedBusinessMode(savedBusinessMode)) {
         this.lastBusinessMode = savedBusinessMode
       } else if (isPersistedBusinessMode(savedMode) && savedMode !== 'canvas') {
@@ -449,33 +437,33 @@ export const useDeviceStore = defineStore('device', {
 
       this.deviceMode = mode
       if (persist && isPersistedBusinessMode(mode)) {
-        uni.setStorageSync(DEVICE_MODE_KEY, mode)
+        setStorage(DEVICE_MODE_KEY, mode)
       }
       if (businessMode && isPersistedBusinessMode(mode) && mode !== 'canvas') {
         this.lastBusinessMode = mode
-        uni.setStorageSync(DEVICE_LAST_BUSINESS_MODE_KEY, mode)
+        setStorage(DEVICE_LAST_BUSINESS_MODE_KEY, mode)
       }
     },
 
-    // 连接设备（只支持 IP 直连）
+    // 连接设备（只支持 IP 直连�?
     async connect(ip) {
       if (!this.webSocket) {
         this.init()
       }
 
-      // 如果已经连接到同一个 IP，直接返回
+      // 如果已经连接到同一�?IP，直接返�?
       if (this.connected && this.deviceIp === ip) {
         return { success: true }
       }
 
-      // 如果连接到不同的 IP，先断开旧连接
+      // 如果连接到不同的 IP，先断开旧连�?
       if (this.connected && this.deviceIp !== ip) {
         this.webSocket.disconnect()
         this.connected = false
       }
 
       this.deviceIp = ip
-      uni.setStorageSync('device_ip', ip)
+      setStorage('device_ip', ip)
 
       try {
         let lastError = null
@@ -494,7 +482,7 @@ export const useDeviceStore = defineStore('device', {
             })
 
             if (!status) {
-              throw new Error('WebSocket 已连接，但设备状态同步失败')
+              throw new Error('WebSocket 已连接，但设备状态同步失�?)
             }
 
             return { success: true, status }
@@ -533,7 +521,7 @@ export const useDeviceStore = defineStore('device', {
 
     async ensureCanvasMode() {
       if (!this.connected || !this.webSocket) {
-        throw new Error('设备未连接')
+        throw new Error('设备未连�?)
       }
 
       return this.webSocket.ensureCanvasMode()
@@ -542,14 +530,14 @@ export const useDeviceStore = defineStore('device', {
     // 发送图片数据到设备（画板模式）
     async sendImage(pixels, width, height) {
       if (!this.connected || !this.webSocket) {
-        throw new Error('设备未连接')
+        throw new Error('设备未连�?)
       }
 
       try {
         await this.webSocket.showImage(pixels, width, height)
         return { success: true }
       } catch (err) {
-        console.error('发送图片失败:', err)
+        console.error('发送图片失�?', err)
         return { success: false, error: err }
       }
     },
@@ -557,14 +545,14 @@ export const useDeviceStore = defineStore('device', {
     // 发送稀疏像素数据到设备（画板模式，只发送有颜色的像素）
     async sendSparseImage(sparsePixels, width, height) {
       if (!this.connected || !this.webSocket) {
-        throw new Error('设备未连接')
+        throw new Error('设备未连�?)
       }
 
       try {
         await this.webSocket.showSparseImage(sparsePixels, width, height)
         return { success: true }
       } catch (err) {
-        console.error('发送稀疏图片失败:', err)
+        console.error('发送稀疏图片失�?', err)
         return { success: false, error: err }
       }
     },
@@ -572,7 +560,7 @@ export const useDeviceStore = defineStore('device', {
     // 设置亮度
     async setBrightness(value) {
       if (!this.connected || !this.webSocket) {
-        return { success: false, message: '设备未连接' }
+        return { success: false, message: '设备未连�? }
       }
 
       try {
@@ -587,7 +575,7 @@ export const useDeviceStore = defineStore('device', {
     // 清空屏幕
     async clear() {
       if (!this.connected || !this.webSocket) {
-        throw new Error('设备未连接')
+        throw new Error('设备未连�?)
       }
 
       try {
@@ -599,7 +587,7 @@ export const useDeviceStore = defineStore('device', {
       }
     },
 
-    // 获取 WebSocket 实例（供页面直接使用）
+    // 获取 WebSocket 实例（供页面直接使用�?
     getWebSocket() {
       if (!this.webSocket) {
         this.init()

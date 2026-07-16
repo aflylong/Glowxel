@@ -1,9 +1,9 @@
-<template>
+﻿<template>
   <div class="settings-card">
     <div class="card-title-section">
       <Icon name="picture" :size="32" />
-      <span class="card-title">主题库</span>
-      <span class="card-count">{{ presets.length }} 个主题</span>
+      <span class="card-title">涓婚搴?</span>
+      <span class="card-count">{{ presets.length }} 涓富棰?</span>
     </div>
 
     <div class="theme-sections">
@@ -26,14 +26,14 @@
             <span class="theme-name">{{ preset.name }}</span>
           </div>
           <div v-if="currentThemeId === preset.id" class="theme-badge">
-            <div class="theme-badge-text">当前</div>
+            <div class="theme-badge-text">褰撳墠</div>
           </div>
           <div
             v-if="preset.requiresImage"
             class="theme-image-badge"
             :class="{ warn: selectedThemeId === preset.id && !hasImage }"
           >
-            <div class="theme-image-badge-text">图片</div>
+            <div class="theme-image-badge-text">鍥剧墖</div>
           </div>
         </div>
       </div>

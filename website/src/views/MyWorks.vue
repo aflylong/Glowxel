@@ -1,14 +1,13 @@
-<template>
+﻿<template>
   <div class="glx-page-shell">
     <section class="glx-page-shell__hero">
       <span class="glx-page-shell__eyebrow">My Works</span>
-      <h1 class="glx-page-shell__title">我的作品</h1>
+      <h1 class="glx-page-shell__title">鎴戠殑浣滃搧</h1>
       <p class="glx-page-shell__desc">
-        这里恢复的是“已发布作品管理”，不是云端项目草稿。项目草稿继续在工作台和总览页管理。
-      </p>
+        杩欓噷鎭㈠鐨勬槸鈥滃凡鍙戝竷浣滃搧绠＄悊鈥濓紝涓嶆槸浜戠椤圭洰鑽夌銆傞」鐩崏绋跨户缁湪宸ヤ綔鍙板拰鎬昏椤电鐞嗐€?      </p>
       <div class="glx-inline-actions">
-        <router-link to="/workspace" class="glx-button glx-button--ghost">回工作台</router-link>
-        <router-link to="/profile" class="glx-button glx-button--ghost">回个人中心</router-link>
+        <router-link to="/workspace" class="glx-button glx-button--ghost">鍥炲伐浣滃彴</router-link>
+        <router-link to="/profile" class="glx-button glx-button--ghost">鍥炰釜浜轰腑蹇?/router-link>
       </div>
     </section>
 
@@ -21,8 +20,8 @@
     </section>
 
     <section v-else-if="works.length === 0" class="glx-empty-card">
-      <strong class="glx-section-title">还没有已发布作品</strong>
-      <p class="glx-page-shell__desc">先去编辑器发布作品，这里就会出现你的作品管理列表。</p>
+      <strong class="glx-section-title">杩樻病鏈夊凡鍙戝竷浣滃搧</strong>
+      <p class="glx-page-shell__desc">鍏堝幓缂栬緫鍣ㄥ彂甯冧綔鍝侊紝杩欓噷灏变細鍑虹幇浣犵殑浣滃搧绠＄悊鍒楄〃銆?</p>
     </section>
 
     <section v-else class="glx-grid glx-grid--three">
@@ -34,14 +33,14 @@
           class="work-cover"
         />
         <div v-else class="glx-empty-card">
-          <strong class="glx-section-title">暂无封面</strong>
-          <p class="glx-page-shell__desc">当前作品没有封面图。</p>
+          <strong class="glx-section-title">鏆傛棤灏侀潰</strong>
+          <p class="glx-page-shell__desc">褰撳墠浣滃搧娌℃湁灏侀潰鍥俱€?</p>
         </div>
         <strong class="glx-section-title">{{ resolveTitle(item) }}</strong>
         <p class="glx-page-shell__desc">{{ resolveMeta(item) }}</p>
         <div class="glx-inline-actions">
-          <router-link :to="`/artwork/${item.id}`" class="glx-button glx-button--ghost">查看</router-link>
-          <button type="button" class="glx-button glx-button--danger" @click="removeWork(item.id)">删除</button>
+          <router-link :to="`/artwork/${item.id}`" class="glx-button glx-button--ghost">鏌ョ湅</router-link>
+          <button type="button" class="glx-button glx-button--danger" @click="removeWork(item.id)">鍒犻櫎</button>
         </div>
       </article>
     </section>
@@ -69,7 +68,7 @@ function resolveTitle(item) {
   if (typeof item.title === "string" && item.title.length > 0) {
     return item.title;
   }
-  return "未命名作品";
+  return "鏈懡鍚嶄綔鍝?";"
 }
 
 function resolveMeta(item) {
@@ -80,18 +79,18 @@ function resolveMeta(item) {
   }
 
   if (typeof item.likes === "number") {
-    parts.push(`${item.likes} 赞`);
+    parts.push(`${item.likes} 璧瀈);
   }
 
   if (typeof item.views === "number") {
-    parts.push(`${item.views} 浏览`);
+    parts.push(`${item.views} 娴忚`);
   }
 
   if (typeof item.created_at === "string" && item.created_at.length > 0) {
     parts.push(item.created_at.slice(0, 10));
   }
 
-  return parts.join(" · ");
+  return parts.join(" 路 ");
 }
 
 async function loadWorks() {
@@ -104,7 +103,7 @@ async function loadWorks() {
     }
 
     works.value = [];
-    feedback.error("作品加载失败", "没有成功取回我的作品列表。");
+    feedback.error("浣滃搧鍔犺浇澶辫触"", "娌℃湁鎴愬姛鍙栧洖鎴戠殑浣滃搧鍒楄〃銆?")";"
   } finally {
     loading.value = false;
   }
@@ -114,11 +113,11 @@ async function removeWork(id) {
   const response = await artworkAPI.remove(id);
   if (response.success) {
     works.value = works.value.filter((item) => item.id !== id);
-    feedback.success("删除成功", "作品已经从列表里移除。");
+    feedback.success("鍒犻櫎鎴愬姛"", "浣滃搧宸茬粡浠庡垪琛ㄩ噷绉婚櫎銆?")";"
     return;
   }
 
-  feedback.error("删除失败", "作品没有成功删除。");
+  feedback.error("鍒犻櫎澶辫触"", "浣滃搧娌℃湁鎴愬姛鍒犻櫎銆?")";"
 }
 
 onMounted(async () => {

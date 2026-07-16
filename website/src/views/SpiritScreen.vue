@@ -1,6 +1,6 @@
-<template>
+﻿<template>
   <div class="spirit-page glx-page-shell game-mode-page">
-    <PcModeTopbar title="桌面宠物" />
+    <PcModeTopbar title="妗岄潰瀹犵墿" />
 
     <section class="spirit-layout game-mode-layout">
       <article
@@ -9,7 +9,7 @@
         <div class="spirit-preview-card__head">
           <div>
             <p class="spirit-preview-card__eyebrow">Device Mode</p>
-            <h2 class="spirit-preview-card__title">桌面宠物预览</h2>
+            <h2 class="spirit-preview-card__title">妗岄潰瀹犵墿棰勮</h2>
           </div>
         </div>
 
@@ -20,13 +20,13 @@
             :disabled="isSending"
             @click="handleSend"
           >
-            {{ isSending ? "发送中..." : "发送到设备" }}
+            {{ isSending ? "鍙戦€佷腑..." : "鍙戦€佸埌璁惧" }}
           </button>
           <span
             class="glx-chip"
             :class="deviceStore.connected ? 'glx-chip--green' : 'glx-chip--yellow'"
           >
-            {{ deviceStore.connected ? "已连接" : "未连接" }}
+            {{ deviceStore.connected ? "宸茶繛鎺? : "鏈繛鎺? }}
           </span>
         </div>
 
@@ -35,8 +35,8 @@
             <DevicePixelBoard :pixels="previewPixels" :grid-visible="true" />
             <DeviceSendingOverlay
               :visible="isSending"
-              title="正在发送桌面宠物"
-              description="发送期间锁定当前预览快照，等待设备完成桌面宠物配置事务提交。"
+              title="姝ｅ湪鍙戦€佹闈㈠疇鐗?"
+              description="鍙戦€佹湡闂撮攣瀹氬綋鍓嶉瑙堝揩鐓э紝绛夊緟璁惧瀹屾垚妗岄潰瀹犵墿閰嶇疆浜嬪姟鎻愪氦銆?"
             >
               <div class="spirit-preview-sending">
                 <DevicePixelBoard :pixels="sendingPixels" :grid-visible="true" />
@@ -47,24 +47,24 @@
 
         <div class="spirit-summary-grid">
           <article class="spirit-summary-card">
-            <span class="spirit-summary-card__label">表情</span>
+            <span class="spirit-summary-card__label">琛ㄦ儏</span>
             <strong class="spirit-summary-card__value">{{ selectedExpressionLabel }}</strong>
             <span class="spirit-summary-card__meta">{{ expressionModeLabel }}</span>
           </article>
           <article class="spirit-summary-card">
-            <span class="spirit-summary-card__label">时间</span>
+            <span class="spirit-summary-card__label">鏃堕棿</span>
             <strong class="spirit-summary-card__value">
-              {{ eyesConfig.time.showSeconds ? "显示秒钟" : "隐藏秒钟" }}
+              {{ eyesConfig.time.showSeconds ? "鏄剧ず绉掗挓" : "闅愯棌绉掗挓" }}
             </strong>
             <span class="spirit-summary-card__meta">
-              {{ eyesConfig.style.timeColor }} / 字号 {{ eyesConfig.time.fontSize }}
+              {{ eyesConfig.style.timeColor }} / 瀛楀彿 {{ eyesConfig.time.fontSize }}
             </span>
           </article>
           <article class="spirit-summary-card">
-            <span class="spirit-summary-card__label">字体</span>
+            <span class="spirit-summary-card__label">瀛椾綋</span>
             <strong class="spirit-summary-card__value">{{ selectedFontLabel }}</strong>
             <span class="spirit-summary-card__meta">
-              眼睛 {{ eyesConfig.style.eyeColor }}
+              鐪肩潧 {{ eyesConfig.style.eyeColor }}
             </span>
           </article>
         </div>
@@ -73,8 +73,8 @@
       <div class="spirit-config-stack game-mode-stack">
         <article class="glx-section-card glx-section-card--stack">
           <div class="glx-section-head">
-            <h2 class="glx-section-title">模式配置</h2>
-            <span class="glx-section-meta">表情 / 时间 / 字体</span>
+            <h2 class="glx-section-title">妯″紡閰嶇疆</h2>
+            <span class="glx-section-meta">琛ㄦ儏 / 鏃堕棿 / 瀛椾綋</span>
           </div>
           <DeviceModeTabs v-model="currentTab" :items="tabItems" />
         </article>
@@ -82,16 +82,16 @@
         <template v-if="currentTab === 'expression'">
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">表情模式</h2>
-              <span class="glx-section-meta">自动 / 手动</span>
+              <h2 class="glx-section-title">琛ㄦ儏妯″紡</h2>
+              <span class="glx-section-meta">鑷姩 / 鎵嬪姩</span>
             </div>
             <DeviceModeTabs v-model="expressionMode" :items="EXPRESSION_MODE_OPTIONS" />
           </article>
 
           <article v-if="expressionMode === 'manual'" class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">指定表情</h2>
-              <span class="glx-section-meta">{{ EXPRESSION_OPTIONS.length }} 个表情</span>
+              <h2 class="glx-section-title">鎸囧畾琛ㄦ儏</h2>
+              <span class="glx-section-meta">{{ EXPRESSION_OPTIONS.length }} 涓〃鎯?</span>
             </div>
             <div class="expression-grid">
               <button
@@ -109,8 +109,8 @@
 
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">自动节奏</h2>
-              <span class="glx-section-meta">仅自动模式生效</span>
+              <h2 class="glx-section-title">鑷姩鑺傚</h2>
+              <span class="glx-section-meta">浠呰嚜鍔ㄦā寮忕敓鏁?</span>
             </div>
             <DeviceModeTabs
               v-model="eyesConfig.behavior.expressionRhythm"
@@ -120,18 +120,18 @@
 
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">颜色</h2>
-              <span class="glx-section-meta">眼睛 / 时间</span>
+              <h2 class="glx-section-title">棰滆壊</h2>
+              <span class="glx-section-meta">鐪肩潧 / 鏃堕棿</span>
             </div>
             <div class="game-fields">
               <GameModeColorField
                 v-model="eyesConfig.style.eyeColor"
-                label="眼睛颜色"
+                label="鐪肩潧棰滆壊"
                 :preset-colors="colorOptions"
               />
               <GameModeColorField
                 v-model="eyesConfig.style.timeColor"
-                label="时间颜色"
+                label="鏃堕棿棰滆壊"
                 :preset-colors="colorOptions"
               />
             </div>
@@ -139,41 +139,41 @@
 
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">参数调整</h2>
-              <span class="glx-section-meta">眨眼 / 游走 / 灵动幅度</span>
+              <h2 class="glx-section-title">鍙傛暟璋冩暣</h2>
+              <span class="glx-section-meta">鐪ㄧ溂 / 娓歌蛋 / 鐏靛姩骞呭害</span>
             </div>
             <div class="game-row">
-              <span class="game-row__label">眨眼步频 {{ blinkLevel }}</span>
+              <span class="game-row__label">鐪ㄧ溂姝ラ {{ blinkLevel }}</span>
               <DeviceModeStepper v-model="blinkLevel" :min="1" :max="10" />
             </div>
             <div class="game-row">
-              <span class="game-row__label">游走步频 {{ lookLevel }}</span>
+              <span class="game-row__label">娓歌蛋姝ラ {{ lookLevel }}</span>
               <DeviceModeStepper v-model="lookLevel" :min="1" :max="10" />
             </div>
             <div class="game-row">
-              <span class="game-row__label">灵动幅度 {{ eyesConfig.behavior.idleMove }}</span>
+              <span class="game-row__label">鐏靛姩骞呭害 {{ eyesConfig.behavior.idleMove }}</span>
               <DeviceModeStepper v-model="eyesConfig.behavior.idleMove" :min="1" :max="10" />
             </div>
           </article>
 
           <article class="glx-section-card glx-section-card--stack">
             <div class="glx-section-head">
-              <h2 class="glx-section-title">互动预览</h2>
-              <span class="glx-section-meta">只影响本地预览</span>
+              <h2 class="glx-section-title">浜掑姩棰勮</h2>
+              <span class="glx-section-meta">鍙奖鍝嶆湰鍦伴瑙?</span>
             </div>
             <div class="game-inline-actions">
-              <button type="button" class="glx-button glx-button--ghost" @click="triggerPreviewAction('blink')">眨眼</button>
-              <button type="button" class="glx-button glx-button--ghost" @click="triggerPreviewAction('look_left')">看左</button>
-              <button type="button" class="glx-button glx-button--ghost" @click="triggerPreviewAction('look_center')">看中</button>
-              <button type="button" class="glx-button glx-button--ghost" @click="triggerPreviewAction('look_right')">看右</button>
+              <button type="button" class="glx-button glx-button--ghost" @click="triggerPreviewAction('blink')">鐪ㄧ溂</button>
+              <button type="button" class="glx-button glx-button--ghost" @click="triggerPreviewAction('look_left')">鐪嬪乏</button>
+              <button type="button" class="glx-button glx-button--ghost" @click="triggerPreviewAction('look_center')">鐪嬩腑</button>
+              <button type="button" class="glx-button glx-button--ghost" @click="triggerPreviewAction('look_right')">鐪嬪彸</button>
             </div>
           </article>
         </template>
 
         <article v-else-if="currentTab === 'time'" class="glx-section-card glx-section-card--stack">
           <ClockTextSettingsSection
-            title="时间显示"
-            description="桌面宠物的时间布局、颜色和对齐直接对齐 uniapp 当前语义。"
+            title="鏃堕棿鏄剧ず"
+            description="妗岄潰瀹犵墿鐨勬椂闂村竷灞€銆侀鑹插拰瀵归綈鐩存帴瀵归綈 uniapp 褰撳墠璇箟銆?"
             :section="timeSection"
             :preset-colors="colorOptions"
             :show-font-size="true"
@@ -191,8 +191,8 @@
 
         <article v-else class="glx-section-card glx-section-card--stack">
           <GameModeFontSelector
-            title="字体样式"
-            description="保留桌面宠物自己的时间字模设置，和发送 payload 共用同一字段。"
+            title="瀛椾綋鏍峰紡"
+            description="淇濈暀妗岄潰瀹犵墿鑷繁鐨勬椂闂村瓧妯¤缃紝鍜屽彂閫?payload 鍏辩敤鍚屼竴瀛楁銆?"
             :font-options="EYES_TIME_FONT_OPTIONS"
             :selected-font="eyesConfig.time.font"
             :show-seconds="eyesConfig.time.showSeconds"
@@ -242,9 +242,9 @@ import {
 } from "@/utils/device-mode-spirit.js";
 
 const tabItems = Object.freeze([
-  { value: "expression", label: "表情" },
-  { value: "time", label: "时间" },
-  { value: "font", label: "字体" },
+  { value: "expression", label: "琛ㄦ儏" },
+  { value: "time", label: "鏃堕棿" },
+  { value: "font", label: "瀛椾綋" },
 ]);
 
 const colorOptions = EYES_PRESET_COLORS.map((item) => ({
@@ -297,7 +297,7 @@ const selectedExpressionLabel = computed(() => {
 });
 
 const expressionModeLabel = computed(() => {
-  return expressionMode.value === "auto" ? "自动模式" : "手动模式";
+  return expressionMode.value === "auto" ? "鑷姩妯″紡" : "鎵嬪姩妯″紡";
 });
 
 const selectedFontLabel = computed(() => {
@@ -458,13 +458,13 @@ function handleTimeColor(color) {
 
 async function handleSend() {
   if (deviceStore.connected !== true) {
-    feedback.warning("设备未连接", "请先返回设备控制页建立连接。");
+    feedback.warning("璁惧鏈繛鎺?, "璇峰厛杩斿洖璁惧鎺у埗椤靛缓绔嬭繛鎺ャ€?);
     return;
   }
 
   isSending.value = true;
   sendingPixels.value = new Map(previewPixels.value);
-  feedback.showBlocking("发送桌面宠物", "正在把当前桌面宠物配置发送到设备。");
+  feedback.showBlocking("鍙戦€佹闈㈠疇鐗?, "姝ｅ湪鎶婂綋鍓嶆闈㈠疇鐗╅厤缃彂閫佸埌璁惧銆?);
   try {
     const nextConfig = JSON.parse(JSON.stringify(eyesConfig));
     normalizeSpiritTimeLayout(nextConfig);
@@ -474,12 +474,12 @@ async function handleSend() {
       await ws.eyesInteract(`set_expression:${selectedExpression.value}`);
     }
     persistSpiritState();
-    feedback.success("发送成功", "桌面宠物已发送到设备。");
+    feedback.success("鍙戦€佹垚鍔?, "妗岄潰瀹犵墿宸插彂閫佸埌璁惧銆?);
   } catch (error) {
     if (error instanceof Error) {
-      feedback.error("发送失败", error.message);
+      feedback.error("鍙戦€佸け璐?", error.message")";"
     } else {
-      feedback.error("发送失败", "桌面宠物发送失败。");
+      feedback.error("鍙戦€佸け璐?, "妗岄潰瀹犵墿鍙戦€佸け璐ャ€?);
     }
   } finally {
     feedback.hideBlocking();

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div v-if="visible" class="sheet-dialog-mask">
     <div class="sheet-dialog">
       <div class="dialog-head">
@@ -6,7 +6,7 @@
           <h2>{{ modeTitle }}</h2>
         </div>
         <button class="ghost-btn" type="button" @click="$emit('cancel')">
-          取消
+          鍙栨秷
         </button>
       </div>
 
@@ -29,21 +29,21 @@
 
       <div v-if="currentStep === 1" class="step-panel">
         <div class="section-head">
-          <h3>裁图</h3>
+          <h3>瑁佸浘</h3>
           <span>{{ cropSummary }}</span>
         </div>
 
         <div v-if="mode === 'sheet'" class="crop-compare-layout">
           <div class="compare-card">
             <div class="compare-head">
-              <strong>原图</strong>
+              <strong>鍘熷浘</strong>
             </div>
             <div class="preview-stage compare-stage">
               <img
                 v-if="imageUrl"
                 ref="stageImageRef"
                 :src="imageUrl"
-                alt="导入原图"
+                alt="瀵煎叆鍘熷浘"
                 draggable="false"
                 @load="handleStageImageLoad"
               >
@@ -57,17 +57,17 @@
 
           <div class="compare-card">
             <div class="compare-head">
-              <strong>裁后图</strong>
+              <strong>瑁佸悗鍥?</strong>
             </div>
             <div class="preview-stage compare-stage">
               <img
                 v-if="cropPreviewUrl"
                 class="cropped-preview-image"
                 :src="cropPreviewUrl"
-                alt="裁后图"
+                alt="瑁佸悗鍥?"
                 draggable="false"
               >
-              <div v-else class="empty-state compact">先裁图</div>
+              <div v-else class="empty-state compact">鍏堣鍥?</div>
             </div>
           </div>
         </div>
@@ -77,7 +77,7 @@
             v-if="imageUrl"
             ref="stageImageRef"
             :src="imageUrl"
-            alt="导入原图"
+            alt="瀵煎叆鍘熷浘"
             draggable="false"
             @load="handleStageImageLoad"
           >
@@ -90,24 +90,24 @@
 
         <div class="selection-actions">
           <button class="secondary-btn" type="button" @click="openCropper">
-            {{ cropRect ? '重新裁图' : '开始裁图' }}
+            {{ cropRect ? '閲嶆柊瑁佸浘' : '寮€濮嬭鍥? }}
           </button>
           <button class="secondary-btn" type="button" @click="resetCrop">
-            整张都要
+            鏁村紶閮借
           </button>
           <div class="mini-summary">
-            <span>已选 {{ cropRect?.width || 0 }} × {{ cropRect?.height || 0 }}</span>
+            <span>宸查€?{{ cropRect?.width || 0 }} 脳 {{ cropRect?.height || 0 }}</span>
           </div>
         </div>
 
         <template v-if="mode === 'image'">
           <div class="size-grid">
             <label class="field-card">
-              <span>宽</span>
+              <span>瀹?</span>
               <input v-model.number="targetWidth" type="number" min="8" :max="PATTERN_MAX_DIMENSION">
             </label>
             <label class="field-card">
-              <span>高</span>
+              <span>楂?</span>
               <input v-model.number="targetHeight" type="number" min="8" :max="PATTERN_MAX_DIMENSION">
             </label>
           </div>
@@ -116,7 +116,7 @@
 
       <div v-else-if="currentStep === 2 && mode === 'sheet'" class="step-panel">
         <div class="section-head">
-          <h3>对齐格子</h3>
+          <h3>瀵归綈鏍煎瓙</h3>
           <span>{{ cellSummary }}</span>
         </div>
 
@@ -126,7 +126,7 @@
               v-if="sheetStageImageUrl"
               ref="stageImageRef"
               :src="sheetStageImageUrl"
-              alt="单格定标"
+              alt="鍗曟牸瀹氭爣"
               draggable="false"
               @load="handleStageImageLoad"
             >
@@ -134,7 +134,7 @@
 
           <div class="zoom-panel">
             <div class="zoom-head">
-              <strong>中间参考区</strong>
+              <strong>涓棿鍙傝€冨尯</strong>
             </div>
             <div class="zoom-stage" :style="zoomStageStyle">
               <div
@@ -163,18 +163,18 @@
               </div>
             </div>
             <div class="zoom-move">
-              <span class="zoom-tip">挪一挪</span>
+              <span class="zoom-tip">鎸竴鎸?</span>
               <div class="move-pad">
-                <button class="move-btn up" type="button" @click="adjustBasisRow(-1)" aria-label="上移">
+                <button class="move-btn up" type="button" @click="adjustBasisRow(-1)" aria-label="涓婄Щ">
                   <span class="arrow-icon up"></span>
                 </button>
-                <button class="move-btn left" type="button" @click="adjustBasisColumn(-1)" aria-label="左移">
+                <button class="move-btn left" type="button" @click="adjustBasisColumn(-1)" aria-label="宸︾Щ">
                   <span class="arrow-icon left"></span>
                 </button>
-                <button class="move-btn right" type="button" @click="adjustBasisColumn(1)" aria-label="右移">
+                <button class="move-btn right" type="button" @click="adjustBasisColumn(1)" aria-label="鍙崇Щ">
                   <span class="arrow-icon right"></span>
                 </button>
-                <button class="move-btn down" type="button" @click="adjustBasisRow(1)" aria-label="下移">
+                <button class="move-btn down" type="button" @click="adjustBasisRow(1)" aria-label="涓嬬Щ">
                   <span class="arrow-icon down"></span>
                 </button>
               </div>
@@ -184,9 +184,9 @@
 
         <div class="field-stack">
           <label class="field-card wide-card">
-            <span>格子宽高</span>
+            <span>鏍煎瓙瀹介珮</span>
             <div class="stepper-row">
-              <strong class="stepper-label">宽</strong>
+              <strong class="stepper-label">瀹?</strong>
               <div class="stepper-control">
                 <button class="stepper-btn" type="button" @click="adjustCellWidth(-1)">-</button>
                 <input
@@ -201,7 +201,7 @@
               </div>
             </div>
             <div class="stepper-row">
-              <strong class="stepper-label">高</strong>
+              <strong class="stepper-label">楂?</strong>
               <div class="stepper-control">
                 <button class="stepper-btn" type="button" @click="adjustCellHeight(-1)">-</button>
                 <input
@@ -220,9 +220,9 @@
 
         <div class="field-stack">
           <label class="field-card wide-card">
-            <span>参考区</span>
+            <span>鍙傝€冨尯</span>
             <div class="stepper-row">
-              <strong class="stepper-label">一起看几格</strong>
+              <strong class="stepper-label">涓€璧风湅鍑犳牸</strong>
               <div class="stepper-control">
                 <button class="stepper-btn" type="button" @click="adjustFocusGridCount(-1)">-</button>
                 <input
@@ -232,12 +232,12 @@
                   min="3"
                   max="8"
                 >
-                <span class="stepper-unit">格</span>
+                <span class="stepper-unit">鏍?</span>
                 <button class="stepper-btn" type="button" @click="adjustFocusGridCount(1)">+</button>
               </div>
             </div>
             <div class="stepper-row">
-              <strong class="stepper-label">线粗细</strong>
+              <strong class="stepper-label">绾跨矖缁?</strong>
               <div class="stepper-control">
                 <button class="stepper-btn" type="button" @click="adjustFocusLineWidth(-1)">-</button>
                 <input
@@ -256,54 +256,54 @@
 
         <div class="field-stack">
           <div class="field-card wide-card">
-            <span>边缘微调</span>
+            <span>杈圭紭寰皟</span>
             <div class="trim-grid">
               <button class="trim-btn" type="button" @click="trimCrop('left')">
                 <span class="arrow-icon left"></span>
-                <span>左边减一点</span>
+                <span>宸﹁竟鍑忎竴鐐?</span>
               </button>
               <button class="trim-btn" type="button" @click="trimCrop('right')">
                 <span class="arrow-icon right"></span>
-                <span>右边减一点</span>
+                <span>鍙宠竟鍑忎竴鐐?</span>
               </button>
               <button class="trim-btn" type="button" @click="trimCrop('top')">
                 <span class="arrow-icon up"></span>
-                <span>上边减一点</span>
+                <span>涓婅竟鍑忎竴鐐?</span>
               </button>
               <button class="trim-btn" type="button" @click="trimCrop('bottom')">
                 <span class="arrow-icon down"></span>
-                <span>下边减一点</span>
+                <span>涓嬭竟鍑忎竴鐐?</span>
               </button>
-              <button class="ghost-btn" type="button" @click="currentStep = 1">上一步</button>
+              <button class="ghost-btn" type="button" @click="currentStep = 1">涓婁竴姝?</button>
             </div>
           </div>
         </div>
 
         <div class="toggle-row">
-          <strong>去掉底色</strong>
+          <strong>鍘绘帀搴曡壊</strong>
           <button
             class="switch-btn"
             :class="{ active: removeBackground }"
             type="button"
             @click="removeBackground = !removeBackground"
           >
-            {{ removeBackground ? '开' : '关' }}
+            {{ removeBackground ? '寮€' : '鍏? }}
           </button>
         </div>
 
         <div v-if="previewLoading" class="status-box loading-box">
-          正在切图...
+          姝ｅ湪鍒囧浘...
         </div>
       </div>
 
       <div v-else-if="currentStep === 3 && mode === 'sheet'" class="step-panel review-panel">
         <div class="section-head">
-          <h3>看颜色</h3>
+          <h3>鐪嬮鑹?</h3>
           <span>{{ reviewSummary }}</span>
         </div>
 
         <div v-if="previewLoading" class="status-box">
-          正在识别颜色...
+          姝ｅ湪璇嗗埆棰滆壊...
         </div>
 
         <template v-else-if="reviewCells.length">
@@ -333,8 +333,8 @@
               @click="selectedReviewCellKey = cell.key"
             >
               <div class="tile-flags">
-                <span v-if="cell.needsCheck" class="flag-chip warm">先看</span>
-                <span v-else-if="cell.token" class="flag-chip">有字</span>
+                <span v-if="cell.needsCheck" class="flag-chip warm">鍏堢湅</span>
+                <span v-else-if="cell.token" class="flag-chip">鏈夊瓧</span>
               </div>
               <div class="review-thumb-shell large-shell">
                 <div class="review-fragment" :style="buildCellFragmentStyle(cell, 72)"></div>
@@ -349,20 +349,20 @@
               </div>
               <div class="detail-meta">
                 <div class="detail-row">
-                  <span>当前颜色</span>
-                  <strong>{{ selectedReviewCell.code || '暂未判断' }}</strong>
+                  <span>褰撳墠棰滆壊</span>
+                  <strong>{{ selectedReviewCell.code || '鏆傛湭鍒ゆ柇' }}</strong>
                 </div>
                 <div class="detail-row">
-                  <span>这格怎么判的</span>
+                  <span>杩欐牸鎬庝箞鍒ょ殑</span>
                   <strong>{{ reviewMethodText(selectedReviewCell) }}</strong>
                 </div>
                 <div v-if="selectedReviewCell.token" class="detail-row">
-                  <span>识别到的字</span>
+                  <span>璇嗗埆鍒扮殑瀛?</span>
                   <strong>{{ selectedReviewCell.token }}</strong>
                 </div>
                 <div class="detail-row">
-                  <span>想改的话</span>
-                  <strong>点下面颜色</strong>
+                  <span>鎯虫敼鐨勮瘽</span>
+                  <strong>鐐逛笅闈㈤鑹?</strong>
                 </div>
               </div>
             </div>
@@ -384,8 +384,7 @@
         </template>
 
         <div v-else class="empty-state compact">
-          先生成一下。
-        </div>
+          鍏堢敓鎴愪竴涓嬨€?        </div>
       </div>
 
       <div
@@ -393,12 +392,12 @@
         class="step-panel compact-panel"
       >
         <div class="section-head">
-          <h3>预览</h3>
-          <span>{{ previewReport ? `${previewReport.width} × ${previewReport.height}` : '未生成' }}</span>
+          <h3>棰勮</h3>
+          <span>{{ previewReport ? `${previewReport.width} 脳 ${previewReport.height}` : '鏈敓鎴? }}</span>
         </div>
 
         <div v-if="previewLoading" class="status-box">
-          正在生成预览...
+          姝ｅ湪鐢熸垚棰勮...
         </div>
 
         <div v-else-if="previewDocument" class="preview-result">
@@ -415,13 +414,12 @@
           </div>
         </div>
         <div v-else class="empty-state">
-          先生成一下。
-        </div>
+          鍏堢敓鎴愪竴涓嬨€?        </div>
       </div>
 
       <div class="dialog-actions">
         <button class="ghost-btn" type="button" @click="handleBackAction">
-          {{ currentStep === 1 ? '取消' : '上一步' }}
+          {{ currentStep === 1 ? '鍙栨秷' : '涓婁竴姝? }}
         </button>
         <button
           class="primary-btn"
@@ -991,19 +989,19 @@ function sampleColorText(cell) {
 const stepItems = computed(() => {
   if (mode.value === 'sheet') {
     return [
-      { value: 1, index: '1', label: '裁图' },
-      { value: 2, index: '2', label: '对齐' },
-      { value: 3, index: '3', label: '颜色' },
+      { value: 1, index: '1', label: '瑁佸浘' },
+      { value: 2, index: '2', label: '瀵归綈' },
+      { value: 3, index: '3', label: '棰滆壊' },
     ]
   }
 
   return [
-    { value: 1, index: '1', label: '裁图' },
-    { value: 2, index: '2', label: '结果' },
+    { value: 1, index: '1', label: '瑁佸浘' },
+    { value: 2, index: '2', label: '缁撴灉' },
   ]
 })
 
-const modeTitle = computed(() => (mode.value === 'sheet' ? '导入拼豆图纸' : '图片生成'))
+const modeTitle = computed(() => (mode.value === 'sheet' ? '瀵煎叆鎷艰眴鍥剧焊' : '鍥剧墖鐢熸垚'))
 const useCropPreviewAsStage = computed(() => {
   return mode.value === 'sheet' && currentStep.value === 2 && !!cropPreviewUrl.value
 })
@@ -1017,18 +1015,18 @@ const sheetStageImageUrl = computed(() => {
 
 const cropSummary = computed(() => {
   if (!cropRect.value) {
-    return '先圈出要用的部分'
+    return '鍏堝湀鍑鸿鐢ㄧ殑閮ㄥ垎'
   }
 
-  return `已选 ${cropRect.value.width} × ${cropRect.value.height}`
+  return `宸查€?${cropRect.value.width} 脳 ${cropRect.value.height}`
 })
 
 const cellSummary = computed(() => {
   if (!cellWidth.value || !cellHeight.value) {
-    return '把中间参考区对齐就行'
+    return '鎶婁腑闂村弬鑰冨尯瀵归綈灏辫'
   }
 
-  return `宽 ${cellWidth.value} / 高 ${cellHeight.value} / 参考 ${focusGridCount.value} 格`
+  return `瀹?${cellWidth.value} / 楂?${cellHeight.value} / 鍙傝€?${focusGridCount.value} 鏍糮
 })
 
 const derivedSheetSize = computed(() => {
@@ -1053,7 +1051,7 @@ const gridRemainderText = computed(() => {
     return '--'
   }
 
-  return `横向 ${(cropRect.value.width - resolvedGridOffsetX.value) % cellWidth.value}px / 纵向 ${(cropRect.value.height - resolvedGridOffsetY.value) % cellHeight.value}px`
+  return `妯悜 ${(cropRect.value.width - resolvedGridOffsetX.value) % cellWidth.value}px / 绾靛悜 ${(cropRect.value.height - resolvedGridOffsetY.value) % cellHeight.value}px`
 })
 
 const maxCellWidth = computed(() => {
@@ -1425,14 +1423,14 @@ function reviewMethodText(cell) {
   }
 
   if (cell.source === 'ocr') {
-    return cell.confidence >= 72 ? '按格子里的字' : '按字先猜的'
+    return cell.confidence >= 72 ? '鎸夋牸瀛愰噷鐨勫瓧' : '鎸夊瓧鍏堢寽鐨?
   }
 
   if (cell.token) {
-    return '看到字，但颜色更像这个'
+    return '鐪嬪埌瀛楋紝浣嗛鑹叉洿鍍忚繖涓?
   }
 
-  return '按颜色判断'
+  return '鎸夐鑹插垽鏂?
 }
 
 function compareReviewCells(left, right) {
@@ -1464,7 +1462,7 @@ const groupedReviewCells = computed(() => {
   const groups = new Map()
 
   sortedReviewCells.value.forEach((cell) => {
-    const code = cell.code || '未识别'
+    const code = cell.code || '鏈瘑鍒?
     if (!groups.has(code)) {
       groups.set(code, {
         code,
@@ -1510,15 +1508,15 @@ const selectedReviewCell = computed(() => {
 
 const reviewSummary = computed(() => {
   if (!sortedReviewCells.value.length) {
-    return '下一步后会自动识别'
+    return '涓嬩竴姝ュ悗浼氳嚜鍔ㄨ瘑鍒?
   }
 
   const priorityCount = sortedReviewCells.value.filter((cell) => cell.needsCheck).length
   if (!priorityCount) {
-    return `识别很稳，可直接导入`
+    return `璇嗗埆寰堢ǔ锛屽彲鐩存帴瀵煎叆`
   }
 
-  return `先看 ${priorityCount} 张 / 共 ${sortedReviewCells.value.length} 张`
+  return `鍏堢湅 ${priorityCount} 寮?/ 鍏?${sortedReviewCells.value.length} 寮燻
 })
 
 function selectReviewGroup(code) {
@@ -1601,18 +1599,18 @@ const primaryDisabled = computed(() => {
 
 const primaryText = computed(() => {
   if (props.previewLoading) {
-    return '生成中...'
+    return '鐢熸垚涓?..'
   }
 
   if (mode.value === 'image' && currentStep.value === 2) {
-    return '导入画板'
+    return '瀵煎叆鐢绘澘'
   }
 
   if (mode.value === 'sheet' && currentStep.value === 3) {
-    return '导入画板'
+    return '瀵煎叆鐢绘澘'
   }
 
-  return '下一步'
+  return '涓嬩竴姝?
 })
 
 watch(
@@ -1683,7 +1681,7 @@ watch(
       return
     }
 
-    activeReviewGroupCode.value = cell.code || '未识别'
+    activeReviewGroupCode.value = cell.code || '鏈瘑鍒?
   },
 )
 

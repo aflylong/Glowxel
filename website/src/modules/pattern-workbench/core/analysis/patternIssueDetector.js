@@ -1,4 +1,4 @@
-import { createPatternIssue } from "../model/patternDocument.js";
+﻿import { createPatternIssue } from "../model/patternDocument.js";
 
 function hasSameColorNeighbor(document, x, y, color) {
   let sameCount = 0;
@@ -30,9 +30,9 @@ export function detectPatternIssues(document, diffResult) {
       issues.push(
         createPatternIssue({
           id: `isolated-${x}-${y}`,
-          type: "孤立点",
-          title: `(${x}, ${y}) 存在单点杂色`,
-          meta: "建议合并到周围主色",
+          type: "瀛ょ珛鐐?,"
+          title: `(${x}, ${y}) 瀛樺湪鍗曠偣鏉傝壊`,
+          meta: "寤鸿鍚堝苟鍒板懆鍥翠富鑹?,"
           position: { x, y },
           severity: "medium",
         }),
@@ -45,9 +45,9 @@ export function detectPatternIssues(document, diffResult) {
       issues.push(
         createPatternIssue({
           id: `missing-${item.x}-${item.y}`,
-          type: "缺失点",
-          title: `(${item.x}, ${item.y}) 缺少参考像素`,
-          meta: "建议补齐到参考结果",
+          type: "缂哄け鐐?,"
+          title: `(${item.x}, ${item.y}) 缂哄皯鍙傝€冨儚绱燻,
+          meta: "寤鸿琛ラ綈鍒板弬鑰冪粨鏋?,"
           position: { x: item.x, y: item.y },
           severity: "high",
         }),
@@ -58,9 +58,9 @@ export function detectPatternIssues(document, diffResult) {
       issues.push(
         createPatternIssue({
           id: `extra-${item.x}-${item.y}`,
-          type: "多余点",
-          title: `(${item.x}, ${item.y}) 多出当前像素`,
-          meta: "建议检查是否需要删除",
+          type: "澶氫綑鐐?,"
+          title: `(${item.x}, ${item.y}) 澶氬嚭褰撳墠鍍忕礌`,
+          meta: "寤鸿妫€鏌ユ槸鍚﹂渶瑕佸垹闄?,"
           position: { x: item.x, y: item.y },
           severity: "medium",
         }),
@@ -71,9 +71,9 @@ export function detectPatternIssues(document, diffResult) {
       issues.push(
         createPatternIssue({
           id: `changed-${item.x}-${item.y}`,
-          type: "颜色偏差",
-          title: `(${item.x}, ${item.y}) 与参考颜色不一致`,
-          meta: `当前 ${item.current}，参考 ${item.reference}`,
+          type: "棰滆壊鍋忓樊",
+          title: `(${item.x}, ${item.y}) 涓庡弬鑰冮鑹蹭笉涓€鑷碻,
+          meta: `褰撳墠 ${item.current}锛屽弬鑰?${item.reference}`,
           position: { x: item.x, y: item.y },
           severity: "medium",
         }),

@@ -1,15 +1,15 @@
-<template>
+﻿<template>
   <div class="settings-card glx-panel-card">
     <div class="card-title-section glx-panel-head">
       <div class="font-title-main">
         <Icon name="text" :size="32" />
-        <span class="card-title glx-panel-title">字体样式</span>
+        <span class="card-title glx-panel-title">瀛椾綋鏍峰紡</span>
       </div>
     </div>
 
     <div class="setting-group">
       <div class="settings-block">
-        <span class="setting-label">统一字体</span>
+        <span class="setting-label">缁熶竴瀛椾綋</span>
         <div class="font-list">
           <div
             v-for="font in fontOptions"
@@ -39,7 +39,7 @@
                         backgroundColor: cell.active
                           ? font.previewColor
                           : 'transparent',
-                      }"
+                      }""
                     ></div>
                   </div>
                 </div>
@@ -53,25 +53,25 @@
       </div>
 
       <div v-if="showSecondsControl" class="settings-block">
-        <span class="setting-label">秒钟</span>
+        <span class="setting-label">绉掗挓</span>
         <div v-if="showSecondsStyle === 'tabs'" class="seconds-tabs">
           <div
             class="seconds-tab glx-feature-option"
             :class="{ active: showSeconds === false }"
             @click="$emit('set-show-seconds', false)"
           >
-            <span class="glx-feature-option__label">关闭</span>
+            <span class="glx-feature-option__label">鍏抽棴</span>
           </div>
           <div
             class="seconds-tab glx-feature-option"
             :class="{ active: showSeconds === true }"
             @click="$emit('set-show-seconds', true)"
           >
-            <span class="glx-feature-option__label">显示</span>
+            <span class="glx-feature-option__label">鏄剧ず</span>
           </div>
         </div>
         <div v-else class="setting-header-row">
-          <span class="setting-label">显示秒钟</span>
+          <span class="setting-label">鏄剧ず绉掗挓</span>
           <GlxSwitch
             class="glx-row-switch"
             :checked="showSeconds"
@@ -81,21 +81,21 @@
       </div>
 
       <div v-if="showHourFormat" class="settings-block">
-        <span class="setting-label">小时制式</span>
+        <span class="setting-label">灏忔椂鍒跺紡</span>
         <div class="align-buttons">
           <div
             class="align-btn glx-feature-option"
             :class="{ active: hourFormat === 24 }"
             @click="$emit('set-hour-format', 24)"
           >
-            <span class="glx-feature-option__label">24 小时</span>
+            <span class="glx-feature-option__label">24 灏忔椂</span>
           </div>
           <div
             class="align-btn glx-feature-option"
             :class="{ active: hourFormat === 12 }"
             @click="$emit('set-hour-format', 12)"
           >
-            <span class="glx-feature-option__label">12 小时</span>
+            <span class="glx-feature-option__label">12 灏忔椂</span>
           </div>
         </div>
       </div>

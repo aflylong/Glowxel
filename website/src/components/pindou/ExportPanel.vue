@@ -1,8 +1,8 @@
-<template>
+﻿<template>
   <div class="export-panel">
-    <h3 class="section-title">导出设置</h3>
+    <h3 class="section-title">瀵煎嚭璁剧疆</h3>
     
-    <!-- 导出选项 -->
+    <!-- 瀵煎嚭閫夐」 -->
     <div class="export-options">
       <label class="checkbox-label">
         <input 
@@ -10,7 +10,7 @@
           v-model="showNumbers"
         />
         <span class="checkmark"></span>
-        在图片上显示拼豆编号
+        鍦ㄥ浘鐗囦笂鏄剧ず鎷艰眴缂栧彿
       </label>
       
       <label class="checkbox-label">
@@ -20,13 +20,13 @@
           checked
         />
         <span class="checkmark"></span>
-        显示拼豆统计数据
+        鏄剧ず鎷艰眴缁熻鏁版嵁
       </label>
     </div>
     
-    <!-- 拼豆样式 -->
+    <!-- 鎷艰眴鏍峰紡 -->
     <div class="style-group">
-      <label class="setting-label">拼豆样式</label>
+      <label class="setting-label">鎷艰眴鏍峰紡</label>
       <div class="style-buttons">
         <button
           v-for="style in beadStyles"
@@ -40,9 +40,9 @@
       </div>
     </div>
     
-    <!-- 网格间距 -->
+    <!-- 缃戞牸闂磋窛 -->
     <div class="spacing-group">
-      <label class="setting-label">网格间距</label>
+      <label class="setting-label">缃戞牸闂磋窛</label>
       <div class="spacing-buttons">
         <button
           v-for="spacing in spacingOptions"
@@ -56,14 +56,14 @@
       </div>
     </div>
     
-    <!-- 导出按钮 -->
+    <!-- 瀵煎嚭鎸夐挳 -->
     <div class="export-actions">
       <button 
         class="export-btn primary"
         @click="handleExport('pdf')"
         :disabled="!canExport"
       >
-        下载 PDF
+        涓嬭浇 PDF
       </button>
       
       <button 
@@ -71,28 +71,28 @@
         @click="handleExport('png')"
         :disabled="!canExport"
       >
-        导出图片
+        瀵煎嚭鍥剧墖
       </button>
     </div>
     
-    <!-- 预览信息 -->
+    <!-- 棰勮淇℃伅 -->
     <div v-if="usedColors.size > 0" class="preview-info">
-      <h4>预览信息</h4>
+      <h4>棰勮淇℃伅</h4>
       <div class="info-grid">
         <div class="info-item">
-          <span class="info-label">尺寸</span>
-          <span class="info-value">{{ width }}×{{ height }}</span>
+          <span class="info-label">灏哄</span>
+          <span class="info-value">{{ width }}脳{{ height }}</span>
         </div>
         <div class="info-item">
-          <span class="info-label">颜色数</span>
-          <span class="info-value">{{ usedColors.size }} 种</span>
+          <span class="info-label">棰滆壊鏁?</span>
+          <span class="info-value">{{ usedColors.size }} 绉?</span>
         </div>
         <div class="info-item">
-          <span class="info-label">拼豆数</span>
-          <span class="info-value">{{ totalBeads }} 颗</span>
+          <span class="info-label">鎷艰眴鏁?</span>
+          <span class="info-value">{{ totalBeads }} 棰?</span>
         </div>
         <div class="info-item">
-          <span class="info-label">预估时间</span>
+          <span class="info-label">棰勪及鏃堕棿</span>
           <span class="info-value">{{ estimatedTime }}</span>
         </div>
       </div>
@@ -113,27 +113,26 @@ const props = defineProps({
 
 const emit = defineEmits(['export'])
 
-// 导出设置
+// 瀵煎嚭璁剧疆
 const showNumbers = ref(true)
 const showStats = ref(true)
 const selectedStyle = ref('grid-circle')
 const selectedSpacing = ref('small')
 
-// 样式选项
+// 鏍峰紡閫夐」
 const beadStyles = [
-  { value: 'grid-square', label: '网格方块' },
-  { value: 'grid-circle', label: '网格圆珠' },
-  { value: 'grid-hollow', label: '网格圆中空珠' }
+  { value: 'grid-square', label: '缃戞牸鏂瑰潡' },
+  { value: 'grid-circle', label: '缃戞牸鍦嗙彔' },
+  { value: 'grid-hollow', label: '缃戞牸鍦嗕腑绌虹彔' }
 ]
 
 const spacingOptions = [
-  { value: 'none', label: '无' },
-  { value: 'small', label: '小' },
-  { value: 'large', label: '大' }
+  { value: 'none', label: '鏃? },
+  { value: 'small', label: '灏? },
+  { value: 'large', label: '澶? }
 ]
 
-// 计算属性
-const canExport = computed(() => {
+// 璁＄畻灞炴€?const canExport = computed(() => {
   return props.pixels.size > 0
 })
 
@@ -147,11 +146,11 @@ const totalBeads = computed(() => {
 
 const estimatedTime = computed(() => {
   const beads = totalBeads.value
-  if (beads < 100) return '< 30分钟'
-  if (beads < 500) return '1-2小时'
-  if (beads < 1000) return '2-4小时'
-  if (beads < 2000) return '4-8小时'
-  return '> 8小时'
+  if (beads < 100) return '< 30鍒嗛挓'
+  if (beads < 500) return '1-2灏忔椂'
+  if (beads < 1000) return '2-4灏忔椂'
+  if (beads < 2000) return '4-8灏忔椂'
+  return '> 8灏忔椂'
 })
 
 function handleExport(format) {
@@ -221,7 +220,7 @@ function handleExport(format) {
 }
 
 .checkbox-label input[type="checkbox"]:checked + .checkmark::after {
-  content: '✓';
+  content: '鉁?;
   position: absolute;
   top: 50%;
   left: 50%;

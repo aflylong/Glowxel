@@ -1,7 +1,7 @@
-<template>
+﻿<template>
   <div class="inspector-panel">
     <div class="panel-head">
-      <h2>当前问题</h2>
+      <h2>褰撳墠闂</h2>
       <span>{{ issueLabel }}</span>
     </div>
 
@@ -10,22 +10,22 @@
       <p>{{ selectedIssue.meta }}</p>
       <div class="detail-grid">
         <div class="detail-card">
-          <span>坐标</span>
+          <span>鍧愭爣</span>
           <strong>{{ positionText }}</strong>
         </div>
         <div class="detail-card">
-          <span>优先级</span>
+          <span>浼樺厛绾?</span>
           <strong>{{ selectedIssue.severity }}</strong>
         </div>
       </div>
 
       <div v-if="pixelContext" class="pixel-context">
         <div class="context-row">
-          <span>当前颜色</span>
+          <span>褰撳墠棰滆壊</span>
           <strong>{{ pixelContext.currentCode }}</strong>
         </div>
         <div class="context-row">
-          <span>参考颜色</span>
+          <span>鍙傝€冮鑹?</span>
           <strong>{{ pixelContext.referenceCode }}</strong>
         </div>
       </div>
@@ -36,11 +36,10 @@
     </div>
 
     <div v-else class="empty-state">
-      选中右侧问题项后，这里会显示问题详情、坐标和修正建议。
-    </div>
+      閫変腑鍙充晶闂椤瑰悗锛岃繖閲屼細鏄剧ず闂璇︽儏銆佸潗鏍囧拰淇寤鸿銆?    </div>
 
     <div class="panel-head actions-head">
-      <h2>修正动作</h2>
+      <h2>淇鍔ㄤ綔</h2>
       <span>{{ actionStateText }}</span>
     </div>
 
@@ -51,7 +50,7 @@
         :disabled="!selectedIssue"
         @click="$emit('issue-action', 'suggestion')"
       >
-        应用建议
+        搴旂敤寤鸿
       </button>
       <button
         class="action-btn"
@@ -59,37 +58,34 @@
         :disabled="!selectedIssue"
         @click="$emit('issue-action', 'reference')"
       >
-        改成参考
-      </button>
+        鏀规垚鍙傝€?      </button>
       <button
         class="action-btn"
         type="button"
         :disabled="!selectedIssue"
         @click="$emit('issue-action', 'neighbor')"
       >
-        合并邻域色
-      </button>
+        鍚堝苟閭诲煙鑹?      </button>
       <button
         class="action-btn"
         type="button"
         :disabled="!selectedIssue"
         @click="$emit('issue-action', 'remove')"
       >
-        删除当前点
-      </button>
+        鍒犻櫎褰撳墠鐐?      </button>
       <button
         class="action-btn"
         type="button"
         :disabled="!selectedIssue"
         @click="$emit('issue-action', 'ignore')"
       >
-        忽略此项
+        蹇界暐姝ら」
       </button>
     </div>
 
     <div class="panel-head actions-head">
-      <h2>批量处理</h2>
-      <span>{{ filteredIssueCount }} 项</span>
+      <h2>鎵归噺澶勭悊</h2>
+      <span>{{ filteredIssueCount }} 椤?</span>
     </div>
 
     <div class="action-grid">
@@ -99,31 +95,28 @@
         :disabled="!filteredIssueCount"
         @click="$emit('batch-action', 'suggestion')"
       >
-        当前筛选应用建议
-      </button>
+        褰撳墠绛涢€夊簲鐢ㄥ缓璁?      </button>
       <button
         class="action-btn"
         type="button"
         :disabled="!filteredIssueCount"
         @click="$emit('batch-action', 'reference')"
       >
-        当前筛选按参考
-      </button>
+        褰撳墠绛涢€夋寜鍙傝€?      </button>
       <button
         class="action-btn"
         type="button"
         :disabled="!filteredIssueCount"
         @click="$emit('batch-action', 'ignore')"
       >
-        当前筛选忽略
-      </button>
+        褰撳墠绛涢€夊拷鐣?      </button>
       <button
         class="action-btn"
         type="button"
         :disabled="!ignoredIssueCount"
         @click="$emit('clear-ignored')"
       >
-        清空忽略
+        娓呯┖蹇界暐
       </button>
     </div>
   </div>
@@ -155,7 +148,7 @@ defineEmits(["issue-action", "batch-action", "clear-ignored"]);
 
 const issueLabel = computed(() => {
   if (!props.selectedIssue) {
-    return "未选中";
+    return "鏈€変腑";
   }
   return props.selectedIssue.type;
 });
@@ -174,26 +167,26 @@ const suggestionText = computed(() => {
   if (!props.selectedIssue) {
     return "";
   }
-  if (props.selectedIssue.type === "孤立点") {
-    return "建议先检查周围 8 邻域颜色，优先合并到邻域主色，减少碎点。";
+  if (props.selectedIssue.type === "瀛ょ珛鐐?) {"
+    return "寤鸿鍏堟鏌ュ懆鍥?8 閭诲煙棰滆壊锛屼紭鍏堝悎骞跺埌閭诲煙涓昏壊锛屽噺灏戠鐐广€?";"
   }
-  if (props.selectedIssue.type === "缺失点") {
-    return "当前图纸缺少参考像素，后续可以直接补点或批量按参考图修正。";
+  if (props.selectedIssue.type === "缂哄け鐐?) {"
+    return "褰撳墠鍥剧焊缂哄皯鍙傝€冨儚绱狅紝鍚庣画鍙互鐩存帴琛ョ偣鎴栨壒閲忔寜鍙傝€冨浘淇銆?";"
   }
-  if (props.selectedIssue.type === "多余点") {
-    return "当前位置在当前图纸存在额外像素，建议结合整体轮廓判断是否删除。";
+  if (props.selectedIssue.type === "澶氫綑鐐?) {"
+    return "褰撳墠浣嶇疆鍦ㄥ綋鍓嶅浘绾稿瓨鍦ㄩ澶栧儚绱狅紝寤鸿缁撳悎鏁翠綋杞粨鍒ゆ柇鏄惁鍒犻櫎銆?";"
   }
-  if (props.selectedIssue.type === "颜色偏差") {
-    return "当前位置颜色与参考图不一致，优先检查是否需要替换为参考色号。";
+  if (props.selectedIssue.type === "棰滆壊鍋忓樊") {
+    return "褰撳墠浣嶇疆棰滆壊涓庡弬鑰冨浘涓嶄竴鑷达紝浼樺厛妫€鏌ユ槸鍚﹂渶瑕佹浛鎹负鍙傝€冭壊鍙枫€?";"
   }
-  return "这个问题已经定位出来了，下一步可以接批量修正和局部编辑动作。";
+  return "杩欎釜闂宸茬粡瀹氫綅鍑烘潵浜嗭紝涓嬩竴姝ュ彲浠ユ帴鎵归噺淇鍜屽眬閮ㄧ紪杈戝姩浣溿€?";"
 });
 
 const actionStateText = computed(() => {
   if (!props.selectedIssue) {
-    return "请选择问题";
+    return "璇烽€夋嫨闂";
   }
-  return "已接入真实修改";
+  return "宸叉帴鍏ョ湡瀹炰慨鏀?";"
 });
 </script>
 

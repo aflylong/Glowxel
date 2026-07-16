@@ -1,10 +1,10 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/clock-editor/animation-clock.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/clock-editor/animation-clock.vue -->
 <template>
   <div class="clock-editor-page glx-page-shell">
-    <!-- 状态栏占位 -->
+    <!-- 鐘舵€佹爮鍗犱綅 -->
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
 
-    <!-- 头部 -->
+    <!-- 澶撮儴 -->
     <div class="navbar glx-topbar glx-page-shell__fixed">
       <div class="nav-left" @click="handleBack">
         <Icon name="direction-left" :size="32" color="var(--nb-ink)" />
@@ -13,7 +13,7 @@
       <div class="nav-right"></div>
     </div>
 
-    <!-- Canvas 预览区域 -->
+    <!-- Canvas 棰勮鍖哄煙 -->
     <div class="canvas-section">
       <div class="preview-canvas-container" :style="previewCanvasBoxStyle">
         <PixelPreviewBoard
@@ -52,24 +52,24 @@
             @click="sendToDevice"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 主内容：当前 Tab 的表单 -->
+    <!-- 涓诲唴瀹癸細褰撳墠 Tab 鐨勮〃鍗?-->
     <div data-scroll-view
       scroll-y
       class="content glx-scroll-region glx-page-shell__content"
       :style="{ height: contentHeight }"
     >
       <div class="content-wrapper glx-scroll-stack">
-        <!-- 时间设置 -->
+        <!-- 鏃堕棿璁剧疆 -->
         <ClockTextSettingsCard
           v-show="currentTab === 1"
           icon-name="time"
-          title="时间显示"
+          title="鏃堕棿鏄剧ず"
           :section="config.time"
           :preset-colors="presetColors"
           :show-font-size="true"
@@ -84,7 +84,7 @@
           @set-align="handleTimeAlign"
         />
 
-        <!-- 字体设置 -->
+        <!-- 瀛椾綋璁剧疆 -->
         <ClockFontPanel
           v-show="currentTab === 2"
           :font-options="fontOptions"
@@ -95,11 +95,11 @@
           @set-hour-format="setHourFormat"
         />
 
-        <!-- 日期设置 -->
+        <!-- 鏃ユ湡璁剧疆 -->
         <ClockTextSettingsCard
           v-show="currentTab === 4"
           icon-name="calendar"
-          title="日期显示"
+          title="鏃ユ湡鏄剧ず"
           :section="config.date"
           :preset-colors="presetColors"
           :show-font-size="true"
@@ -111,11 +111,11 @@
           @set-align="handleDateAlign"
         />
 
-        <!-- 星期设置 -->
+        <!-- 鏄熸湡璁剧疆 -->
         <ClockTextSettingsCard
           v-show="currentTab === 5"
           icon-name="rili5"
-          title="星期显示"
+          title="鏄熸湡鏄剧ず"
           :section="config.week"
           :preset-colors="presetColors"
           :show-font-size="false"
@@ -125,11 +125,11 @@
           @set-align="handleWeekAlign"
         />
 
-        <!-- 背景图片 -->
+        <!-- 鑳屾櫙鍥剧墖 -->
         <div v-show="currentTab === 3" class="settings-card">
           <div class="card-title-section">
             <Icon name="picture" :size="32" />
-            <span class="card-title">背景图片</span>
+            <span class="card-title">鑳屾櫙鍥剧墖</span>
             <div class="toggle-switch" @click="toggleImageShow">
               <div class="switch-track" :class="{ active: config.image.show }">
                 <div class="switch-thumb"></div>
@@ -141,9 +141,9 @@
             <div v-if="!config.image.data" class="image-upload-empty">
               <div class="upload-placeholder" @click="chooseImage">
                 <Icon name="add" :size="64" />
-                <span class="upload-text">点击上传图片/GIF</span>
+                <span class="upload-text">鐐瑰嚮涓婁紶鍥剧墖/GIF</span>
                 <span class="upload-hint"
-                  >支持静态图片和 GIF 动画，建议 64x64 以内</span>
+                  >鏀寔闈欐€佸浘鐗囧拰 GIF 鍔ㄧ敾锛屽缓璁?64x64 浠ュ唴</span>
               </div>
               <div class="image-actions">
                 <div
@@ -151,7 +151,7 @@
                   @click.stop="restoreLastUsedGif"
                 >
                   <Icon name="refresh" :size="28" color="currentColor" />
-                  <span>上次使用</span>
+                  <span>涓婃浣跨敤</span>
                 </div>
               </div>
             </div>
@@ -163,34 +163,34 @@
               />
               <div v-if="gifAnimationData" class="gif-badge">
                 <span class="gif-badge-text"
-                  >GIF {{ gifAnimationData.frameCount }}帧</span>
+                  >GIF {{ gifAnimationData.frameCount }}甯?</span>
               </div>
               <div class="image-actions">
                 <div class="image-action-btn" @click="chooseImage">
                   <Icon name="refresh" :size="28" color="currentColor" />
-                  <span>更换</span>
+                  <span>鏇存崲</span>
                 </div>
                 <div class="image-action-btn danger" @click="removeImage">
                   <Icon name="ashbin" :size="28" color="currentColor" />
-                  <span>删除</span>
+                  <span>鍒犻櫎</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- 图片尺寸和位置控制 -->
+          <!-- 鍥剧墖灏哄鍜屼綅缃帶鍒?-->
           <div v-if="config.image.data" class="setting-group">
             <div class="setting-item">
               <div class="setting-header-row">
-                <span class="setting-label">尺寸设置</span>
+                <span class="setting-label">灏哄璁剧疆</span>
                 <div class="quick-size-btn" @click="setSquareSize">
-                  <span class="btn-text">长宽一致</span>
+                  <span class="btn-text">闀垮涓€鑷?</span>
                 </div>
               </div>
             </div>
 
             <div class="setting-item-row">
-              <span class="setting-label">宽度</span>
+              <span class="setting-label">瀹藉害</span>
               <div class="setting-control-buttons">
                 <div
                   class="control-btn"
@@ -209,10 +209,10 @@
             </div>
             <span v-if="config.image.width > 64" class="info-text"
               ><Icon name="prompt" :size="24" color="var(--accent-color)" />
-              宽度超过64，超出部分不会显示</span>
+              瀹藉害瓒呰繃64锛岃秴鍑洪儴鍒嗕笉浼氭樉绀?</span>
 
             <div class="setting-item-row">
-              <span class="setting-label">高度</span>
+              <span class="setting-label">楂樺害</span>
               <div class="setting-control-buttons">
                 <div
                   class="control-btn"
@@ -234,10 +234,10 @@
             </div>
             <span v-if="config.image.height > 64" class="info-text"
               ><Icon name="prompt" :size="24" color="var(--accent-color)" />
-              高度超过64，超出部分不会显示</span>
+              楂樺害瓒呰繃64锛岃秴鍑洪儴鍒嗕笉浼氭樉绀?</span>
 
             <div class="setting-item-row">
-              <span class="setting-label">X 位置</span>
+              <span class="setting-label">X 浣嶇疆</span>
               <div class="setting-control-buttons">
                 <div class="control-btn" @click="adjustImageValue('x', -1)">
                   <span class="control-icon">-</span>
@@ -249,40 +249,40 @@
               </div>
             </div>
 
-            <!-- GIF 播放控制 -->
+            <!-- GIF 鎾斁鎺у埗 -->
             <div
               v-if="gifAnimationData && gifAnimationData.frameCount > 1"
               class="setting-item-row"
             >
-              <span class="setting-label">预览</span>
+              <span class="setting-label">棰勮</span>
               <div class="setting-control-buttons">
                 <div
                   class="control-btn"
-                  @click="
+                  @click=""
                     gifIsPlaying ? pauseGifAnimation() : startGifAnimation()
-                  "
+                  ""
                 >
                   <span class="control-icon">{{
-                    gifIsPlaying ? "⏸" : "▶"
+                    gifIsPlaying ? "鈴? : "鈻?
                   }}</span>
                 </div>
                 <span class="setting-value-large">{{ gifPlaySpeed }}x</span>
                 <div
                   class="control-btn"
-                  @click="
+                  @click=""
                     gifPlaySpeed = Math.min(4, +(gifPlaySpeed + 0.5).toFixed(1))
-                  "
+                  ""
                 >
                   <span class="control-icon">+</span>
                 </div>
                 <div
                   class="control-btn"
-                  @click="
+                  @click=""
                     gifPlaySpeed = Math.max(
                       0.5,
                       +(gifPlaySpeed - 0.5).toFixed(1),
                     )
-                  "
+                  ""
                 >
                   <span class="control-icon">-</span>
                 </div>
@@ -290,7 +290,7 @@
             </div>
 
             <div class="setting-item-row">
-              <span class="setting-label">Y 位置</span>
+              <span class="setting-label">Y 浣嶇疆</span>
               <div class="setting-control-buttons">
                 <div class="control-btn" @click="adjustImageValue('y', -1)">
                   <span class="control-icon">-</span>
@@ -306,7 +306,7 @@
       </div>
     </div>
 
-    <!-- 底部 Tab 切换 -->
+    <!-- 搴曢儴 Tab 鍒囨崲 -->
     <div class="bottom-tabs">
       <div
         v-for="tab in tabDefinitions"
@@ -340,17 +340,17 @@
       </div>
     </div>
 
-    <!-- 隐藏的 canvas，用于图片处理 -->
+    <!-- 闅愯棌鐨?canvas锛岀敤浜庡浘鐗囧鐞?-->
     <canvas
       id="imageProcessCanvas"
       type="2d"
-      style="
+      style=""
         position: fixed;
         left: -9999px;
         top: -9999px;
         width: 64px;
         height: 64px;
-      "
+      ""
     ></canvas>
 
     <Toast
@@ -362,6 +362,7 @@
 </template>
 
 <script>
+import { getSystemInfo, createDomQuery, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import { useDeviceStore } from "@/stores/device.js";
 import { useToast } from "@/composables/useToast.js";
@@ -400,14 +401,11 @@ export default {
       deviceStore: null,
       toast: null,
       isReady: false,
-      clockMode: "animation", // animation=动态时钟
-      gifAnimationData: null, // GIF 动画数据 { frameCount, frames }
-      gifRenderedFrameMaps: null, // GIF 所有帧的像素 Map 数组
-      gifFrameIndex: 0, // 当前播放帧索引
-      gifTimer: null, // GIF 动画定时器
-      gifIsPlaying: false, // 是否正在播放
-      gifPlaySpeed: 1.0, // 播放速度倍率
-      _gifParser: null, // GIF 解析器实例，改宽高时重新生成数据
+      clockMode: "animation", // animation=鍔ㄦ€佹椂閽?      gifAnimationData: null, // GIF 鍔ㄧ敾鏁版嵁 { frameCount, frames }
+      gifRenderedFrameMaps: null, // GIF 鎵€鏈夊抚鐨勫儚绱?Map 鏁扮粍
+      gifFrameIndex: 0, // 褰撳墠鎾斁甯х储寮?      gifTimer: null, // GIF 鍔ㄧ敾瀹氭椂鍣?      gifIsPlaying: false, // 鏄惁姝ｅ湪鎾斁
+      gifPlaySpeed: 1.0, // 鎾斁閫熷害鍊嶇巼
+      _gifParser: null, // GIF 瑙ｆ瀽鍣ㄥ疄渚嬶紝鏀瑰楂樻椂閲嶆柊鐢熸垚鏁版嵁
       _imageConvertToken: 0,
 
       contentHeight: "calc(100vh - 112rpx - 120rpx - 80rpx)",
@@ -417,7 +415,7 @@ export default {
       previewPixels: new Map(),
       sendingPreviewPixels: new Map(),
 
-      // PixelCanvas 视图控制
+      // PixelCanvas 瑙嗗浘鎺у埗
       previewZoom: 4,
       previewOffset: { x: 16, y: 16 },
       previewContainerSize: { width: 320, height: 320 },
@@ -427,7 +425,7 @@ export default {
       previewRefreshTimer: null,
       previewClockTimer: null,
 
-      // loading 动画定时器（实例变量，方便清理）
+      // loading 鍔ㄧ敾瀹氭椂鍣紙瀹炰緥鍙橀噺锛屾柟渚挎竻鐞嗭級
       loadingTimer: null,
       loadingActive: false,
 
@@ -435,11 +433,11 @@ export default {
 
       currentTab: 1,
       tabDefinitions: [
-        { index: 1, label: "时间", icon: "time" },
-        { index: 2, label: "字体", icon: "text" },
-        { index: 3, label: "图片", icon: "picture" },
-        { index: 4, label: "日期", icon: "calendar" },
-        { index: 5, label: "星期", icon: "rili5" },
+        { index: 1, label: "鏃堕棿", icon: "time" },
+        { index: 2, label: "瀛椾綋", icon: "text" },
+        { index: 3, label: "鍥剧墖", icon: "picture" },
+        { index: 4, label: "鏃ユ湡", icon: "calendar" },
+        { index: 5, label: "鏄熸湡", icon: "rili5" },
       ],
 
       config: {
@@ -480,15 +478,15 @@ export default {
       },
 
       presetColors: [
-        { name: "青色", hex: "#64c8ff" },
-        { name: "绿色", hex: "#00ff9d" },
-        { name: "黄色", hex: "#ffdc00" },
-        { name: "橙色", hex: "#ffa500" },
-        { name: "红色", hex: "#ff6464" },
-        { name: "紫色", hex: "#c864ff" },
-        { name: "白色", hex: "#ffffff" },
-        { name: "灰色", hex: "#787878" },
-        { name: "深灰", hex: "#646464" },
+        { name: "闈掕壊", hex: "#64c8ff" },
+        { name: "缁胯壊", hex: "#00ff9d" },
+        { name: "榛勮壊", hex: "#ffdc00" },
+        { name: "姗欒壊", hex: "#ffa500" },
+        { name: "绾㈣壊", hex: "#ff6464" },
+        { name: "绱壊", hex: "#c864ff" },
+        { name: "鐧借壊", hex: "#ffffff" },
+        { name: "鐏拌壊", hex: "#787878" },
+        { name: "娣辩伆", hex: "#646464" },
       ],
     };
   },
@@ -547,10 +545,10 @@ export default {
       return "#4F7FFF";
     },
     pageHeaderTitle() {
-      return "动态时钟";
+      return "鍔ㄦ€佹椂閽?";"
     },
     previewPanelTitle() {
-      return "模拟预览";
+      return "妯℃嫙棰勮";
     },
     previewCanvasBoxStyle() {
       const size =
@@ -582,7 +580,7 @@ export default {
     this.deviceStore.init();
     this.toast = useToast();
 
-    const systemInfo = uni.getSystemInfoSync();
+    const systemInfo = getSystemInfo();
     const statusBarHeight = systemInfo.statusBarHeight || 0;
     const headerHeight = 56;
     this.contentHeight = `${systemInfo.windowHeight - statusBarHeight - headerHeight - 360}px`;
@@ -676,12 +674,12 @@ export default {
       }
     },
     initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
+      const systemInfo = getSystemInfo();
       const statusBarHeight = systemInfo.statusBarHeight || 0;
 
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query.select(".canvas-section").boundingClientRect((sectionRect) => {
             if (!sectionRect || !sectionRect.height) {
               return;
@@ -771,7 +769,7 @@ export default {
         : { r: 255, g: 255, b: 255 };
     },
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
   },
 };
@@ -1138,7 +1136,7 @@ export default {
   padding: 0 0 56rpx;
 }
 
-/* 底部 Tab 栏：与拼豆辅助页底部控制区风格一致 */
+/* 搴曢儴 Tab 鏍忥細涓庢嫾璞嗚緟鍔╅〉搴曢儴鎺у埗鍖洪鏍间竴鑷?*/
 .bottom-tabs {
   display: flex;
   flex-shrink: 0;
@@ -1468,7 +1466,7 @@ export default {
   background-color: #d92d20;
 }
 
-/* 传输遮罩弹窗 */
+/* 浼犺緭閬僵寮圭獥 */
 .sending-overlay {
   position: fixed;
   top: 0;

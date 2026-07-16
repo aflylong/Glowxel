@@ -1,49 +1,49 @@
-<template>
+﻿<template>
   <div class="glx-page-shell device-params-page">
     <section class="glx-page-shell__hero">
       <span class="glx-page-shell__eyebrow">Device Params</span>
-      <h1 class="glx-page-shell__title">设备参数</h1>
+      <h1 class="glx-page-shell__title">璁惧鍙傛暟</h1>
       <p class="glx-page-shell__desc">
-        这里通过统一设备通信底座读取和写回设备参数。字段分组、边界值和保存链路跟小程序设备参数页保持同一条主线，亮度上限固定为 178。
+        杩欓噷閫氳繃缁熶竴璁惧閫氫俊搴曞骇璇诲彇鍜屽啓鍥炶澶囧弬鏁般€傚瓧娈靛垎缁勩€佽竟鐣屽€煎拰淇濆瓨閾捐矾璺熷皬绋嬪簭璁惧鍙傛暟椤典繚鎸佸悓涓€鏉′富绾匡紝浜害涓婇檺鍥哄畾涓?178銆?
       </p>
       <div class="glx-hero-metrics">
         <div class="glx-hero-metric">
-          <span class="glx-hero-metric__label">当前设备地址</span>
+          <span class="glx-hero-metric__label">褰撳墠璁惧鍦板潃</span>
           <strong class="glx-hero-metric__value device-params-page__metric">{{ deviceHostText }}</strong>
         </div>
         <div class="glx-hero-metric">
-          <span class="glx-hero-metric__label">当前 WiFi</span>
+          <span class="glx-hero-metric__label">褰撳墠 WiFi</span>
           <strong class="glx-hero-metric__value device-params-page__metric">{{ wifiSsidText }}</strong>
         </div>
         <div class="glx-hero-metric">
-          <span class="glx-hero-metric__label">固件版本</span>
+          <span class="glx-hero-metric__label">鍥轰欢鐗堟湰</span>
           <strong class="glx-hero-metric__value device-params-page__metric">{{ firmwareVersionText }}</strong>
         </div>
         <div class="glx-hero-metric">
-          <span class="glx-hero-metric__label">运行时长</span>
+          <span class="glx-hero-metric__label">杩愯鏃堕暱</span>
           <strong class="glx-hero-metric__value device-params-page__metric">{{ uptimeText }}</strong>
         </div>
       </div>
       <div class="glx-inline-actions">
-        <router-link to="/device-control" class="glx-button glx-button--ghost">返回设备控制</router-link>
+        <router-link to="/device-control" class="glx-button glx-button--ghost">杩斿洖璁惧鎺у埗</router-link>
         <button
           type="button"
           class="glx-button glx-button--primary"
           :disabled="loadingParams || saving"
           @click="reloadParams"
         >
-          {{ loadingParams ? "读取中..." : "重新读取" }}
+          {{ loadingParams ? "璇诲彇涓?.." : "閲嶆柊璇诲彇" }}
         </button>
       </div>
     </section>
 
     <section class="glx-grid glx-grid--two">
       <DeviceParamsSection
-        title="特殊LED"
-        meta="旋转、色彩、反转相位"
-        description="画面侧着、颜色不对、残影分裂或左右错位时，优先检查这一组。"
+        title="鐗规畩LED"
+        meta="鏃嬭浆銆佽壊褰┿€佸弽杞浉浣?"
+        description="鐢婚潰渚х潃銆侀鑹蹭笉瀵广€佹畫褰卞垎瑁傛垨宸﹀彸閿欎綅鏃讹紝浼樺厛妫€鏌ヨ繖涓€缁勩€?"
       >
-        <DeviceParamsField label="旋转" description="画面侧着时在这里切换。">
+        <DeviceParamsField label="鏃嬭浆" description="鐢婚潰渚х潃鏃跺湪杩欓噷鍒囨崲銆?">"
           <select v-model.number="params.displayRotation" class="glx-select">
             <option
               v-for="option in rotationOptions"
@@ -54,7 +54,7 @@
             </option>
           </select>
         </DeviceParamsField>
-        <DeviceParamsField label="色彩" description="颜色不对时在这里切换。">
+        <DeviceParamsField label="鑹插僵" description="棰滆壊涓嶅鏃跺湪杩欓噷鍒囨崲銆?">"
           <select v-model="colorOrderValue" class="glx-select">
             <option
               v-for="option in colorOrderOptions"
@@ -65,29 +65,29 @@
             </option>
           </select>
         </DeviceParamsField>
-        <DeviceParamsField label="反转相位" description="残影、分裂、左右错位时切换。">
+        <DeviceParamsField label="鍙嶈浆鐩镐綅" description="娈嬪奖銆佸垎瑁傘€佸乏鍙抽敊浣嶆椂鍒囨崲銆?">"
           <select v-model="clkPhaseValue" class="glx-select">
-            <option value="0">关闭</option>
-            <option value="1">开启</option>
+            <option value="0">鍏抽棴</option>
+            <option value="1">寮€鍚?/option>
           </select>
         </DeviceParamsField>
       </DeviceParamsSection>
 
       <DeviceParamsSection
-        title="设备信息"
-        meta="只读"
-        description="只展示设备当前回读值，不在这里做本地猜测或缓存改写。"
+        title="璁惧淇℃伅"
+        meta="鍙"
+        description="鍙睍绀鸿澶囧綋鍓嶅洖璇诲€硷紝涓嶅湪杩欓噷鍋氭湰鍦扮寽娴嬫垨缂撳瓨鏀瑰啓銆?"
       >
-        <DeviceParamsField label="当前设备地址" description="当前已连接设备主机地址。">
+        <DeviceParamsField label="褰撳墠璁惧鍦板潃" description="褰撳墠宸茶繛鎺ヨ澶囦富鏈哄湴鍧€銆?">"
           <span class="device-params-page__value-box">{{ deviceHostText }}</span>
         </DeviceParamsField>
-        <DeviceParamsField label="固件版本" description="当前固件版本回显。">
+        <DeviceParamsField label="鍥轰欢鐗堟湰" description="褰撳墠鍥轰欢鐗堟湰鍥炴樉銆?">"
           <span class="device-params-page__value-box">{{ firmwareVersionText }}</span>
         </DeviceParamsField>
-        <DeviceParamsField label="运行时长" description="设备已运行时长。">
+        <DeviceParamsField label="杩愯鏃堕暱" description="璁惧宸茶繍琛屾椂闀裤€?">"
           <span class="device-params-page__value-box">{{ uptimeText }}</span>
         </DeviceParamsField>
-        <DeviceParamsField label="当前 WiFi" description="设备当前已连接 WiFi。">
+        <DeviceParamsField label="褰撳墠 WiFi" description="璁惧褰撳墠宸茶繛鎺?WiFi銆?">"
           <span class="device-params-page__value-box">{{ wifiSsidText }}</span>
         </DeviceParamsField>
       </DeviceParamsSection>
@@ -95,45 +95,45 @@
 
     <section class="glx-grid glx-grid--two">
       <DeviceParamsSection
-        title="日夜亮度"
+        title="鏃ュ浜害"
         meta="0 - 178"
-        description="设备常规亮度、日间亮度、夜间亮度都按 0 到 178 下发。"
+        description="璁惧甯歌浜害銆佹棩闂翠寒搴︺€佸闂翠寒搴﹂兘鎸?0 鍒?178 涓嬪彂銆?"
       >
         <DeviceBrightnessField
           v-model="params.displayBright"
-          label="当前亮度"
-          description="设备常规显示亮度，范围 0-178。"
+          label="褰撳墠浜害"
+          description="璁惧甯歌鏄剧ず浜害锛岃寖鍥?0-178銆?"
           :max="UI_BRIGHTNESS_MAX"
         />
         <DeviceBrightnessField
           v-model="params.brightnessDay"
-          label="日间亮度"
-          description="白天自动亮度，范围 0-178。"
+          label="鏃ラ棿浜害"
+          description="鐧藉ぉ鑷姩浜害锛岃寖鍥?0-178銆?"
           :max="UI_BRIGHTNESS_MAX"
         />
         <DeviceBrightnessField
           v-model="params.brightnessNight"
-          label="夜间亮度"
-          description="夜间自动亮度，范围 0-178。"
+          label="澶滈棿浜害"
+          description="澶滈棿鑷姩浜害锛岃寖鍥?0-178銆?"
           :max="UI_BRIGHTNESS_MAX"
         />
-        <DeviceParamsField label="夜间开始时间" description="夜间开始时间。">
+        <DeviceParamsField label="澶滈棿寮€濮嬫椂闂? description="澶滈棿寮€濮嬫椂闂淬€?>
           <input v-model="params.nightStart" class="glx-input" type="time" />
         </DeviceParamsField>
-        <DeviceParamsField label="夜间结束时间" description="夜间结束时间。">
+        <DeviceParamsField label="澶滈棿缁撴潫鏃堕棿" description="澶滈棿缁撴潫鏃堕棿銆?">"
           <input v-model="params.nightEnd" class="glx-input" type="time" />
         </DeviceParamsField>
         <div class="device-params-page__tip-box">
-          只有当日间亮度和夜间亮度设置成不同数值时，设备才会按时间自动切换。
+          鍙湁褰撴棩闂翠寒搴﹀拰澶滈棿浜害璁剧疆鎴愪笉鍚屾暟鍊兼椂锛岃澶囨墠浼氭寜鏃堕棿鑷姩鍒囨崲銆?
         </div>
       </DeviceParamsSection>
 
       <DeviceParamsSection
-        title="驱动参数"
-        meta="面板驱动相关配置"
-        description="这组值按固件合同逐项回写，适合做驱动芯片、I2S 速度和 E 引脚校准。"
+        title="椹卞姩鍙傛暟"
+        meta="闈㈡澘椹卞姩鐩稿叧閰嶇疆"
+        description="杩欑粍鍊兼寜鍥轰欢鍚堝悓閫愰」鍥炲啓锛岄€傚悎鍋氶┍鍔ㄨ姱鐗囥€両2S 閫熷害鍜?E 寮曡剼鏍″噯銆?"
       >
-        <DeviceParamsField label="驱动芯片" description="按设备当前 driver 参数回显。">
+        <DeviceParamsField label="椹卞姩鑺墖" description="鎸夎澶囧綋鍓?driver 鍙傛暟鍥炴樉銆?">"
           <select v-model.number="params.driver" class="glx-select">
             <option
               v-for="option in driverOptions"
@@ -144,7 +144,7 @@
             </option>
           </select>
         </DeviceParamsField>
-        <DeviceParamsField label="I2S 速度" description="按设备当前 i2cSpeed 参数回显。">
+        <DeviceParamsField label="I2S 閫熷害" description="鎸夎澶囧綋鍓?i2cSpeed 鍙傛暟鍥炴樉銆?">"
           <select v-model.number="params.i2cSpeed" class="glx-select">
             <option
               v-for="option in speedOptions"
@@ -155,7 +155,7 @@
             </option>
           </select>
         </DeviceParamsField>
-        <DeviceParamsField label="E 引脚" description="按设备当前 E_pin 参数回显。">
+        <DeviceParamsField label="E 寮曡剼" description="鎸夎澶囧綋鍓?E_pin 鍙傛暟鍥炴樉銆?">"
           <input
             v-model.number="params.E_pin"
             class="glx-input"
@@ -170,11 +170,11 @@
 
     <section class="glx-grid glx-grid--two">
       <DeviceParamsSection
-        title="网络参数"
-        meta="国内优先 NTP"
-        description="默认优先国内可用时间服务器；如果默认地址慢或不可用，可以手动填写。"
+        title="缃戠粶鍙傛暟"
+        meta="鍥藉唴浼樺厛 NTP"
+        description="榛樿浼樺厛鍥藉唴鍙敤鏃堕棿鏈嶅姟鍣紱濡傛灉榛樿鍦板潃鎱㈡垨涓嶅彲鐢紝鍙互鎵嬪姩濉啓銆?"
       >
-        <DeviceParamsField label="时间服务器预设" description="默认优先国内可用地址。">
+        <DeviceParamsField label="鏃堕棿鏈嶅姟鍣ㄩ璁? description="榛樿浼樺厛鍥藉唴鍙敤鍦板潃銆?>
           <select v-model="ntpPresetValue" class="glx-select">
             <option
               v-for="option in ntpPresetOptions"
@@ -186,8 +186,8 @@
           </select>
         </DeviceParamsField>
         <DeviceParamsField
-          label="自定义时间服务器"
-          description="如果默认地址慢或不可用，可以手动填写。"
+          label="鑷畾涔夋椂闂存湇鍔″櫒"
+          description="濡傛灉榛樿鍦板潃鎱㈡垨涓嶅彲鐢紝鍙互鎵嬪姩濉啓銆?"
           :stack="true"
         >
           <input
@@ -195,29 +195,29 @@
             class="glx-input"
             type="text"
             maxlength="63"
-            placeholder="例如 ntp2.aliyun.com"
+            placeholder="渚嬪 ntp2.aliyun.com"
           />
         </DeviceParamsField>
       </DeviceParamsSection>
 
       <DeviceParamsSection
-        title="应用操作"
-        meta="逐项下发到设备"
-        description="保存时会按参数变更逐项调用统一参数写入链路，写完后重新回读一遍确认设备实际值。"
+        title="搴旂敤鎿嶄綔"
+        meta="閫愰」涓嬪彂鍒拌澶?"
+        description="淇濆瓨鏃朵細鎸夊弬鏁板彉鏇撮€愰」璋冪敤缁熶竴鍙傛暟鍐欏叆閾捐矾锛屽啓瀹屽悗閲嶆柊鍥炶涓€閬嶇‘璁よ澶囧疄闄呭€笺€?"
       >
         <div class="device-params-page__action-stack">
           <DeviceActionCard
             mark="AP"
-            title="保存并应用"
-            description="把当前参数写入设备并立即生效。"
+            title="淇濆瓨骞跺簲鐢?"
+            description="鎶婂綋鍓嶅弬鏁板啓鍏ヨ澶囧苟绔嬪嵆鐢熸晥銆?"
             tone="primary"
             :disabled="saving || loadingParams"
             @trigger="saveParams"
           />
           <DeviceActionCard
             mark="RD"
-            title="重新读取"
-            description="从设备拉取当前实际参数。"
+            title="閲嶆柊璇诲彇"
+            description="浠庤澶囨媺鍙栧綋鍓嶅疄闄呭弬鏁般€?"
             tone="accent"
             :disabled="saving || loadingParams"
             @trigger="reloadParams"
@@ -227,15 +227,15 @@
     </section>
 
     <DeviceParamsSection
-      title="高级"
-      meta="危险操作请谨慎"
-      description="清除 WiFi 配置后设备会自动重启，随后需要回到热点配网页重新配网。"
+      title="楂樼骇"
+      meta="鍗遍櫓鎿嶄綔璇疯皑鎱?"
+      description="娓呴櫎 WiFi 閰嶇疆鍚庤澶囦細鑷姩閲嶅惎锛岄殢鍚庨渶瑕佸洖鍒扮儹鐐归厤缃戦〉閲嶆柊閰嶇綉銆?"
     >
       <div class="device-params-page__action-stack">
         <DeviceActionCard
           mark="RST"
-          title="重置网络"
-          description="清除 WiFi 配置并自动重启设备。"
+          title="閲嶇疆缃戠粶"
+          description="娓呴櫎 WiFi 閰嶇疆骞惰嚜鍔ㄩ噸鍚澶囥€?"
           tone="danger"
           :disabled="saving || loadingParams"
           @trigger="openResetConfirm"
@@ -243,9 +243,9 @@
       </div>
       <div v-if="showResetConfirm" class="device-params-page__confirm-box">
         <div class="device-params-page__confirm-copy">
-          <strong class="device-params-page__confirm-title">确认要重置网络吗？</strong>
+          <strong class="device-params-page__confirm-title">纭瑕侀噸缃綉缁滃悧锛?</strong>
           <p class="device-params-page__confirm-desc">
-            设备会清除当前 WiFi 配置并自动重启。重启后热点会重新出现，你需要回到热点配网页重新配网。
+            璁惧浼氭竻闄ゅ綋鍓?WiFi 閰嶇疆骞惰嚜鍔ㄩ噸鍚€傞噸鍚悗鐑偣浼氶噸鏂板嚭鐜帮紝浣犻渶瑕佸洖鍒扮儹鐐归厤缃戦〉閲嶆柊閰嶇綉銆?
           </p>
         </div>
         <div class="glx-inline-actions">
@@ -255,7 +255,7 @@
             :disabled="saving || loadingParams"
             @click="cancelResetConfirm"
           >
-            先不重置
+            鍏堜笉閲嶇疆
           </button>
           <button
             type="button"
@@ -263,7 +263,7 @@
             :disabled="saving || loadingParams"
             @click="resetWifi"
           >
-            确认重置
+            纭閲嶇疆
           </button>
         </div>
       </div>
@@ -299,10 +299,10 @@ const speedOptions = [
 ];
 
 const rotationOptions = [
-  { label: "0°", value: 0 },
-  { label: "90°", value: 1 },
-  { label: "180°", value: 2 },
-  { label: "270°", value: 3 },
+  { label: "0掳", value: 0 },
+  { label: "90掳", value: 1 },
+  { label: "180掳", value: 2 },
+  { label: "270掳", value: 3 },
 ];
 
 const colorOrderOptions = [
@@ -312,11 +312,11 @@ const colorOrderOptions = [
 ];
 
 const ntpPresetOptions = [
-  { label: "阿里云 2", value: "ntp2.aliyun.com" },
-  { label: "阿里云", value: "ntp.aliyun.com" },
-  { label: "腾讯云", value: "ntp.tencent.com" },
-  { label: "国家授时中心", value: "ntp.ntsc.ac.cn" },
-  { label: "自定义", value: "__custom__" },
+  { label: "闃块噷浜?2", value: "ntp2.aliyun.com" },
+  { label: "闃块噷浜?", value: "ntp.aliyun.com"" },"
+  { label: "鑵捐浜?", value: "ntp.tencent.com"" },"
+  { label: "鍥藉鎺堟椂涓績", value: "ntp.ntsc.ac.cn" },
+  { label: "鑷畾涔?", value: "__custom__"" },"
 ];
 
 const router = useRouter();
@@ -361,7 +361,7 @@ const wifiSsidText = computed(() => {
   if (typeof info.value.wifiSsid === "string" && info.value.wifiSsid.length > 0) {
     return info.value.wifiSsid;
   }
-  return "未连接";
+  return "鏈繛鎺?";"
 });
 
 const deviceHostText = computed(() => {
@@ -383,12 +383,12 @@ const uptimeText = computed(() => {
   const hours = Math.floor((totalSeconds % 86400) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   if (days > 0) {
-    return `${days}天 ${hours}小时 ${minutes}分`;
+    return `${days}澶?${hours}灏忔椂 ${minutes}鍒哷;
   }
   if (hours > 0) {
-    return `${hours}小时 ${minutes}分`;
+    return `${hours}灏忔椂 ${minutes}鍒哷;
   }
-  return `${minutes}分`;
+  return `${minutes}鍒哷;
 });
 
 const colorOrderValue = computed({
@@ -490,12 +490,12 @@ async function reloadParams() {
   showResetConfirm.value = false;
   loadingParams.value = true;
   try {
-    feedback.showBlocking("读取设备参数", "正在从设备本地接口读取当前实际参数。");
+    feedback.showBlocking("璇诲彇璁惧鍙傛暟"", "姝ｅ湪浠庤澶囨湰鍦版帴鍙ｈ鍙栧綋鍓嶅疄闄呭弬鏁般€?")";"
     const data = await deviceStore.getDeviceParams();
     applyResponse(data);
-    feedback.success("读取完成", "设备参数已经按当前值回显。");
+    feedback.success("璇诲彇瀹屾垚"", "璁惧鍙傛暟宸茬粡鎸夊綋鍓嶅€煎洖鏄俱€?")";"
   } catch (error) {
-    feedback.error("读取失败", error.message);
+    feedback.error("璇诲彇澶辫触", error.message);
   } finally {
     loadingParams.value = false;
     feedback.hideBlocking();
@@ -561,37 +561,37 @@ function buildUpdates() {
 
 async function saveParams() {
   if (snapshot.value == null) {
-    feedback.warning("还没有快照", "请先重新读取一次设备参数。");
+    feedback.warning("杩樻病鏈夊揩鐓?, "璇峰厛閲嶆柊璇诲彇涓€娆¤澶囧弬鏁般€?);
     return;
   }
 
   if (!Number.isInteger(params.E_pin) || params.E_pin < 0 || params.E_pin > 32) {
-    feedback.error("参数无效", "E_pin 必须是 0 到 32 之间的整数。");
+    feedback.error("鍙傛暟鏃犳晥"", "E_pin 蹇呴』鏄?0 鍒?32 涔嬮棿鐨勬暣鏁般€?")";"
     return;
   }
 
   if (params.ntpServer.trim().length === 0) {
-    feedback.error("参数无效", "ntpServer 不能为空。");
+    feedback.error("鍙傛暟鏃犳晥"", "ntpServer 涓嶈兘涓虹┖銆?")";"
     return;
   }
 
   const updates = buildUpdates();
   if (updates.length === 0) {
-    feedback.info("参数没有变化", "当前参数没有新的修改。");
+    feedback.info("鍙傛暟娌℃湁鍙樺寲"", "褰撳墠鍙傛暟娌℃湁鏂扮殑淇敼銆?")";"
     return;
   }
 
   saving.value = true;
   showResetConfirm.value = false;
   try {
-    feedback.showBlocking("保存设备参数", "正在逐项把参数写入设备并等待生效。");
+    feedback.showBlocking("淇濆瓨璁惧鍙傛暟"", "姝ｅ湪閫愰」鎶婂弬鏁板啓鍏ヨ澶囧苟绛夊緟鐢熸晥銆?")";"
     for (const entry of updates) {
       await updateDeviceParam(entry[0], entry[1]);
     }
     await reloadParams();
-    feedback.success("保存成功", "设备参数已经写入并重新回读。");
+    feedback.success("淇濆瓨鎴愬姛"", "璁惧鍙傛暟宸茬粡鍐欏叆骞堕噸鏂板洖璇汇€?")";"
   } catch (error) {
-    feedback.error("保存失败", error.message);
+    feedback.error("淇濆瓨澶辫触", error.message);
   } finally {
     saving.value = false;
     feedback.hideBlocking();
@@ -609,11 +609,11 @@ function cancelResetConfirm() {
 async function resetWifi() {
   showResetConfirm.value = false;
   try {
-    feedback.showBlocking("重置网络", "设备会清除 WiFi 配置并自动重启。");
+    feedback.showBlocking("閲嶇疆缃戠粶"", "璁惧浼氭竻闄?WiFi 閰嶇疆骞惰嚜鍔ㄩ噸鍚€?")";"
     await deviceStore.clearWifiConfig();
-    feedback.success("设备已开始重置网络", "设备热点会重新出现，请回到热点配网页重新配网。");
+    feedback.success("璁惧宸插紑濮嬮噸缃綉缁?, "璁惧鐑偣浼氶噸鏂板嚭鐜帮紝璇峰洖鍒扮儹鐐归厤缃戦〉閲嶆柊閰嶇綉銆?);
   } catch (error) {
-    feedback.error("重置网络失败", error.message);
+    feedback.error("閲嶇疆缃戠粶澶辫触", error.message);
   } finally {
     feedback.hideBlocking();
   }
@@ -626,7 +626,7 @@ onMounted(async () => {
   }
 
   if (!deviceStore.connected) {
-    feedback.warning("请先连接设备", "设备参数页只能在已连接态进入，正在返回设备控制页。");
+    feedback.warning("璇峰厛杩炴帴璁惧"", "璁惧鍙傛暟椤靛彧鑳藉湪宸茶繛鎺ユ€佽繘鍏ワ紝姝ｅ湪杩斿洖璁惧鎺у埗椤点€?")";"
     router.push("/device-control");
     return;
   }
@@ -654,7 +654,7 @@ watch(
   () => deviceStore.connected,
   (connected) => {
     if (!connected) {
-      feedback.warning("设备已断开", "设备参数页只支持已连接状态，正在返回设备控制页。");
+      feedback.warning("璁惧宸叉柇寮€"", "璁惧鍙傛暟椤靛彧鏀寔宸茶繛鎺ョ姸鎬侊紝姝ｅ湪杩斿洖璁惧鎺у埗椤点€?")";"
       router.push("/device-control");
     }
   },

@@ -1,0 +1,1 @@
+import{K as i}from"./index-DvLGkGAL.js";function u(){const r=i(),n=(o,s,e,c)=>{r.pushToast({type:o,title:s,message:e,duration:c})};return{info(o,s,e){n("info",o,s,e)},success(o,s,e){n("success",o,s,e)},warning(o,s,e){n("warning",o,s,e)},error(o,s,e){n("error",o,s,e)},showBlocking(o,s){r.showBlocking(o,s)},hideBlocking(){r.hideBlocking()}}}export{u};

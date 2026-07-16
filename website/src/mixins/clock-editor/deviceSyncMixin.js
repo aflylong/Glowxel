@@ -1,4 +1,10 @@
+import { getStorage, setStorage } from '@/utils/browser-platform.js'
 import { getClockFont, getClockTextWidth } from "@/utils/clockCanvas.js";
+import {
+  DEVICE_CLOCK_BINARY_KINDS,
+  DEVICE_CLOCK_SEND_MODES,
+  sendDeviceClockMode,
+} from "@/utils/device-clock-protocol.js";
 
 const CLOCK_DEVICE_THEME_ID_KEY = "clock_device_theme_id";
 
@@ -86,13 +92,13 @@ export default {
 
       const storageKey = this.getClockEditorStorageKey();
 
-      uni.setStorageSync(storageKey, JSON.stringify(saveData));
+      setStorage(storageKey, JSON.stringify(saveData));
     },
 
     loadConfig() {
       const storageKey = this.getClockEditorStorageKey();
 
-      const saved = uni.getStorageSync(storageKey);
+      const saved = getStorage(storageKey);
 
       if (saved) {
         try {
@@ -255,71 +261,57 @@ export default {
       this.beginSendUi();
       const ws = this.deviceStore.getWebSocket();
       try {
-        const clockPayload = this.buildClockConfigPayload();
         const hasGifAnimation =
           this.clockMode === "animation" &&
           this.gifAnimationData &&
-          this.gifAnimationData.frameCount > 0;
+          this.gifAnimationData.frameCount > 0 &&
+          this._gifParser &&
+          Array.isArray(this.gifRenderedFrameMaps) &&
+          this.gifRenderedFrameMaps.length > 0;
 
         if (this.clockMode === "theme") {
           if (!this.lastAppliedClockThemeId) {
             throw new Error("请先选择主题");
           }
 
-          await ws.applyThemeMode(
-            clockPayload,
-            this.lastAppliedClockThemeId,
-          );
+          await sendDeviceClockMode(ws, {
+            mode: DEVICE_CLOCK_SEND_MODES.THEME,
+            themeId: this.lastAppliedClockThemeId,
+          });
 
           this.deviceThemeId = this.lastAppliedClockThemeId;
-          uni.setStorageSync(CLOCK_DEVICE_THEME_ID_KEY, this.deviceThemeId);
+          setStorage(CLOCK_DEVICE_THEME_ID_KEY, this.deviceThemeId);
           this.saveConfig();
           this.showSendSuccess();
           return;
         }
 
-        let binaryPayload = null;
+        const sendRequest = {
+          mode: this.clockMode,
+          config: this.config,
+          now: new Date(),
+          binaryKind: DEVICE_CLOCK_BINARY_KINDS.NONE,
+        };
 
         if (hasGifAnimation) {
-          if (this._gifParser) {
-            const targetW = this.config.image.width || 64;
-            const targetH = this.config.image.height || 64;
-            this.gifAnimationData = this._gifParser.generateESP32Data(
-              targetW,
-              targetH,
-              20,
-              null,
-              this.config.image.x || 0,
-              this.config.image.y || 0,
-              this.gifRenderedFrameMaps,
-              this.gifPlaySpeed,
-            );
-          }
-          binaryPayload = ws.buildCompactAnimationBinaryBuffer(
-            this.gifAnimationData.frames,
-          );
-        } else {
-          const allPixels = this.buildImageLayerPixels();
-          if (allPixels.size > 0) {
-            const pixelArray = [];
-            allPixels.forEach((color, key) => {
-              const [x, y] = key.split(",").map(Number);
-              const rgb = this.hexToRgb(color);
-              pixelArray.push({ x, y, r: rgb.r, g: rgb.g, b: rgb.b });
-            });
-            binaryPayload = ws.buildPixelBinaryFromObjects(pixelArray);
-          }
+          sendRequest.binaryKind = DEVICE_CLOCK_BINARY_KINDS.GIF_ANIMATION;
+          sendRequest.gifParser = this._gifParser;
+          sendRequest.gifRenderedFrames = this.gifRenderedFrameMaps;
+          sendRequest.gifPlaySpeed = this.gifPlaySpeed;
+        } else if (
+          this.config.image.show === true &&
+          this.imagePixels instanceof Map &&
+          this.imagePixels.size > 0
+        ) {
+          sendRequest.binaryKind = DEVICE_CLOCK_BINARY_KINDS.STATIC_IMAGE;
+          sendRequest.imagePixelMap = this.imagePixels;
         }
 
-        await ws.applyClockMode(
-          this.clockMode,
-          clockPayload,
-          binaryPayload,
-        );
+        await sendDeviceClockMode(ws, sendRequest);
         this.saveConfig();
         this.showSendSuccess();
       } catch (err) {
-        console.error("发送失败:", err);
+        console.error("发送失�?", err);
         this.showSendFailure(err);
       } finally {
         this.stopLoading().catch(() => {});

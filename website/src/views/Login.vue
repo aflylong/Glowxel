@@ -1,34 +1,33 @@
-<template>
+﻿<template>
   <div class="glx-page-shell login-page">
     <section class="glx-page-shell__hero">
       <span class="glx-page-shell__eyebrow">Login</span>
-      <h1 class="glx-page-shell__title">登录光格像素工坊</h1>
+      <h1 class="glx-page-shell__title">鐧诲綍鍏夋牸鍍忕礌宸ュ潑</h1>
       <p class="glx-page-shell__desc">
-        网站的登录入口需要保留，登录后才能进入作品管理、发布和个人中心。当前页面继续承接仓库里已经存在的账号密码链路。
-      </p>
+        缃戠珯鐨勭櫥褰曞叆鍙ｉ渶瑕佷繚鐣欙紝鐧诲綍鍚庢墠鑳借繘鍏ヤ綔鍝佺鐞嗐€佸彂甯冨拰涓汉涓績銆傚綋鍓嶉〉闈㈢户缁壙鎺ヤ粨搴撻噷宸茬粡瀛樺湪鐨勮处鍙峰瘑鐮侀摼璺€?      </p>
     </section>
 
     <section class="glx-section-card glx-section-card--stack login-card">
       <div class="glx-form-grid">
         <label class="glx-field">
-          <span class="glx-field__label">用户名</span>
+          <span class="glx-field__label">鐢ㄦ埛鍚?</span>
           <input
             v-model="form.username"
             class="glx-input"
             type="text"
             autocomplete="username"
-            placeholder="请输入用户名"
+            placeholder="璇疯緭鍏ョ敤鎴峰悕"
           />
         </label>
 
         <label class="glx-field">
-          <span class="glx-field__label">密码</span>
+          <span class="glx-field__label">瀵嗙爜</span>
           <input
             v-model="form.password"
             class="glx-input"
             type="password"
             autocomplete="current-password"
-            placeholder="请输入密码"
+            placeholder="璇疯緭鍏ュ瘑鐮?"
           />
         </label>
       </div>
@@ -40,7 +39,7 @@
           :disabled="userStore.loading"
           @click="handleLogin"
         >
-          {{ userStore.loading ? "登录中..." : "登录" }}
+          {{ userStore.loading ? "鐧诲綍涓?.." : "鐧诲綍" }}
         </button>
       </div>
 
@@ -68,7 +67,7 @@ async function handleLogin() {
   errorMessage.value = "";
 
   if (form.username.trim().length === 0 || form.password.trim().length === 0) {
-    errorMessage.value = "请输入用户名和密码";
+    errorMessage.value = "璇疯緭鍏ョ敤鎴峰悕鍜屽瘑鐮?";"
     return;
   }
 
@@ -91,7 +90,7 @@ async function handleLogin() {
     return;
   }
 
-  errorMessage.value = "登录失败";
+  errorMessage.value = "鐧诲綍澶辫触";
 }
 </script>
 

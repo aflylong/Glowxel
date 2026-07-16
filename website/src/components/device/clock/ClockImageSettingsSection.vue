@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <section class="clock-section">
     <div class="clock-section__head">
       <div>
@@ -6,7 +6,7 @@
         <p class="clock-section__meta">{{ description }}</p>
       </div>
       <button type="button" class="clock-toggle" :class="{ 'is-on': imageConfig.show }" @click="$emit('toggle-show')">
-        {{ imageConfig.show ? "图层开启" : "图层关闭" }}
+        {{ imageConfig.show ? "鍥惧眰寮€鍚?" : "鍥惧眰鍏抽棴""" }}"
       </button>
     </div>
 
@@ -17,19 +17,19 @@
           <strong>{{ imageSource.name }}</strong>
           <span>{{ imageSource.width }} x {{ imageSource.height }}</span>
           <span v-if="imageSource.isGif" class="clock-image-preview__badge">
-            GIF {{ gifFrameCount > 0 ? `${gifFrameCount} 帧` : "素材" }}
+            GIF {{ gifFrameCount > 0 ? `${gifFrameCount} 甯 : "绱犳潗" }}
           </span>
         </div>
       </div>
       <div v-else class="clock-image-empty">
-        <strong>还没有图片素材</strong>
+        <strong>杩樻病鏈夊浘鐗囩礌鏉?</strong>
         <span>{{ emptyDescription }}</span>
       </div>
 
       <div class="clock-image-actions">
-        <button type="button" class="glx-button glx-button--primary" @click="openFilePicker">选择图片</button>
-        <button type="button" class="glx-button glx-button--ghost" :disabled="!imageSource" @click="$emit('clear-image')">清除</button>
-        <button type="button" class="glx-button glx-button--ghost" @click="$emit('set-square')">长宽一致</button>
+        <button type="button" class="glx-button glx-button--primary" @click="openFilePicker">閫夋嫨鍥剧墖</button>
+        <button type="button" class="glx-button glx-button--ghost" :disabled="!imageSource" @click="$emit('clear-image')">娓呴櫎</button>
+        <button type="button" class="glx-button glx-button--ghost" @click="$emit('set-square')">闀垮涓€鑷?</button>
       </div>
 
       <input
@@ -43,10 +43,10 @@
 
     <div v-if="imageSource && imageSource.isGif && allowGif" class="clock-gif-controls">
       <button type="button" class="glx-button glx-button--ghost" @click="$emit('toggle-gif-play')">
-        {{ gifIsPlaying ? "暂停预览" : "播放预览" }}
+        {{ gifIsPlaying ? "鏆傚仠棰勮" : "鎾斁棰勮" }}
       </button>
       <div class="clock-row clock-row--compact">
-        <span class="clock-row__label">播放速度</span>
+        <span class="clock-row__label">鎾斁閫熷害</span>
         <div class="clock-stepper">
           <button type="button" class="clock-stepper__button" @click="$emit('adjust-gif-speed', -0.5)">-</button>
           <strong class="clock-stepper__value">{{ gifPlaySpeed.toFixed(1) }}x</strong>
@@ -57,7 +57,7 @@
 
     <div class="clock-setting-grid">
       <div class="clock-row">
-        <span class="clock-row__label">宽度</span>
+        <span class="clock-row__label">瀹藉害</span>
         <div class="clock-stepper">
           <button type="button" class="clock-stepper__button" @click="$emit('adjust-image', 'width', -1)">-</button>
           <strong class="clock-stepper__value">{{ imageConfig.width }}</strong>
@@ -66,7 +66,7 @@
       </div>
 
       <div class="clock-row">
-        <span class="clock-row__label">高度</span>
+        <span class="clock-row__label">楂樺害</span>
         <div class="clock-stepper">
           <button type="button" class="clock-stepper__button" @click="$emit('adjust-image', 'height', -1)">-</button>
           <strong class="clock-stepper__value">{{ imageConfig.height }}</strong>
@@ -75,7 +75,7 @@
       </div>
 
       <div class="clock-row">
-        <span class="clock-row__label">X 位置</span>
+        <span class="clock-row__label">X 浣嶇疆</span>
         <div class="clock-stepper">
           <button type="button" class="clock-stepper__button" @click="$emit('adjust-image', 'x', -1)">-</button>
           <strong class="clock-stepper__value">{{ imageConfig.x }}</strong>
@@ -84,7 +84,7 @@
       </div>
 
       <div class="clock-row">
-        <span class="clock-row__label">Y 位置</span>
+        <span class="clock-row__label">Y 浣嶇疆</span>
         <div class="clock-stepper">
           <button type="button" class="clock-stepper__button" @click="$emit('adjust-image', 'y', -1)">-</button>
           <strong class="clock-stepper__value">{{ imageConfig.y }}</strong>
@@ -133,7 +133,7 @@ const props = defineProps({
   },
   emptyDescription: {
     type: String,
-    default: "网站端支持本地预览图片。",
+    default: "缃戠珯绔敮鎸佹湰鍦伴瑙堝浘鐗囥€?,"
   },
 });
 

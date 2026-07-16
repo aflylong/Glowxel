@@ -1,29 +1,29 @@
-<template>
+﻿<template>
   <div class="glx-page-shell">
     <section class="glx-page-shell__hero">
       <span class="glx-page-shell__eyebrow">Artwork Detail</span>
-      <h1 class="glx-page-shell__title">{{ detail.title || "作品详情" }}</h1>
-      <p class="glx-page-shell__desc">{{ detail.description || "当前作品暂无描述。" }}</p>
+      <h1 class="glx-page-shell__title">{{ detail.title || "浣滃搧璇︽儏" }}</h1>
+      <p class="glx-page-shell__desc"">{{ detail.description || "褰撳墠浣滃搧鏆傛棤鎻忚堪銆?"" }}</p">"
       <div class="glx-hero-metrics">
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">作者</span>
+          <span class="glx-hero-metric__label">浣滆€?</span>
           <strong class="glx-hero-metric__value">{{ detail.author_name || "--" }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">点赞</span>
+          <span class="glx-hero-metric__label">鐐硅禐</span>
           <strong class="glx-hero-metric__value">{{ detail.likes || 0 }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">评论</span>
+          <span class="glx-hero-metric__label">璇勮</span>
           <strong class="glx-hero-metric__value">{{ comments.length }}</strong>
         </article>
       </div>
       <div class="glx-inline-actions">
         <button type="button" class="glx-button glx-button--ghost" @click="handleLike">
-          {{ isLiked ? "取消点赞" : "点赞" }}
+          {{ isLiked ? "鍙栨秷鐐硅禐" : "鐐硅禐" }}
         </button>
         <button type="button" class="glx-button glx-button--ghost" @click="handleCollect">
-          {{ isCollected ? "取消收藏" : "收藏" }}
+          {{ isCollected ? "鍙栨秷鏀惰棌" : "鏀惰棌" }}
         </button>
         <button
           v-if="showFollowAction"
@@ -31,7 +31,7 @@
           class="glx-button glx-button--ghost"
           @click="handleFollow"
         >
-          {{ isFollowing ? "取消关注" : "关注作者" }}
+          {{ isFollowing ? "鍙栨秷鍏虫敞"" : "鍏虫敞浣滆€?"" }}"
         </button>
       </div>
     </section>
@@ -45,28 +45,28 @@
           class="artwork-cover"
         />
         <div v-else class="glx-empty-card">
-          <strong class="glx-section-title">暂无封面</strong>
-          <p class="glx-page-shell__desc">当前作品没有封面图。</p>
+          <strong class="glx-section-title">鏆傛棤灏侀潰</strong>
+          <p class="glx-page-shell__desc">褰撳墠浣滃搧娌℃湁灏侀潰鍥俱€?</p>
         </div>
       </article>
 
       <article class="glx-section-card glx-section-card--stack">
         <div class="glx-section-head">
-          <h2 class="glx-section-title">作品信息</h2>
-          <span class="glx-section-meta">公开浏览</span>
+          <h2 class="glx-section-title">浣滃搧淇℃伅</h2>
+          <span class="glx-section-meta">鍏紑娴忚</span>
         </div>
         <div class="glx-stack">
           <div class="glx-list-card">
             <div class="glx-list-card__copy">
-              <strong class="glx-list-card__title">作者主页</strong>
-              <span class="glx-list-card__desc">公开主页和关注链路都继续保留。</span>
+              <strong class="glx-list-card__title">浣滆€呬富椤?</strong>
+              <span class="glx-list-card__desc">鍏紑涓婚〉鍜屽叧娉ㄩ摼璺兘缁х画淇濈暀銆?</span>
             </div>
-            <router-link v-if="detail.author_id" :to="`/user/${detail.author_id}`" class="glx-button glx-button--ghost">查看</router-link>
+            <router-link v-if="detail.author_id" :to="`/user/${detail.author_id}`" class="glx-button glx-button--ghost">鏌ョ湅</router-link>
           </div>
           <div class="glx-list-card">
             <div class="glx-list-card__copy">
-              <strong class="glx-list-card__title">互动动作</strong>
-              <span class="glx-list-card__desc">点赞、收藏、评论和关注动作已经恢复到作品详情页。</span>
+              <strong class="glx-list-card__title">浜掑姩鍔ㄤ綔</strong>
+              <span class="glx-list-card__desc">鐐硅禐銆佹敹钘忋€佽瘎璁哄拰鍏虫敞鍔ㄤ綔宸茬粡鎭㈠鍒颁綔鍝佽鎯呴〉銆?</span>
             </div>
           </div>
         </div>
@@ -75,21 +75,21 @@
 
     <section class="glx-section-card glx-section-card--stack">
       <div class="glx-section-head">
-        <h2 class="glx-section-title">评论列表</h2>
-        <span class="glx-section-meta">{{ comments.length }} 条</span>
+        <h2 class="glx-section-title">璇勮鍒楄〃</h2>
+        <span class="glx-section-meta">{{ comments.length }} 鏉?</span>
       </div>
       <div class="glx-inline-actions">
-        <input v-model="commentText" class="glx-input artwork-comment-input" placeholder="写下你的评论..." />
-        <button type="button" class="glx-button glx-button--primary" @click="submitComment">发送</button>
+        <input v-model="commentText" class="glx-input artwork-comment-input" placeholder="鍐欎笅浣犵殑璇勮..." />
+        <button type="button" class="glx-button glx-button--primary" @click="submitComment">鍙戦€?</button>
       </div>
       <div v-if="comments.length === 0" class="glx-empty-card">
-        <strong class="glx-section-title">暂无评论</strong>
-        <p class="glx-page-shell__desc">当前作品还没有公开评论。</p>
+        <strong class="glx-section-title">鏆傛棤璇勮</strong>
+        <p class="glx-page-shell__desc">褰撳墠浣滃搧杩樻病鏈夊叕寮€璇勮銆?</p>
       </div>
       <div v-else class="glx-stack">
         <div v-for="comment in comments" :key="comment.id" class="glx-list-card">
           <div class="glx-list-card__copy">
-            <strong class="glx-list-card__title">{{ comment.user_name || "匿名用户" }}</strong>
+            <strong class="glx-list-card__title">{{ comment.user_name || "鍖垮悕鐢ㄦ埛" }}</strong>
             <span class="glx-list-card__desc">{{ comment.content || "" }}</span>
           </div>
         </div>
@@ -179,7 +179,7 @@ async function handleLike() {
   }
 
   if (!response.success) {
-    feedback.error('操作失败', '点赞状态没有成功更新。')
+    feedback.error('鎿嶄綔澶辫触', '鐐硅禐鐘舵€佹病鏈夋垚鍔熸洿鏂般€?)
     return
   }
 
@@ -207,7 +207,7 @@ async function handleCollect() {
   }
 
   if (!response.success) {
-    feedback.error('操作失败', '收藏状态没有成功更新。')
+    feedback.error('鎿嶄綔澶辫触', '鏀惰棌鐘舵€佹病鏈夋垚鍔熸洿鏂般€?)
     return
   }
 
@@ -226,7 +226,7 @@ async function handleFollow() {
 
   const response = await followAPI.toggle(detail.value.author_id)
   if (!response.success) {
-    feedback.error('操作失败', '关注状态没有成功更新。')
+    feedback.error('鎿嶄綔澶辫触', '鍏虫敞鐘舵€佹病鏈夋垚鍔熸洿鏂般€?)
     return
   }
 
@@ -250,7 +250,7 @@ async function submitComment() {
 
   const response = await commentAPI.add(route.params.id, commentText.value.trim())
   if (!response.success) {
-    feedback.error('发送失败', '评论没有成功发送。')
+    feedback.error('鍙戦€佸け璐?, '璇勮娌℃湁鎴愬姛鍙戦€併€?)
     return
   }
 

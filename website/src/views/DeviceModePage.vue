@@ -1,9 +1,9 @@
-<template>
+﻿<template>
   <div class="glx-page-shell">
     <section class="glx-page-shell__hero">
       <div class="device-mode-hero__eyebrow-row">
         <span class="glx-page-shell__eyebrow">{{ modeEyebrow }}</span>
-        <span v-if="hiddenFeature" class="glx-chip glx-chip--ghost">隐藏能力</span>
+        <span v-if="hiddenFeature" class="glx-chip glx-chip--ghost">闅愯棌鑳藉姏</span>
       </div>
       <h1 class="glx-page-shell__title">{{ modeTitle }}</h1>
       <p class="glx-page-shell__desc">{{ modeDescription }}</p>
@@ -14,7 +14,7 @@
           :disabled="!deviceStore.connected || switching"
           @click="activateMode"
         >
-          {{ switching ? "切换中..." : actionLabel }}
+          {{ switching ? "鍒囨崲涓?.." : actionLabel }}
         </button>
         <button
           type="button"
@@ -22,26 +22,26 @@
           :disabled="!deviceStore.connected || refreshing"
           @click="refreshStatus"
         >
-          {{ refreshing ? "刷新中..." : "刷新状态" }}
+          {{ refreshing ? "鍒锋柊涓?.."" : "鍒锋柊鐘舵€?"" }}"
         </button>
-        <router-link to="/device-params" class="glx-button glx-button--ghost">设备参数</router-link>
-        <router-link to="/device-control" class="glx-button glx-button--ghost">返回设备控制</router-link>
+        <router-link to="/device-params" class="glx-button glx-button--ghost">璁惧鍙傛暟</router-link>
+        <router-link to="/device-control" class="glx-button glx-button--ghost">杩斿洖璁惧鎺у埗</router-link>
       </div>
       <div class="glx-hero-metrics">
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">连接状态</span>
+          <span class="glx-hero-metric__label">杩炴帴鐘舵€?</span>
           <strong class="glx-hero-metric__value">{{ connectionText }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">当前 businessMode</span>
+          <span class="glx-hero-metric__label">褰撳墠 businessMode</span>
           <strong class="glx-hero-metric__value">{{ businessModeText }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">当前亮度</span>
+          <span class="glx-hero-metric__label">褰撳墠浜害</span>
           <strong class="glx-hero-metric__value">{{ brightnessText }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">设备地址</span>
+          <span class="glx-hero-metric__label">璁惧鍦板潃</span>
           <strong class="glx-hero-metric__value">{{ hostText }}</strong>
         </article>
       </div>
@@ -50,24 +50,24 @@
     <section class="glx-grid glx-grid--two">
       <article class="glx-section-card glx-section-card--stack">
         <div class="glx-section-head">
-          <h2 class="glx-section-title">当前设备状态</h2>
-          <span class="glx-section-meta">运行时回显</span>
+          <h2 class="glx-section-title">褰撳墠璁惧鐘舵€?</h2>
+          <span class="glx-section-meta">杩愯鏃跺洖鏄?</span>
         </div>
         <div class="glx-kv-grid">
           <div class="glx-kv-card">
-            <span class="glx-kv-card__label">当前顶层 mode</span>
+            <span class="glx-kv-card__label">褰撳墠椤跺眰 mode</span>
             <strong class="glx-kv-card__value">{{ topModeText }}</strong>
           </div>
           <div class="glx-kv-card">
-            <span class="glx-kv-card__label">当前 effectMode</span>
+            <span class="glx-kv-card__label">褰撳墠 effectMode</span>
             <strong class="glx-kv-card__value">{{ effectModeText }}</strong>
           </div>
           <div class="glx-kv-card">
-            <span class="glx-kv-card__label">画布尺寸</span>
+            <span class="glx-kv-card__label">鐢诲竷灏哄</span>
             <strong class="glx-kv-card__value">{{ boardSizeText }}</strong>
           </div>
           <div class="glx-kv-card">
-            <span class="glx-kv-card__label">模式目标</span>
+            <span class="glx-kv-card__label">妯″紡鐩爣</span>
             <strong class="glx-kv-card__value">{{ modeKeyText }}</strong>
           </div>
         </div>
@@ -75,13 +75,13 @@
 
       <article class="glx-section-card glx-section-card--stack">
         <div class="glx-section-head">
-          <h2 class="glx-section-title">页面说明</h2>
-          <span class="glx-section-meta">正式反馈链</span>
+          <h2 class="glx-section-title">椤甸潰璇存槑</h2>
+          <span class="glx-section-meta">姝ｅ紡鍙嶉閾?</span>
         </div>
         <div class="glx-stack">
           <div v-for="note in modeNotes" :key="note" class="glx-list-card">
             <div class="glx-list-card__copy">
-              <strong class="glx-list-card__title">说明</strong>
+              <strong class="glx-list-card__title">璇存槑</strong>
               <span class="glx-list-card__desc">{{ note }}</span>
             </div>
           </div>
@@ -92,13 +92,13 @@
     <section class="glx-grid glx-grid--two">
       <article class="glx-section-card glx-section-card--stack">
         <div class="glx-section-head">
-          <h2 class="glx-section-title">下一步动作</h2>
-          <span class="glx-section-meta">主链路提示</span>
+          <h2 class="glx-section-title">涓嬩竴姝ュ姩浣?</h2>
+          <span class="glx-section-meta">涓婚摼璺彁绀?</span>
         </div>
         <div class="glx-stack">
           <div v-for="item in modeActions" :key="item" class="glx-list-card">
             <div class="glx-list-card__copy">
-              <strong class="glx-list-card__title">步骤</strong>
+              <strong class="glx-list-card__title">姝ラ</strong>
               <span class="glx-list-card__desc">{{ item }}</span>
             </div>
           </div>
@@ -107,8 +107,8 @@
 
       <article class="glx-section-card glx-section-card--stack">
         <div class="glx-section-head">
-          <h2 class="glx-section-title">模式入口</h2>
-          <span class="glx-section-meta">快捷跳转</span>
+          <h2 class="glx-section-title">妯″紡鍏ュ彛</h2>
+          <span class="glx-section-meta">蹇嵎璺宠浆</span>
         </div>
         <div class="glx-inline-actions">
           <router-link
@@ -122,8 +122,7 @@
           </router-link>
         </div>
         <p class="glx-page-shell__desc">
-          当前页负责模式切换、状态回显和正式反馈；更细的创作编辑仍回到对应功能页继续完成。
-        </p>
+          褰撳墠椤佃礋璐ｆā寮忓垏鎹€佺姸鎬佸洖鏄惧拰姝ｅ紡鍙嶉锛涙洿缁嗙殑鍒涗綔缂栬緫浠嶅洖鍒板搴斿姛鑳介〉缁х画瀹屾垚銆?        </p>
       </article>
     </section>
   </div>
@@ -155,14 +154,14 @@ const modeTitle = computed(() => {
   if (typeof route.meta.modeTitle === "string" && route.meta.modeTitle.length > 0) {
     return route.meta.modeTitle;
   }
-  return "设备模式";
+  return "璁惧妯″紡";
 });
 
 const modeDescription = computed(() => {
   if (typeof route.meta.modeDescription === "string" && route.meta.modeDescription.length > 0) {
     return route.meta.modeDescription;
   }
-  return "当前模式页已经接入网站应用主端、设备状态回显和正式反馈链。";
+  return "褰撳墠妯″紡椤靛凡缁忔帴鍏ョ綉绔欏簲鐢ㄤ富绔€佽澶囩姸鎬佸洖鏄惧拰姝ｅ紡鍙嶉閾俱€?";"
 });
 
 const modeKey = computed(() => {
@@ -176,21 +175,21 @@ const actionLabel = computed(() => {
   if (typeof route.meta.modeActionLabel === "string" && route.meta.modeActionLabel.length > 0) {
     return route.meta.modeActionLabel;
   }
-  return "切换到当前模式";
+  return "鍒囨崲鍒板綋鍓嶆ā寮?";"
 });
 
 const modeNotes = computed(() => {
   if (Array.isArray(route.meta.modeNotes)) {
     return route.meta.modeNotes.filter((item) => typeof item === "string" && item.length > 0);
   }
-  return ["当前模式页已经进入网站应用壳。"];
+  return ["褰撳墠妯″紡椤靛凡缁忚繘鍏ョ綉绔欏簲鐢ㄥ３銆?]";"
 });
 
 const modeActions = computed(() => {
   if (Array.isArray(route.meta.modeActions)) {
     return route.meta.modeActions.filter((item) => typeof item === "string" && item.length > 0);
   }
-  return ["连接设备后先切换模式，再进入对应创作或参数入口继续完成操作。"];
+  return ["杩炴帴璁惧鍚庡厛鍒囨崲妯″紡锛屽啀杩涘叆瀵瑰簲鍒涗綔鎴栧弬鏁板叆鍙ｇ户缁畬鎴愭搷浣溿€?]";"
 });
 
 const modeLinks = computed(() => {
@@ -214,9 +213,9 @@ const modeLinks = computed(() => {
 
 const connectionText = computed(() => {
   if (deviceStore.connected) {
-    return "已连接";
+    return "宸茶繛鎺?";"
   }
-  return "未连接";
+  return "鏈繛鎺?";"
 });
 
 const topModeText = computed(() => {
@@ -242,7 +241,7 @@ const effectModeText = computed(() => {
 
 const boardSizeText = computed(() => {
   if (typeof deviceStore.width === "number" && typeof deviceStore.height === "number" && deviceStore.width > 0 && deviceStore.height > 0) {
-    return `${deviceStore.width} × ${deviceStore.height}`;
+    return `${deviceStore.width} 脳 ${deviceStore.height}`;
   }
   return "--";
 });
@@ -283,20 +282,20 @@ function resolveToneClass(tone) {
 
 async function refreshStatus() {
   if (!deviceStore.connected) {
-    feedback.warning("设备未连接", "请先在设备控制页建立连接，再读取模式状态。");
+    feedback.warning("璁惧鏈繛鎺?, "璇峰厛鍦ㄨ澶囨帶鍒堕〉寤虹珛杩炴帴锛屽啀璇诲彇妯″紡鐘舵€併€?);
     return;
   }
 
   try {
     refreshing.value = true;
-    feedback.showBlocking("刷新状态", "正在重新读取当前设备状态。");
+    feedback.showBlocking("鍒锋柊鐘舵€?, "姝ｅ湪閲嶆柊璇诲彇褰撳墠璁惧鐘舵€併€?);
     await deviceStore.syncDeviceStatus();
-    feedback.success("状态已刷新", `${modeTitle.value} 页面的设备状态已经更新。`);
+    feedback.success("鐘舵€佸凡鍒锋柊", `${modeTitle.value} 椤甸潰鐨勮澶囩姸鎬佸凡缁忔洿鏂般€俙);
   } catch (error) {
     if (error instanceof Error) {
-      feedback.error("刷新失败", error.message);
+      feedback.error("鍒锋柊澶辫触", error.message);
     } else {
-      feedback.error("刷新失败", "设备状态读取失败。");
+      feedback.error("鍒锋柊澶辫触"", "璁惧鐘舵€佽鍙栧け璐ャ€?")";"
     }
   } finally {
     refreshing.value = false;
@@ -306,26 +305,26 @@ async function refreshStatus() {
 
 async function activateMode() {
   if (!deviceStore.connected) {
-    feedback.warning("设备未连接", "请先在设备控制页建立连接，再切换模式。");
+    feedback.warning("璁惧鏈繛鎺?, "璇峰厛鍦ㄨ澶囨帶鍒堕〉寤虹珛杩炴帴锛屽啀鍒囨崲妯″紡銆?);
     return;
   }
 
   if (modeKey.value.length === 0) {
-    feedback.error("模式未配置", "当前页面没有提供有效的 businessMode。");
+    feedback.error("妯″紡鏈厤缃?, "褰撳墠椤甸潰娌℃湁鎻愪緵鏈夋晥鐨?businessMode銆?);
     return;
   }
 
   try {
     switching.value = true;
-    feedback.showBlocking("切换模式", `正在把设备切换到 ${modeTitle.value}。`);
+    feedback.showBlocking("鍒囨崲妯″紡", `姝ｅ湪鎶婅澶囧垏鎹㈠埌 ${modeTitle.value}銆俙);
     await deviceStore.setMode(modeKey.value);
     await deviceStore.syncDeviceStatus();
-    feedback.success("模式已切换", `${modeTitle.value} 已进入当前设备链路。`);
+    feedback.success("妯″紡宸插垏鎹?, `${modeTitle.value"} 宸茶繘鍏ュ綋鍓嶈澶囬摼璺€俙")";"
   } catch (error) {
     if (error instanceof Error) {
-      feedback.error("切换失败", error.message);
+      feedback.error("鍒囨崲澶辫触", error.message);
     } else {
-      feedback.error("切换失败", "设备没有成功进入当前模式。");
+      feedback.error("鍒囨崲澶辫触"", "璁惧娌℃湁鎴愬姛杩涘叆褰撳墠妯″紡銆?")";"
     }
   } finally {
     switching.value = false;

@@ -1,4 +1,4 @@
-<!-- AUTO-CONVERTED FROM uniapp/pages/spirit-screen/spirit-screen.vue -->
+﻿<!-- AUTO-CONVERTED FROM uniapp/pages/spirit-screen/spirit-screen.vue -->
 <template>
   <div class="spirit-page glx-page-shell">
     <div class="status-bar" :style="{ height: statusBarHeight + 'px' }"></div>
@@ -11,7 +11,7 @@
           color="var(--nb-ink)"
         />
       </div>
-      <span class="nav-title glx-topbar__title">桌面宠物</span>
+      <span class="nav-title glx-topbar__title">妗岄潰瀹犵墿</span>
       <div class="nav-right"></div>
     </div>
 
@@ -47,7 +47,7 @@
       </div>
       <div class="preview-caption glx-preview-panel">
         <div class="preview-caption-info glx-preview-panel__info">
-          <span class="preview-caption-title">预览效果</span>
+          <span class="preview-caption-title">棰勮鏁堟灉</span>
         </div>
         <div class="preview-actions">
           <div
@@ -56,7 +56,7 @@
             @click="saveAndApply"
           >
             <Icon name="link" :size="36" color="#000000" />
-            <span>发送</span>
+            <span>鍙戦€?</span>
           </div>
         </div>
       </div>
@@ -67,7 +67,7 @@
         <div v-show="currentTab === 0" class="tab-panel glx-tab-panel">
           <div class="card glx-panel-card glx-editor-card spirit-section-card">
             <div class="card-title-section glx-panel-head">
-              <span class="card-title glx-panel-title">表情模式</span>
+              <span class="card-title glx-panel-title">琛ㄦ儏妯″紡</span>
               <span class="card-subtitle glx-panel-subtitle">{{ expressionModeLabel }}</span>
             </div>
             <div class="option-row">
@@ -84,7 +84,7 @@
           </div>
 
           <div v-show="expressionModeValue === 'manual'" class="card glx-panel-card glx-editor-card spirit-section-card">
-            <span class="card-title glx-panel-title">指定表情</span>
+            <span class="card-title glx-panel-title">鎸囧畾琛ㄦ儏</span>
             <div class="expression-grid">
               <div
                 v-for="item in expressionOptions"
@@ -100,8 +100,8 @@
 
           <div class="card glx-panel-card glx-editor-card spirit-section-card">
             <div class="card-title-section glx-panel-head">
-              <span class="card-title glx-panel-title">自动节奏</span>
-              <span class="card-subtitle glx-panel-subtitle">只影响自动表情切换</span>
+              <span class="card-title glx-panel-title">鑷姩鑺傚</span>
+              <span class="card-subtitle glx-panel-subtitle">鍙奖鍝嶈嚜鍔ㄨ〃鎯呭垏鎹?</span>
             </div>
             <div class="option-row option-row-triple">
               <div
@@ -118,11 +118,11 @@
 
           <div class="card glx-panel-card glx-editor-card spirit-section-card">
             <div class="card-title-section glx-panel-head">
-              <span class="card-title glx-panel-title">眼睛颜色</span>
+              <span class="card-title glx-panel-title">鐪肩潧棰滆壊</span>
             </div>
             <ColorPanelPicker
               :value="eyesConfig.style.eyeColor"
-              label="眼睛颜色"
+              label="鐪肩潧棰滆壊"
               :preset-colors="eyeColorOptions"
               @input="handleEyeColorChange"
             />
@@ -130,12 +130,12 @@
 
           <div class="card glx-panel-card glx-editor-card spirit-section-card">
             <div class="card-title-section glx-panel-head">
-              <span class="card-title glx-panel-title">参数调整</span>
+              <span class="card-title glx-panel-title">鍙傛暟璋冩暣</span>
             </div>
 
             <div class="form-row">
               <span class="form-label">
-                眨眼步频 {{ blinkRhythmLevel }}
+                鐪ㄧ溂姝ラ {{ blinkRhythmLevel }}
               </span>
               <GlxStepper
                 :value="blinkRhythmLevel"
@@ -148,7 +148,7 @@
 
             <div class="form-row">
               <span class="form-label">
-                游走步频 {{ lookRhythmLevel }}
+                娓歌蛋姝ラ {{ lookRhythmLevel }}
               </span>
               <GlxStepper
                 :value="lookRhythmLevel"
@@ -161,7 +161,7 @@
 
             <div class="form-row">
               <span class="form-label">
-                灵动幅度 {{ motionAmplitudeLevel }}
+                鐏靛姩骞呭害 {{ motionAmplitudeLevel }}
               </span>
               <GlxStepper
                 :value="motionAmplitudeLevel"
@@ -175,20 +175,20 @@
 
           <div class="card glx-panel-card glx-editor-card spirit-section-card">
             <div class="card-title-section glx-panel-head">
-              <span class="card-title glx-panel-title">互动预览</span>
+              <span class="card-title glx-panel-title">浜掑姩棰勮</span>
             </div>
             <div class="option-row option-row-wrap">
               <div class="option-btn glx-feature-option" @click="triggerPreviewOnlyAction('blink')">
-                <span>眨眼</span>
+                <span>鐪ㄧ溂</span>
               </div>
               <div class="option-btn glx-feature-option" @click="triggerPreviewOnlyAction('look_left')">
-                <span>看左</span>
+                <span>鐪嬪乏</span>
               </div>
               <div class="option-btn glx-feature-option" @click="triggerPreviewOnlyAction('look_center')">
-                <span>看中</span>
+                <span>鐪嬩腑</span>
               </div>
               <div class="option-btn glx-feature-option" @click="triggerPreviewOnlyAction('look_right')">
-                <span>看右</span>
+                <span>鐪嬪彸</span>
               </div>
             </div>
           </div>
@@ -197,7 +197,7 @@
         <div v-show="currentTab === 1" class="tab-panel glx-tab-panel">
           <ClockTextSettingsCard
             icon-name="time"
-            title="时间显示"
+            title="鏃堕棿鏄剧ず"
             :section="spiritTimeSection"
             :preset-colors="timeColorOptions"
             :show-font-size="true"
@@ -268,6 +268,7 @@
 </template>
 
 <script>
+import { getStorage, setStorage, getSystemInfo, createDomQuery, navigateBack } from '@/utils/browser-platform.js'
 import uniLifecycleAdapter from "@/mixins/uniLifecycleAdapter.js";
 import { useDeviceStore } from "@/stores/device.js";
 import { useToast } from "@/composables/useToast.js";
@@ -297,9 +298,9 @@ const EYES_TIME_FONT_IDS = new Set(
   EYES_TIME_FONT_OPTIONS.map((item) => item.id),
 );
 const EXPRESSION_RHYTHM_OPTIONS = [
-  { label: "慢速", value: "slow" },
-  { label: "标准", value: "standard" },
-  { label: "活泼", value: "lively" },
+  { label: "鎱㈤€?", value: "slow"" },"
+  { label: "鏍囧噯", value: "standard" },
+  { label: "娲绘臣", value: "lively" },
 ];
 const VALID_EXPRESSION_RHYTHMS = new Set(
   EXPRESSION_RHYTHM_OPTIONS.map((item) => item.value),
@@ -395,12 +396,12 @@ const PREVIEW_CLUSTER_BASE_WEIGHTS = {
   intense: 0.34,
 };
 const PREVIEW_CLUSTER_LABELS = {
-  calm: "安静陪伴",
-  warm: "温和开心",
-  sleepy: "轻困放松",
-  low: "低落收敛",
-  alert: "轻警觉",
-  intense: "强瞬时",
+  calm: "瀹夐潤闄即",
+  warm: "娓╁拰寮€蹇?,"
+  sleepy: "杞诲洶鏀炬澗",
+  low: "浣庤惤鏀舵暃",
+  alert: "杞昏瑙?,"
+  intense: "寮虹灛鏃?,"
 };
 const PREVIEW_EXPRESSION_CLUSTER_MAP = {
   Normal: "calm",
@@ -509,28 +510,28 @@ const MOUTH_PIXEL_PATTERNS = {
 };
 
 const EXPRESSION_OPTIONS = [
-  { label: "正常", value: "Normal" },
-  { label: "生气", value: "Angry" },
-  { label: "偷笑", value: "Glee" },
-  { label: "开心", value: "Happy" },
-  { label: "爱心", value: HEART_EXPRESSION_VALUE },
-  { label: "难过", value: "Sad" },
-  { label: "担忧", value: "Worried" },
-  { label: "专注", value: "Focused" },
-  { label: "不耐烦", value: "Annoyed" },
-  { label: "惊讶", value: "Surprised" },
-  { label: "怀疑", value: "Skeptic" },
-  { label: "挫败", value: "Frustrated" },
-  { label: "无语", value: "Unimpressed" },
-  { label: "困倦", value: "Sleepy" },
-  { label: "警觉", value: "Suspicious" },
-  { label: "眯眼", value: "Squint" },
-  { label: "愤怒", value: "Furious" },
-  { label: "受惊", value: "Scared" },
-  { label: "惊叹", value: "Awe" },
-  { label: "兴奋", value: "Excited" },
-  { label: "坚定", value: "Determined" },
-  { label: "迷糊", value: "Confused" },
+  { label: "姝ｅ父", value: "Normal" },
+  { label: "鐢熸皵", value: "Angry" },
+  { label: "鍋风瑧", value: "Glee" },
+  { label: "寮€蹇?", value: "Happy"" },"
+  { label: "鐖卞績", value: HEART_EXPRESSION_VALUE },
+  { label: "闅捐繃", value: "Sad" },
+  { label: "鎷呭咖", value: "Worried" },
+  { label: "涓撴敞", value: "Focused" },
+  { label: "涓嶈€愮儲", value: "Annoyed" },
+  { label: "鎯婅", value: "Surprised" },
+  { label: "鎬€鐤?", value: "Skeptic"" },"
+  { label: "鎸触", value: "Frustrated" },
+  { label: "鏃犺", value: "Unimpressed" },
+  { label: "鍥板€?", value: "Sleepy"" },"
+  { label: "璀﹁", value: "Suspicious" },
+  { label: "鐪溂", value: "Squint" },
+  { label: "鎰ゆ€?", value: "Furious"" },"
+  { label: "鍙楁儕", value: "Scared" },
+  { label: "鎯婂徆", value: "Awe" },
+  { label: "鍏村", value: "Excited" },
+  { label: "鍧氬畾", value: "Determined" },
+  { label: "杩风硦", value: "Confused" },
 ];
 
 const ALL_EXPRESSION_VALUES = EXPRESSION_OPTIONS.map((item) => item.value);
@@ -1189,11 +1190,11 @@ export default {
       sendingPreviewTick: 0,
       previewTimer: null,
       currentTab: 0,
-      tabs: ["表情", "时间", "字体"],
+      tabs: ["琛ㄦ儏", "鏃堕棿", "瀛椾綋"],
       tabIconNames: ["browse", "time", "text"],
       expressionModeOptions: [
-        { label: "自动切换", value: "auto" },
-        { label: "指定表情", value: "manual" },
+        { label: "鑷姩鍒囨崲", value: "auto" },
+        { label: "鎸囧畾琛ㄦ儏", value: "manual" },
       ],
       expressionRhythmOptions: EXPRESSION_RHYTHM_OPTIONS,
       eyesConfig: createDefaultEyesConfig(),
@@ -1203,23 +1204,23 @@ export default {
       expressionOptions: EXPRESSION_OPTIONS,
       timeFontOptions: EYES_TIME_FONT_OPTIONS,
       eyeColorOptions: [
-        { name: "浅蓝", hex: "#9bdcff" },
-        { name: "冰蓝", hex: "#7fd8ff" },
-        { name: "薄荷蓝", hex: "#8ee7f2" },
-        { name: "天青", hex: "#68c9ff" },
-        { name: "雾蓝", hex: "#8ebcff" },
-        { name: "霓虹蓝", hex: "#52b7ff" },
+        { name: "娴呰摑", hex: "#9bdcff" },
+        { name: "鍐拌摑", hex: "#7fd8ff" },
+        { name: "钖勮嵎钃?", hex: "#8ee7f2"" },"
+        { name: "澶╅潚", hex: "#68c9ff" },
+        { name: "闆捐摑", hex: "#8ebcff" },
+        { name: "闇撹櫣钃?", hex: "#52b7ff"" },"
       ],
       timeColorOptions: [
-        { name: "青色", hex: "#64c8ff" },
-        { name: "绿色", hex: "#00ff9d" },
-        { name: "黄色", hex: "#ffdc00" },
-        { name: "橙色", hex: "#ffa500" },
-        { name: "红色", hex: "#ff6464" },
-        { name: "紫色", hex: "#c864ff" },
-        { name: "白色", hex: "#ffffff" },
-        { name: "灰色", hex: "#787878" },
-        { name: "深灰", hex: "#646464" },
+        { name: "闈掕壊", hex: "#64c8ff" },
+        { name: "缁胯壊", hex: "#00ff9d" },
+        { name: "榛勮壊", hex: "#ffdc00" },
+        { name: "姗欒壊", hex: "#ffa500" },
+        { name: "绾㈣壊", hex: "#ff6464" },
+        { name: "绱壊", hex: "#c864ff" },
+        { name: "鐧借壊", hex: "#ffffff" },
+        { name: "鐏拌壊", hex: "#787878" },
+        { name: "娣辩伆", hex: "#646464" },
       ],
     };
   },
@@ -1237,7 +1238,7 @@ export default {
       return this.eyesConfig.behavior.autoSwitch ? "auto" : "manual";
     },
     expressionModeLabel() {
-      return this.eyesConfig.behavior.autoSwitch ? "自动切换" : "指定表情";
+      return this.eyesConfig.behavior.autoSwitch ? "鑷姩鍒囨崲" : "鎸囧畾琛ㄦ儏";
     },
     blinkRhythmLevel() {
       return this.intervalToRhythmLevel(
@@ -1319,16 +1320,16 @@ export default {
       deviceSendUxMixin.methods.endSendUi.call(this);
     },
     handleBack() {
-      uni.navigateBack();
+      navigateBack();
     },
 
     initPreviewCanvas() {
-      const systemInfo = uni.getSystemInfoSync();
+      const systemInfo = getSystemInfo();
       const statusBarHeight = systemInfo.statusBarHeight || 0;
 
       this.$nextTick(() => {
         setTimeout(() => {
-          const query = uni.createSelectorQuery().in(this);
+          const query = createDomQuery().in(this);
           query.select(".canvas-section").boundingClientRect((sectionRect) => {
             if (!sectionRect || !sectionRect.height) {
               return;
@@ -1362,7 +1363,7 @@ export default {
     },
 
     loadEyesConfig() {
-      const savedEyesConfig = uni.getStorageSync(EYES_CONFIG_STORAGE_KEY);
+      const savedEyesConfig = getStorage(EYES_CONFIG_STORAGE_KEY);
       if (!savedEyesConfig) {
         this.eyesConfig = createDefaultEyesConfig();
         return;
@@ -1382,13 +1383,13 @@ export default {
         this.eyesConfig = nextConfig;
         this.normalizeTimeLayout();
       } catch (error) {
-        console.error("读取桌面宠物配置失败:", error);
+        console.error("璇诲彇妗岄潰瀹犵墿閰嶇疆澶辫触:", error);
         this.eyesConfig = createDefaultEyesConfig();
       }
     },
 
     loadLocalPreview() {
-      const savedPreviewConfig = uni.getStorageSync(EYES_LOCAL_PREVIEW_STORAGE_KEY);
+      const savedPreviewConfig = getStorage(EYES_LOCAL_PREVIEW_STORAGE_KEY);
       if (!savedPreviewConfig) {
         this.localPreview = createDefaultLocalPreviewState();
         return;
@@ -1409,40 +1410,40 @@ export default {
         );
         this.localPreview = nextConfig;
       } catch (error) {
-        console.error("读取桌面宠物本地预览配置失败:", error);
+        console.error("璇诲彇妗岄潰瀹犵墿鏈湴棰勮閰嶇疆澶辫触:", error);
         this.localPreview = createDefaultLocalPreviewState();
       }
     },
 
     loadSelectedExpression() {
-      const savedExpression = uni.getStorageSync(EYES_EXPRESSION_STORAGE_KEY);
+      const savedExpression = getStorage(EYES_EXPRESSION_STORAGE_KEY);
       const matched = this.expressionOptions.find(
         (item) => item.value === savedExpression,
       );
       if (!matched) {
         this.selectedEyesExpression = "Normal";
-        uni.setStorageSync(EYES_EXPRESSION_STORAGE_KEY, "Normal");
+        setStorage(EYES_EXPRESSION_STORAGE_KEY, "Normal");
         return;
       }
       this.selectedEyesExpression = matched.value;
     },
 
     saveEyesConfig() {
-      uni.setStorageSync(
+      setStorage(
         EYES_CONFIG_STORAGE_KEY,
         JSON.stringify(this.eyesConfig),
       );
     },
 
     saveSelectedExpression() {
-      uni.setStorageSync(
+      setStorage(
         EYES_EXPRESSION_STORAGE_KEY,
         this.selectedEyesExpression,
       );
     },
 
     saveLocalPreview() {
-      uni.setStorageSync(
+      setStorage(
         EYES_LOCAL_PREVIEW_STORAGE_KEY,
         JSON.stringify(this.localPreview),
       );
@@ -1465,7 +1466,7 @@ export default {
         this.saveSelectedExpression();
         this.showSendSuccess();
       } catch (error) {
-        console.error("发送桌面宠物失败:", error);
+        console.error("鍙戦€佹闈㈠疇鐗╁け璐?", error);
         this.showSendFailure(error);
       } finally {
         this.endSendUi();

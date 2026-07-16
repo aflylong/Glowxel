@@ -1,4 +1,4 @@
-import { ARTKAL_COLORS_FULL, getColorByCode } from "@/data/artkal-colors.js";
+﻿import { ARTKAL_COLORS_FULL, getColorByCode } from "@/data/artkal-colors.js";
 import { createPatternDocument } from "../model/patternDocument.js";
 import { PATTERN_DEFAULT_DIMENSION } from "../patternBoard.js";
 
@@ -6,7 +6,7 @@ function loadImage(url) {
   return new Promise((resolve, reject) => {
     const image = new Image();
     image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error("图片加载失败"));
+    image.onerror = () => reject(new Error("鍥剧墖鍔犺浇澶辫触"));
     image.src = url;
   });
 }
@@ -14,7 +14,7 @@ function loadImage(url) {
 function loadImageFromFile(file) {
   return new Promise((resolve, reject) => {
     if (!file) {
-      reject(new Error("缺少图片文件"));
+      reject(new Error("缂哄皯鍥剧墖鏂囦欢"));
       return;
     }
 
@@ -26,7 +26,7 @@ function loadImageFromFile(file) {
     };
     image.onerror = () => {
       globalThis.URL.revokeObjectURL(objectUrl);
-      reject(new Error("图片加载失败"));
+      reject(new Error("鍥剧墖鍔犺浇澶辫触"));
     };
     image.src = objectUrl;
   });
@@ -42,7 +42,7 @@ function createCanvas(width, height) {
 function getContext(canvas, options = {}) {
   const context = canvas.getContext("2d", options);
   if (!context) {
-    throw new Error("Canvas 初始化失败");
+    throw new Error("Canvas 鍒濆鍖栧け璐?")";"
   }
   return context;
 }
@@ -304,7 +304,7 @@ function generatePixelsFromCanvas(sourceCanvas, width, height, palette) {
 
 export async function importPatternFromImage(file, options = {}) {
   if (!file) {
-    throw new Error("缺少图片文件");
+    throw new Error("缂哄皯鍥剧墖鏂囦欢");
   }
 
   const image = await loadImageFromFile(file);
@@ -317,7 +317,7 @@ export async function importPatternFromImage(file, options = {}) {
 
   const document = createPatternDocument({
     id: options.id || `image-${Date.now()}`,
-    name: options.name || file.name || "图片导入",
+    name: options.name || file.name || "鍥剧墖瀵煎叆",
     width,
     height,
     pixels: result.pixels,
@@ -343,7 +343,7 @@ export async function importPatternFromImage(file, options = {}) {
 
 export async function importPatternFromCaptureImage(file, options = {}) {
   if (!file) {
-    throw new Error("缺少图片文件");
+    throw new Error("缂哄皯鍥剧墖鏂囦欢");
   }
 
   const image = await loadImageFromFile(file);
@@ -356,7 +356,7 @@ export async function importPatternFromCaptureImage(file, options = {}) {
 
   return createPatternDocument({
     id: options.id || `capture-${Date.now()}`,
-    name: options.name || file.name || "实拍图校验",
+    name: options.name || file.name || "瀹炴媿鍥炬牎楠?,"
     width,
     height,
     pixels: result.pixels,

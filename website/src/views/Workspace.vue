@@ -1,27 +1,26 @@
-<template>
+﻿<template>
   <div class="glx-page-shell">
     <section class="glx-page-shell__hero">
       <span class="glx-page-shell__eyebrow">Workspace</span>
-      <h1 class="glx-page-shell__title">创作中心</h1>
+      <h1 class="glx-page-shell__title">鍒涗綔涓績</h1>
       <p class="glx-page-shell__desc">
-        工作台需要继续承接创作入口、云端项目列表和项目管理，不应该被改成只剩说明文案的占位页。
-      </p>
+        宸ヤ綔鍙伴渶瑕佺户缁壙鎺ュ垱浣滃叆鍙ｃ€佷簯绔」鐩垪琛ㄥ拰椤圭洰绠＄悊锛屼笉搴旇琚敼鎴愬彧鍓╄鏄庢枃妗堢殑鍗犱綅椤点€?      </p>
       <div class="glx-hero-metrics">
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">云端项目</span>
+          <span class="glx-hero-metric__label">浜戠椤圭洰</span>
           <strong class="glx-hero-metric__value">{{ userStore.isLoggedIn ? projectStore.totalProjects : 0 }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">草稿</span>
+          <span class="glx-hero-metric__label">鑽夌</span>
           <strong class="glx-hero-metric__value">{{ userStore.isLoggedIn ? projectStore.draftProjects.length : 0 }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">已发布</span>
+          <span class="glx-hero-metric__label">宸插彂甯?</span>
           <strong class="glx-hero-metric__value">{{ userStore.isLoggedIn ? projectStore.publishedProjects.length : 0 }}</strong>
         </article>
         <article class="glx-hero-metric">
-          <span class="glx-hero-metric__label">当前状态</span>
-          <strong class="glx-hero-metric__value">{{ userStore.isLoggedIn ? "已登录" : "未登录" }}</strong>
+          <span class="glx-hero-metric__label">褰撳墠鐘舵€?</span>
+          <strong class="glx-hero-metric__value">{{ userStore.isLoggedIn ? "宸茬櫥褰? : "鏈櫥褰? }}</strong>
         </article>
       </div>
     </section>
@@ -29,40 +28,40 @@
     <section class="glx-grid glx-grid--two">
       <router-link to="/create?mode=blank" class="workspace-entry">
         <span class="glx-icon-chip glx-icon-chip--yellow workspace-entry__icon">+</span>
-        <strong class="workspace-entry__title">新建画布</strong>
-        <p class="workspace-entry__desc">从空白画布开始创作，继续走网站端正式创作链。</p>
+        <strong class="workspace-entry__title">鏂板缓鐢诲竷</strong>
+        <p class="workspace-entry__desc">浠庣┖鐧界敾甯冨紑濮嬪垱浣滐紝缁х画璧扮綉绔欑姝ｅ紡鍒涗綔閾俱€?</p>
       </router-link>
 
       <router-link to="/create?mode=image" class="workspace-entry">
-        <span class="glx-icon-chip glx-icon-chip--blue workspace-entry__icon">图</span>
-        <strong class="workspace-entry__title">导入图片</strong>
-        <p class="workspace-entry__desc">把现有图片送进像素编辑器，再继续细修和保存。</p>
+        <span class="glx-icon-chip glx-icon-chip--blue workspace-entry__icon">鍥?</span>
+        <strong class="workspace-entry__title">瀵煎叆鍥剧墖</strong>
+        <p class="workspace-entry__desc">鎶婄幇鏈夊浘鐗囬€佽繘鍍忕礌缂栬緫鍣紝鍐嶇户缁粏淇拰淇濆瓨銆?</p>
       </router-link>
 
       <router-link to="/pattern-workbench" class="workspace-entry">
-        <span class="glx-icon-chip glx-icon-chip--green workspace-entry__icon">拼</span>
-        <strong class="workspace-entry__title">拼豆工作台</strong>
-        <p class="workspace-entry__desc">拼豆图纸导入、差异校对和分板整理继续保留。</p>
+        <span class="glx-icon-chip glx-icon-chip--green workspace-entry__icon">鎷?</span>
+        <strong class="workspace-entry__title">鎷艰眴宸ヤ綔鍙?</strong>
+        <p class="workspace-entry__desc">鎷艰眴鍥剧焊瀵煎叆銆佸樊寮傛牎瀵瑰拰鍒嗘澘鏁寸悊缁х画淇濈暀銆?</p>
       </router-link>
 
       <router-link to="/device-control" class="workspace-entry">
-        <span class="glx-icon-chip glx-icon-chip--paper workspace-entry__icon">设</span>
-        <strong class="workspace-entry__title">设备发送</strong>
-        <p class="workspace-entry__desc">设备连接、配网、参数和画板模式入口继续留在网站端。</p>
+        <span class="glx-icon-chip glx-icon-chip--paper workspace-entry__icon">璁?</span>
+        <strong class="workspace-entry__title">璁惧鍙戦€?</strong>
+        <p class="workspace-entry__desc">璁惧杩炴帴銆侀厤缃戙€佸弬鏁板拰鐢绘澘妯″紡鍏ュ彛缁х画鐣欏湪缃戠珯绔€?</p>
       </router-link>
     </section>
 
     <section class="glx-section-card glx-section-card--stack">
       <div class="glx-section-head">
-        <h2 class="glx-section-title">我的云端项目</h2>
-        <span class="glx-section-meta">{{ userStore.isLoggedIn ? `${projectStore.totalProjects} 个` : "需登录" }}</span>
+        <h2 class="glx-section-title">鎴戠殑浜戠椤圭洰</h2>
+        <span class="glx-section-meta">{{ userStore.isLoggedIn ? `${projectStore.totalProjects} 涓猔 : "闇€鐧诲綍" }}</span>
       </div>
 
       <div v-if="!userStore.isLoggedIn" class="glx-empty-card">
-        <strong class="glx-section-title">登录后可管理项目</strong>
-        <p class="glx-page-shell__desc">工作台的项目列表、总览、辅助处理和发布链路都需要登录后继续使用。</p>
+        <strong class="glx-section-title">鐧诲綍鍚庡彲绠＄悊椤圭洰</strong>
+        <p class="glx-page-shell__desc">宸ヤ綔鍙扮殑椤圭洰鍒楄〃銆佹€昏銆佽緟鍔╁鐞嗗拰鍙戝竷閾捐矾閮介渶瑕佺櫥褰曞悗缁х画浣跨敤銆?</p>
         <div class="glx-inline-actions">
-          <router-link to="/login" class="glx-button glx-button--primary">去登录</router-link>
+          <router-link to="/login" class="glx-button glx-button--primary">鍘荤櫥褰?/router-link>
         </div>
       </div>
 
@@ -74,8 +73,8 @@
       </div>
 
       <div v-else-if="projectStore.projects.length === 0" class="glx-empty-card">
-        <strong class="glx-section-title">还没有云端项目</strong>
-        <p class="glx-page-shell__desc">先保存草稿或从模板开始创作，这里就会出现你的项目列表。</p>
+        <strong class="glx-section-title">杩樻病鏈変簯绔」鐩?</strong>
+        <p class="glx-page-shell__desc">鍏堜繚瀛樿崏绋挎垨浠庢ā鏉垮紑濮嬪垱浣滐紝杩欓噷灏变細鍑虹幇浣犵殑椤圭洰鍒楄〃銆?</p>
       </div>
 
       <div v-else class="glx-stack">
@@ -86,15 +85,15 @@
             alt="thumbnail"
             class="workspace-project-row__cover"
           />
-          <div v-else class="workspace-project-row__cover workspace-project-row__cover--empty">图</div>
+          <div v-else class="workspace-project-row__cover workspace-project-row__cover--empty">鍥?</div>
           <div class="glx-list-card__copy">
             <strong class="glx-list-card__title">{{ projectName(item) }}</strong>
             <span class="glx-list-card__desc">{{ projectMeta(item) }}</span>
           </div>
           <div class="glx-inline-actions">
-            <router-link :to="`/overview/${item.id}`" class="glx-button glx-button--ghost">总览</router-link>
-            <router-link :to="`/editor/${item.id}`" class="glx-button glx-button--ghost">编辑</router-link>
-            <button type="button" class="glx-button glx-button--danger" @click="removeProject(item.id)">删除</button>
+            <router-link :to="`/overview/${item.id}`" class="glx-button glx-button--ghost">鎬昏</router-link>
+            <router-link :to="`/editor/${item.id}`" class="glx-button glx-button--ghost">缂栬緫</router-link>
+            <button type="button" class="glx-button glx-button--danger" @click="removeProject(item.id)">鍒犻櫎</button>
           </div>
         </article>
       </div>
@@ -123,14 +122,14 @@ function projectName(item) {
   if (typeof item.name === "string" && item.name.length > 0) {
     return item.name;
   }
-  return "未命名项目";
+  return "鏈懡鍚嶉」鐩?";"
 }
 
 function projectMeta(item) {
   const parts = [];
 
   if (typeof item.width === "number" && typeof item.height === "number") {
-    parts.push(`${item.width} × ${item.height}`);
+    parts.push(`${item.width} 脳 ${item.height}`);
   }
 
   if (typeof item.status === "string" && item.status.length > 0) {
@@ -141,17 +140,17 @@ function projectMeta(item) {
     parts.push(item.updated_at.slice(0, 10));
   }
 
-  return parts.join(" · ");
+  return parts.join(" 路 ");
 }
 
 async function removeProject(id) {
   const response = await projectStore.removeProject(id);
   if (response.success) {
-    feedback.success("删除成功", "项目已经从云端项目列表中移除。");
+    feedback.success("鍒犻櫎鎴愬姛"", "椤圭洰宸茬粡浠庝簯绔」鐩垪琛ㄤ腑绉婚櫎銆?")";"
     return;
   }
 
-  feedback.error("删除失败", "项目没有成功删除。");
+  feedback.error("鍒犻櫎澶辫触"", "椤圭洰娌℃湁鎴愬姛鍒犻櫎銆?")";"
 }
 
 onMounted(async () => {
